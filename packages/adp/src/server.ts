@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
+import { EventEmitter } from 'events';
 import {
   JsonRpcRequestSchema,
   type JsonRpcResponse,
@@ -10,17 +11,17 @@ import {
  * AdpServer — the out-of-band control plane.
  *
  * It opens a dedicated WebSocket on a configurable port and speaks JSON-RPC 2.0.
- * Command handlers are registered by method name (e.g. "Inference.halt").
- * Because the WebSocket listener runs on the Node.js I/O layer (libuv), it can
- * receive and dispatch commands even while the main event loop is blocked in
- * an LLM inference call, which is the whole point of the ADP architecture.
+ *
+ * Now extends EventEmitter to provide a high-level API for handling commands
+ * and emitting events, similar to Playwright/CDP.
  */
-export class AdpServer {
+export class AdpServer extends EventEmitter {
   private wss: WebSocketServer;
   private handlers = new Map<string, AdpCommandHandler>();
   private clients = new Set<WebSocket>();
 
   constructor(port: number) {
+    super();
     this.wss = new WebSocketServer({ port });
 
     this.wss.on('connection', (ws: WebSocket) => {
@@ -39,9 +40,25 @@ export class AdpServer {
           }
 
           const req = parsed.data;
-          const handler = this.handlers.get(req.method);
+          
+          // Emit the event locally for high-level handlers
+          // The listener signature is (params, callback)
+          const hasListeners = this.emit(req.method, req.params, (resultData: any) => {
+            if (req.id !== undefined) {
+              this.sendResult(ws, req.id, resultData);
+            }
+          });
 
-          if (!handler) {
+          // Fallback to legacy handlers map
+          const legacyHandler = this.handlers.get(req.method);
+          if (legacyHandler) {
+            console.log(`[ADP] ← ${req.method} (legacy)`);
+            legacyHandler(req.params, (resultData: any) => {
+              if (req.id !== undefined) {
+                this.sendResult(ws, req.id, resultData);
+              }
+            });
+          } else if (!hasListeners) {
             if (req.id !== undefined) {
               this.sendError(ws, req.id, -32601, `Method not found: ${req.method}`);
             }
@@ -49,12 +66,6 @@ export class AdpServer {
           }
 
           console.log(`[ADP] ← ${req.method}`);
-
-          handler(req.params, (resultData: any) => {
-            if (req.id !== undefined) {
-              this.sendResult(ws, req.id, resultData);
-            }
-          });
         } catch {
           this.sendError(ws, null, -32700, 'Parse error');
         }
@@ -69,12 +80,18 @@ export class AdpServer {
     console.log(`[ADP] Control-plane listening on ws://localhost:${port}`);
   }
 
-  /** Register a handler for an ADP method (e.g. "Inference.halt") */
+  /**
+   * Register a handler for an ADP method (e.g. "Inference.halt")
+   * @deprecated Use .on(method, handler) instead.
+   */
   public handle(method: string, handler: AdpCommandHandler): void {
     this.handlers.set(method, handler);
   }
 
-  /** Push an event to all connected ADP clients (server → client) */
+  /**
+   * Push an event to all connected ADP clients (server → client)
+   * @deprecated Use .notify(method, params) instead.
+   */
   public broadcast(event: AdpEvent): void {
     const payload = JSON.stringify(event);
     for (const ws of this.clients) {
@@ -82,6 +99,18 @@ export class AdpServer {
         ws.send(payload);
       }
     }
+  }
+
+  /**
+   * High-level method to send an event to all connected clients.
+   * Equivalent to Playwright's emit but for remote clients.
+   */
+  public notify(method: string, params?: any): void {
+    this.broadcast({
+      jsonrpc: '2.0',
+      method,
+      params,
+    });
   }
 
   /** Graceful shutdown */

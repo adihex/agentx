@@ -44,7 +44,7 @@ export interface AgentEventLoopOptions {
  */
 export class AgentEventLoop {
   // ── Infrastructure ────────────────────────────────────────────────────────
-  private adp: AdpServer;
+  public readonly adp: AdpServer;
   private threadPool: AgenticThreadPool;
   private llm: LLMOrchestrator;
 
@@ -101,11 +101,7 @@ export class AgentEventLoop {
       this.macrotaskQueue.push({ source: toolName, data: result });
 
       // Broadcast tool completion to any ADP observers
-      this.adp.broadcast({
-        jsonrpc: '2.0',
-        method: 'Toolchain.responseReceived',
-        params: { toolName, result },
-      });
+      this.adp.notify('Toolchain.responseReceived', { toolName, result });
     });
   }
 
@@ -116,16 +112,12 @@ export class AgentEventLoop {
 
   /** Register a custom ADP command handler. */
   public registerAdpHandler(method: string, handler: AdpCommandHandler): void {
-    this.adp.handle(method, handler);
+    this.adp.on(method, handler);
   }
 
   /** Emit an event via ADP. */
   public emitAdpEvent(method: string, params?: any): void {
-    this.adp.broadcast({
-      jsonrpc: '2.0',
-      method,
-      params,
-    });
+    this.adp.notify(method, params);
   }
 
   /** Wait for the next prompt from the ADP control plane. */
