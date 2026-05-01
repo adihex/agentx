@@ -1,0 +1,17 @@
+{
+  "name": "@agentx/demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "admin": "tsx src/admin.ts"
+  },
+  "dependencies": {
+    "@agentx/core": "workspace:*",
+    "@agentx/adp": "workspace:*",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@agentx/pi-extension",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'nothing to build'",
+    "check": "echo 'nothing to check'"
+  },
+  "pi": {
+    "extensions": [
+      "./src/extension.ts"
+    ]
+  },
+  "dependencies": {
+    "@agentx/adp": "workspace:*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.71.0",
+    "@mariozechner/pi-tui": "^0.71.0",
+    "typebox": "^1.1.36"
+  }
+}
