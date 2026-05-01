@@ -33,10 +33,10 @@ describe('AgentEventLoop Tool Injection', () => {
     const loop = new AgentEventLoop();
     const handler = vi.fn();
     
-    (loop as any).registerAdpHandler('Custom.test', handler);
+    loop.registerAdpHandler('Custom.test', handler);
     
-    // Simulate an ADP call (manually triggering the handler for now)
-    (loop as any).adp.handlers.get('Custom.test')({ foo: 'bar' }, () => {});
+    // Simulate an ADP call using the new EventEmitter API
+    loop.adp.emit('Custom.test', { foo: 'bar' }, () => {});
     
     expect(handler).toHaveBeenCalledWith({ foo: 'bar' }, expect.any(Function));
     
