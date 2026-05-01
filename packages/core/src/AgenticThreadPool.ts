@@ -30,55 +30,64 @@ export interface ToolResult {
 export class AgenticThreadPool {
   private workers: Worker[] = [];
   private roundRobinIdx = 0;
+  private workerScript: string;
 
-  /** Inline worker script — runs inside its own V8 isolate */
-  private static WORKER_SCRIPT = `
-    const { parentPort } = require('worker_threads');
-
-    // Built-in tool registry inside the worker isolate
-    const tools = {
-      heavyComputation: async (args) => {
-        const start = Date.now();
-        await new Promise(r => setTimeout(r, args.duration || 3000));
-        return {
-          success: true,
-          computedAt: new Date().toISOString(),
-          durationMs: Date.now() - start,
-          message: 'Heavy computation finished inside worker thread!',
-        };
-      },
-
-      fileAnalysis: async (args) => {
-        const start = Date.now();
-        // Simulate reading + parsing a large file
-        await new Promise(r => setTimeout(r, args.duration || 2000));
-        return {
-          success: true,
-          linesProcessed: Math.floor(Math.random() * 50000) + 10000,
-          anomalies: Math.floor(Math.random() * 12),
-          durationMs: Date.now() - start,
-        };
-      },
-    };
-
-    parentPort.on('message', async (req) => {
+  /** Default built-in tools */
+  private static DEFAULT_TOOLS: Record<string, string> = {
+    heavyComputation: `async (args) => {
       const start = Date.now();
-      try {
-        const fn = tools[req.toolName];
-        if (!fn) throw new Error('Unknown tool: ' + req.toolName);
-        const result = await fn(req.args);
-        parentPort.postMessage({ id: req.id, result, durationMs: Date.now() - start });
-      } catch (err) {
-        parentPort.postMessage({ id: req.id, error: err.message, durationMs: Date.now() - start });
-      }
-    });
-  `;
+      await new Promise(r => setTimeout(r, args.duration || 3000));
+      return {
+        success: true,
+        computedAt: new Date().toISOString(),
+        durationMs: Date.now() - start,
+        message: 'Heavy computation finished inside worker thread!',
+      };
+    }`,
+    fileAnalysis: `async (args) => {
+      const start = Date.now();
+      await new Promise(r => setTimeout(r, args.duration || 2000));
+      return {
+        success: true,
+        linesProcessed: Math.floor(Math.random() * 50000) + 10000,
+        anomalies: Math.floor(Math.random() * 12),
+        durationMs: Date.now() - start,
+      };
+    }`
+  };
 
-  constructor(poolSize = 4) {
+  constructor(poolSize = 4, customTools: Record<string, string> = {}) {
+    const allTools = { ...AgenticThreadPool.DEFAULT_TOOLS, ...customTools };
+    this.workerScript = this.generateWorkerScript(allTools);
+
     for (let i = 0; i < poolSize; i++) {
       this.spawn();
     }
-    console.log(`[ThreadPool] Spawned ${poolSize} worker threads`);
+    console.log(`[ThreadPool] Spawned ${poolSize} worker threads with ${Object.keys(allTools).length} tools`);
+  }
+
+  private generateWorkerScript(tools: Record<string, string>) {
+    return `
+      const { parentPort } = require('worker_threads');
+
+      const tools = {
+        ${Object.entries(tools)
+          .map(([name, body]) => `"${name}": ${body}`)
+          .join(',\n')}
+      };
+
+      parentPort.on('message', async (req) => {
+        const start = Date.now();
+        try {
+          const fn = tools[req.toolName];
+          if (!fn) throw new Error('Unknown tool: ' + req.toolName);
+          const result = await fn(req.args);
+          parentPort.postMessage({ id: req.id, result, durationMs: Date.now() - start });
+        } catch (err) {
+          parentPort.postMessage({ id: req.id, error: err.message, durationMs: Date.now() - start });
+        }
+      });
+    `;
   }
 
   // ── Public API ────────────────────────────────────────────────────────────
@@ -112,7 +121,7 @@ export class AgenticThreadPool {
   // ── Internals ─────────────────────────────────────────────────────────────
 
   private spawn() {
-    const worker = new Worker(AgenticThreadPool.WORKER_SCRIPT, { eval: true });
+    const worker = new Worker(this.workerScript, { eval: true });
     worker.on('error', (err: Error) => {
       console.error('[ThreadPool] Worker crashed, respawning:', err.message);
       this.remove(worker);

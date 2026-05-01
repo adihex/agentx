@@ -1,4 +1,4 @@
-import { AdpServer, AdpDomains } from '@agentx/adp';
+import { AdpServer, AdpDomains, type AdpCommandHandler } from '@agentx/adp';
 import { AgenticThreadPool, type ToolRequest, type ToolResult } from './AgenticThreadPool';
 import { LLMOrchestrator } from './LLMOrchestrator';
 import type { CoreMessage } from 'ai';
@@ -24,6 +24,7 @@ export interface AgentEventLoopOptions {
   llmModel?: string;
   threadPoolSize?: number;
   systemPrompt?: string;
+  tools?: Record<string, string>;
 }
 
 // ─── Main Loop ─────────────────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ export class AgentEventLoop {
   constructor(opts: AgentEventLoopOptions = {}) {
     const adpPort = opts.adpPort ?? 9222;
     this.adp = new AdpServer(adpPort);
-    this.threadPool = new AgenticThreadPool(opts.threadPoolSize ?? 4);
+    this.threadPool = new AgenticThreadPool(opts.threadPoolSize ?? 4, opts.tools);
     this.llm = new LLMOrchestrator({
       apiKey: opts.llmApiKey,
       baseURL: opts.llmBaseUrl,
@@ -111,6 +112,20 @@ export class AgentEventLoop {
   /** Register a microtask (guardrail / validator) to run before next action. */
   public addMicrotask(name: string, fn: () => Promise<void> | void): void {
     this.microtaskQueue.push({ name, fn });
+  }
+
+  /** Register a custom ADP command handler. */
+  public registerAdpHandler(method: string, handler: AdpCommandHandler): void {
+    this.adp.handle(method, handler);
+  }
+
+  /** Emit an event via ADP. */
+  public emitAdpEvent(method: string, params?: any): void {
+    this.adp.broadcast({
+      jsonrpc: '2.0',
+      method,
+      params,
+    });
   }
 
   /** Wait for the next prompt from the ADP control plane. */
