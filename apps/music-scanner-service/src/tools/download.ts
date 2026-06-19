@@ -18,16 +18,16 @@ export const downloadAndUpload = `async (args) => {
     // 1. Download as mp3 using yt-dlp
     // We use /tmp inside the worker isolate for temporary storage
     const localPath = "/tmp/" + id + ".mp3";
-    const downloadCmd = "yt-dlp -x --audio-format mp3 -o \"" + localPath + "\" \"https://www.youtube.com/watch?v=" + id + "\"";
+    const downloadCmd = "yt-dlp -x --audio-format mp3 -o "" + localPath + "" "https://www.youtube.com/watch?v=" + id + """;
     execSync(downloadCmd);
     
     // 2. Upload to GCS using gcloud storage cp
     const gcsPath = "gs://" + bucket + "/" + id + ".mp3";
-    const uploadCmd = "gcloud storage cp \"" + localPath + "\" \"" + gcsPath + "\"";
+    const uploadCmd = "gcloud storage cp "" + localPath + "" "" + gcsPath + """;
     execSync(uploadCmd);
     
     // 3. Cleanup
-    execSync("rm \"" + localPath + "\"");
+    execSync("rm "" + localPath + """);
     
     return {
       success: true,

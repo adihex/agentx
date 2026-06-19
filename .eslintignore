@@ -1,0 +1,6 @@
+apps/web/.output
+apps/web/.vinxi
+**/dist
+**/*.mjs
+node_modules
+scratch

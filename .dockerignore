@@ -1,0 +1,13 @@
+node_modules
+.pnpm-debug.log
+.git
+.gitignore
+*.md
+dist
+build
+.next
+.vinxi
+routeTree.gen.ts
+.env
+.env.local
+.env.*.local

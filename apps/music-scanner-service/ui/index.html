@@ -1,84 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Music Scanner | Premium Orchestrator</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <div class="background-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
     </div>
 
     <main class="glass-container">
-        <header>
-            <div class="logo">MUSIC <span>SCANNER</span></div>
-            <nav>
-                <a href="#" class="active">Scan</a>
-                <a href="#">History</a>
-                <a href="#">Library</a>
-            </nav>
-            <div class="user-profile">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User">
-                <span>Aditya B.</span>
-            </div>
-        </header>
+      <header>
+        <div class="logo">MUSIC <span>SCANNER</span></div>
+        <nav>
+          <a href="#" class="active">Scan</a>
+          <a href="#">History</a>
+          <a href="#">Library</a>
+        </nav>
+        <div class="user-profile">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+          <span>Aditya B.</span>
+        </div>
+      </header>
 
-        <section class="hero">
-            <h1>Extract Guitar Tracks with AI</h1>
-            <p>Paste a YouTube link or type a song name to start the orchestration.</p>
-            
-            <div class="search-box">
-                <input type="text" id="songInput" placeholder="Enter song title, artist, or URL...">
-                <button id="scanBtn">SCAN</button>
-            </div>
-        </section>
+      <section class="hero">
+        <h1>Extract Guitar Tracks with AI</h1>
+        <p>Paste a YouTube link or type a song name to start the orchestration.</p>
 
-        <section class="progress-section hidden" id="progressSection">
-            <div class="scan-info">
-                <h2 id="currentSong">Scan Progress: "..."</h2>
-            </div>
-            
-            <div class="steps-container">
-                <div class="step" id="step-search">
-                    <div class="icon">🔍</div>
-                    <span>Search</span>
-                    <div class="status-indicator"></div>
-                </div>
-                <div class="connector"></div>
-                <div class="step" id="step-download">
-                    <div class="icon">📥</div>
-                    <span>Download</span>
-                    <div class="status-indicator"></div>
-                </div>
-                <div class="connector"></div>
-                <div class="step" id="step-extract">
-                    <div class="icon">📈</div>
-                    <span>Extract</span>
-                    <div class="status-indicator"></div>
-                </div>
-                <div class="connector"></div>
-                <div class="step" id="step-done">
-                    <div class="icon">✅</div>
-                    <span>Done</span>
-                    <div class="status-indicator"></div>
-                </div>
-            </div>
+        <div class="search-box">
+          <input type="text" id="songInput" placeholder="Enter song title, artist, or URL..." />
+          <button id="scanBtn">SCAN</button>
+        </div>
+      </section>
 
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar"></div>
-                <span class="percentage" id="progressPercent">0%</span>
-            </div>
-            
-            <div class="status-log" id="statusLog">Initializing agentx runtime...</div>
-        </section>
+      <section class="progress-section hidden" id="progressSection">
+        <div class="scan-info">
+          <h2 id="currentSong">Scan Progress: "..."</h2>
+        </div>
+
+        <div class="steps-container">
+          <div class="step" id="step-search">
+            <div class="icon">🔍</div>
+            <span>Search</span>
+            <div class="status-indicator"></div>
+          </div>
+          <div class="connector"></div>
+          <div class="step" id="step-download">
+            <div class="icon">📥</div>
+            <span>Download</span>
+            <div class="status-indicator"></div>
+          </div>
+          <div class="connector"></div>
+          <div class="step" id="step-extract">
+            <div class="icon">📈</div>
+            <span>Extract</span>
+            <div class="status-indicator"></div>
+          </div>
+          <div class="connector"></div>
+          <div class="step" id="step-done">
+            <div class="icon">✅</div>
+            <span>Done</span>
+            <div class="status-indicator"></div>
+          </div>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar"></div>
+          <span class="percentage" id="progressPercent">0%</span>
+        </div>
+
+        <div class="status-log" id="statusLog">Initializing agentx runtime...</div>
+      </section>
     </main>
 
     <script src="app.js"></script>
-</body>
+  </body>
 </html>

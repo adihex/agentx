@@ -9,96 +9,604 @@
     "gitCommitHash": "none"
   },
   "nodes": [
-    { "id": "file:packages/core/src/index.ts", "type": "file", "name": "index.ts", "filePath": "packages/core/src/index.ts", "summary": "Re-exports from AgentEventLoop, AgenticThreadPool, and LLMOrchestrator.", "tags": ["core", "public-api", "barrel"] },
-    { "id": "file:packages/core/src/AgentEventLoop.ts", "type": "file", "name": "AgentEventLoop.ts", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Heart of the agentx runtime. Models a 4-phase event loop (Timers, I/O Callbacks, Inference, Check) with ADP control-plane wiring.", "tags": ["core", "runtime", "event-loop", "main"] },
-    { "id": "file:packages/core/src/AgenticThreadPool.ts", "type": "file", "name": "AgenticThreadPool.ts", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Fixed-size worker_thread pool for executing tool calls off the main thread. Round-robin dispatch with auto-respawn on crash.", "tags": ["core", "thread-pool", "workers", "tools"] },
-    { "id": "file:packages/core/src/LLMOrchestrator.ts", "type": "file", "name": "LLMOrchestrator.ts", "filePath": "packages/core/src/LLMOrchestrator.ts", "summary": "Wraps Vercel AI SDK for streaming LLM inference with AbortSignal support for immediate halt via ADP.", "tags": ["core", "llm", "inference", "streaming"] },
-    { "id": "file:packages/adp/src/index.ts", "type": "file", "name": "index.ts", "filePath": "packages/adp/src/index.ts", "summary": "Re-exports from ADP schemas, server, and client.", "tags": ["adp", "public-api", "barrel"] },
-    { "id": "file:packages/adp/src/schemas.ts", "type": "file", "name": "schemas.ts", "filePath": "packages/adp/src/schemas.ts", "summary": "Zod schemas for JSON-RPC 2.0 messages and ADP domain command constants.", "tags": ["adp", "schemas", "json-rpc", "zod"] },
-    { "id": "file:packages/adp/src/server.ts", "type": "file", "name": "server.ts", "filePath": "packages/adp/src/server.ts", "summary": "WebSocket JSON-RPC 2.0 server — the out-of-band control plane for agents.", "tags": ["adp", "server", "websocket", "control-plane"] },
-    { "id": "file:packages/adp/src/client.ts", "type": "file", "name": "client.ts", "filePath": "packages/adp/src/client.ts", "summary": "WebSocket JSON-RPC 2.0 client for connecting to and commanding an ADP server.", "tags": ["adp", "client", "websocket", "cli"] },
-    { "id": "file:apps/demo/src/index.ts", "type": "file", "name": "index.ts", "filePath": "apps/demo/src/index.ts", "summary": "Demo agent entrypoint showcasing non-blocking tool execution and ADP out-of-band control.", "tags": ["demo", "entrypoint", "example"] },
-    { "id": "file:apps/demo/src/admin.ts", "type": "file", "name": "admin.ts", "filePath": "apps/demo/src/admin.ts", "summary": "Admin CLI connecting to ADP control plane to issue halt, pause, resume, compact, inspect, inject commands.", "tags": ["demo", "admin", "cli", "adp"] },
-    { "id": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "type": "class", "name": "AgentEventLoop", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "4-phase event loop orchestrating timers, I/O callbacks, LLM inference, and microtask checks.", "tags": ["core", "runtime", "event-loop"] },
-    { "id": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "type": "class", "name": "AgenticThreadPool", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Worker thread pool executing tools off the main thread using round-robin dispatch.", "tags": ["core", "thread-pool", "workers"] },
-    { "id": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator", "type": "class", "name": "LLMOrchestrator", "filePath": "packages/core/src/LLMOrchestrator.ts", "summary": "Orchestrates streaming LLM calls via Vercel AI SDK with abort support.", "tags": ["core", "llm", "inference"] },
-    { "id": "class:packages/adp/src/server.ts:AdpServer", "type": "class", "name": "AdpServer", "filePath": "packages/adp/src/server.ts", "summary": "WebSocket server that speaks JSON-RPC 2.0 and registers command handlers for out-of-band agent control.", "tags": ["adp", "server", "control-plane"] },
-    { "id": "class:packages/adp/src/client.ts:AdpClient", "type": "class", "name": "AdpClient", "filePath": "packages/adp/src/client.ts", "summary": "WebSocket client that sends JSON-RPC commands and subscribes to server-push events.", "tags": ["adp", "client", "cli"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:tick", "type": "function", "name": "tick", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Private method running one event loop iteration through all four phases.", "tags": ["core", "event-loop", "private"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:wireAdp", "type": "function", "name": "wireAdp", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Private method wiring ADP command handlers for inference, metacognition, and memory.", "tags": ["core", "adp", "private"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:dispatchTool", "type": "function", "name": "dispatchTool", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Public API to dispatch a tool call to the thread pool (fire-and-forget).", "tags": ["core", "tools", "public-api"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:run", "type": "function", "name": "run", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Public API to push a user message and run one loop iteration.", "tags": ["core", "public-api", "inference"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:addMicrotask", "type": "function", "name": "addMicrotask", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Public API to register a guardrail/validator microtask.", "tags": ["core", "public-api", "guardrails"] },
-    { "id": "function:packages/core/src/AgentEventLoop.ts:shutdown", "type": "function", "name": "shutdown", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Public API for graceful shutdown of thread pool and ADP server.", "tags": ["core", "public-api", "lifecycle"] },
-    { "id": "function:packages/core/src/AgenticThreadPool.ts:execute", "type": "function", "name": "execute", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Dispatch a ToolRequest to the next available worker via round-robin.", "tags": ["core", "thread-pool", "public-api"] },
-    { "id": "function:packages/core/src/AgenticThreadPool.ts:terminateAll", "type": "function", "name": "terminateAll", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Kill every worker thread. Used during shutdown.", "tags": ["core", "thread-pool", "lifecycle"] },
-    { "id": "function:packages/core/src/LLMOrchestrator.ts:generateStream", "type": "function", "name": "generateStream", "filePath": "packages/core/src/LLMOrchestrator.ts", "summary": "Yield streaming text chunks from the LLM with AbortSignal support.", "tags": ["core", "llm", "streaming", "public-api"] },
-    { "id": "function:apps/demo/src/index.ts:main", "type": "function", "name": "main", "filePath": "apps/demo/src/index.ts", "summary": "Demo main — sets up AgentEventLoop, dispatches tools, runs inference, and shuts down.", "tags": ["demo", "entrypoint", "example"] },
-    { "id": "function:apps/demo/src/admin.ts:main", "type": "function", "name": "main", "filePath": "apps/demo/src/admin.ts", "summary": "Admin CLI main — parses command, connects ADP client, sends command, prints response.", "tags": ["demo", "admin", "cli"] },
-    { "id": "concept:packages/adp/src/schemas.ts:AdpDomains", "type": "concept", "name": "AdpDomains", "filePath": "packages/adp/src/schemas.ts", "summary": "Namespace of ADP domain constants: Inference, Metacognition, Toolchain, Memory.", "tags": ["adp", "domains", "constants"] },
-    { "id": "concept:packages/adp/src/schemas.ts:JsonRpcRequest", "type": "concept", "name": "JsonRpcRequest", "filePath": "packages/adp/src/schemas.ts", "summary": "Zod-validated JSON-RPC 2.0 request type.", "tags": ["adp", "json-rpc", "types"] },
-    { "id": "concept:packages/adp/src/schemas.ts:JsonRpcResponse", "type": "concept", "name": "JsonRpcResponse", "filePath": "packages/adp/src/schemas.ts", "summary": "Zod-validated JSON-RPC 2.0 response type.", "tags": ["adp", "json-rpc", "types"] },
-    { "id": "concept:packages/adp/src/schemas.ts:AdpCommandHandler", "type": "concept", "name": "AdpCommandHandler", "filePath": "packages/adp/src/schemas.ts", "summary": "Handler signature for ADP command callbacks.", "tags": ["adp", "types", "handlers"] },
-    { "id": "concept:packages/adp/src/schemas.ts:AdpEvent", "type": "concept", "name": "AdpEvent", "filePath": "packages/adp/src/schemas.ts", "summary": "Server-push event structure for ADP broadcasts.", "tags": ["adp", "types", "events"] },
-    { "id": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest", "type": "concept", "name": "ToolRequest", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Request payload for dispatching a tool to the thread pool.", "tags": ["core", "types", "tools"] },
-    { "id": "interface:packages/core/src/AgenticThreadPool.ts:ToolResult", "type": "concept", "name": "ToolResult", "filePath": "packages/core/src/AgenticThreadPool.ts", "summary": "Result payload returned from a worker after tool execution.", "tags": ["core", "types", "tools"] },
-    { "id": "interface:packages/core/src/AgentEventLoop.ts:AgentEventLoopOptions", "type": "concept", "name": "AgentEventLoopOptions", "filePath": "packages/core/src/AgentEventLoop.ts", "summary": "Configuration options for AgentEventLoop.", "tags": ["core", "types", "config"] }
+    {
+      "id": "file:packages/core/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "packages/core/src/index.ts",
+      "summary": "Re-exports from AgentEventLoop, AgenticThreadPool, and LLMOrchestrator.",
+      "tags": ["core", "public-api", "barrel"]
+    },
+    {
+      "id": "file:packages/core/src/AgentEventLoop.ts",
+      "type": "file",
+      "name": "AgentEventLoop.ts",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Heart of the agentx runtime. Models a 4-phase event loop (Timers, I/O Callbacks, Inference, Check) with ADP control-plane wiring.",
+      "tags": ["core", "runtime", "event-loop", "main"]
+    },
+    {
+      "id": "file:packages/core/src/AgenticThreadPool.ts",
+      "type": "file",
+      "name": "AgenticThreadPool.ts",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Fixed-size worker_thread pool for executing tool calls off the main thread. Round-robin dispatch with auto-respawn on crash.",
+      "tags": ["core", "thread-pool", "workers", "tools"]
+    },
+    {
+      "id": "file:packages/core/src/LLMOrchestrator.ts",
+      "type": "file",
+      "name": "LLMOrchestrator.ts",
+      "filePath": "packages/core/src/LLMOrchestrator.ts",
+      "summary": "Wraps Vercel AI SDK for streaming LLM inference with AbortSignal support for immediate halt via ADP.",
+      "tags": ["core", "llm", "inference", "streaming"]
+    },
+    {
+      "id": "file:packages/adp/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "packages/adp/src/index.ts",
+      "summary": "Re-exports from ADP schemas, server, and client.",
+      "tags": ["adp", "public-api", "barrel"]
+    },
+    {
+      "id": "file:packages/adp/src/schemas.ts",
+      "type": "file",
+      "name": "schemas.ts",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Zod schemas for JSON-RPC 2.0 messages and ADP domain command constants.",
+      "tags": ["adp", "schemas", "json-rpc", "zod"]
+    },
+    {
+      "id": "file:packages/adp/src/server.ts",
+      "type": "file",
+      "name": "server.ts",
+      "filePath": "packages/adp/src/server.ts",
+      "summary": "WebSocket JSON-RPC 2.0 server — the out-of-band control plane for agents.",
+      "tags": ["adp", "server", "websocket", "control-plane"]
+    },
+    {
+      "id": "file:packages/adp/src/client.ts",
+      "type": "file",
+      "name": "client.ts",
+      "filePath": "packages/adp/src/client.ts",
+      "summary": "WebSocket JSON-RPC 2.0 client for connecting to and commanding an ADP server.",
+      "tags": ["adp", "client", "websocket", "cli"]
+    },
+    {
+      "id": "file:apps/demo/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "apps/demo/src/index.ts",
+      "summary": "Demo agent entrypoint showcasing non-blocking tool execution and ADP out-of-band control.",
+      "tags": ["demo", "entrypoint", "example"]
+    },
+    {
+      "id": "file:apps/demo/src/admin.ts",
+      "type": "file",
+      "name": "admin.ts",
+      "filePath": "apps/demo/src/admin.ts",
+      "summary": "Admin CLI connecting to ADP control plane to issue halt, pause, resume, compact, inspect, inject commands.",
+      "tags": ["demo", "admin", "cli", "adp"]
+    },
+    {
+      "id": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "type": "class",
+      "name": "AgentEventLoop",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "4-phase event loop orchestrating timers, I/O callbacks, LLM inference, and microtask checks.",
+      "tags": ["core", "runtime", "event-loop"]
+    },
+    {
+      "id": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "type": "class",
+      "name": "AgenticThreadPool",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Worker thread pool executing tools off the main thread using round-robin dispatch.",
+      "tags": ["core", "thread-pool", "workers"]
+    },
+    {
+      "id": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator",
+      "type": "class",
+      "name": "LLMOrchestrator",
+      "filePath": "packages/core/src/LLMOrchestrator.ts",
+      "summary": "Orchestrates streaming LLM calls via Vercel AI SDK with abort support.",
+      "tags": ["core", "llm", "inference"]
+    },
+    {
+      "id": "class:packages/adp/src/server.ts:AdpServer",
+      "type": "class",
+      "name": "AdpServer",
+      "filePath": "packages/adp/src/server.ts",
+      "summary": "WebSocket server that speaks JSON-RPC 2.0 and registers command handlers for out-of-band agent control.",
+      "tags": ["adp", "server", "control-plane"]
+    },
+    {
+      "id": "class:packages/adp/src/client.ts:AdpClient",
+      "type": "class",
+      "name": "AdpClient",
+      "filePath": "packages/adp/src/client.ts",
+      "summary": "WebSocket client that sends JSON-RPC commands and subscribes to server-push events.",
+      "tags": ["adp", "client", "cli"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:tick",
+      "type": "function",
+      "name": "tick",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Private method running one event loop iteration through all four phases.",
+      "tags": ["core", "event-loop", "private"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:wireAdp",
+      "type": "function",
+      "name": "wireAdp",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Private method wiring ADP command handlers for inference, metacognition, and memory.",
+      "tags": ["core", "adp", "private"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:dispatchTool",
+      "type": "function",
+      "name": "dispatchTool",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Public API to dispatch a tool call to the thread pool (fire-and-forget).",
+      "tags": ["core", "tools", "public-api"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Public API to push a user message and run one loop iteration.",
+      "tags": ["core", "public-api", "inference"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:addMicrotask",
+      "type": "function",
+      "name": "addMicrotask",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Public API to register a guardrail/validator microtask.",
+      "tags": ["core", "public-api", "guardrails"]
+    },
+    {
+      "id": "function:packages/core/src/AgentEventLoop.ts:shutdown",
+      "type": "function",
+      "name": "shutdown",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Public API for graceful shutdown of thread pool and ADP server.",
+      "tags": ["core", "public-api", "lifecycle"]
+    },
+    {
+      "id": "function:packages/core/src/AgenticThreadPool.ts:execute",
+      "type": "function",
+      "name": "execute",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Dispatch a ToolRequest to the next available worker via round-robin.",
+      "tags": ["core", "thread-pool", "public-api"]
+    },
+    {
+      "id": "function:packages/core/src/AgenticThreadPool.ts:terminateAll",
+      "type": "function",
+      "name": "terminateAll",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Kill every worker thread. Used during shutdown.",
+      "tags": ["core", "thread-pool", "lifecycle"]
+    },
+    {
+      "id": "function:packages/core/src/LLMOrchestrator.ts:generateStream",
+      "type": "function",
+      "name": "generateStream",
+      "filePath": "packages/core/src/LLMOrchestrator.ts",
+      "summary": "Yield streaming text chunks from the LLM with AbortSignal support.",
+      "tags": ["core", "llm", "streaming", "public-api"]
+    },
+    {
+      "id": "function:apps/demo/src/index.ts:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "apps/demo/src/index.ts",
+      "summary": "Demo main — sets up AgentEventLoop, dispatches tools, runs inference, and shuts down.",
+      "tags": ["demo", "entrypoint", "example"]
+    },
+    {
+      "id": "function:apps/demo/src/admin.ts:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "apps/demo/src/admin.ts",
+      "summary": "Admin CLI main — parses command, connects ADP client, sends command, prints response.",
+      "tags": ["demo", "admin", "cli"]
+    },
+    {
+      "id": "concept:packages/adp/src/schemas.ts:AdpDomains",
+      "type": "concept",
+      "name": "AdpDomains",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Namespace of ADP domain constants: Inference, Metacognition, Toolchain, Memory.",
+      "tags": ["adp", "domains", "constants"]
+    },
+    {
+      "id": "concept:packages/adp/src/schemas.ts:JsonRpcRequest",
+      "type": "concept",
+      "name": "JsonRpcRequest",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Zod-validated JSON-RPC 2.0 request type.",
+      "tags": ["adp", "json-rpc", "types"]
+    },
+    {
+      "id": "concept:packages/adp/src/schemas.ts:JsonRpcResponse",
+      "type": "concept",
+      "name": "JsonRpcResponse",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Zod-validated JSON-RPC 2.0 response type.",
+      "tags": ["adp", "json-rpc", "types"]
+    },
+    {
+      "id": "concept:packages/adp/src/schemas.ts:AdpCommandHandler",
+      "type": "concept",
+      "name": "AdpCommandHandler",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Handler signature for ADP command callbacks.",
+      "tags": ["adp", "types", "handlers"]
+    },
+    {
+      "id": "concept:packages/adp/src/schemas.ts:AdpEvent",
+      "type": "concept",
+      "name": "AdpEvent",
+      "filePath": "packages/adp/src/schemas.ts",
+      "summary": "Server-push event structure for ADP broadcasts.",
+      "tags": ["adp", "types", "events"]
+    },
+    {
+      "id": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest",
+      "type": "concept",
+      "name": "ToolRequest",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Request payload for dispatching a tool to the thread pool.",
+      "tags": ["core", "types", "tools"]
+    },
+    {
+      "id": "interface:packages/core/src/AgenticThreadPool.ts:ToolResult",
+      "type": "concept",
+      "name": "ToolResult",
+      "filePath": "packages/core/src/AgenticThreadPool.ts",
+      "summary": "Result payload returned from a worker after tool execution.",
+      "tags": ["core", "types", "tools"]
+    },
+    {
+      "id": "interface:packages/core/src/AgentEventLoop.ts:AgentEventLoopOptions",
+      "type": "concept",
+      "name": "AgentEventLoopOptions",
+      "filePath": "packages/core/src/AgentEventLoop.ts",
+      "summary": "Configuration options for AgentEventLoop.",
+      "tags": ["core", "types", "config"]
+    }
   ],
   "edges": [
-    { "source": "file:packages/core/src/index.ts", "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/core/src/index.ts", "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/core/src/index.ts", "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/core/src/AgentEventLoop.ts", "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/core/src/AgenticThreadPool.ts", "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/core/src/LLMOrchestrator.ts", "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "type": "depends_on", "weight": 0.6 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator", "type": "depends_on", "weight": 0.6 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:tick", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:wireAdp", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:dispatchTool", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:run", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:addMicrotask", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "function:packages/core/src/AgentEventLoop.ts:shutdown", "type": "contains", "weight": 1.0 },
-    { "source": "function:packages/core/src/AgentEventLoop.ts:dispatchTool", "target": "function:packages/core/src/AgenticThreadPool.ts:execute", "type": "calls", "weight": 0.8 },
-    { "source": "function:packages/core/src/AgentEventLoop.ts:dispatchTool", "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest", "type": "related", "weight": 0.5 },
-    { "source": "function:packages/core/src/AgenticThreadPool.ts:execute", "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest", "type": "reads_from", "weight": 0.5 },
-    { "source": "function:packages/core/src/AgenticThreadPool.ts:execute", "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolResult", "type": "writes_to", "weight": 0.5 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "interface:packages/core/src/AgentEventLoop.ts:AgentEventLoopOptions", "type": "related", "weight": 0.5 },
-    { "source": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "target": "function:packages/core/src/AgenticThreadPool.ts:execute", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool", "target": "function:packages/core/src/AgenticThreadPool.ts:terminateAll", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator", "target": "function:packages/core/src/LLMOrchestrator.ts:generateStream", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/index.ts", "target": "class:packages/adp/src/server.ts:AdpServer", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/adp/src/index.ts", "target": "class:packages/adp/src/client.ts:AdpClient", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/adp/src/index.ts", "target": "concept:packages/adp/src/schemas.ts:AdpDomains", "type": "exports", "weight": 0.8 },
-    { "source": "file:packages/adp/src/server.ts", "target": "class:packages/adp/src/server.ts:AdpServer", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/client.ts", "target": "class:packages/adp/src/client.ts:AdpClient", "type": "contains", "weight": 1.0 },
-    { "source": "class:packages/adp/src/server.ts:AdpServer", "target": "concept:packages/adp/src/schemas.ts:AdpCommandHandler", "type": "related", "weight": 0.5 },
-    { "source": "class:packages/adp/src/server.ts:AdpServer", "target": "concept:packages/adp/src/schemas.ts:AdpEvent", "type": "related", "weight": 0.5 },
-    { "source": "class:packages/adp/src/client.ts:AdpClient", "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest", "type": "related", "weight": 0.5 },
-    { "source": "class:packages/adp/src/client.ts:AdpClient", "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse", "type": "related", "weight": 0.5 },
-    { "source": "file:packages/adp/src/server.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest", "type": "reads_from", "weight": 0.5 },
-    { "source": "file:packages/adp/src/server.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse", "type": "writes_to", "weight": 0.5 },
-    { "source": "file:packages/adp/src/client.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest", "type": "writes_to", "weight": 0.5 },
-    { "source": "file:packages/adp/src/client.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse", "type": "reads_from", "weight": 0.5 },
-    { "source": "file:packages/adp/src/schemas.ts", "target": "concept:packages/adp/src/schemas.ts:AdpDomains", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/schemas.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/schemas.ts", "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/schemas.ts", "target": "concept:packages/adp/src/schemas.ts:AdpCommandHandler", "type": "contains", "weight": 1.0 },
-    { "source": "file:packages/adp/src/schemas.ts", "target": "concept:packages/adp/src/schemas.ts:AdpEvent", "type": "contains", "weight": 1.0 },
-    { "source": "file:apps/demo/src/index.ts", "target": "function:apps/demo/src/index.ts:main", "type": "contains", "weight": 1.0 },
-    { "source": "file:apps/demo/src/admin.ts", "target": "function:apps/demo/src/admin.ts:main", "type": "contains", "weight": 1.0 },
-    { "source": "function:apps/demo/src/index.ts:main", "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/index.ts:main", "target": "function:packages/core/src/AgentEventLoop.ts:dispatchTool", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/index.ts:main", "target": "function:packages/core/src/AgentEventLoop.ts:run", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/index.ts:main", "target": "function:packages/core/src/AgentEventLoop.ts:addMicrotask", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/index.ts:main", "target": "function:packages/core/src/AgentEventLoop.ts:shutdown", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/admin.ts:main", "target": "class:packages/adp/src/client.ts:AdpClient", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/admin.ts:main", "target": "function:packages/adp/src/client.ts:connect", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/admin.ts:main", "target": "function:packages/adp/src/client.ts:send", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/admin.ts:main", "target": "function:packages/adp/src/client.ts:close", "type": "calls", "weight": 0.8 },
-    { "source": "function:apps/demo/src/admin.ts:main", "target": "concept:packages/adp/src/schemas.ts:AdpDomains", "type": "reads_from", "weight": 0.5 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "class:packages/adp/src/server.ts:AdpServer", "type": "depends_on", "weight": 0.6 },
-    { "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop", "target": "concept:packages/adp/src/schemas.ts:AdpDomains", "type": "depends_on", "weight": 0.6 }
+    {
+      "source": "file:packages/core/src/index.ts",
+      "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/core/src/index.ts",
+      "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/core/src/index.ts",
+      "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/core/src/AgentEventLoop.ts",
+      "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/core/src/AgenticThreadPool.ts",
+      "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/core/src/LLMOrchestrator.ts",
+      "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:tick",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:wireAdp",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:dispatchTool",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:run",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:addMicrotask",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "function:packages/core/src/AgentEventLoop.ts:shutdown",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "function:packages/core/src/AgentEventLoop.ts:dispatchTool",
+      "target": "function:packages/core/src/AgenticThreadPool.ts:execute",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/core/src/AgentEventLoop.ts:dispatchTool",
+      "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "function:packages/core/src/AgenticThreadPool.ts:execute",
+      "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolRequest",
+      "type": "reads_from",
+      "weight": 0.5
+    },
+    {
+      "source": "function:packages/core/src/AgenticThreadPool.ts:execute",
+      "target": "interface:packages/core/src/AgenticThreadPool.ts:ToolResult",
+      "type": "writes_to",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "interface:packages/core/src/AgentEventLoop.ts:AgentEventLoopOptions",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "target": "function:packages/core/src/AgenticThreadPool.ts:execute",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/AgenticThreadPool.ts:AgenticThreadPool",
+      "target": "function:packages/core/src/AgenticThreadPool.ts:terminateAll",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/core/src/LLMOrchestrator.ts:LLMOrchestrator",
+      "target": "function:packages/core/src/LLMOrchestrator.ts:generateStream",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/index.ts",
+      "target": "class:packages/adp/src/server.ts:AdpServer",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/adp/src/index.ts",
+      "target": "class:packages/adp/src/client.ts:AdpClient",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/adp/src/index.ts",
+      "target": "concept:packages/adp/src/schemas.ts:AdpDomains",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/adp/src/server.ts",
+      "target": "class:packages/adp/src/server.ts:AdpServer",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/client.ts",
+      "target": "class:packages/adp/src/client.ts:AdpClient",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/adp/src/server.ts:AdpServer",
+      "target": "concept:packages/adp/src/schemas.ts:AdpCommandHandler",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/adp/src/server.ts:AdpServer",
+      "target": "concept:packages/adp/src/schemas.ts:AdpEvent",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/adp/src/client.ts:AdpClient",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/adp/src/client.ts:AdpClient",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse",
+      "type": "related",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/adp/src/server.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest",
+      "type": "reads_from",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/adp/src/server.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse",
+      "type": "writes_to",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/adp/src/client.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest",
+      "type": "writes_to",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/adp/src/client.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse",
+      "type": "reads_from",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/adp/src/schemas.ts",
+      "target": "concept:packages/adp/src/schemas.ts:AdpDomains",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/schemas.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcRequest",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/schemas.ts",
+      "target": "concept:packages/adp/src/schemas.ts:JsonRpcResponse",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/schemas.ts",
+      "target": "concept:packages/adp/src/schemas.ts:AdpCommandHandler",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/adp/src/schemas.ts",
+      "target": "concept:packages/adp/src/schemas.ts:AdpEvent",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:apps/demo/src/index.ts",
+      "target": "function:apps/demo/src/index.ts:main",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:apps/demo/src/admin.ts",
+      "target": "function:apps/demo/src/admin.ts:main",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "function:apps/demo/src/index.ts:main",
+      "target": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/index.ts:main",
+      "target": "function:packages/core/src/AgentEventLoop.ts:dispatchTool",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/index.ts:main",
+      "target": "function:packages/core/src/AgentEventLoop.ts:run",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/index.ts:main",
+      "target": "function:packages/core/src/AgentEventLoop.ts:addMicrotask",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/index.ts:main",
+      "target": "function:packages/core/src/AgentEventLoop.ts:shutdown",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/admin.ts:main",
+      "target": "class:packages/adp/src/client.ts:AdpClient",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/admin.ts:main",
+      "target": "function:packages/adp/src/client.ts:connect",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/admin.ts:main",
+      "target": "function:packages/adp/src/client.ts:send",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/admin.ts:main",
+      "target": "function:packages/adp/src/client.ts:close",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/demo/src/admin.ts:main",
+      "target": "concept:packages/adp/src/schemas.ts:AdpDomains",
+      "type": "reads_from",
+      "weight": 0.5
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "class:packages/adp/src/server.ts:AdpServer",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/core/src/AgentEventLoop.ts:AgentEventLoop",
+      "target": "concept:packages/adp/src/schemas.ts:AdpDomains",
+      "type": "depends_on",
+      "weight": 0.6
+    }
   ],
   "layers": [
     {
@@ -152,10 +660,7 @@
       "id": "layer:public-api",
       "name": "Public API",
       "description": "Barrel files that re-export the public surface of each package.",
-      "nodes": [
-        "file:packages/core/src/index.ts",
-        "file:packages/adp/src/index.ts"
-      ]
+      "nodes": ["file:packages/core/src/index.ts", "file:packages/adp/src/index.ts"]
     },
     {
       "id": "layer:application",
@@ -237,10 +742,7 @@
       "step": 8,
       "title": "Demo & Admin CLI",
       "description": "apps/demo shows it all in action: dispatch heavy tools, run inference concurrently, then use pnpm admin to send ADP commands from another terminal.",
-      "focusNodes": [
-        "function:apps/demo/src/index.ts:main",
-        "function:apps/demo/src/admin.ts:main"
-      ]
+      "focusNodes": ["function:apps/demo/src/index.ts:main", "function:apps/demo/src/admin.ts:main"]
     }
   ]
 }

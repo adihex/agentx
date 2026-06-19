@@ -1,0 +1,68 @@
+[
+  {
+    "id": "US-001",
+    "title": "Baseline Assessment",
+    "description": "Run build, test, and lint across the entire monorepo to identify all current failures.",
+    "acceptanceCriteria": [
+      "All package.json files analyzed for start, dev, test, build scripts",
+      "Baseline report of failing build scripts generated",
+      "Baseline report of failing tests generated",
+      "Baseline report of linting issues generated"
+    ],
+    "passes": true
+  },
+  {
+    "id": "US-002",
+    "title": "Build System Migration (vite+)",
+    "description": "Replace tsup and other build tools with vite+ native dependencies where applicable and fix all build errors.",
+    "acceptanceCriteria": [
+      "tsup dependencies and scripts replaced with vite+ native build patterns in all packages",
+      "pnpm run build passes for all packages in the monorepo",
+      "No TypeScript compilation errors in any package"
+    ],
+    "passes": true
+  },
+  {
+    "id": "US-003",
+    "title": "Test Suite Fixes",
+    "description": "Resolve all failing tests in all packages.",
+    "acceptanceCriteria": [
+      "pnpm run test passes for all packages in the monorepo",
+      "No regression in existing functionality"
+    ],
+    "passes": true
+  },
+  {
+    "id": "US-004",
+    "title": "Script Completeness & Functionality",
+    "description": "Ensure start, dev, test, build scripts exist and work as expected in every package.",
+    "acceptanceCriteria": [
+      "Every package has a valid build script",
+      "Every package has a valid test script",
+      "Packages intended to be run as services have valid start/dev scripts",
+      "Running scripts does not result in unexpected crashes or environment errors"
+    ],
+    "passes": true
+  },
+  {
+    "id": "US-005",
+    "title": "Linting Resolution",
+    "description": "Resolve all linting errors and warnings across the monorepo.",
+    "acceptanceCriteria": [
+      "pnpm run lint passes without errors or warnings in all packages",
+      "Lint fixes adhere to the project's existing style guide"
+    ],
+    "passes": true
+  },
+  {
+    "id": "US-006",
+    "title": "Final E2E Verification",
+    "description": "Comprehensive run of all scripts to confirm the system is stable and green.",
+    "acceptanceCriteria": [
+      "Full monorepo build passes",
+      "Full monorepo test suite passes",
+      "Full monorepo lint check passes"
+    ],
+    "passes": true
+  }
+]

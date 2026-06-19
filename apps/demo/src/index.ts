@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { AgentEventLoop } from '@agentx/core';
+import "dotenv/config";
+import { AgentEventLoop } from "@agentx/core";
 
 /**
  * agentx demo — Interactive Event-Driven Agent Runtime
@@ -29,20 +29,20 @@ import { AgentEventLoop } from '@agentx/core';
 
 async function main() {
   console.log();
-  console.log('┌──────────────────────────────────────────────────┐');
-  console.log('│       agentx — Event-Driven Agent Runtime        │');
-  console.log('│          ADP Control Plane on port 9222          │');
-  console.log('│         Waiting for prompts via ADP…             │');
-  console.log('└──────────────────────────────────────────────────┘');
+  console.log("┌──────────────────────────────────────────────────┐");
+  console.log("│       agentx — Event-Driven Agent Runtime        │");
+  console.log("│          ADP Control Plane on port 9222          │");
+  console.log("│         Waiting for prompts via ADP…             │");
+  console.log("└──────────────────────────────────────────────────┘");
   console.log();
 
   const agent = new AgentEventLoop({
     adpPort: 9222,
     systemPrompt: [
-      'You are a helpful AI assistant running inside an event-driven runtime.',
-      'When tool results appear in your context, analyze them concisely.',
-      'You are demonstrating non-blocking execution and out-of-band control.',
-    ].join(' '),
+      "You are a helpful AI assistant running inside an event-driven runtime.",
+      "When tool results appear in your context, analyze them concisely.",
+      "You are demonstrating non-blocking execution and out-of-band control.",
+    ].join(" "),
   });
 
   // ── Graceful shutdown on SIGINT/SIGTERM ───────────────────────────────────
@@ -52,8 +52,8 @@ async function main() {
     process.exit(0);
   };
 
-  process.on('SIGINT', () => shutdown('SIGINT'));
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
 
   // ── Main loop: wait for prompts and run inference ─────────────────────────
   while (true) {
@@ -66,16 +66,16 @@ async function main() {
     try {
       await agent.run(prompt);
     } catch (err: any) {
-      console.error('[Demo] Inference error:', err.message ?? err);
+      console.error("[Demo] Inference error:", err.message ?? err);
     }
   }
 
-  console.log('[Demo] Main loop exited. Shutting down…');
+  console.log("[Demo] Main loop exited. Shutting down…");
   await agent.shutdown();
   process.exit(0);
 }
 
 main().catch((err) => {
-  console.error('Fatal:', err);
+  console.error("Fatal:", err);
   process.exit(1);
 });

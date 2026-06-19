@@ -1,4 +1,4 @@
-import { AdpClient, AdpDomains } from '@agentx/adp';
+import { AdpClient, AdpDomains } from "@agentx/adp";
 
 /**
  * agentx Metacognitive Admin CLI
@@ -29,39 +29,40 @@ const COMMANDS: Record<string, string> = {
 };
 
 async function main() {
-  const [action = 'halt', ...rest] = process.argv.slice(2);
+  const [action = "halt", ...rest] = process.argv.slice(2);
   const method = COMMANDS[action];
 
   if (!method) {
     console.error(`Unknown command: "${action}"`);
-    console.error(`Available: ${Object.keys(COMMANDS).join(', ')}`);
+    console.error(`Available: ${Object.keys(COMMANDS).join(", ")}`);
     process.exit(1);
   }
 
-  const params: Record<string, any> = {};
-  if (action === 'inject') {
-    params.expression = rest.join(' ') || 'You are stuck. Re-evaluate your approach.';
+  const params: Record<string, unknown> = {};
+  if (action === "inject") {
+    params.expression = rest.join(" ") || "You are stuck. Re-evaluate your approach.";
   }
-  if (action === 'prompt') {
-    params.prompt = rest.join(' ') || 'Hello, agent!';
+  if (action === "prompt") {
+    params.prompt = rest.join(" ") || "Hello, agent!";
   }
 
   console.log(`🔌  Connecting to ADP on ws://localhost:9222…`);
-  const client = new AdpClient('ws://localhost:9222');
+  const client = new AdpClient("ws://localhost:9222");
 
   try {
-    await client.connect();
+    await client.waitForOpen();
     console.log(`✅  Connected`);
     console.log(`📡  Sending ${method}…`);
 
     const result = await client.send(method, params);
     console.log(`✅  Response:`, JSON.stringify(result, null, 2));
-  } catch (err: any) {
-    console.error(`❌  Error: ${err.message ?? err}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`❌  Error: ${message}`);
   } finally {
     client.close();
     process.exit(0);
   }
 }
 
-main();
+void main();

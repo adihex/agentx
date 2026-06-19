@@ -2,22 +2,17 @@
   "name": "@agentx/pi-extension",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "echo 'nothing to build'",
-    "check": "echo 'nothing to check'"
-  },
-  "pi": {
-    "extensions": [
-      "./src/extension.ts"
-    ]
+    "check": "echo 'nothing to check'",
+    "dev": "echo 'nothing to dev'",
+    "test": "echo 'No tests'",
+    "start": "echo 'nothing to start'"
   },
   "dependencies": {
-    "@agentx/adp": "workspace:*"
-  },
-  "devDependencies": {
-    "@mariozechner/pi-coding-agent": "^0.71.0",
-    "@mariozechner/pi-tui": "^0.71.0",
-    "typebox": "^1.1.36"
+    "@agentx/adp": "workspace:*",
+    "@mariozechner/pi-coding-agent": "^0.73.0",
+    "@mariozechner/pi-tui": "^0.73.0",
+    "typebox": "^1.1.38"
   }
 }

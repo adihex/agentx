@@ -40,12 +40,12 @@
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `@agentx/adp` | Agent Debugger Protocol — JSON-RPC schemas, WebSocket server & client |
-| `@agentx/core` | Runtime — AgentEventLoop, AgenticThreadPool, LLMOrchestrator |
-| `apps/demo` | Prototype agent demonstrating non-blocking tools + ADP control |
-| `apps/pi-extension` | Pi TUI frontend — control agentx from inside pi |
+| Package             | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| `@agentx/adp`       | Agent Debugger Protocol — JSON-RPC schemas, WebSocket server & client |
+| `@agentx/core`      | Runtime — AgentEventLoop, AgenticThreadPool, LLMOrchestrator          |
+| `apps/demo`         | Prototype agent demonstrating non-blocking tools + ADP control        |
+| `apps/pi-extension` | Pi TUI frontend — control agentx from inside pi                       |
 
 ## Quick Start
 

@@ -1,0 +1,18 @@
+{
+  "name": "@agentx/agx-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc --noEmit --watch",
+    "start": "echo 'Library package, no start command needed'",
+    "docs": "typedoc",
+    "build": "tsgo",
+    "test": "echo 'No tests'"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

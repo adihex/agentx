@@ -2,16 +2,8 @@
   "version": "1.0.0",
   "project": {
     "name": "agentx",
-    "languages": [
-      "TypeScript"
-    ],
-    "frameworks": [
-      "ai",
-      "@ai-sdk/openai",
-      "ws",
-      "zod",
-      "tsup"
-    ],
+    "languages": ["TypeScript"],
+    "frameworks": ["ai", "@ai-sdk/openai", "ws", "zod", "tsup"],
     "description": "Event-Driven AI Agent Runtime SDK \u2014 modeled on Node.js and the Chrome DevTools Protocol.",
     "analyzedAt": "2026-05-01T00:00:00.000Z",
     "gitCommitHash": "none"
@@ -23,11 +15,7 @@
       "name": "index.ts",
       "filePath": "packages/core/src/index.ts",
       "summary": "Re-exports from AgentEventLoop, AgenticThreadPool, and LLMOrchestrator.",
-      "tags": [
-        "core",
-        "public-api",
-        "barrel"
-      ],
+      "tags": ["core", "public-api", "barrel"],
       "complexity": "moderate"
     },
     {
@@ -36,12 +24,7 @@
       "name": "AgentEventLoop.ts",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Heart of the agentx runtime. Models a 4-phase event loop (Timers, I/O Callbacks, Inference, Check) with ADP control-plane wiring.",
-      "tags": [
-        "core",
-        "runtime",
-        "event-loop",
-        "main"
-      ],
+      "tags": ["core", "runtime", "event-loop", "main"],
       "complexity": "moderate"
     },
     {
@@ -50,12 +33,7 @@
       "name": "AgenticThreadPool.ts",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Fixed-size worker_thread pool for executing tool calls off the main thread. Round-robin dispatch with auto-respawn on crash.",
-      "tags": [
-        "core",
-        "thread-pool",
-        "workers",
-        "tools"
-      ],
+      "tags": ["core", "thread-pool", "workers", "tools"],
       "complexity": "moderate"
     },
     {
@@ -64,12 +42,7 @@
       "name": "LLMOrchestrator.ts",
       "filePath": "packages/core/src/LLMOrchestrator.ts",
       "summary": "Wraps Vercel AI SDK for streaming LLM inference with AbortSignal support for immediate halt via ADP.",
-      "tags": [
-        "core",
-        "llm",
-        "inference",
-        "streaming"
-      ],
+      "tags": ["core", "llm", "inference", "streaming"],
       "complexity": "moderate"
     },
     {
@@ -78,11 +51,7 @@
       "name": "index.ts",
       "filePath": "packages/adp/src/index.ts",
       "summary": "Re-exports from ADP schemas, server, and client.",
-      "tags": [
-        "adp",
-        "public-api",
-        "barrel"
-      ],
+      "tags": ["adp", "public-api", "barrel"],
       "complexity": "moderate"
     },
     {
@@ -91,12 +60,7 @@
       "name": "schemas.ts",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Zod schemas for JSON-RPC 2.0 messages and ADP domain command constants.",
-      "tags": [
-        "adp",
-        "schemas",
-        "json-rpc",
-        "zod"
-      ],
+      "tags": ["adp", "schemas", "json-rpc", "zod"],
       "complexity": "moderate"
     },
     {
@@ -105,12 +69,7 @@
       "name": "server.ts",
       "filePath": "packages/adp/src/server.ts",
       "summary": "WebSocket JSON-RPC 2.0 server \u2014 the out-of-band control plane for agents.",
-      "tags": [
-        "adp",
-        "server",
-        "websocket",
-        "control-plane"
-      ],
+      "tags": ["adp", "server", "websocket", "control-plane"],
       "complexity": "moderate"
     },
     {
@@ -119,12 +78,7 @@
       "name": "client.ts",
       "filePath": "packages/adp/src/client.ts",
       "summary": "WebSocket JSON-RPC 2.0 client for connecting to and commanding an ADP server.",
-      "tags": [
-        "adp",
-        "client",
-        "websocket",
-        "cli"
-      ],
+      "tags": ["adp", "client", "websocket", "cli"],
       "complexity": "moderate"
     },
     {
@@ -133,11 +87,7 @@
       "name": "index.ts",
       "filePath": "apps/demo/src/index.ts",
       "summary": "Demo agent entrypoint showcasing non-blocking tool execution and ADP out-of-band control.",
-      "tags": [
-        "demo",
-        "entrypoint",
-        "example"
-      ],
+      "tags": ["demo", "entrypoint", "example"],
       "complexity": "moderate"
     },
     {
@@ -146,12 +96,7 @@
       "name": "admin.ts",
       "filePath": "apps/demo/src/admin.ts",
       "summary": "Admin CLI connecting to ADP control plane to issue halt, pause, resume, compact, inspect, inject commands.",
-      "tags": [
-        "demo",
-        "admin",
-        "cli",
-        "adp"
-      ],
+      "tags": ["demo", "admin", "cli", "adp"],
       "complexity": "moderate"
     },
     {
@@ -160,11 +105,7 @@
       "name": "AgentEventLoop",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "4-phase event loop orchestrating timers, I/O callbacks, LLM inference, and microtask checks.",
-      "tags": [
-        "core",
-        "runtime",
-        "event-loop"
-      ],
+      "tags": ["core", "runtime", "event-loop"],
       "complexity": "moderate"
     },
     {
@@ -173,11 +114,7 @@
       "name": "AgenticThreadPool",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Worker thread pool executing tools off the main thread using round-robin dispatch.",
-      "tags": [
-        "core",
-        "thread-pool",
-        "workers"
-      ],
+      "tags": ["core", "thread-pool", "workers"],
       "complexity": "moderate"
     },
     {
@@ -186,11 +123,7 @@
       "name": "LLMOrchestrator",
       "filePath": "packages/core/src/LLMOrchestrator.ts",
       "summary": "Orchestrates streaming LLM calls via Vercel AI SDK with abort support.",
-      "tags": [
-        "core",
-        "llm",
-        "inference"
-      ],
+      "tags": ["core", "llm", "inference"],
       "complexity": "moderate"
     },
     {
@@ -199,11 +132,7 @@
       "name": "AdpServer",
       "filePath": "packages/adp/src/server.ts",
       "summary": "WebSocket server that speaks JSON-RPC 2.0 and registers command handlers for out-of-band agent control.",
-      "tags": [
-        "adp",
-        "server",
-        "control-plane"
-      ],
+      "tags": ["adp", "server", "control-plane"],
       "complexity": "moderate"
     },
     {
@@ -212,11 +141,7 @@
       "name": "AdpClient",
       "filePath": "packages/adp/src/client.ts",
       "summary": "WebSocket client that sends JSON-RPC commands and subscribes to server-push events.",
-      "tags": [
-        "adp",
-        "client",
-        "cli"
-      ],
+      "tags": ["adp", "client", "cli"],
       "complexity": "moderate"
     },
     {
@@ -225,11 +150,7 @@
       "name": "tick",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Private method running one event loop iteration through all four phases.",
-      "tags": [
-        "core",
-        "event-loop",
-        "private"
-      ],
+      "tags": ["core", "event-loop", "private"],
       "complexity": "moderate"
     },
     {
@@ -238,11 +159,7 @@
       "name": "wireAdp",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Private method wiring ADP command handlers for inference, metacognition, and memory.",
-      "tags": [
-        "core",
-        "adp",
-        "private"
-      ],
+      "tags": ["core", "adp", "private"],
       "complexity": "moderate"
     },
     {
@@ -251,11 +168,7 @@
       "name": "dispatchTool",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Public API to dispatch a tool call to the thread pool (fire-and-forget).",
-      "tags": [
-        "core",
-        "tools",
-        "public-api"
-      ],
+      "tags": ["core", "tools", "public-api"],
       "complexity": "moderate"
     },
     {
@@ -264,11 +177,7 @@
       "name": "run",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Public API to push a user message and run one loop iteration.",
-      "tags": [
-        "core",
-        "public-api",
-        "inference"
-      ],
+      "tags": ["core", "public-api", "inference"],
       "complexity": "moderate"
     },
     {
@@ -277,11 +186,7 @@
       "name": "addMicrotask",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Public API to register a guardrail/validator microtask.",
-      "tags": [
-        "core",
-        "public-api",
-        "guardrails"
-      ],
+      "tags": ["core", "public-api", "guardrails"],
       "complexity": "moderate"
     },
     {
@@ -290,11 +195,7 @@
       "name": "shutdown",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Public API for graceful shutdown of thread pool and ADP server.",
-      "tags": [
-        "core",
-        "public-api",
-        "lifecycle"
-      ],
+      "tags": ["core", "public-api", "lifecycle"],
       "complexity": "moderate"
     },
     {
@@ -303,11 +204,7 @@
       "name": "execute",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Dispatch a ToolRequest to the next available worker via round-robin.",
-      "tags": [
-        "core",
-        "thread-pool",
-        "public-api"
-      ],
+      "tags": ["core", "thread-pool", "public-api"],
       "complexity": "moderate"
     },
     {
@@ -316,11 +213,7 @@
       "name": "terminateAll",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Kill every worker thread. Used during shutdown.",
-      "tags": [
-        "core",
-        "thread-pool",
-        "lifecycle"
-      ],
+      "tags": ["core", "thread-pool", "lifecycle"],
       "complexity": "moderate"
     },
     {
@@ -329,12 +222,7 @@
       "name": "generateStream",
       "filePath": "packages/core/src/LLMOrchestrator.ts",
       "summary": "Yield streaming text chunks from the LLM with AbortSignal support.",
-      "tags": [
-        "core",
-        "llm",
-        "streaming",
-        "public-api"
-      ],
+      "tags": ["core", "llm", "streaming", "public-api"],
       "complexity": "moderate"
     },
     {
@@ -343,11 +231,7 @@
       "name": "main",
       "filePath": "apps/demo/src/index.ts",
       "summary": "Demo main \u2014 sets up AgentEventLoop, dispatches tools, runs inference, and shuts down.",
-      "tags": [
-        "demo",
-        "entrypoint",
-        "example"
-      ],
+      "tags": ["demo", "entrypoint", "example"],
       "complexity": "moderate"
     },
     {
@@ -356,11 +240,7 @@
       "name": "main",
       "filePath": "apps/demo/src/admin.ts",
       "summary": "Admin CLI main \u2014 parses command, connects ADP client, sends command, prints response.",
-      "tags": [
-        "demo",
-        "admin",
-        "cli"
-      ],
+      "tags": ["demo", "admin", "cli"],
       "complexity": "moderate"
     },
     {
@@ -369,11 +249,7 @@
       "name": "AdpDomains",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Namespace of ADP domain constants: Inference, Metacognition, Toolchain, Memory.",
-      "tags": [
-        "adp",
-        "domains",
-        "constants"
-      ],
+      "tags": ["adp", "domains", "constants"],
       "complexity": "moderate"
     },
     {
@@ -382,11 +258,7 @@
       "name": "JsonRpcRequest",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Zod-validated JSON-RPC 2.0 request type.",
-      "tags": [
-        "adp",
-        "json-rpc",
-        "types"
-      ],
+      "tags": ["adp", "json-rpc", "types"],
       "complexity": "moderate"
     },
     {
@@ -395,11 +267,7 @@
       "name": "JsonRpcResponse",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Zod-validated JSON-RPC 2.0 response type.",
-      "tags": [
-        "adp",
-        "json-rpc",
-        "types"
-      ],
+      "tags": ["adp", "json-rpc", "types"],
       "complexity": "moderate"
     },
     {
@@ -408,11 +276,7 @@
       "name": "AdpCommandHandler",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Handler signature for ADP command callbacks.",
-      "tags": [
-        "adp",
-        "types",
-        "handlers"
-      ],
+      "tags": ["adp", "types", "handlers"],
       "complexity": "moderate"
     },
     {
@@ -421,11 +285,7 @@
       "name": "AdpEvent",
       "filePath": "packages/adp/src/schemas.ts",
       "summary": "Server-push event structure for ADP broadcasts.",
-      "tags": [
-        "adp",
-        "types",
-        "events"
-      ],
+      "tags": ["adp", "types", "events"],
       "complexity": "moderate"
     },
     {
@@ -434,11 +294,7 @@
       "name": "ToolRequest",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Request payload for dispatching a tool to the thread pool.",
-      "tags": [
-        "core",
-        "types",
-        "tools"
-      ],
+      "tags": ["core", "types", "tools"],
       "complexity": "moderate"
     },
     {
@@ -447,11 +303,7 @@
       "name": "ToolResult",
       "filePath": "packages/core/src/AgenticThreadPool.ts",
       "summary": "Result payload returned from a worker after tool execution.",
-      "tags": [
-        "core",
-        "types",
-        "tools"
-      ],
+      "tags": ["core", "types", "tools"],
       "complexity": "moderate"
     },
     {
@@ -460,11 +312,7 @@
       "name": "AgentEventLoopOptions",
       "filePath": "packages/core/src/AgentEventLoop.ts",
       "summary": "Configuration options for AgentEventLoop.",
-      "tags": [
-        "core",
-        "types",
-        "config"
-      ],
+      "tags": ["core", "types", "config"],
       "complexity": "moderate"
     }
   ],
@@ -900,10 +748,7 @@
       "id": "layer:public-api",
       "name": "Public API",
       "description": "Barrel files that re-export the public surface of each package.",
-      "nodeIds": [
-        "file:packages/core/src/index.ts",
-        "file:packages/adp/src/index.ts"
-      ]
+      "nodeIds": ["file:packages/core/src/index.ts", "file:packages/adp/src/index.ts"]
     },
     {
       "id": "layer:application",
@@ -922,9 +767,7 @@
       "title": "Welcome to agentx",
       "description": "agentx is an event-driven AI agent runtime modeled on Node.js and Chrome DevTools Protocol. It has 10 source files across a monorepo with 3 packages.",
       "order": 1,
-      "nodeIds": [
-        "file:apps/demo/src/index.ts"
-      ]
+      "nodeIds": ["file:apps/demo/src/index.ts"]
     },
     {
       "title": "The ADP Control Plane",
@@ -987,10 +830,7 @@
       "title": "Demo & Admin CLI",
       "description": "apps/demo shows it all in action: dispatch heavy tools, run inference concurrently, then use pnpm admin to send ADP commands from another terminal.",
       "order": 8,
-      "nodeIds": [
-        "function:apps/demo/src/index.ts:main",
-        "function:apps/demo/src/admin.ts:main"
-      ]
+      "nodeIds": ["function:apps/demo/src/index.ts:main", "function:apps/demo/src/admin.ts:main"]
     }
   ]
 }

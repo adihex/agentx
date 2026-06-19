@@ -1,0 +1,12 @@
+{
+  "last_session_id": "fd378e21-8ba2-4f08-8a31-2f26edb68a21",
+  "last_event_key": "fd378e21-8ba2-4f08-8a31-2f26edb68a21:transcript:4ac6fcfb7b1de62babd392cbfaa94efe990d46f25b3f456db9a5df442eaed9a6",
+  "last_prompted_session_id": "",
+  "last_reason": "short-session",
+  "last_prompted_at": "",
+  "last_user_message_count": 0,
+  "last_actionable_message_count": 0,
+  "deep_interview_lock_active": false,
+  "deep_interview_lock_source": "/Users/adityabalakrishnan/Documents/agentx/.omg/state/deep-interview.json",
+  "updated_at": "2026-05-07T07:48:54.560Z"
+}

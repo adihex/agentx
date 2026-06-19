@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "worktreeRoot": "/Users/adityabalakrishnan/Documents/agentx",
+  "gitDir": "/Users/adityabalakrishnan/Documents/agentx/.git",
+  "indexMtimeMs": 1778126151775.187,
+  "indexSize": 15960,
+  "map": "  apps/: eslint.config, postcss.config, App, Dashboard, main, useAdp, tailwind.config, vite.config, agx, AgxAgentZoom\n  packages/: client, schemas, server, protocol.test, agx, AgxAgentZoom, AgxOrchestrator, adp-repl\n  scratch/: test_worker, test_worker_search",
+  "createdAt": "2026-05-07T09:05:26.167Z"
+}

@@ -1,120 +1,113 @@
-import WebSocket from 'ws';
-import { JsonRpcResponseSchema, type JsonRpcRequest } from './schemas';
+import WebSocket from "ws";
+import type { JsonRpcResponse, AdpEvent } from "./schemas.js";
 
-/**
- * AdpClient — connects to a running agent's ADP control-plane WebSocket
- * and issues JSON-RPC 2.0 commands (e.g. Inference.halt, Metacognition.pause).
- *
- * Usage:
- *   const client = new AdpClient('ws://localhost:9222');
- *   await client.connect();
- *   const res = await client.send('Inference.halt');
- */
 export class AdpClient {
   private ws: WebSocket;
-  private nextId = 0;
-  private pending = new Map<
-    number | string,
-    { resolve: (v: any) => void; reject: (e: any) => void }
+  private pendingRequests = new Map<
+    string | number,
+    { resolve: (v: unknown) => void; reject: (e: Error) => void }
   >();
-  private eventListeners: Array<(method: string, params?: any) => void> = [];
-  private closeListeners: Array<(code: number, reason: string) => void> = [];
+  private eventListeners: Array<(method: string, params?: unknown) => void> = [];
+  private closeListeners: Array<(code: number) => void> = [];
 
   constructor(private url: string) {
-    this.ws = new WebSocket(url);
-
-    this.ws.on('message', (raw) => {
-      const message = typeof raw === 'string' ? raw : raw.toString();
-      try {
-        const data = JSON.parse(message);
-
-        // Check if it's a response to one of our requests
-        const parsed = JsonRpcResponseSchema.safeParse(data);
-        if (parsed.success && parsed.data.id !== undefined) {
-          const entry = this.pending.get(parsed.data.id);
-          if (entry) {
-            this.pending.delete(parsed.data.id);
-            if (parsed.data.error) {
-              entry.reject(parsed.data.error);
-            } else {
-              entry.resolve(parsed.data.result);
-            }
-            return;
-          }
-        }
-
-        // Otherwise treat it as a server-push event
-        if (data.method) {
-          for (const listener of this.eventListeners) {
-            listener(data.method, data.params);
-          }
-        }
-      } catch {
-        // ignore malformed frames
-      }
-    });
-
-    this.ws.on('close', (code, reason) => {
-      // Reject any pending requests
-      for (const [, entry] of this.pending) {
-        entry.reject(new Error(`WebSocket closed: ${code} ${reason}`));
-      }
-      this.pending.clear();
-      const reasonStr = reason.toString();
-      for (const listener of this.closeListeners) {
-        listener(code, reasonStr);
-      }
-    });
+    this.ws = new WebSocket(this.url);
+    this.setupHandlers();
   }
 
-  /** Wait for the WebSocket connection to open. */
-  public connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.ws.readyState === WebSocket.OPEN) {
-        resolve();
-        return;
-      }
-      this.ws.once('open', resolve);
-      this.ws.once('error', reject);
-    });
-  }
-
-  /** True if the underlying WebSocket is currently open. */
   public get isOpen(): boolean {
     return this.ws.readyState === WebSocket.OPEN;
   }
 
-  /** Send a JSON-RPC command and await the response. */
-  public send(method: string, params?: Record<string, any>): Promise<any> {
-    if (!this.isOpen) {
-      return Promise.reject(new Error(`WebSocket is not open: readyState ${this.ws.readyState}`));
-    }
+  public async connect(): Promise<void> {
+    return this.waitForOpen();
+  }
 
-    const id = ++this.nextId;
-    const request: JsonRpcRequest = { jsonrpc: '2.0', id, method, params };
+  private setupHandlers() {
+    this.ws.on("message", (raw) => {
+      try {
+        const data = JSON.parse(raw.toString());
 
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify(request), (err) => {
-        if (err) {
-          this.pending.delete(id);
-          reject(err);
+        if ("id" in data && data.id !== null) {
+          const res = data as JsonRpcResponse;
+          const pending = this.pendingRequests.get(res.id);
+          if (pending) {
+            this.pendingRequests.delete(res.id);
+            if (res.error) {
+              pending.reject(new Error(res.error.message));
+            } else {
+              pending.resolve(res.result);
+            }
+          }
+        } else if ("method" in data) {
+          const event = data as AdpEvent<unknown>;
+          for (const listener of this.eventListeners) {
+            listener(event.method, event.params);
+          }
         }
-      });
+      } catch (err) {
+        console.error("[ADP Client] Failed to parse message:", err);
+      }
+    });
+
+    this.ws.on("error", (err) => {
+      console.error("[ADP Client] WebSocket error:", err);
+      for (const pending of this.pendingRequests.values()) {
+        pending.reject(err);
+      }
+      this.pendingRequests.clear();
+    });
+
+    this.ws.on("close", (code) => {
+      for (const listener of this.closeListeners) {
+        listener(code);
+      }
     });
   }
 
-  /** Subscribe to server-push events (e.g. Metacognition.hallucinationDetected) */
-  public onEvent(listener: (method: string, params?: any) => void): void {
+  public send<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
+    if (this.ws.readyState !== WebSocket.OPEN && this.ws.readyState !== WebSocket.CONNECTING) {
+      return Promise.reject(new Error("WebSocket is not open"));
+    }
+
+    return new Promise((resolve, reject) => {
+      const id = Math.random().toString(36).slice(2, 10);
+      const payload = JSON.stringify({
+        jsonrpc: "2.0",
+        id,
+        method,
+        params,
+      });
+
+      this.pendingRequests.set(id, {
+        resolve: resolve as (v: unknown) => void,
+        reject,
+      });
+
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(payload);
+      } else {
+        this.ws.once("open", () => this.ws.send(payload));
+      }
+    });
+  }
+
+  public onEvent(listener: (method: string, params?: unknown) => void): void {
     this.eventListeners.push(listener);
   }
 
-  /** Subscribe to connection-close events. */
-  public onClose(listener: (code: number, reason: string) => void): void {
+  public onClose(listener: (code: number) => void): void {
     this.closeListeners.push(listener);
   }
 
-  public close(): void {
+  public async waitForOpen(): Promise<void> {
+    if (this.ws.readyState === WebSocket.OPEN) return;
+    return new Promise((resolve) => {
+      this.ws.once("open", () => resolve());
+    });
+  }
+
+  public close() {
     this.ws.close();
   }
 }
