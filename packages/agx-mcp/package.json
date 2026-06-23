@@ -1,0 +1,21 @@
+{
+  "name": "@agentx/mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "agx-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "docs": "typedoc",
+    "build": "tsgo",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@agentx/orchestrator": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

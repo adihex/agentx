@@ -2,16 +2,17 @@
   "name": "@agentx/demo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
-    "admin": "tsx src/admin.ts"
+    "admin": "tsx src/admin.ts",
+    "build": "tsgo",
+    "test": "echo 'No tests'"
   },
   "dependencies": {
-    "@agentx/core": "workspace:*",
     "@agentx/adp": "workspace:*",
-    "dotenv": "^16.4.5"
-  },
-  "devDependencies": {
+    "@agentx/core": "workspace:*",
     "tsx": "^4.7.1"
   }
 }

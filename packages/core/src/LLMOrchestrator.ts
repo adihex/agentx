@@ -1,5 +1,5 @@
-import { streamText, type CoreMessage } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+import { streamText, type CoreMessage } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 
 /**
  * LLMOrchestrator
@@ -15,16 +15,18 @@ export class LLMOrchestrator {
   private provider: ReturnType<typeof createOpenAI>;
   private defaultModel: string;
 
-  constructor(opts: {
-    apiKey?: string;
-    baseURL?: string;
-    model?: string;
-  } = {}) {
+  constructor(
+    opts: {
+      apiKey?: string;
+      baseURL?: string;
+      model?: string;
+    } = {},
+  ) {
     this.provider = createOpenAI({
-      apiKey: opts.apiKey || process.env.OPENAI_API_KEY || '',
+      apiKey: opts.apiKey || process.env.OPENAI_API_KEY || "",
       baseURL: opts.baseURL || process.env.OPENAI_BASE_URL || undefined,
     });
-    this.defaultModel = opts.model || process.env.AGENT_MODEL || 'gpt-4o';
+    this.defaultModel = opts.model || process.env.AGENT_MODEL || "gpt-4o";
   }
 
   /**

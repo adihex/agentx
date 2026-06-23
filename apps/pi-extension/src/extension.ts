@@ -25,7 +25,7 @@
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { Text } from "@mariozechner/pi-tui";
-import { AdpClient, AdpDomains } from "../../../packages/adp/src/index.ts";
+import { AdpClient, AdpDomains } from "@agentx/adp";
 import { Type } from "typebox";
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ export default function (api: ExtensionAPI) {
       const status = state.callFrame?.paused ? "⏸ paused" : "▶ running";
       ctx.ui.setStatus(
         "agentx",
-        `🧠 agentx: ${status} | iter=${state.callFrame?.iteration ?? "?"} | ctx=${state.callFrame?.contextLength ?? "?"}`
+        `🧠 agentx: ${status} | iter=${state.callFrame?.iteration ?? "?"} | ctx=${state.callFrame?.contextLength ?? "?"}`,
       );
     }, 2000);
   });
@@ -357,7 +357,7 @@ export default function (api: ExtensionAPI) {
     description: "List available tools in the connected agentx agent",
     parameters: Type.Object({}),
     promptSnippet: "List tools registered in the remote agentx runtime",
-    async execute(_toolCallId, _params, _signal, _onUpdate, ctx) {
+    async execute(_toolCallId, _params, _signal, _onUpdate, _ctx) {
       if (!state.client?.isOpen) {
         throw new Error("Not connected to agentx. Run `/agentx connect` first.");
       }
@@ -382,7 +382,7 @@ export default function (api: ExtensionAPI) {
       query: Type.Optional(Type.String({ description: "Query string for memory nodes" })),
     }),
     promptSnippet: "Query memory nodes in the remote agentx runtime",
-    async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+    async execute(_toolCallId, params, _signal, _onUpdate, _ctx) {
       if (!state.client?.isOpen) {
         throw new Error("Not connected to agentx. Run `/agentx connect` first.");
       }
@@ -400,4 +400,3 @@ export default function (api: ExtensionAPI) {
     },
   });
 }
-

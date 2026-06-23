@@ -1,0 +1,24 @@
+{
+  "name": "@agentx/cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.tsx",
+    "start": "tsx src/index.tsx",
+    "build": "tsgo",
+    "test": "echo 'No tests'"
+  },
+  "dependencies": {
+    "@agentx/adp": "workspace:*",
+    "@agentx/agx-cli": "workspace:*",
+    "@agentx/agx-core": "workspace:*",
+    "@opentui/react": "^0.2.1",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.5"
+  }
+}

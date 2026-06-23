@@ -1,142 +1,130 @@
-import { Worker } from 'node:worker_threads';
+import { Worker } from "node:worker_threads";
+import path from "node:url";
 
-// ─── Public Types ──────────────────────────────────────────────────────────────
-
+/**
+ * ToolRequest
+ *
+ * The payload sent to a worker thread to execute a tool.
+ */
 export interface ToolRequest {
+  /** Unique execution ID */
   id: string;
+  /** Name of the tool to run */
   toolName: string;
+  /** Arguments for the tool */
   args: Record<string, unknown>;
 }
 
+/**
+ * ToolResult
+ *
+ * The payload returned from a worker thread after tool execution.
+ */
 export interface ToolResult {
+  /** Unique execution ID matching the request */
   id: string;
-  result?: unknown;
+  /** Whether the tool succeeded */
+  success: boolean;
+  /** The tool's output data (on success) */
+  data?: unknown;
+  /** Error message (on failure) */
   error?: string;
+  /** Time spent executing the tool */
   durationMs: number;
 }
-
-// ─── Thread Pool ───────────────────────────────────────────────────────────────
 
 /**
  * AgenticThreadPool
  *
- * Models the libuv thread-pool: a fixed set of worker_threads that execute
- * tool calls off the main thread. When a tool finishes, its result is returned
- * via a Promise which the AgentEventLoop drains as a macrotask.
- *
- * Each worker runs a self-contained JS snippet (eval mode). In production you
- * would point workers at compiled tool bundles or load them dynamically.
+ * A fixed-size pool of worker threads for executing tool calls
+ * off the main event loop.
  */
 export class AgenticThreadPool {
   private workers: Worker[] = [];
-  private roundRobinIdx = 0;
+  private nextWorkerIndex = 0;
+  private pendingRequests = new Map<string, (res: ToolResult) => void>();
 
-  /** Inline worker script — runs inside its own V8 isolate */
-  private static WORKER_SCRIPT = `
-    const { parentPort } = require('worker_threads');
-
-    // Built-in tool registry inside the worker isolate
-    const tools = {
-      heavyComputation: async (args) => {
-        const start = Date.now();
-        await new Promise(r => setTimeout(r, args.duration || 3000));
-        return {
-          success: true,
-          computedAt: new Date().toISOString(),
-          durationMs: Date.now() - start,
-          message: 'Heavy computation finished inside worker thread!',
-        };
-      },
-
-      fileAnalysis: async (args) => {
-        const start = Date.now();
-        // Simulate reading + parsing a large file
-        await new Promise(r => setTimeout(r, args.duration || 2000));
-        return {
-          success: true,
-          linesProcessed: Math.floor(Math.random() * 50000) + 10000,
-          anomalies: Math.floor(Math.random() * 12),
-          durationMs: Date.now() - start,
-        };
-      },
-    };
-
-    parentPort.on('message', async (req) => {
-      const start = Date.now();
-      try {
-        const fn = tools[req.toolName];
-        if (!fn) throw new Error('Unknown tool: ' + req.toolName);
-        const result = await fn(req.args);
-        parentPort.postMessage({ id: req.id, result, durationMs: Date.now() - start });
-      } catch (err) {
-        parentPort.postMessage({ id: req.id, error: err.message, durationMs: Date.now() - start });
-      }
-    });
-  `;
-
-  constructor(poolSize = 4) {
-    for (let i = 0; i < poolSize; i++) {
-      this.spawn();
-    }
-    console.log(`[ThreadPool] Spawned ${poolSize} worker threads`);
+  /**
+   * Create a new thread pool.
+   * @param size - Number of worker threads to spawn.
+   * @param tools - Optional mapping of tool names to implementation paths.
+   */
+  constructor(private size: number, private tools?: Record<string, string>) {
+    this.init();
   }
 
-  // ── Public API ────────────────────────────────────────────────────────────
-
-  /** Dispatch a tool request to the next available worker (round-robin). */
-  public execute(req: ToolRequest): Promise<ToolResult> {
-    return new Promise((resolve) => {
-      const worker = this.pick();
-      if (!worker) {
-        resolve({ id: req.id, error: 'No workers available', durationMs: 0 });
-        return;
-      }
-
-      const onMessage = (res: ToolResult) => {
-        if (res.id === req.id) {
-          worker.off('message', onMessage);
+  private init() {
+    const workerScript = this.generateWorkerScript();
+    for (let i = 0; i < this.size; i++) {
+      const worker = new Worker(workerScript, { eval: true });
+      worker.on("message", (res: ToolResult) => {
+        const resolve = this.pendingRequests.get(res.id);
+        if (resolve) {
+          this.pendingRequests.delete(res.id);
           resolve(res);
         }
-      };
-      worker.on('message', onMessage);
+      });
+      worker.on("error", (err) => {
+        console.error(`[ThreadPool] Worker ${i} error:`, err);
+      });
+      this.workers.push(worker);
+    }
+  }
+
+  /**
+   * Execute a tool call in the next available worker thread.
+   * @param req - The tool request payload.
+   * @returns A promise that resolves with the tool result.
+   */
+  public async execute(req: ToolRequest): Promise<ToolResult> {
+    const worker = this.workers[this.nextWorkerIndex];
+    this.nextWorkerIndex = (this.nextWorkerIndex + 1) % this.size;
+
+    return new Promise((resolve) => {
+      this.pendingRequests.set(req.id, resolve);
       worker.postMessage(req);
     });
   }
 
-  /** Kill every worker. Used during shutdown. */
+  /** Terminate all workers in the pool. */
   public async terminateAll(): Promise<void> {
     await Promise.all(this.workers.map((w) => w.terminate()));
     this.workers = [];
   }
 
-  // ── Internals ─────────────────────────────────────────────────────────────
+  private generateWorkerScript(): string {
+    const toolsJson = JSON.stringify(this.tools ?? {});
+    return `
+      const { parentPort } = require('node:worker_threads');
+      const tools = ${toolsJson};
 
-  private spawn() {
-    const worker = new Worker(AgenticThreadPool.WORKER_SCRIPT, { eval: true });
-    worker.on('error', (err: Error) => {
-      console.error('[ThreadPool] Worker crashed, respawning:', err.message);
-      this.remove(worker);
-      this.spawn();
-    });
-    worker.on('exit', (code) => {
-      if (code !== 0) {
-        console.error(`[ThreadPool] Worker exited with code ${code}, respawning`);
-        this.remove(worker);
-        this.spawn();
-      }
-    });
-    this.workers.push(worker);
-  }
-
-  private remove(w: Worker) {
-    const idx = this.workers.indexOf(w);
-    if (idx >= 0) this.workers.splice(idx, 1);
-  }
-
-  private pick(): Worker | undefined {
-    if (this.workers.length === 0) return undefined;
-    const w = this.workers[this.roundRobinIdx % this.workers.length];
-    this.roundRobinIdx++;
-    return w;
+      parentPort.on('message', async (req) => {
+        const start = Date.now();
+        const { id, toolName, args } = req;
+        
+        try {
+          const toolCode = tools[toolName];
+          if (!toolCode) throw new Error(\`Tool "\${toolName}" not found\`);
+          
+          const toolFn = eval('(' + toolCode + ')');
+          if (typeof toolFn !== 'function') throw new Error(\`Tool "\${toolName}" is not a function\`);
+          
+          const data = await toolFn(args);
+          parentPort.postMessage({
+            id,
+            success: true,
+            data,
+            durationMs: Date.now() - start
+          });
+        } catch (err) {
+          parentPort.postMessage({
+            id,
+            success: false,
+            error: err.message,
+            durationMs: Date.now() - start
+          });
+        }
+      });
+    `;
   }
 }
