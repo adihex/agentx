@@ -13,6 +13,15 @@ coverage
 .impeccable/
 .understand-anything/
 .vscode/
+.agents
+
+# Copilot CLI auto-generated files (keep .github/workflows/ for GitHub Actions)
+.github/INSTRUCTIONS_INSTALLED.md
+.github/README.md
+.github/SKILLS_INSTALLED.md
+.github/agents/
+.github/instructions/
+.github/skills/
 
 # build and cache outputs
 *.tsbuildinfo
@@ -21,3 +30,6 @@ zen-capability-matrix.json
 
 # OS files
 .DS_Store
+.goose
+.pi
+.kiro
