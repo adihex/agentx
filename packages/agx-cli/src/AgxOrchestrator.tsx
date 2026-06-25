@@ -16,7 +16,14 @@ import {
 
 interface BoxProps {
   children?: React.ReactNode;
-  borderStyle?: "single" | "double" | "round" | "bold" | "singleDouble" | "doubleSingle" | "classic";
+  borderStyle?:
+    | "single"
+    | "double"
+    | "round"
+    | "bold"
+    | "singleDouble"
+    | "doubleSingle"
+    | "classic";
   borderColor?: string;
   paddingX?: number;
   paddingY?: number;
@@ -179,6 +186,8 @@ export const AgxOrchestratorCLI = ({ onExit }: { onExit: () => void }) => {
       onExit();
     } else if (event.name === "backspace") {
       setCommand((p) => p.slice(0, -1));
+    } else if (event.name === "space") {
+      setCommand((p) => p + " ");
     } else if (!event.ctrl && !event.meta && !event.option && event.name.length === 1) {
       setCommand((p) => p + event.name);
     }

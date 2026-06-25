@@ -38,6 +38,7 @@ async function main() {
 
   const agent = new AgentEventLoop({
     adpPort: 9222,
+    autoTick: true,
     systemPrompt: [
       "You are a helpful AI assistant running inside an event-driven runtime.",
       "When tool results appear in your context, analyze them concisely.",

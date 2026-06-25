@@ -10,16 +10,16 @@
     "start": "tsx src/index.ts",
     "dev": "tsx src/index.ts",
     "start:repl": "tsx src/adp-repl.ts",
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsdown src/index.ts --format esm --dts",
     "test": "echo 'No tests yet'"
   },
   "dependencies": {
     "@agentx/agx-core": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.7.1",
-    "tsup": "^8.0.0",
-    "typescript": "^5.4.5",
-    "@types/node": "^25.6.0"
+    "@types/node": "catalog:",
+    "tsdown": "^0.22.3",
+    "tsx": "catalog:",
+    "typescript": "6.0.3"
   }
 }

@@ -1,4 +1,4 @@
-export * from "./types.js.js";
+export * from "./types.js";
 export * from "./OrchestrationBus";
 export * from "./DependencyGraph";
 export * from "./RetryLedger";

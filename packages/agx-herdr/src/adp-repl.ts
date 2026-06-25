@@ -7,12 +7,7 @@
  */
 
 import readline from "node:readline";
-import {
-  AdpClient,
-  parseReplCommand,
-  REPL_HELP_LINES,
-  nowHHMMSS,
-} from "@agentx/agx-core";
+import { AdpClient, parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -54,17 +49,13 @@ async function startRepl() {
 
   client.onEvent((ev) => {
     if (ev.method === "Debugger.Response") {
-      console.log(
-        `\n\x1b[35m← ${JSON.stringify(ev.params.result || ev.params)}\x1b[0m`,
-      );
+      console.log(`\n\x1b[35m← ${JSON.stringify(ev.params.result || ev.params)}\x1b[0m`);
       rl.prompt();
     }
     // Also show agent status updates in the REPL
     if (ev.method === "Agent.StatusUpdate") {
       const p = ev.params as any;
-      console.log(
-        `\n\x1b[90m[ADP] ${p.agentId}: ${p.status} (${p.progress}%)\x1b[0m`,
-      );
+      console.log(`\n\x1b[90m[ADP] ${p.agentId}: ${p.status} (${p.progress}%)\x1b[0m`);
       rl.prompt();
     }
   });
@@ -102,14 +93,10 @@ async function startRepl() {
         console.log(`\x1b[90m  [SENT] ${parsed.method}\x1b[0m`);
         logToDashboard(`Sent command: ${input}`);
       } else {
-        console.log(
-          "\x1b[31m  [ERROR] Failed to send (disconnected)\x1b[0m",
-        );
+        console.log("\x1b[31m  [ERROR] Failed to send (disconnected)\x1b[0m");
       }
     } else {
-      console.log(
-        `\x1b[31m  Unknown command: ${input}. Use /<method> <args>\x1b[0m`,
-      );
+      console.log(`\x1b[31m  Unknown command: ${input}. Use /<method> <args>\x1b[0m`);
     }
 
     rl.prompt();

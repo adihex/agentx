@@ -12,19 +12,20 @@
     }
   },
   "scripts": {
-    "build": "tsgo",
+    "build": "tsc",
     "docs": "typedoc",
-    "dev": "tsgo --watch",
+    "dev": "tsc --watch",
     "start": "echo 'Library package, no start command needed'",
     "test": "vitest run"
   },
   "dependencies": {
     "@agentx/adp": "workspace:*",
-    "@agentx/core": "workspace:*"
+    "@agentx/core": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@agentx/sysmon-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun src/index.tsx",
+    "dev": "bun src/index.tsx",
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@agentx/core": "workspace:*",
+    "@opentui/core": "catalog:",
+    "@opentui/react": "catalog:",
+    "dotenv": "^17.4.2",
+    "react": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

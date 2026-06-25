@@ -183,6 +183,8 @@ export const AgxOrchestratorCLI = ({ onExit }: { onExit: () => void }) => {
       onExit();
     } else if (event.name === "backspace") {
       setCommand((prev) => prev.slice(0, -1));
+    } else if (event.name === "space") {
+      setCommand((prev) => prev + " ");
     } else if (!event.ctrl && !event.meta && !event.option && event.name.length === 1) {
       setCommand((prev) => prev + event.name);
     }

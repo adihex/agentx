@@ -7,12 +7,13 @@
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
     "admin": "tsx src/admin.ts",
-    "build": "tsgo",
+    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "dependencies": {
     "@agentx/adp": "workspace:*",
     "@agentx/core": "workspace:*",
-    "tsx": "^4.7.1"
+    "dotenv": "^17.4.2",
+    "tsx": "catalog:"
   }
 }

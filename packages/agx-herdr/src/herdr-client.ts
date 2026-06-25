@@ -79,8 +79,7 @@ function resolveSocketPath(session?: string): string {
     return process.env.HERDR_SOCKET_PATH;
   }
 
-  const configDir =
-    process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config");
+  const configDir = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config");
 
   // 2. Session-specific path
   if (session || process.env.HERDR_SESSION) {
@@ -108,8 +107,7 @@ export class HerdrClient extends EventEmitter {
 
   constructor(opts?: { session?: string; socketPath?: string }) {
     super();
-    this.socketPath =
-      opts?.socketPath || resolveSocketPath(opts?.session);
+    this.socketPath = opts?.socketPath || resolveSocketPath(opts?.session);
   }
 
   /* ── Connection ──────────────────────────────────────────── */
@@ -164,10 +162,7 @@ export class HerdrClient extends EventEmitter {
 
   /* ── Request/Response ────────────────────────────────────── */
 
-  async request(
-    method: string,
-    params: Record<string, unknown> = {},
-  ): Promise<HerdrResponse> {
+  async request(method: string, params: Record<string, unknown> = {}): Promise<HerdrResponse> {
     if (!this.socket) {
       throw new Error("Not connected. Call connect() first.");
     }
@@ -218,10 +213,7 @@ export class HerdrClient extends EventEmitter {
     await this.request("workspace.close", { workspace_id: workspaceId });
   }
 
-  async workspaceRename(
-    workspaceId: string,
-    label: string,
-  ): Promise<WorkspaceInfo> {
+  async workspaceRename(workspaceId: string, label: string): Promise<WorkspaceInfo> {
     const res = await this.request("workspace.rename", {
       workspace_id: workspaceId,
       label,
@@ -246,9 +238,7 @@ export class HerdrClient extends EventEmitter {
   }
 
   async tabList(workspaceId?: string): Promise<TabInfo[]> {
-    const res = await this.request("tab.list", {
-      ...(workspaceId ? { workspace_id: workspaceId } : {}),
-    });
+    const res = await this.request("tab.list", workspaceId ? { workspace_id: workspaceId } : {});
     return (res.result?.tabs as TabInfo[]) || [];
   }
 
@@ -263,9 +253,7 @@ export class HerdrClient extends EventEmitter {
 
   // Pane methods
   async paneList(workspaceId?: string): Promise<PaneInfo[]> {
-    const res = await this.request("pane.list", {
-      ...(workspaceId ? { workspace_id: workspaceId } : {}),
-    });
+    const res = await this.request("pane.list", workspaceId ? { workspace_id: workspaceId } : {});
     return (res.result?.panes as PaneInfo[]) || [];
   }
 
@@ -300,10 +288,7 @@ export class HerdrClient extends EventEmitter {
     await this.request("pane.send_text", { pane_id: paneId, text });
   }
 
-  async paneSendKeys(
-    paneId: string,
-    keys: string[],
-  ): Promise<void> {
+  async paneSendKeys(paneId: string, keys: string[]): Promise<void> {
     await this.request("pane.send_keys", { pane_id: paneId, keys });
   }
 
@@ -378,17 +363,14 @@ export class HerdrClient extends EventEmitter {
     onEvent: (event: HerdrEvent) => void,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.subscriptionSocket = net.createConnection(
-        this.socketPath,
-        () => {
-          const req: HerdrRequest = {
-            id: `sub_${++this.reqCounter}`,
-            method: "events.subscribe",
-            params: { subscriptions },
-          };
-          this.subscriptionSocket!.write(JSON.stringify(req) + "\n");
-        },
-      );
+      this.subscriptionSocket = net.createConnection(this.socketPath, () => {
+        const req: HerdrRequest = {
+          id: `sub_${++this.reqCounter}`,
+          method: "events.subscribe",
+          params: { subscriptions },
+        };
+        this.subscriptionSocket!.write(JSON.stringify(req) + "\n");
+      });
 
       this.subscriptionSocket.on("error", (err) => {
         this.emit("subscription_error", err);

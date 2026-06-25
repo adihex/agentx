@@ -1,37 +1,49 @@
-FROM node:20-slim AS base
+FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 WORKDIR /app
 
-# Stage 1: Install dependencies
+# ─── Stage 1: Install dependencies ──────────────────────────────────────────
 FROM base AS deps
 COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
+# Copy all package.json files so pnpm can resolve the workspace graph
 COPY apps/web/package.json ./apps/web/
 COPY apps/cli/package.json ./apps/cli/
 COPY apps/demo/package.json ./apps/demo/
 COPY apps/music-scanner-service/package.json ./apps/music-scanner-service/
+COPY apps/agx-web/package.json ./apps/agx-web/
+COPY apps/orchestrator-demo/package.json ./apps/orchestrator-demo/
+COPY apps/sysmon-cli/package.json ./apps/sysmon-cli/
+COPY apps/daily-planner/package.json ./apps/daily-planner/
+COPY apps/zettel/package.json ./apps/zettel/
+COPY apps/pi-extension/package.json ./apps/pi-extension/
 COPY packages/core/package.json ./packages/core/
 COPY packages/adp/package.json ./packages/adp/
+COPY packages/orchestrator/package.json ./packages/orchestrator/
+COPY packages/agx-core/package.json ./packages/agx-core/
+COPY packages/agx-cli/package.json ./packages/agx-cli/
+COPY packages/agx-herdr/package.json ./packages/agx-herdr/
+COPY packages/agx-mcp/package.json ./packages/agx-mcp/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Stage 2: Build all packages
+# ─── Stage 2: Build all packages ────────────────────────────────────────────
 FROM deps AS builder
 COPY . .
 RUN pnpm run build
 
-# Stage 3: Final Runner for Web
+# ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
 COPY --from=builder /app ./
 EXPOSE 3000
 ENV PORT=3000
-CMD ["pnpm", "--filter", "@agentx/web", "start"]
+CMD ["pnpm", "--filter", "@agentx/music-extractor-web", "start"]
 
-# Stage 4: Final Runner for Scanner
+# ─── Music Scanner Service (Agent Host — ADP :9222) ─────────────────────────
 FROM base AS scanner
-# Install system dependencies for music processing tools
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -43,9 +55,34 @@ RUN apt-get update && apt-get install -y \
     && pip3 install yt-dlp --break-system-packages \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app ./
-CMD ["pnpm", "--filter", "music-scanner-service", "start"]
+EXPOSE 9222
+CMD ["pnpm", "--filter", "@agentx/music-scanner-service", "start"]
 
-# Stage 5: Final Runner for Demo
+# ─── Demo Agent (ADP :9222) ─────────────────────────────────────────────────
 FROM base AS demo
 COPY --from=builder /app ./
+EXPOSE 9222
 CMD ["pnpm", "--filter", "@agentx/demo", "start"]
+
+# ─── AGX Web Dashboard (Vite — :5173) ───────────────────────────────────────
+FROM base AS agx-web
+COPY --from=builder /app ./
+EXPOSE 5173
+CMD ["pnpm", "--filter", "@agentx/agx-web", "preview"]
+
+# ─── Orchestrator Demo ──────────────────────────────────────────────────────
+FROM base AS orchestrator-demo
+COPY --from=builder /app ./
+CMD ["pnpm", "--filter", "@agentx/orchestrator-demo", "start"]
+
+# ─── Daily Planner (Agent + Vite — ADP :9224, Web :5173) ────────────────────
+FROM base AS daily-planner
+COPY --from=builder /app ./
+EXPOSE 5173 9224
+CMD ["pnpm", "--filter", "@agentx/daily-planner", "start"]
+
+# ─── Zettel (Agent + Vite) ──────────────────────────────────────────────────
+FROM base AS zettel
+COPY --from=builder /app ./
+EXPOSE 5174 9225
+CMD ["pnpm", "--filter", "@agentx/zettel", "start"]

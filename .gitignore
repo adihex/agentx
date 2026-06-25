@@ -2,3 +2,22 @@ node_modules
 dist
 .env
 *.log
+coverage
+
+# local agent/tooling state — not for public repo
+.omc/
+.omg/
+.serena/
+.claude/
+.commandcode/
+.impeccable/
+.understand-anything/
+.vscode/
+
+# build and cache outputs
+*.tsbuildinfo
+.output/
+zen-capability-matrix.json
+
+# OS files
+.DS_Store

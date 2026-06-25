@@ -1,4 +1,74 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Agentx Docker Compose — run any combination of apps
+#
+# Usage:
+#   docker compose up scanner web          # Music pipeline
+#   docker compose up daily-planner        # Daily planner (agent + web UI)
+#   docker compose up demo agx-web         # Demo agent + browser dashboard
+#   docker compose --profile extra up      # Include optional services
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
+  # ── Agent Hosts ────────────────────────────────────────────────────────────
+
+  scanner:
+    build:
+      context: .
+      target: scanner
+    ports:
+      - "9222:9222"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+
+  demo:
+    build:
+      context: .
+      target: demo
+    ports:
+      - "9222:9222"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - extra
+
+  daily-planner:
+    build:
+      context: .
+      target: daily-planner
+    ports:
+      - "5173:5173"
+      - "9224:9224"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+
+  zettel:
+    build:
+      context: .
+      target: zettel
+    ports:
+      - "5174:5174"
+      - "9225:9225"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - extra
+
+  orchestrator-demo:
+    build:
+      context: .
+      target: orchestrator-demo
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - extra
+
+  # ── Web Frontends ─────────────────────────────────────────────────────────
+
   web:
     build:
       context: .
@@ -10,22 +80,13 @@ services:
     depends_on:
       - scanner
 
-  scanner:
+  agx-web:
     build:
       context: .
-      target: scanner
+      target: agx-web
+    ports:
+      - "5173:5173"
     environment:
       - NODE_ENV=production
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
-
-  demo:
-    build:
-      context: .
-      target: demo
-    environment:
-      - NODE_ENV=production
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
     profiles:
-      - extra # Only run if explicitly requested
+      - extra

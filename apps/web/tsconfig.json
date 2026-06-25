@@ -6,6 +6,8 @@
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "rootDir": "."
   },
   "include": [

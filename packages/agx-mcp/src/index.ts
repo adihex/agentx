@@ -6,7 +6,11 @@ import {
   ErrorCode,
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
-import { OrchestratedSession, ExecutionPlanSchema, type OrchestrationEvent } from "@agentx/orchestrator";
+import {
+  OrchestratedSession,
+  ExecutionPlanSchema,
+  type OrchestrationEvent,
+} from "@agentx/orchestrator";
 
 /**
  * AgxMcpServer
@@ -27,7 +31,7 @@ class AgxMcpServer {
         capabilities: {
           tools: {},
         },
-      }
+      },
     );
 
     this.setupTools();
@@ -38,7 +42,8 @@ class AgxMcpServer {
       tools: [
         {
           name: "execute_plan",
-          description: "Execute a DAG orchestration plan (ExecutionPlan). The agent should generate the plan (steps, dependencies, criteria) before calling this.",
+          description:
+            "Execute a DAG orchestration plan (ExecutionPlan). The agent should generate the plan (steps, dependencies, criteria) before calling this.",
           inputSchema: {
             type: "object",
             properties: {
@@ -66,7 +71,7 @@ class AgxMcpServer {
       try {
         // Validate plan against orchestrator schema
         const plan = ExecutionPlanSchema.parse(planArg);
-        
+
         const session = new OrchestratedSession();
         const bus = session.getBus();
 
@@ -81,12 +86,16 @@ class AgxMcpServer {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                status: "completed",
-                planId: plan.planId,
-                summary: "Orchestration finished successfully.",
-                eventCount: events.length,
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  status: "completed",
+                  planId: plan.planId,
+                  summary: "Orchestration finished successfully.",
+                  eventCount: events.length,
+                },
+                null,
+                2,
+              ),
             },
           ],
         };

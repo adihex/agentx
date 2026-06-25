@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
-    "build": "tsgo",
+    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "dependencies": {
     "@agentx/orchestrator": "workspace:*",
-    "tsx": "^4.7.1"
+    "tsx": "catalog:"
   }
 }

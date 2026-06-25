@@ -1,0 +1,8 @@
+id: no-as-any
+valid:
+  - const x = foo as Bar
+  - const x = foo as unknown
+  - const x = foo as const
+invalid:
+  - const x = foo as any
+  - return (payload as any).id

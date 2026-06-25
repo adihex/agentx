@@ -1,7 +1,8 @@
 import { AdpServer, AdpDomains, type AdpCommandHandler } from "@agentx/adp";
-import { AgenticThreadPool } from "./AgenticThreadPool.js";
+import { AgenticThreadPool, type ToolResult } from "./AgenticThreadPool.js";
 import { LLMOrchestrator } from "./LLMOrchestrator.js";
-import type { CoreMessage } from "ai";
+import { buildToolSet, type ToolDefinition } from "./tools.js";
+import type { ModelMessage, ToolSet } from "ai";
 import { EventEmitter } from "node:events";
 
 /**
@@ -15,12 +16,19 @@ interface Microtask {
 
 /**
  * MacrotaskItem
- * Internal queue item for tool results.
+ * Internal queue item for tool results. Carries the tool-call id + name so the
+ * result can be recorded as a paired `tool` message in context.
  */
 interface MacrotaskItem {
   source: string;
-  data: unknown;
+  toolCallId: string;
+  toolName: string;
+  /** The full worker result; unwrapped into the tool-result message in Phase 2. */
+  result: ToolResult;
 }
+
+/** Maximum inference→tool steps per run before the loop force-stops. */
+const MAX_STEPS_PER_RUN = 12;
 
 /**
  * AgentEventLoopOptions
@@ -39,8 +47,10 @@ export interface AgentEventLoopOptions {
   threadPoolSize?: number;
   /** Initial system prompt for the agent */
   systemPrompt?: string;
-  /** Map of tool names to implementation file paths */
-  tools?: Record<string, string>;
+  /** Registry of tool definitions (advertised natively + executed in workers) */
+  tools?: Record<string, ToolDefinition>;
+  /** Automatically run tick when async tasks complete or new ones are scheduled (default: false) */
+  autoTick?: boolean;
 }
 
 /**
@@ -63,19 +73,29 @@ export class AgentEventLoop extends EventEmitter {
   private threadPool: AgenticThreadPool;
   private llm: LLMOrchestrator;
 
+  // ── Tools ─────────────────────────────────────────────────────────────────
+  /** Registry of tool definitions (name → definition). */
+  private toolDefs: Record<string, ToolDefinition>;
+  /** AI SDK ToolSet advertised to the model on every step. */
+  private toolSet: ToolSet;
+
   // ── Queues ────────────────────────────────────────────────────────────────
   private microtaskQueue: Microtask[] = [];
   private macrotaskQueue: MacrotaskItem[] = [];
 
   // ── State ─────────────────────────────────────────────────────────────────
-  private context: CoreMessage[] = [];
+  private context: ModelMessage[] = [];
   private inferenceAbort: AbortController | null = null;
   private paused = false;
   private running = false;
   private iteration = 0;
+  private stepCount = 0;
+  /** Tool calls dispatched but not yet completed for the current turn (barrier). */
+  private pendingToolCalls = 0;
   private promptQueue: string[] = [];
   private promptResolver: (() => void) | null = null;
   private shutdownRequested = false;
+  private autoTick = false;
 
   /**
    * Create a new AgentEventLoop.
@@ -83,9 +103,12 @@ export class AgentEventLoop extends EventEmitter {
    */
   constructor(opts: AgentEventLoopOptions = {}) {
     super();
+    this.autoTick = opts.autoTick ?? false;
     const adpPort = opts.adpPort ?? 9222;
     this.adp = new AdpServer(adpPort);
-    this.threadPool = new AgenticThreadPool(opts.threadPoolSize ?? 4, opts.tools);
+    this.toolDefs = opts.tools ?? {};
+    this.toolSet = buildToolSet(this.toolDefs);
+    this.threadPool = new AgenticThreadPool(opts.threadPoolSize ?? 4, this.toolDefs);
     this.llm = new LLMOrchestrator({
       apiKey: opts.llmApiKey,
       baseURL: opts.llmBaseUrl,
@@ -110,6 +133,7 @@ export class AgentEventLoop extends EventEmitter {
    */
   public async run(prompt: string): Promise<string> {
     this.context.push({ role: "user", content: prompt });
+    this.stepCount = 0;
     this.emit("session.input", { prompt });
     return this.tick();
   }
@@ -117,21 +141,39 @@ export class AgentEventLoop extends EventEmitter {
   /**
    * Dispatch a tool to the thread pool (fire-and-forget, non-blocking).
    * @param toolName - Name of the registered tool to execute.
-   * @param args - Arguments for the tool implementation.
+   * @param input - Validated arguments for the tool implementation.
+   * @param toolCallId - The LLM's tool-call id, threaded back to pair the result.
    */
-  public dispatchTool(toolName: string, args: Record<string, unknown> = {}): void {
+  public dispatchTool(toolName: string, input: unknown, toolCallId: string): void {
     const id = this.uid();
+    const args = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+    this.pendingToolCalls++;
     console.log(`[Loop] 🚀  Dispatching tool "${toolName}" (id=${id}) to thread pool`);
 
     // Fire and forget — the promise resolves asynchronously and pushes onto
     // the macrotask queue, exactly like libuv posts I/O completions.
-    void this.threadPool.execute({ id, toolName, args }).then((result) => {
+    void this.threadPool.execute({ id, toolCallId, toolName, args }).then((result) => {
       console.log(`[Loop] 📬  Tool "${toolName}" completed in ${result.durationMs}ms`);
-      this.macrotaskQueue.push({ source: toolName, data: result });
+      this.macrotaskQueue.push({ source: toolName, toolCallId, toolName, result });
+      this.pendingToolCalls--;
       this.emit("tool.complete", { toolName, id, result });
 
       // Broadcast tool completion to any ADP observers
       this.adp.notify("Toolchain.responseReceived", { toolName, result });
+
+      // Barrier: only re-infer once EVERY tool call from this turn has completed.
+      // Re-inferring after a partial set would hand the model an assistant turn
+      // bearing N tool_calls but fewer than N tool-results — invalid history that
+      // breaks the Anthropic/messages (qwen) family in particular.
+      if (
+        this.autoTick &&
+        !this.running &&
+        !this.shutdownRequested &&
+        this.pendingToolCalls === 0 &&
+        this.stepCount < MAX_STEPS_PER_RUN
+      ) {
+        void this.tick();
+      }
     });
     this.emit("tool.dispatch", { toolName, id, args });
   }
@@ -151,8 +193,8 @@ export class AgentEventLoop extends EventEmitter {
    * @param handler - Function to handle the command.
    */
   public registerAdpHandler<P = Record<string, unknown>, R = unknown>(
-    method: string, 
-    handler: AdpCommandHandler<P, R>
+    method: string,
+    handler: AdpCommandHandler<P, R>,
   ): void {
     this.adp.on(method, handler as any);
   }
@@ -223,44 +265,83 @@ export class AgentEventLoop extends EventEmitter {
     console.log(`[Phase 2/4] 📥  I/O Callbacks — ${this.macrotaskQueue.length} macrotask(s)`);
     while (this.macrotaskQueue.length > 0) {
       const item = this.macrotaskQueue.shift()!;
+      const r = item.result;
       console.log(`           └─ ingesting result from "${item.source}"`);
-      // Append tool results to context so the LLM can reason about them
+      // Record the worker result as a proper tool-result message, paired to the
+      // assistant tool_call by toolCallId, so native tool calling stays valid.
+      // Unwrap the ToolResult: the model sees the tool's actual return value (or
+      // a typed error), never the internal {id,success,durationMs,…} envelope.
       this.context.push({
-        role: "user",
-        content: `[Tool Result from "${item.source}"]: ${JSON.stringify(item.data)}`,
+        role: "tool",
+        content: [
+          {
+            type: "tool-result",
+            toolCallId: item.toolCallId,
+            toolName: item.toolName,
+            output: r.success
+              ? { type: "json", value: (r.data ?? null) as any }
+              : { type: "error-text", value: r.error ?? "tool execution failed" },
+          },
+        ],
       });
     }
 
-    // ── Phase 3: Inference (stream LLM) ─────────────────────────────────────
+    // ── Phase 3: Inference (native-tools step) ──────────────────────────────
     console.log(`[Phase 3/4] 🧠  Inference`);
     let assistantText = "";
+    this.stepCount++;
 
     try {
       this.inferenceAbort = new AbortController();
-      const stream = this.llm.generateStream(this.context, this.inferenceAbort.signal);
 
       process.stdout.write("  Agent ▸ ");
       this.emit("inference.start", { iteration: iter });
-      for await (const chunk of stream) {
-        process.stdout.write(chunk);
-        assistantText += chunk;
-        this.emit("inference.chunk", { chunk });
-      }
+
+      const result = await this.llm.runStep(
+        this.context,
+        this.toolSet,
+        this.inferenceAbort.signal,
+        undefined,
+        (chunk) => {
+          process.stdout.write(chunk);
+          assistantText += chunk;
+          this.emit("inference.chunk", { chunk });
+        },
+      );
       process.stdout.write("\n");
-      this.emit("inference.end", { text: assistantText });
+
+      // Record the assistant turn verbatim — this carries the tool_calls
+      // correctly (replacing the old assistant-as-string push).
+      this.context.push(...result.responseMessages);
+      this.emit("inference.end", { text: result.text });
+
+      // Self-dispatch each requested tool call to the worker pool.
+      for (const call of result.toolCalls) {
+        this.dispatchTool(call.toolName, call.input, call.toolCallId);
+      }
+
+      // Terminal answer (no tool calls) or step cap reached → stop the run.
+      // The step-cap halt is enforced by the `stepCount < MAX_STEPS_PER_RUN`
+      // guard on every re-tick trigger, so tool results still get recorded
+      // (keeping history valid) — we simply stop inferring further.
+      if (result.toolCalls.length === 0) {
+        console.log(`[Loop] ✅  Terminal answer (no tool calls) — run complete`);
+      } else if (this.stepCount >= MAX_STEPS_PER_RUN) {
+        console.log(`[Loop] 🛑  Step cap (${MAX_STEPS_PER_RUN}) reached — no further inference`);
+      }
     } catch (err: any) {
       if (err.name === "AbortError" || (err instanceof Error && err.message?.includes("aborted"))) {
         console.log("\n  ⚠️  Inference HALTED via ADP (AbortSignal fired)");
         assistantText = "[inference halted by operator]";
+        this.context.push({ role: "assistant", content: assistantText });
       } else {
         console.error("\n  ❌  Inference error:", (err as Error).message ?? err);
         assistantText = `[inference error: ${(err as Error).message}]`;
+        this.context.push({ role: "assistant", content: assistantText });
       }
     } finally {
       this.inferenceAbort = null;
     }
-
-    this.context.push({ role: "assistant", content: assistantText });
 
     // ── Phase 4: Check (drain microtask queue) ──────────────────────────────
     console.log(`[Phase 4/4] 🔍  Check — ${this.microtaskQueue.length} microtask(s)`);
@@ -281,6 +362,22 @@ export class AgentEventLoop extends EventEmitter {
 
     this.running = false;
     this.emit("tick.end", { iteration: iter });
+
+    // Schedule a new tick only when results are pending AND every dispatched
+    // tool of the turn has landed (barrier) AND we're under the step cap.
+    if (
+      this.macrotaskQueue.length > 0 &&
+      this.pendingToolCalls === 0 &&
+      this.stepCount < MAX_STEPS_PER_RUN &&
+      !this.shutdownRequested
+    ) {
+      setImmediate(() => {
+        if (!this.running) {
+          void this.tick();
+        }
+      });
+    }
+
     return assistantText;
   }
 
@@ -304,8 +401,8 @@ export class AgentEventLoop extends EventEmitter {
     // Inference.evaluate — inject a thought into context without queuing
     this.adp.handle(AdpDomains.Inference.evaluate, (params, cb) => {
       const expr = params?.expression ?? "";
-      console.log(`[ADP] 💉  Inference.evaluate: "${expr}"`);
-      this.context.push({ role: "user", content: `[ADP Injected]: ${expr}` });
+      console.log(`[ADP] 💉  Inference.evaluate: "${JSON.stringify(expr)}"`);
+      this.context.push({ role: "user", content: `[ADP Injected]: ${JSON.stringify(expr)}` });
       cb({ status: "injected", contextLength: this.context.length });
     });
 
@@ -337,10 +434,16 @@ export class AgentEventLoop extends EventEmitter {
     // Memory.compact — summarize old context to free tokens
     this.adp.handle(AdpDomains.Memory.compact, (_params, cb) => {
       const before = this.context.length;
-      // Naive compaction: keep system prompt + last 4 messages
+      // Keep system prompt + a recent window, but never start the window on a
+      // `tool` message — that would orphan a tool-result from its tool_call
+      // turn and break native tool calling.
       if (this.context.length > 6) {
         const system = this.context.filter((m) => m.role === "system");
-        const recent = this.context.slice(-4);
+        let start = this.context.length - 4;
+        while (start > 0 && this.context[start]?.role === "tool") {
+          start--;
+        }
+        const recent = this.context.slice(start).filter((m) => m.role !== "system");
         this.context = [...system, ...recent];
       }
       cb({ before, after: this.context.length });
@@ -376,13 +479,13 @@ export class AgentEventLoop extends EventEmitter {
       cb({ status: "shutting_down" });
     });
 
-    // Toolchain.list — enumerate registered tools
+    // Toolchain.list — enumerate the actually-registered tools
     this.adp.handle(AdpDomains.Toolchain.list, (_params, cb) => {
       cb({
-        tools: [
-          { name: "heavyComputation", description: "Run a heavy computation in a worker thread" },
-          { name: "fileAnalysis", description: "Simulate reading and parsing a large file" },
-        ],
+        tools: Object.values(this.toolDefs).map((d) => ({
+          name: d.name,
+          description: d.description,
+        })),
       });
     });
 
@@ -395,8 +498,9 @@ export class AgentEventLoop extends EventEmitter {
         return;
       }
       console.log(`[ADP] 🔧  Toolchain.intercept: ${toolName}`);
-      this.dispatchTool(toolName, args);
-      cb({ status: "dispatched", toolName });
+      const toolCallId = `intercept_${this.uid()}`;
+      this.dispatchTool(toolName, args, toolCallId);
+      cb({ status: "dispatched", toolName, toolCallId });
     });
 
     // Memory.queryNodes — return context entries as memory nodes

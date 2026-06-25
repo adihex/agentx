@@ -1,5 +1,17 @@
-import WebSocket from "ws";
+import WebSocket, { type RawData } from "ws";
 import type { JsonRpcResponse, AdpEvent } from "./schemas.js";
+
+/**
+ * Normalize a ws `RawData` frame to a UTF-8 string.
+ * ws delivers a message as `Buffer | ArrayBuffer | Buffer[]`; a blind
+ * `(raw as Buffer).toString()` corrupts fragmented (`Buffer[]`) frames and
+ * yields "[object ArrayBuffer]" for binary frames. Handle each shape.
+ */
+function rawToUtf8(raw: RawData): string {
+  if (Array.isArray(raw)) return Buffer.concat(raw).toString("utf8");
+  if (raw instanceof ArrayBuffer) return Buffer.from(raw).toString("utf8");
+  return raw.toString("utf8");
+}
 
 export class AdpClient {
   private ws: WebSocket;
@@ -24,9 +36,9 @@ export class AdpClient {
   }
 
   private setupHandlers() {
-    this.ws.on("message", (raw) => {
+    this.ws.on("message", (raw: RawData) => {
       try {
-        const data = JSON.parse(raw.toString());
+        const data = JSON.parse(rawToUtf8(raw));
 
         if ("id" in data && data.id !== null) {
           const res = data as JsonRpcResponse;

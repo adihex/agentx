@@ -1,8 +1,8 @@
 {
   "name": "@agentx/music-extractor-web-prod",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@tanstack/history": "1.120.17",
     "@tanstack/react-router": "1.120.20",

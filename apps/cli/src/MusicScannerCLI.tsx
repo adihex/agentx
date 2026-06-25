@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useKeyboard } from "@opentui/react";
-import WebSocket from "ws";
+import { WebSocket } from "ws";
 
 const Box = (props: any) => <box {...props} />;
 const Text = (props: any) => <text {...props} />;
@@ -101,6 +101,8 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
       onExit();
     } else if (event.name === "backspace") {
       setSongName((prev) => prev.slice(0, -1));
+    } else if (event.name === "space") {
+      setSongName((prev) => prev + " ");
     } else if (!event.ctrl && !event.meta && !event.option && event.name.length === 1) {
       setSongName((prev) => prev + event.name);
     }

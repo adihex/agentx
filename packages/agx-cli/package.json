@@ -7,25 +7,25 @@
   },
   "type": "module",
   "scripts": {
-    "start": "tsx --import ./scripts/register.mjs src/index.tsx",
-    "dev": "tsx --import ./scripts/register.mjs src/index.tsx",
+    "start": "bun src/index.tsx",
+    "dev": "bun src/index.tsx",
     "start:repl": "tsx src/adp-repl.ts",
     "docs": "typedoc",
-    "build": "tsgo",
+    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "dependencies": {
     "@agentx/agx-core": "workspace:*",
-    "@opentui/core": "^0.2.1",
-    "@opentui/react": "^0.2.1",
-    "react": "^19.0.0",
-    "ws": "^8.17.0"
+    "@opentui/core": "catalog:",
+    "@opentui/react": "catalog:",
+    "react": "catalog:",
+    "ws": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/ws": "^8.5.10",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.5",
+    "@types/react": "catalog:",
+    "@types/ws": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
     "yoga-layout": "^3.2.1"
   }
 }

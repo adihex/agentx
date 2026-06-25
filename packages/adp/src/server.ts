@@ -91,8 +91,8 @@ export class AdpServer extends EventEmitter {
    * @param handler - The handler function.
    */
   public handle<P = Record<string, unknown>, R = unknown>(
-    method: string, 
-    handler: AdpCommandHandler<P, R>
+    method: string,
+    handler: AdpCommandHandler<P, R>,
   ): void {
     this.handlers.set(method, handler as AdpCommandHandler<any, any>);
   }
@@ -125,7 +125,7 @@ export class AdpServer extends EventEmitter {
     });
   }
 
-  /** 
+  /**
    * Graceful shutdown.
    * @returns A promise that resolves when the server is closed.
    */

@@ -1,10 +1,6 @@
 import { EventEmitter } from "node:events";
 import { OrchestrationEvent } from "./types";
 
-interface OrchestrationEvents extends Record<OrchestrationEvent["type"], [OrchestrationEvent]> {
-  event: [OrchestrationEvent];
-}
-
 /**
  * OrchestrationBus
  *

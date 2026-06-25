@@ -1,36 +1,41 @@
 import { describe, it, expect, vi } from "vitest";
+import { fileURLToPath } from "node:url";
+import { z } from "zod";
 import { AgentEventLoop } from "../src/AgentEventLoop";
+import type { ToolDefinition } from "../src/tools";
+
+const fixturePath = fileURLToPath(new URL("./fixtures/echoTool.ts", import.meta.url));
 
 describe("AgentEventLoop Tool Injection", () => {
   it("should execute an injected tool", async () => {
-    const mockTool = vi.fn().mockResolvedValue({ success: true, data: "mocked" });
+    const myCustomTool: ToolDefinition = {
+      name: "myCustomTool",
+      description: "Echoes its args",
+      inputSchema: z.object({ some: z.string() }),
+      modulePath: fixturePath,
+      exportName: "echo",
+    };
 
-    // We want to be able to do this:
     const loop = new AgentEventLoop({
-      tools: {
-        myCustomTool: mockTool.toString(), // Serialize to string for worker
-      },
+      adpPort: 9225,
+      tools: { myCustomTool },
     });
 
     // Manually trigger the tool (simulating an LLM action or intercept)
-    loop.dispatchTool("myCustomTool", { some: "args" });
+    loop.dispatchTool("myCustomTool", { some: "args" }, "tc-inject-1");
 
-    // Wait for the tool result to be processed into the macrotask queue
-    // In a real scenario, the loop tick would ingest this.
-    // We'll wait a bit for the worker to respond.
+    // Wait for the worker to respond and push onto the macrotask queue.
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Verify the tool was called (this will fail because core doesn't support injection yet)
-    // Actually, we can't easily verify the mockTool was called if it's in a worker.
-    // Instead, we'll check the macrotask queue.
     const macrotasks = (loop as any).macrotaskQueue;
     expect(macrotasks.some((t: any) => t.source === "myCustomTool")).toBe(true);
+    expect(macrotasks.some((t: any) => t.toolCallId === "tc-inject-1")).toBe(true);
 
     await loop.shutdown();
   });
 
   it("should support custom ADP handlers", async () => {
-    const loop = new AgentEventLoop();
+    const loop = new AgentEventLoop({ adpPort: 9226 });
     const handler = vi.fn();
 
     loop.registerAdpHandler("Custom.test", handler);

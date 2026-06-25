@@ -20,10 +20,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "ws": "^8.16.0",
-    "zod": "^3.23.8"
+    "ws": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/ws": "^8.5.10"
+    "@types/ws": "catalog:",
+    "tsdown": "^0.22.3",
+    "typescript": "6.0.3"
   }
 }

@@ -1,7 +1,7 @@
 import { AgentEventLoop } from "@agentx/core";
-import { searchMusic } from "./tools/search.js";
-import { downloadAndUpload } from "./tools/download.js";
-import { triggerCloudRun } from "./tools/cloudrun.js";
+import { searchMusicTool } from "./tools/search.js";
+import { downloadAndUploadTool } from "./tools/download.js";
+import { triggerCloudRunTool } from "./tools/cloudrun.js";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -15,7 +15,7 @@ dotenv.config();
 async function main() {
   const SYSTEM_PROMPT = `
     You are the Music Scanner Orchestrator. Your goal is to help users extract guitar tracks from any song.
-    
+
     Workflow:
     1. Search for the song using 'searchMusic'.
     2. Confirm the best match with the user or proceed if highly confident.
@@ -24,13 +24,8 @@ async function main() {
     4. Trigger the extraction job using 'triggerCloudRun'.
        - Job: 'guitar-processor'
     5. Notify the user when the extraction is complete.
-    
-    You have access to the following tools:
-    - searchMusic({ query: string })
-    - downloadAndUpload({ id: string, bucket: string })
-    - triggerCloudRun({ fileName: string })
-    
-    Always use these tools to fulfill the user's request.
+
+    Always use the provided tools to fulfill the user's request.
     When a tool completes, reason about the result and move to the next step.
   `;
 
@@ -39,10 +34,11 @@ async function main() {
   const agent = new AgentEventLoop({
     adpPort: 9222,
     systemPrompt: SYSTEM_PROMPT,
+    autoTick: true,
     tools: {
-      searchMusic,
-      downloadAndUpload,
-      triggerCloudRun,
+      searchMusic: searchMusicTool,
+      downloadAndUpload: downloadAndUploadTool,
+      triggerCloudRun: triggerCloudRunTool,
     },
   });
 

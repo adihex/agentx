@@ -27,12 +27,7 @@ export default defineConfig({
         "packages/core/src/**/*.ts",
         "packages/orchestrator/src/**/*.ts",
       ],
-      exclude: [
-        "**/*.test.ts",
-        "**/*.spec.ts",
-        "**/node_modules/**",
-        "**/dist/**",
-      ],
+      exclude: ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**", "**/dist/**"],
     },
   },
 });

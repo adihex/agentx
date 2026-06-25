@@ -30,8 +30,13 @@ vi.mock("../src/LLMOrchestrator", () => {
   return {
     LLMOrchestrator: vi.fn().mockImplementation(function () {
       return {
-        generateStream: vi.fn().mockImplementation(async function* () {
-          yield "Agent response";
+        runStep: vi.fn().mockImplementation(async (_msgs, _tools, _signal, _model, onTextDelta) => {
+          onTextDelta?.("Agent response");
+          return {
+            text: "Agent response",
+            toolCalls: [],
+            responseMessages: [{ role: "assistant", content: "Agent response" }],
+          };
         }),
       };
     }),
@@ -42,7 +47,13 @@ vi.mock("../src/AgenticThreadPool", () => {
   return {
     AgenticThreadPool: vi.fn().mockImplementation(function () {
       return {
-        execute: vi.fn().mockResolvedValue({ id: "1", result: "tool success", durationMs: 10 }),
+        execute: vi.fn().mockResolvedValue({
+          id: "1",
+          toolCallId: "tc-1",
+          success: true,
+          data: "tool success",
+          durationMs: 10,
+        }),
         terminateAll: vi.fn().mockResolvedValue(undefined),
       };
     }),
@@ -74,10 +85,11 @@ describe("AgentEventLoop", () => {
   });
 
   it("should handle tool dispatch and macrotasks", async () => {
-    loop.dispatchTool("testTool", { arg: 1 });
+    loop.dispatchTool("testTool", { arg: 1 }, "tc-test");
 
     await new Promise((r) => setTimeout(r, 10));
     expect((loop as any).macrotaskQueue).toHaveLength(1);
+    expect((loop as any).macrotaskQueue[0].toolCallId).toBe("tc-test");
 
     await loop.run("process tools");
     expect((loop as any).macrotaskQueue).toHaveLength(0);
@@ -156,5 +168,97 @@ describe("AgentEventLoop", () => {
     const cb = vi.fn();
     queryHandler({ query: "secret" }, cb);
     expect(cb.mock.calls[0][0].nodes[0].preview).toContain("Secret");
+  });
+
+  it("barrier: waits for ALL tool calls of a turn before re-inferring", async () => {
+    const barrierLoop = new AgentEventLoop({ adpPort: 9998, autoTick: true });
+    let step = 0;
+    const toolResultsSeenAtStep: number[] = [];
+
+    (barrierLoop as any).llm.runStep = vi.fn().mockImplementation(async (msgs: any[]) => {
+      step++;
+      toolResultsSeenAtStep.push(msgs.filter((m) => m.role === "tool").length);
+      if (step === 1) {
+        return {
+          text: "",
+          toolCalls: [
+            { toolCallId: "tc-A", toolName: "toolA", input: {} },
+            { toolCallId: "tc-B", toolName: "toolB", input: {} },
+          ],
+          responseMessages: [
+            {
+              role: "assistant",
+              content: [
+                { type: "tool-call", toolCallId: "tc-A", toolName: "toolA", input: {} },
+                { type: "tool-call", toolCallId: "tc-B", toolName: "toolB", input: {} },
+              ],
+            },
+          ],
+        };
+      }
+      return { text: "done", toolCalls: [], responseMessages: [{ role: "assistant", content: "done" }] };
+    });
+
+    // Staggered completions: toolA finishes well before toolB, so a broken
+    // (barrier-less) loop would re-infer after toolA with only 1/2 results.
+    (barrierLoop as any).threadPool.execute = vi.fn().mockImplementation(
+      (req: any) =>
+        new Promise((resolve) => {
+          const delay = req.toolName === "toolA" ? 5 : 35;
+          setTimeout(
+            () =>
+              resolve({
+                id: req.id,
+                toolCallId: req.toolCallId,
+                success: true,
+                data: `${req.toolName} ok`,
+                durationMs: delay,
+              }),
+            delay,
+          );
+        }),
+    );
+
+    await barrierLoop.run("do two things");
+    await new Promise((r) => setTimeout(r, 150));
+
+    expect(step).toBe(2); // initial turn + exactly ONE re-inference
+    expect(toolResultsSeenAtStep[0]).toBe(0); // first inference: no results yet
+    expect(toolResultsSeenAtStep[1]).toBe(2); // re-inference only after BOTH landed
+
+    await barrierLoop.shutdown();
+  });
+
+  it("records tool results unwrapped (data on success, error-text on failure)", async () => {
+    const u = new AgentEventLoop({ adpPort: 9997, autoTick: false });
+    (u as any).threadPool.execute = vi
+      .fn()
+      .mockImplementationOnce(async (req: any) => ({
+        id: req.id,
+        toolCallId: req.toolCallId,
+        success: true,
+        data: { temp: 21 },
+        durationMs: 1,
+      }))
+      .mockImplementationOnce(async (req: any) => ({
+        id: req.id,
+        toolCallId: req.toolCallId,
+        success: false,
+        error: "boom",
+        durationMs: 1,
+      }));
+
+    u.dispatchTool("ok", {}, "tc-ok");
+    u.dispatchTool("bad", {}, "tc-bad");
+    await new Promise((r) => setTimeout(r, 15));
+    await u.run("drain");
+
+    const outputs = (u as any).context
+      .filter((m: any) => m.role === "tool")
+      .map((m: any) => m.content[0].output);
+    expect(outputs).toContainEqual({ type: "json", value: { temp: 21 } });
+    expect(outputs).toContainEqual({ type: "error-text", value: "boom" });
+
+    await u.shutdown();
   });
 });

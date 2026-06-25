@@ -14,15 +14,17 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.0",
+    "@tanstack/react-router": "^1.120.20",
+    "@tanstack/start": "^1.120.17",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.378.0",
+    "lucide-react": "^1.21.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "^7.18.0",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "^1.61.0",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -32,15 +34,14 @@
     "@storybook/test": "^8.1.1",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^16.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "jsdom": "^24.0.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "jsdom": "^29.1.1",
     "storybook": "^8.1.1",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.5",
-    "vite": "^8.0.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.1.5"
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

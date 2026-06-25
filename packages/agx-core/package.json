@@ -9,10 +9,10 @@
     "dev": "tsc --noEmit --watch",
     "start": "echo 'Library package, no start command needed'",
     "docs": "typedoc",
-    "build": "tsgo",
+    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "catalog:"
   }
 }

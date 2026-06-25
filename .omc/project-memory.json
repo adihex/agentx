@@ -42,8 +42,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "pnpm build",
-    "testCommand": "pnpm test",
+    "buildCommand": "cd /Users/adityabalakrishnan/Documents/agentx; export PATH=\"/Users/adityabalakrishnan/.local/share/mise/installs/pnpm/latest:/Users/adityabalakrishnan/.local/share/mise/installs/node/24/bin:/opt/homebrew/bin:$PATH\"; echo \"=== typecheck ===\"; node_modules/.bin/tsc -p apps/zettel/tsconfig.json --noEmit 2>&1 | tail -10; echo \"TSC=$?\"; echo \"=== lint ===\"; pnpm lint > /tmp/lz5.txt 2>&1; echo \"exit=$? issues=$(grep -cE ' (warning|error) ' /tmp/lz5.txt)\"",
+    "testCommand": "cd /Users/adityabalakrishnan/Documents/agentx; export PATH=\"/Users/adityabalakrishnan/.local/share/mise/installs/pnpm/latest:/Users/adityabalakrishnan/.local/share/mise/installs/node/24/bin:$PATH\"; node_modules/.bin/vitest run 2>&1 | grep -E \"Test Files|Tests |FAIL\" | head",
     "lintCommand": "pnpm lint",
     "devCommand": "pnpm dev",
     "scripts": {
@@ -136,6 +136,307 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "packages/core/src/AgentEventLoop.ts",
+      "accessCount": 70,
+      "lastAccessed": 1782271907859,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/src/LLMOrchestrator.ts",
+      "accessCount": 33,
+      "lastAccessed": 1782272011972,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/src/AgenticThreadPool.ts",
+      "accessCount": 28,
+      "lastAccessed": 1782272019994,
+      "type": "file"
+    },
+    {
+      "path": "apps/music-scanner-service/src/index.ts",
+      "accessCount": 26,
+      "lastAccessed": 1782272012678,
+      "type": "file"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "accessCount": 19,
+      "lastAccessed": 1782272269609,
+      "type": "file"
+    },
+    {
+      "path": "apps/music-scanner-service/package.json",
+      "accessCount": 13,
+      "lastAccessed": 1782221376670,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/package.json",
+      "accessCount": 13,
+      "lastAccessed": 1782271901491,
+      "type": "file"
+    },
+    {
+      "path": "packages/adp/src/client.ts",
+      "accessCount": 12,
+      "lastAccessed": 1782223633595,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/tests/injection.test.ts",
+      "accessCount": 9,
+      "lastAccessed": 1782221207985,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-herdr/package.json",
+      "accessCount": 8,
+      "lastAccessed": 1782214642580,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/src/index.ts",
+      "accessCount": 8,
+      "lastAccessed": 1782271901615,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 8,
+      "lastAccessed": 1782272322821,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/tests/AgenticThreadPool.test.ts",
+      "accessCount": 7,
+      "lastAccessed": 1782221178268,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-cli/package.json",
+      "accessCount": 6,
+      "lastAccessed": 1782214628389,
+      "type": "file"
+    },
+    {
+      "path": "apps/cli/package.json",
+      "accessCount": 6,
+      "lastAccessed": 1782214652041,
+      "type": "file"
+    },
+    {
+      "path": "packages/adp/src/schemas.ts",
+      "accessCount": 6,
+      "lastAccessed": 1782218436453,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/tests/AgentEventLoop.test.ts",
+      "accessCount": 6,
+      "lastAccessed": 1782269352555,
+      "type": "file"
+    },
+    {
+      "path": "packages/adp/package.json",
+      "accessCount": 5,
+      "lastAccessed": 1782214615645,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-core/package.json",
+      "accessCount": 5,
+      "lastAccessed": 1782214617365,
+      "type": "file"
+    },
+    {
+      "path": "apps/demo/package.json",
+      "accessCount": 5,
+      "lastAccessed": 1782214666298,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/tests/LLMOrchestrator.test.ts",
+      "accessCount": 5,
+      "lastAccessed": 1782221222751,
+      "type": "file"
+    },
+    {
+      "path": "tsconfig.json",
+      "accessCount": 5,
+      "lastAccessed": 1782272272108,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-herdr/tsconfig.json",
+      "accessCount": 4,
+      "lastAccessed": 1782214647931,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/src/index.ts",
+      "accessCount": 4,
+      "lastAccessed": 1782214651375,
+      "type": "file"
+    },
+    {
+      "path": "apps/agx-web/package.json",
+      "accessCount": 4,
+      "lastAccessed": 1782214677523,
+      "type": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "accessCount": 4,
+      "lastAccessed": 1782214846865,
+      "type": "file"
+    },
+    {
+      "path": "packages/adp/src/server.ts",
+      "accessCount": 4,
+      "lastAccessed": 1782218435042,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/package.json",
+      "accessCount": 3,
+      "lastAccessed": 1782214608209,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-mcp/package.json",
+      "accessCount": 3,
+      "lastAccessed": 1782214636063,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-cli/scripts/loader-hooks.mjs",
+      "accessCount": 3,
+      "lastAccessed": 1782214639035,
+      "type": "file"
+    },
+    {
+      "path": "apps/orchestrator-demo/package.json",
+      "accessCount": 3,
+      "lastAccessed": 1782214659510,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/src/OrchestratedSession.ts",
+      "accessCount": 3,
+      "lastAccessed": 1782214672481,
+      "type": "file"
+    },
+    {
+      "path": "packages/adp/src/index.ts",
+      "accessCount": 3,
+      "lastAccessed": 1782218436963,
+      "type": "file"
+    },
+    {
+      "path": "apps/cli/src/MusicScannerCLI.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1782221453756,
+      "type": "file"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "accessCount": 2,
+      "lastAccessed": 1782203668120,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-cli/scripts/register.mjs",
+      "accessCount": 2,
+      "lastAccessed": 1782214640139,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-herdr/src/index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1782214643377,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/src/types.ts",
+      "accessCount": 2,
+      "lastAccessed": 1782214651352,
+      "type": "file"
+    },
+    {
+      "path": "apps/cli/src/index.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1782214653070,
+      "type": "file"
+    },
+    {
+      "path": "apps/cli/tsconfig.json",
+      "accessCount": 2,
+      "lastAccessed": 1782214663819,
+      "type": "file"
+    },
+    {
+      "path": "apps/music-scanner-service/tsconfig.json",
+      "accessCount": 2,
+      "lastAccessed": 1782216657473,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 2,
+      "lastAccessed": 1782223007492,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-cli/scratch-probe.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1782201880225,
+      "type": "file"
+    },
+    {
+      "path": "sgconfig.yml",
+      "accessCount": 1,
+      "lastAccessed": 1782209636794,
+      "type": "file"
+    },
+    {
+      "path": "rules/no-as-any.yml",
+      "accessCount": 1,
+      "lastAccessed": 1782209639641,
+      "type": "file"
+    },
+    {
+      "path": "rule-tests/no-as-any-test.yml",
+      "accessCount": 1,
+      "lastAccessed": 1782209641043,
+      "type": "file"
+    },
+    {
+      "path": "packages/core/tsconfig.json",
+      "accessCount": 1,
+      "lastAccessed": 1782214608286,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/src/BaseAgent.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782214614133,
+      "type": "file"
+    },
+    {
+      "path": "packages/orchestrator/src/DependencyGraph.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782214614555,
+      "type": "file"
+    },
+    {
+      "path": "packages/agx-core/src/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782214615734,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

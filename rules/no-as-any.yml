@@ -1,0 +1,10 @@
+# Starter rule. ast-grep matches by AST shape, complementing tsgolint (vp lint).
+# `as any` defeats the type checker — flag it so casts are deliberate.
+# Note: `language: typescript` covers .ts only; add a twin rule with
+# `language: tsx` to also lint .tsx files.
+id: no-as-any
+language: typescript
+severity: warning
+message: "Avoid `as any` — it disables type checking. Use a precise type or `unknown`."
+rule:
+  pattern: $EXPR as any

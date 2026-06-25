@@ -6,19 +6,23 @@ description: Use when a complex task needs to be divided into a DAG (Directed Ac
 # Codex Orchestrator Skill
 
 ## Overview
+
 This skill teaches Codex how to use the AGX Orchestrator to execute complex, multi-step goals by breaking them down into a structured `ExecutionPlan`.
 
 ## When to Use
+
 - Use when a user request is too large for a single prompt response.
 - Use when tasks have clear dependencies (e.g., "Build X, then test X").
 - Use when automated review or remediation cycles are required.
 
 ## Core Pattern: Plan → Execute
+
 1. **Analyze Prompt**: Identify the high-level goal and required steps.
 2. **Generate DAG**: Create an `ExecutionPlan` JSON object.
 3. **Invoke Tool**: Call `execute_plan` with the generated plan.
 
 ### ExecutionPlan Structure
+
 ```json
 {
   "planId": "unique-id",
@@ -46,16 +50,19 @@ This skill teaches Codex how to use the AGX Orchestrator to execute complex, mul
 ```
 
 ## Implementation via MCP
+
 Codex should use the `execute_plan` tool provided by the `agx-orchestrator` MCP server.
 
 ## Common Mistakes
+
 - **Circular Dependencies**: Ensure step IDs do not form a cycle.
 - **Missing IDs**: Every dependency must refer to an existing step ID.
 - **Vague Criteria**: Acceptance criteria should be objective and verifiable.
 
 ## Quick Reference
-| Property | Type | Description |
-| --- | --- | --- |
-| `planId` | string | Stable identifier for the session |
-| `steps` | array | List of `PlanStep` objects |
+
+| Property       | Type     | Description                             |
+| -------------- | -------- | --------------------------------------- |
+| `planId`       | string   | Stable identifier for the session       |
+| `steps`        | array    | List of `PlanStep` objects              |
 | `dependencies` | string[] | List of step IDs that must finish first |

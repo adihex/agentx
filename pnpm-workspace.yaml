@@ -1,5 +1,51 @@
 packages:
   - "packages/*"
   - "apps/*"
+allowedDeprecatedVersions:
+  node-domexception: "*"
+overrides:
+  vite: "^8.0.0"
+  "@tanstack/react-router": "1.120.20"
+  "@tanstack/router-core": "1.120.19"
+  "@tanstack/router-generator": "1.120.20"
+  "@tanstack/router-plugin": "1.120.20"
+  "@tanstack/react-start-plugin": "1.120.17"
+  "@tanstack/server-functions-plugin": "1.120.17"
+  "@tanstack/directive-functions-plugin": "1.120.17"
+  "@tanstack/start-server-core": "1.120.19"
+  "@tanstack/start-client-core": "1.120.19"
+  "@tanstack/start-config": "1.120.19"
+  vinxi: "0.5.11"
+  dax-sh: "npm:dax@^0.48.3"
+  glob: "^13.0.6"
+  uuid: "^14.0.1"
 allowBuilds:
+  "@ast-grep/cli": true
+  "@google/genai": true
+  "@parcel/watcher": true
   esbuild: true
+  koffi: true
+  protobufjs: true
+catalog:
+  "@ai-sdk/anthropic": 3.0.74
+  "@ai-sdk/groq": 3.0.42
+  "@ai-sdk/openai": 3.0.74
+  "@ai-sdk/openai-compatible": 2.0.36
+  "@opentui/core": 0.4.1
+  "@opentui/react": 0.4.1
+  "@types/node": 26.0.0
+  "@types/react": 19.2.17
+  "@types/react-dom": 19.2.3
+  "@types/ws": 8.18.1
+  "@vitejs/plugin-react": 6.0.2
+  "@vitest/coverage-v8": 4.1.9
+  "@vitest/ui": 4.1.9
+  ai: 6.0.208
+  react: 19.2.7
+  react-dom: 19.2.7
+  tsx: 4.22.4
+  typescript: 7.0.1-rc
+  vite: 8.0.16
+  vitest: 4.1.9
+  ws: 8.21.0
+  zod: 4.4.3
