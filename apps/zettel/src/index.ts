@@ -1,10 +1,13 @@
-import { createServer } from "vite";
-import { AgentEventLoop } from "@agentx/core";
+import { AgentEventLoop, LLMOrchestrator } from "@agentx/core";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import type { IncomingMessage, ServerResponse } from "node:http";
 import * as dotenv from "dotenv";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
+import { WebSocketServer } from "ws";
+import { auth } from "./notes/auth.js";
 import {
   createNoteTool,
   linkNotesTool,
@@ -12,225 +15,359 @@ import {
   getNoteTool,
 } from "./tools/notes.js";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
-import { listNotes, readNote, backlinksOf, writeNote } from "./notes/store.js";
+import { listNotes, readNote, backlinksOf, writeNote, listCustomTools, writeCustomTool, deleteCustomTool } from "./notes/store.js";
 
-// Required env: OPENAI_API_KEY, OPENAI_BASE_URL (optional), AGENT_MODEL (optional)
-// Optional transcription env: GROQ_API_KEY, WHISPER_BIN, WHISPER_MODEL, ZETTEL_DIR
 dotenv.config();
+console.log("[zettel] Startup - BETTER_AUTH_URL:", process.env.BETTER_AUTH_URL);
 
-function sendJson(res: ServerResponse, body: unknown): void {
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(body));
-}
+if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
+  console.log("[zettel] 🛠️  NODE_ENV=test or MOCK_LLM=true detected. Injecting LLMOrchestrator prototype stub...");
+  LLMOrchestrator.prototype.runStep = async function (messages, tools, abortSignal, model, onTextDelta) {
+    const lastUserMsg = String([...messages].reverse().find(m => m.role === "user")?.content ?? "");
+    const hasToolResult = messages.some(m => m.role === "tool");
+    
+    if (hasToolResult) {
+      const text = "I have successfully created the note for you.";
+      onTextDelta?.(text);
+      return {
+        text,
+        toolCalls: [],
+        responseMessages: [
+          {
+            role: "assistant",
+            content: text,
+            toolCalls: []
+          }
+        ]
+      };
+    }
 
-/** Collect the raw request body as a Buffer. */
-function readBody(req: IncomingMessage): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    req.on("data", (c: Buffer) => chunks.push(c));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
-}
-
-/**
- * Extract the first uploaded file from a multipart/form-data body. Returns the
- * file bytes and a best-effort filename. Minimal parser — sufficient for a
- * single `<input type=file>` upload.
- */
-function parseFirstMultipartFile(
-  buffer: Buffer,
-  contentType: string,
-): { filename: string; data: Buffer } | null {
-  const match = /boundary=(?:"([^"]+)"|([^;]+))/i.exec(contentType);
-  const boundary = match ? (match[1] ?? match[2]).trim() : null;
-  if (!boundary) return null;
-
-  const delimiter = Buffer.from(`--${boundary}`);
-  const headerEnd = Buffer.from("\r\n\r\n");
-
-  let start = buffer.indexOf(delimiter);
-  while (start !== -1) {
-    const partStart = start + delimiter.length;
-    const next = buffer.indexOf(delimiter, partStart);
-    if (next === -1) break;
-
-    const part = buffer.subarray(partStart, next);
-    const sep = part.indexOf(headerEnd);
-    if (sep !== -1) {
-      const rawHeaders = part.subarray(0, sep).toString("utf8");
-      if (/filename="?([^"\r\n]*)"?/i.test(rawHeaders) && /name="?file"?/i.test(rawHeaders)) {
-        const fnMatch = /filename="?([^"\r\n]*)"?/i.exec(rawHeaders);
-        const filename = fnMatch?.[1]?.trim() || "upload.bin";
-        // Body runs from after the header separator to the trailing CRLF before the next boundary.
-        let body = part.subarray(sep + headerEnd.length);
-        if (body.length >= 2 && body[body.length - 2] === 0x0d && body[body.length - 1] === 0x0a) {
-          body = body.subarray(0, body.length - 2);
+    let text = "I am a helpful assistant.";
+    let toolCalls: any[] = [];
+    
+    if (lastUserMsg.includes("apples")) {
+      toolCalls.push({
+        toolCallId: "tc-apples",
+        toolName: "createNote",
+        input: {
+          content: "Apples are delicious fruits.",
+          title: "About Apples",
+          tags: ["apples", "fruit"]
         }
-        return { filename, data: body };
+      });
+      text = "I have created a note about apples for you.";
+    } else if (lastUserMsg.includes("oranges")) {
+      toolCalls.push({
+        toolCallId: "tc-oranges",
+        toolName: "createNote",
+        input: {
+          content: "Oranges are citrus fruits.",
+          title: "About Oranges",
+          tags: ["oranges", "fruit"]
+        }
+      });
+      text = "I have created a note about oranges for you.";
+    }
+    
+    onTextDelta?.(text);
+    
+    return {
+      text,
+      toolCalls,
+      responseMessages: [
+        {
+          role: "assistant",
+          content: text,
+          toolCalls: toolCalls.map(tc => ({
+            id: tc.toolCallId,
+            type: "function",
+            function: { name: tc.toolName, arguments: JSON.stringify(tc.input) }
+          }))
+        }
+      ]
+    };
+  };
+}
+
+const app = new Hono();
+
+// Better Auth endpoints (GET/POST)
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
+  return auth.handler(c.req.raw);
+});
+
+// Protected endpoints using Hono RPC
+const api = new Hono<{ Variables: { user: any } }>();
+
+// Auth Middleware for Hono
+api.use("/*", async (c, next) => {
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  });
+  if (!session) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  c.set("user", session.user);
+  await next();
+});
+
+const routes = api
+  .get("/notes", async (c) => {
+    const user = c.get("user");
+    try {
+      const notes = await listNotes(user.id);
+      return c.json({ notes });
+    } catch {
+      return c.json({ notes: [] });
+    }
+  })
+  .get("/note", async (c) => {
+    const id = c.req.query("id") ?? "";
+    const user = c.get("user");
+    try {
+      const [note, backlinks] = await Promise.all([
+        readNote(user.id, id),
+        backlinksOf(user.id, id),
+      ]);
+      return c.json({ note, backlinks });
+    } catch {
+      return c.json({ note: null, backlinks: [] });
+    }
+  })
+  .get("/graph", async (c) => {
+    const user = c.get("user");
+    try {
+      const notes = await listNotes(user.id);
+      const ids = new Set(notes.map((n) => n.id));
+      const nodes = notes.map((n) => ({ id: n.id, title: n.title }));
+      const seen = new Set<string>();
+      const edges: { source: string; target: string }[] = [];
+      for (const n of notes) {
+        for (const target of n.links) {
+          if (!ids.has(target)) continue;
+          const key = [n.id, target].sort().join("::");
+          if (seen.has(key)) continue;
+          seen.add(key);
+          edges.push({ source: n.id, target });
+        }
       }
+      return c.json({ nodes, edges });
+    } catch {
+      return c.json({ nodes: [], edges: [] });
     }
-    start = next;
-  }
-  return null;
-}
+  })
+  .post("/transcribe", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = await c.req.parseBody();
+      const file = body["file"] as File | undefined;
+      if (!file || file.size === 0) {
+        return c.json({ error: "no audio file uploaded under field 'file'" }, 400);
+      }
 
-async function handleTranscribe(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  const buffer = await readBody(req);
-  const file = parseFirstMultipartFile(buffer, req.headers["content-type"] ?? "");
-  if (!file || file.data.length === 0) {
-    res.statusCode = 400;
-    sendJson(res, { error: "no audio file uploaded under field 'file'" });
-    return;
-  }
+      const arrayBuffer = await file.arrayBuffer();
+      const data = Buffer.from(arrayBuffer);
+      
+      const tmpPath = path.join(
+        os.tmpdir(),
+        `zettel-audio-${Date.now()}-${path.basename(file.name)}`,
+      );
+      fs.writeFileSync(tmpPath, data);
 
-  const tmpPath = path.join(
-    os.tmpdir(),
-    `zettel-audio-${Date.now()}-${path.basename(file.filename)}`,
-  );
-  fs.writeFileSync(tmpPath, file.data);
-
-  try {
-    const transcript = await transcribeAudio({ path: tmpPath });
-    if (!transcript.text) {
-      sendJson(res, { note: null, transcript });
-      return;
+      try {
+        const transcript = await transcribeAudio({ path: tmpPath });
+        if (!transcript.text) {
+          return c.json({ note: null, transcript });
+        }
+        const note = await writeNote(user.id, { content: transcript.text, source: "audio" });
+        return c.json({ note, transcript });
+      } finally {
+        if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+      }
+    } catch (err: unknown) {
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
     }
-    const note = await writeNote({ content: transcript.text, source: "audio" });
-    sendJson(res, { note, transcript });
-  } finally {
-    if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
-  }
-}
+  })
+  .get("/tools", async (c) => {
+    const user = c.get("user");
+    try {
+      const tools = await listCustomTools(user.id);
+      return c.json({ tools });
+    } catch {
+      return c.json({ tools: [] });
+    }
+  })
+  .post("/tools", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = await c.req.json();
+      const { name, description, inputSchema, code, id } = body;
+      if (!name || !description || !inputSchema || !code) {
+        return c.json({ error: "Missing required fields: name, description, inputSchema, code" }, 400);
+      }
+      const tool = await writeCustomTool(user.id, { name, description, inputSchema, code, id });
+      return c.json({ tool });
+    } catch (err: unknown) {
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
+    }
+  })
+  .delete("/tools", async (c) => {
+    const user = c.get("user");
+    const id = c.req.query("id");
+    if (!id) {
+      return c.json({ error: "Missing tool id" }, 400);
+    }
+    try {
+      await deleteCustomTool(user.id, id);
+      return c.json({ ok: true });
+    } catch (err: unknown) {
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
+    }
+  });
+
+app.route("/api", api);
+
+export type AppType = typeof routes;
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5174;
+const isProd = process.env.NODE_ENV === "production";
 
-// Start the Vite server with programmatic configuration.
-const server = await createServer({
-  configFile: path.resolve(process.cwd(), "vite.config.ts"),
-  server: {
-    port,
-    host: true, // Allow external connections for container environments
-    allowedHosts: true,
-  },
-  plugins: [
-    {
-      name: "zettel-api",
-      configureServer(viteServer) {
-        viteServer.middlewares.use((req, res, next) => {
-          const url = req.url ?? "";
-
-          if (url === "/api/notes") {
-            void listNotes()
-              .then((notes) => sendJson(res, { notes }))
-              .catch(() => sendJson(res, { notes: [] }));
-            return;
-          }
-
-          if (url.startsWith("/api/note?")) {
-            const id = new URL(url, "http://localhost").searchParams.get("id") ?? "";
-            void Promise.all([readNote(id), backlinksOf(id)])
-              .then(([note, backlinks]) => sendJson(res, { note, backlinks }))
-              .catch(() => sendJson(res, { note: null, backlinks: [] }));
-            return;
-          }
-
-          if (url === "/api/graph") {
-            void listNotes()
-              .then((notes) => {
-                const ids = new Set(notes.map((n) => n.id));
-                const nodes = notes.map((n) => ({ id: n.id, title: n.title }));
-                const seen = new Set<string>();
-                const edges: { source: string; target: string }[] = [];
-                for (const n of notes) {
-                  for (const target of n.links) {
-                    if (!ids.has(target)) continue;
-                    const key = [n.id, target].sort().join("::");
-                    if (seen.has(key)) continue;
-                    seen.add(key);
-                    edges.push({ source: n.id, target });
-                  }
-                }
-                sendJson(res, { nodes, edges });
-              })
-              .catch(() => sendJson(res, { nodes: [], edges: [] }));
-            return;
-          }
-
-          if (url === "/api/transcribe" && req.method === "POST") {
-            void handleTranscribe(req, res).catch((err: unknown) => {
-              res.statusCode = 500;
-              sendJson(res, { error: err instanceof Error ? err.message : String(err) });
-            });
-            return;
-          }
-
-          next();
-        });
-      },
-    },
-  ],
-});
-
-await server.listen();
-
-if (!server.httpServer) {
-  throw new Error("[zettel] Vite HTTP server was not created");
+if (isProd) {
+  // Serve static assets in production
+  app.use("/*", serveStatic({ root: "./dist" }));
+  app.get("*", serveStatic({ path: "./dist/index.html" }));
 }
 
-// Initialize AgentEventLoop with the Zettelkasten note + transcription tools,
-// sharing the Vite HTTP server for the ADP control plane.
-const agent = new AgentEventLoop({
-  systemPrompt: [
-    "You are a Zettelkasten thinking partner.",
-    "Capture each thought as an atomic note via createNote.",
-    "After creating a note, ALWAYS searchNotes for related existing notes and",
-    "propose/draw links with linkNotes for genuine conceptual connections.",
-    "Be concise.",
-  ].join(" "),
-  tools: {
-    createNote: createNoteTool,
-    linkNotes: linkNotesTool,
-    searchNotes: searchNotesTool,
-    getNote: getNoteTool,
-    transcribeAudio: transcribeAudioTool,
+// Start Hono Node server
+export const httpServer = serve({
+  fetch: app.fetch,
+  port,
+});
+
+export const userAgents = new Map<string, AgentEventLoop>();
+
+// A mock HTTP server that does nothing, to prevent AdpServer from binding to the real upgrade event
+const mockHttpServer = {
+  on: (event: string, callback: any) => {
+    // Do nothing
   },
-  autoTick: true,
-  adpServer: server.httpServer,
-});
+};
 
-// Forward agent events to ADP control plane (real event names).
-agent.on("inference.start", () => {
-  agent.emitAdpEvent("Agent.InferenceStart", {});
-});
-agent.on("inference.chunk", ({ chunk }) => {
-  agent.emitAdpEvent("Agent.InferenceChunk", { chunk });
-});
-agent.on("inference.end", ({ text }) => {
-  agent.emitAdpEvent("Agent.InferenceEnd", { text });
-});
-agent.on("tool.dispatch", (payload) => {
-  agent.emitAdpEvent("Agent.ToolStart", payload);
-});
-agent.on("tool.complete", (payload) => {
-  agent.emitAdpEvent("Agent.ToolComplete", payload);
-});
+function getOrCreateUserAgent(userId: string): AgentEventLoop {
+  let userAgent = userAgents.get(userId);
+  if (!userAgent) {
+    userAgent = new AgentEventLoop({
+      systemPrompt: [
+        "You are a Zettelkasten thinking partner.",
+        "Capture each thought as an atomic note via createNote.",
+        "After creating a note, ALWAYS searchNotes for related existing notes and",
+        "propose/draw links with linkNotes for genuine conceptual connections.",
+        "Be concise.",
+      ].join(" "),
+      tools: {
+        createNote: createNoteTool,
+        linkNotes: linkNotesTool,
+        searchNotes: searchNotesTool,
+        getNote: getNoteTool,
+        transcribeAudio: transcribeAudioTool,
+      },
+      autoTick: true,
+      adpServer: mockHttpServer, // Pass mock server to prevent duplicate port binding
+    });
 
-// Drive the agent from prompts arriving over ADP (Session.prompt).
-void (async () => {
-  for (;;) {
-    const prompt = await agent.waitForPrompt();
-    if (prompt == null) break; // shutdown
+    // Intercept/override the thread pool execute method to inject the userId into req.args
+    const originalExecute = (userAgent as any).threadPool.execute.bind((userAgent as any).threadPool);
+    (userAgent as any).threadPool.execute = async (req: any) => {
+      req.args = { ...req.args, userId };
+      return originalExecute(req);
+    };
+
+    // Forward agent events to ADP control plane (real event names)
+    const currentAgent = userAgent;
+    currentAgent.on("inference.start", () => {
+      currentAgent.emitAdpEvent("Agent.InferenceStart", {});
+    });
+    currentAgent.on("inference.chunk", ({ chunk }) => {
+      currentAgent.emitAdpEvent("Agent.InferenceChunk", { chunk });
+    });
+    currentAgent.on("inference.end", ({ text }) => {
+      currentAgent.emitAdpEvent("Agent.InferenceEnd", { text });
+    });
+    currentAgent.on("tool.dispatch", (payload) => {
+      currentAgent.emitAdpEvent("Agent.ToolStart", payload);
+    });
+    currentAgent.on("tool.complete", (payload) => {
+      if (!payload.result.success) {
+        console.error(`[zettel] Tool ${payload.toolName} execution failed:`, payload.result.error);
+      }
+      currentAgent.emitAdpEvent("Agent.ToolComplete", payload);
+    });
+
+    // Drive the agent from prompts arriving over ADP (Session.prompt).
+    void (async () => {
+      for (;;) {
+        const prompt = await currentAgent.waitForPrompt();
+        if (prompt == null) break; // shutdown
+        try {
+          await currentAgent.run(prompt);
+        } catch (err) {
+          console.error(`[zettel] agent.run failed for user ${userId}:`, err instanceof Error ? err.message : err);
+        }
+      }
+    })();
+
+    userAgents.set(userId, userAgent);
+  }
+  return userAgent;
+}
+
+// Set up WebSocket server and intercept upgrade requests for auth-scoping
+const wss = new WebSocketServer({ noServer: true });
+
+httpServer.on("upgrade", async (request, socket, head) => {
+  const pathname = request.url ? request.url.split("?")[0] : "";
+  if (pathname === "/adp") {
     try {
-      await agent.run(prompt);
+      const headers = new Headers();
+      for (const [key, value] of Object.entries(request.headers)) {
+        if (value === undefined) continue;
+        if (Array.isArray(value)) {
+          for (const v of value) {
+            headers.append(key, v);
+          }
+        } else {
+          headers.set(key, value as string);
+        }
+      }
+
+      // Authenticate the upgrade request using Better Auth
+      const session = await auth.api.getSession({
+        headers,
+      });
+
+      if (!session) {
+        socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+        socket.destroy();
+        return;
+      }
+
+      const userId = session.user.id;
+      const userAgent = getOrCreateUserAgent(userId);
+
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        // Direct connection mapping: emit connection event on the agent's private wss
+        (userAgent.adp as any).wss.emit("connection", ws, request);
+      });
     } catch (err) {
-      console.error("[zettel] agent.run failed:", err instanceof Error ? err.message : err);
+      console.error("[zettel] Upgrade auth failed:", err);
+      socket.write("HTTP/1.1 500 Internal Server Error\r\n\r\n");
+      socket.destroy();
     }
   }
-})();
+});
 
 console.log("┌──────────────────────────────────────────────────┐");
-console.log("│           agentx — Zettelkasten Web App          │");
-console.log(`│     Web Interface: http://localhost:${port}          │`);
+console.log("│      agentx — Multi-Tenant Zettelkasten App      │");
+console.log(`│     Web Interface: http://localhost:${isProd ? port : 5173}          │`);
 console.log(`│     ADP WebSocket shared on HTTP server port     │`);
 console.log("└──────────────────────────────────────────────────┘");

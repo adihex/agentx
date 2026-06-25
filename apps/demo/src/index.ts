@@ -1,79 +1,80 @@
 import "dotenv/config";
 import { AgentEventLoop } from "@agentx/core";
 
+/** System prompt used by the demo agent. */
+export const DEMO_SYSTEM_PROMPT = [
+  "You are a helpful AI assistant running inside an event-driven runtime.",
+  "When tool results appear in your context, analyze them concisely.",
+  "You are demonstrating non-blocking execution and out-of-band control.",
+].join(" ");
+
+/** Default ADP port for the demo agent. */
+export const DEMO_ADP_PORT = 9222;
+
 /**
- * agentx demo — Interactive Event-Driven Agent Runtime
- *
- * This agent starts up and stays alive, waiting for prompts via the ADP
- * control-plane WebSocket. It demonstrates:
- *
- * 1. NON-BLOCKING TOOL EXECUTION
- *    Tools dispatched into the Agentic Thread Pool do NOT block inference.
- *
- * 2. OUT-OF-BAND CONTROL (ADP)
- *    Connect from pi, another terminal, or any WebSocket client on port 9222.
- *
- * ADP Commands:
- *   Session.prompt  <msg>   — Send a prompt to the agent (triggers inference)
- *   Session.shutdown        — Graceful shutdown
- *   Inference.halt          — Abort active LLM stream
- *   Metacognition.pause     — Pause the event loop
- *   Metacognition.resume    — Resume the event loop
- *   Metacognition.getCallFrame — Inspect live state
- *   Memory.compact          — Compact context
- *
- * Usage:
- *   pnpm start                  (starts the interactive agent)
- *   pi -e ../pi-extension/src/extension.ts   (control from pi)
+ * Create the demo AgentEventLoop with default configuration.
+ * Extracted for testability.
  */
-
-async function main() {
-  console.log();
-  console.log("┌──────────────────────────────────────────────────┐");
-  console.log("│       agentx — Event-Driven Agent Runtime        │");
-  console.log("│          ADP Control Plane on port 9222          │");
-  console.log("│         Waiting for prompts via ADP…             │");
-  console.log("└──────────────────────────────────────────────────┘");
-  console.log();
-
-  const agent = new AgentEventLoop({
-    adpPort: 9222,
+export function createDemoAgent(opts?: { adpPort?: number; systemPrompt?: string }) {
+  return new AgentEventLoop({
+    adpPort: opts?.adpPort ?? DEMO_ADP_PORT,
     autoTick: true,
-    systemPrompt: [
-      "You are a helpful AI assistant running inside an event-driven runtime.",
-      "When tool results appear in your context, analyze them concisely.",
-      "You are demonstrating non-blocking execution and out-of-band control.",
-    ].join(" "),
+    systemPrompt: opts?.systemPrompt ?? DEMO_SYSTEM_PROMPT,
   });
+}
 
-  // ── Graceful shutdown on SIGINT/SIGTERM ───────────────────────────────────
-  const shutdown = async (signal: string) => {
-    console.log(`\n[Demo] Received ${signal}. Shutting down…`);
+/**
+ * Create a shutdown handler for the given agent.
+ */
+export function createShutdownHandler(agent: AgentEventLoop, signal?: string) {
+  return async () => {
+    if (signal) {
+      console.log(`\n[Demo] Received ${signal}. Shutting down…`);
+    } else {
+      console.log("\n[Demo] Shutting down…");
+    }
     await agent.shutdown();
     process.exit(0);
   };
+}
 
-  process.on("SIGINT", () => shutdown("SIGINT"));
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-
-  // ── Main loop: wait for prompts and run inference ─────────────────────────
+/**
+ * Run the prompt loop: wait for prompts and process them.
+ * Returns when shutdown is requested.
+ */
+export async function runPromptLoop(agent: AgentEventLoop) {
   while (true) {
     const prompt = await agent.waitForPrompt();
     if (prompt === null) {
-      // Shutdown requested
       break;
     }
-
     try {
       await agent.run(prompt);
     } catch (err: any) {
       console.error("[Demo] Inference error:", err.message ?? err);
     }
   }
+}
 
-  console.log("[Demo] Main loop exited. Shutting down…");
-  await agent.shutdown();
-  process.exit(0);
+// ── Entry point (runs when executed directly) ──────────────────────────────
+
+/** ASCII banner displayed on startup. */
+export const DEMO_BANNER = [
+  "",
+  "┌──────────────────────────────────────────────────┐",
+  "│       agentx — Event-Driven Agent Runtime        │",
+  "│          ADP Control Plane on port 9222          │",
+  "│         Waiting for prompts via ADP…             │",
+  "└──────────────────────────────────────────────────┘",
+  "",
+];
+
+async function main() {
+  DEMO_BANNER.forEach((line) => console.log(line));
+  const agent = createDemoAgent();
+  process.on("SIGINT", createShutdownHandler(agent, "SIGINT"));
+  process.on("SIGTERM", createShutdownHandler(agent, "SIGTERM"));
+  await runPromptLoop(agent);
 }
 
 main().catch((err) => {

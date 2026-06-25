@@ -73,7 +73,7 @@ export interface PaneRead {
 
 /* ── Socket path resolution ────────────────────────────────── */
 
-function resolveSocketPath(session?: string): string {
+export function resolveSocketPath(session?: string): string {
   // 1. Explicit HERDR_SOCKET_PATH
   if (process.env.HERDR_SOCKET_PATH) {
     return process.env.HERDR_SOCKET_PATH;

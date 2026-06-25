@@ -14,7 +14,7 @@ import {
   searchNotes as searchNotesStore,
   addLink,
   backlinksOf,
-} from "../notes/store.ts";
+} from "../notes/store.js";
 
 // ── createNote ────────────────────────────────────────────────────────────────
 
@@ -29,10 +29,11 @@ export const createNoteSchema = z.object({
 });
 export type CreateNoteInput = z.infer<typeof createNoteSchema>;
 
-export async function createNote(args: CreateNoteInput) {
+export async function createNote(args: CreateNoteInput & { userId?: string }) {
   const { content, title, tags, source } = createNoteSchema.parse(args);
+  const userId = args.userId ?? "default";
   try {
-    const note = await writeNote({ content, title, tags, source });
+    const note = await writeNote(userId, { content, title, tags, source });
     return { success: true, id: note.id };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) };
@@ -47,10 +48,11 @@ export const linkNotesSchema = z.object({
 });
 export type LinkNotesInput = z.infer<typeof linkNotesSchema>;
 
-export async function linkNotes(args: LinkNotesInput) {
+export async function linkNotes(args: LinkNotesInput & { userId?: string }) {
   const { fromId, toId } = linkNotesSchema.parse(args);
+  const userId = args.userId ?? "default";
   try {
-    await addLink(fromId, toId);
+    await addLink(userId, fromId, toId);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
@@ -65,10 +67,11 @@ export const searchNotesSchema = z.object({
 });
 export type SearchNotesInput = z.infer<typeof searchNotesSchema>;
 
-export async function searchNotes(args: SearchNotesInput) {
+export async function searchNotes(args: SearchNotesInput & { userId?: string }) {
   const { query, limit } = searchNotesSchema.parse(args);
+  const userId = args.userId ?? "default";
   try {
-    const results = await searchNotesStore(query, limit ?? 10);
+    const results = await searchNotesStore(userId, query, limit ?? 10);
     return { results };
   } catch (err) {
     return { results: [], error: err instanceof Error ? err.message : String(err) };
@@ -82,12 +85,13 @@ export const getNoteSchema = z.object({
 });
 export type GetNoteInput = z.infer<typeof getNoteSchema>;
 
-export async function getNote(args: GetNoteInput) {
+export async function getNote(args: GetNoteInput & { userId?: string }) {
   const { id } = getNoteSchema.parse(args);
+  const userId = args.userId ?? "default";
   try {
-    const note = await readNote(id);
+    const note = await readNote(userId, id);
     if (!note) return { note: null, backlinks: [], error: `note ${id} not found` };
-    const backlinks = await backlinksOf(id);
+    const backlinks = await backlinksOf(userId, id);
     return { note, backlinks };
   } catch (err) {
     return { note: null, backlinks: [], error: err instanceof Error ? err.message : String(err) };
