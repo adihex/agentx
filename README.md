@@ -79,7 +79,3 @@ cd apps/demo && pnpm admin compact   # Compact memory
 2. **4-phase event loop**: Timers → I/O Callbacks → Inference → Check (microtasks/guards).
 3. **ADP control plane**: A WebSocket on port 9222 accepts JSON-RPC commands that bypass the event queue entirely, enabling instant `/stop`, `/pause`, and memory compaction.
 4. **Interactive prompt loop**: The agent stays alive and waits for `Session.prompt` commands via ADP. This lets external frontends (like the pi extension) drive the agent interactively.
-
-## Based On
-
-[Architectural Blueprint for an Event-Driven AI Agent Runtime](https://docs.google.com/document/d/18lS5y_T_yyaoK1wxWjYhMAlC_vMdbT49xwNuR9ieKaw) — adapting Node.js paradigms and out-of-band debugging protocols for AI agents.
