@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { EventEmitter } from "events";
+import type { Server } from "node:http";
 import {
   JsonRpcRequestSchema,
   type JsonRpcResponse,
@@ -22,15 +23,36 @@ export class AdpServer extends EventEmitter {
 
   /**
    * Create a new ADP server.
-   * @param port - The port to listen on.
+   * @param portOrOptions - The port to listen on or WebSocket server options.
    */
-  constructor(port: number) {
+  constructor(portOrOptions: number | { port?: number; server?: Server }) {
     super();
-    this.wss = new WebSocketServer({ port });
+    const options = typeof portOrOptions === "number" ? { port: portOrOptions } : portOrOptions;
+    if (typeof portOrOptions === "object" && portOrOptions.server) {
+      const httpServer = portOrOptions.server;
+      this.wss = new WebSocketServer({ noServer: true });
+      httpServer.on("upgrade", (request, socket, head) => {
+        const pathname = request.url ? request.url.split("?")[0] : "";
+        if (pathname === "/adp") {
+          this.wss.handleUpgrade(request, socket, head, (ws) => {
+            this.wss.emit("connection", ws, request);
+          });
+        }
+      });
+    } else {
+      this.wss = new WebSocketServer(options);
+    }
+    this.wss.on("error", (err) => {
+      console.error("[ADP] Server error:", err);
+    });
 
     this.wss.on("connection", (ws: WebSocket) => {
       console.log("[ADP] Client connected");
       this.clients.add(ws);
+
+      ws.on("error", (err) => {
+        console.error("[ADP] Socket error:", err);
+      });
 
       ws.on("message", (raw) => {
         const message = typeof raw === "string" ? raw : (raw as Buffer).toString();
@@ -81,7 +103,13 @@ export class AdpServer extends EventEmitter {
       });
     });
 
-    console.log(`[ADP] Control-plane listening on ws://localhost:${port}`);
+    if (typeof portOrOptions === "number") {
+      console.log(`[ADP] Control-plane listening on ws://localhost:${portOrOptions}`);
+    } else if (portOrOptions.port) {
+      console.log(`[ADP] Control-plane listening on ws://localhost:${portOrOptions.port}`);
+    } else {
+      console.log("[ADP] Control-plane attached to existing HTTP server");
+    }
   }
 
   /**

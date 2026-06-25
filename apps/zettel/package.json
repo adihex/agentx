@@ -13,6 +13,7 @@
     "@agentx/adp": "workspace:*",
     "@agentx/agx-core": "workspace:*",
     "@agentx/core": "workspace:*",
+    "@libsql/client": "catalog:",
     "@ai-sdk/groq": "catalog:",
     "ai": "catalog:",
     "dotenv": "^17.4.2",

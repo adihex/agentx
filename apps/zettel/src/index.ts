@@ -18,61 +18,6 @@ import { listNotes, readNote, backlinksOf, writeNote } from "./notes/store.js";
 // Optional transcription env: GROQ_API_KEY, WHISPER_BIN, WHISPER_MODEL, ZETTEL_DIR
 dotenv.config();
 
-const ADP_PORT = 9225;
-
-// Initialize AgentEventLoop with the Zettelkasten note + transcription tools.
-const agent = new AgentEventLoop({
-  systemPrompt: [
-    "You are a Zettelkasten thinking partner.",
-    "Capture each thought as an atomic note via createNote.",
-    "After creating a note, ALWAYS searchNotes for related existing notes and",
-    "propose/draw links with linkNotes for genuine conceptual connections.",
-    "Be concise.",
-  ].join(" "),
-  tools: {
-    createNote: createNoteTool,
-    linkNotes: linkNotesTool,
-    searchNotes: searchNotesTool,
-    getNote: getNoteTool,
-    transcribeAudio: transcribeAudioTool,
-  },
-  autoTick: true,
-  adpPort: ADP_PORT,
-});
-
-// Forward agent events to ADP control plane (real event names).
-agent.on("inference.start", () => {
-  agent.emitAdpEvent("Agent.InferenceStart", {});
-});
-agent.on("inference.chunk", ({ chunk }) => {
-  agent.emitAdpEvent("Agent.InferenceChunk", { chunk });
-});
-agent.on("inference.end", ({ text }) => {
-  agent.emitAdpEvent("Agent.InferenceEnd", { text });
-});
-agent.on("tool.dispatch", (payload) => {
-  agent.emitAdpEvent("Agent.ToolStart", payload);
-});
-agent.on("tool.complete", (payload) => {
-  agent.emitAdpEvent("Agent.ToolComplete", payload);
-});
-
-// Drive the agent from prompts arriving over ADP (Session.prompt). The core
-// handler only ENQUEUES the prompt and resolves waitForPrompt(); without this
-// loop the prompt is never run and nothing happens. Serialized: one run at a
-// time, next prompt picked up when the current run settles.
-void (async () => {
-  for (;;) {
-    const prompt = await agent.waitForPrompt();
-    if (prompt == null) break; // shutdown
-    try {
-      await agent.run(prompt);
-    } catch (err) {
-      console.error("[zettel] agent.run failed:", err instanceof Error ? err.message : err);
-    }
-  }
-})();
-
 function sendJson(res: ServerResponse, body: unknown): void {
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(body));
@@ -158,11 +103,15 @@ async function handleTranscribe(req: IncomingMessage, res: ServerResponse): Prom
   }
 }
 
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5174;
+
 // Start the Vite server with programmatic configuration.
 const server = await createServer({
   configFile: path.resolve(process.cwd(), "vite.config.ts"),
   server: {
-    port: 5174,
+    port,
+    host: true, // Allow external connections for container environments
+    allowedHosts: true,
   },
   plugins: [
     {
@@ -225,8 +174,63 @@ const server = await createServer({
 
 await server.listen();
 
+if (!server.httpServer) {
+  throw new Error("[zettel] Vite HTTP server was not created");
+}
+
+// Initialize AgentEventLoop with the Zettelkasten note + transcription tools,
+// sharing the Vite HTTP server for the ADP control plane.
+const agent = new AgentEventLoop({
+  systemPrompt: [
+    "You are a Zettelkasten thinking partner.",
+    "Capture each thought as an atomic note via createNote.",
+    "After creating a note, ALWAYS searchNotes for related existing notes and",
+    "propose/draw links with linkNotes for genuine conceptual connections.",
+    "Be concise.",
+  ].join(" "),
+  tools: {
+    createNote: createNoteTool,
+    linkNotes: linkNotesTool,
+    searchNotes: searchNotesTool,
+    getNote: getNoteTool,
+    transcribeAudio: transcribeAudioTool,
+  },
+  autoTick: true,
+  adpServer: server.httpServer,
+});
+
+// Forward agent events to ADP control plane (real event names).
+agent.on("inference.start", () => {
+  agent.emitAdpEvent("Agent.InferenceStart", {});
+});
+agent.on("inference.chunk", ({ chunk }) => {
+  agent.emitAdpEvent("Agent.InferenceChunk", { chunk });
+});
+agent.on("inference.end", ({ text }) => {
+  agent.emitAdpEvent("Agent.InferenceEnd", { text });
+});
+agent.on("tool.dispatch", (payload) => {
+  agent.emitAdpEvent("Agent.ToolStart", payload);
+});
+agent.on("tool.complete", (payload) => {
+  agent.emitAdpEvent("Agent.ToolComplete", payload);
+});
+
+// Drive the agent from prompts arriving over ADP (Session.prompt).
+void (async () => {
+  for (;;) {
+    const prompt = await agent.waitForPrompt();
+    if (prompt == null) break; // shutdown
+    try {
+      await agent.run(prompt);
+    } catch (err) {
+      console.error("[zettel] agent.run failed:", err instanceof Error ? err.message : err);
+    }
+  }
+})();
+
 console.log("┌──────────────────────────────────────────────────┐");
 console.log("│           agentx — Zettelkasten Web App          │");
-console.log("│     Vite Web Interface: http://localhost:5174    │");
-console.log("│        Agent ADP WebSocket on port 9225          │");
+console.log(`│     Web Interface: http://localhost:${port}          │`);
+console.log(`│     ADP WebSocket shared on HTTP server port     │`);
 console.log("└──────────────────────────────────────────────────┘");

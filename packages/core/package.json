@@ -22,6 +22,7 @@
   "dependencies": {
     "@agentx/adp": "workspace:*",
     "@ai-sdk/anthropic": "catalog:",
+    "@ai-sdk/google-vertex": "catalog:",
     "@ai-sdk/openai-compatible": "catalog:",
     "ai": "catalog:",
     "zod": "catalog:"

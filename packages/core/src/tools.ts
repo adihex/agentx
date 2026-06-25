@@ -25,17 +25,20 @@ export interface ToolDefinition<I = any> {
 }
 
 /** Transport family for a given model id. */
-export type ModelFamily = "chat" | "messages";
+export type ModelFamily = "chat" | "messages" | "vertex";
 
 /**
  * Classify a model id into its transport family.
  *
  * Per zen-capability-matrix.json: model ids starting with "qwen" use the
- * Anthropic Messages API ("messages"); everything else uses the OpenAI
- * Chat Completions API ("chat").
+ * Anthropic Messages API ("messages"); model ids starting with "gemini-"
+ * or "google/" use the Vertex AI API ("vertex"); everything else uses the
+ * OpenAI Chat Completions API ("chat").
  */
 export function classifyModel(modelId: string): ModelFamily {
-  return modelId.startsWith("qwen") ? "messages" : "chat";
+  if (modelId.startsWith("qwen")) return "messages";
+  if (modelId.startsWith("gemini-") || modelId.startsWith("google/")) return "vertex";
+  return "chat";
 }
 
 /** Identity helper for authoring tool definitions with inference. */

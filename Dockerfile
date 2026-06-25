@@ -1,9 +1,11 @@
-FROM node:24-slim AS base
+FROM node:24.14.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
+RUN mkdir -p /pnpm && chown -R node:node /pnpm
 WORKDIR /app
+RUN chown -R node:node /app
 
 # ─── Stage 1: Install dependencies ──────────────────────────────────────────
 FROM base AS deps
@@ -37,9 +39,10 @@ RUN pnpm run build
 
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 3000
 ENV PORT=3000
+USER node
 CMD ["pnpm", "--filter", "@agentx/music-extractor-web", "start"]
 
 # ─── Music Scanner Service (Agent Host — ADP :9222) ─────────────────────────
@@ -54,35 +57,41 @@ RUN apt-get update && apt-get install -y \
     && apt-get update && apt-get install -y google-cloud-cli \
     && pip3 install yt-dlp --break-system-packages \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 9222
+USER node
 CMD ["pnpm", "--filter", "@agentx/music-scanner-service", "start"]
 
 # ─── Demo Agent (ADP :9222) ─────────────────────────────────────────────────
 FROM base AS demo
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 9222
+USER node
 CMD ["pnpm", "--filter", "@agentx/demo", "start"]
 
 # ─── AGX Web Dashboard (Vite — :5173) ───────────────────────────────────────
 FROM base AS agx-web
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 5173
+USER node
 CMD ["pnpm", "--filter", "@agentx/agx-web", "preview"]
 
 # ─── Orchestrator Demo ──────────────────────────────────────────────────────
 FROM base AS orchestrator-demo
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
+USER node
 CMD ["pnpm", "--filter", "@agentx/orchestrator-demo", "start"]
 
 # ─── Daily Planner (Agent + Vite — ADP :9224, Web :5173) ────────────────────
 FROM base AS daily-planner
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 5173 9224
+USER node
 CMD ["pnpm", "--filter", "@agentx/daily-planner", "start"]
 
 # ─── Zettel (Agent + Vite) ──────────────────────────────────────────────────
 FROM base AS zettel
-COPY --from=builder /app ./
+COPY --chown=node:node --from=builder /app ./
 EXPOSE 5174 9225
+USER node
 CMD ["pnpm", "--filter", "@agentx/zettel", "start"]

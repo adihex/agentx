@@ -31,6 +31,8 @@ catalog:
   "@ai-sdk/groq": 3.0.42
   "@ai-sdk/openai": 3.0.74
   "@ai-sdk/openai-compatible": 2.0.36
+  "@ai-sdk/google-vertex": 3.0.74
+  "@libsql/client": 0.14.0
   "@opentui/core": 0.4.1
   "@opentui/react": 0.4.1
   "@types/node": 26.0.0

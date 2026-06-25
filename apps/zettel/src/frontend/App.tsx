@@ -26,7 +26,8 @@ interface ChatMessage {
   text: string;
 }
 
-const ADP_URL = "ws://localhost:9225";
+const isHttps = window.location.protocol === "https:";
+const ADP_URL = `${isHttps ? "wss:" : "ws:"}//${window.location.host}/adp`;
 
 const GREETING_ID = "1";
 
@@ -420,7 +421,7 @@ export default function App() {
         <div className="rail-foot">
           <span className={`status-dot ${connected ? "on" : ""}`} />
           <span>{connected ? "Connected" : "Connecting…"}</span>
-          <span className="port">:9225</span>
+          <span className="port">:{window.location.port || (window.location.protocol === "https:" ? "443" : "80")}</span>
         </div>
       </aside>
 
