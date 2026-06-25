@@ -27,6 +27,7 @@ coverage
 *.tsbuildinfo
 .output/
 zen-capability-matrix.json
+dist-server
 
 # OS files
 .DS_Store

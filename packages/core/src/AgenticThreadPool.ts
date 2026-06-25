@@ -1,5 +1,8 @@
 import { Worker } from "node:worker_threads";
 import type { ToolDefinition } from "./tools.js";
+import { createJiti } from "jiti";
+
+const jiti = createJiti(import.meta.url);
 
 /**
  * ToolRequest
@@ -110,6 +113,34 @@ export class AgenticThreadPool {
       };
     }
 
+    // In test environment, execute on main thread using jiti
+    if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
+      const start = Date.now();
+      try {
+        const mod = await jiti.import<any>(def.modulePath);
+        const fn = mod[def.exportName ?? "default"];
+        if (typeof fn !== "function") {
+          throw new Error(`Tool "${req.toolName}" export "${def.exportName ?? "default"}" is not a function`);
+        }
+        const data = await fn(req.args);
+        return {
+          id: req.id,
+          toolCallId: req.toolCallId,
+          success: true,
+          data,
+          durationMs: Date.now() - start,
+        };
+      } catch (err: any) {
+        return {
+          id: req.id,
+          toolCallId: req.toolCallId,
+          success: false,
+          error: err instanceof Error ? err.message : String(err),
+          durationMs: Date.now() - start,
+        };
+      }
+    }
+
     const worker = this.workers[this.nextWorkerIndex];
     this.nextWorkerIndex = (this.nextWorkerIndex + 1) % this.size;
 
@@ -145,20 +176,21 @@ export class AgenticThreadPool {
   }
 
   private generateWorkerScript(): string {
-    // The worker dynamically imports the tool's module by file URL and calls
-    // its exported implementation. Under tsx dev the .ts path resolves (tsx
-    // patches the worker loader); for built output the .js path resolves.
+    // The worker dynamically imports the tool's module using jiti.
+    // Supports version-agnostic factory function (v1 fallback vs v2 createJiti).
     return `
       const { parentPort } = require('node:worker_threads');
-      const { pathToFileURL } = require('node:url');
+      const jitiLib = require('jiti');
+      
+      const createJiti = jitiLib.createJiti || jitiLib;
+      const jiti = createJiti(process.cwd());
 
       parentPort.on('message', async (req) => {
         const start = Date.now();
         const { id, toolCallId, toolName, args, modulePath, exportName } = req;
 
         try {
-          const url = pathToFileURL(modulePath).href;
-          const mod = await import(url);
+          const mod = await jiti.import(modulePath);
           const fn = mod[exportName] ?? mod.default;
           if (typeof fn !== 'function') {
             throw new Error('Tool "' + toolName + '" export "' + exportName + '" is not a function');

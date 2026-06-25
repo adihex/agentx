@@ -7,6 +7,7 @@
 
 import { createClient } from "@libsql/client";
 import fs from "node:fs/promises";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 import os from "node:os";
 
@@ -39,6 +40,10 @@ function zettelDir(): string {
 const dbUrl = process.env.TURSO_DATABASE_URL || `file:${path.join(zettelDir(), "zettel.db")}`;
 const dbAuthToken = process.env.TURSO_AUTH_TOKEN;
 
+if (dbUrl.startsWith("file:")) {
+  mkdirSync(zettelDir(), { recursive: true });
+}
+
 export const client = createClient({
   url: dbUrl,
   authToken: dbAuthToken,
@@ -54,12 +59,19 @@ async function initDb(): Promise<void> {
   await client.execute(`
     CREATE TABLE IF NOT EXISTS notes (
       id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
       title TEXT NOT NULL,
       created TEXT NOT NULL,
       source TEXT NOT NULL,
       body TEXT NOT NULL
     )
   `);
+
+  try {
+    await client.execute("ALTER TABLE notes ADD COLUMN user_id TEXT DEFAULT 'default'");
+  } catch {
+    // Column already exists
+  }
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS note_tags (
@@ -79,18 +91,96 @@ async function initDb(): Promise<void> {
       FOREIGN KEY (to_id) REFERENCES notes(id) ON DELETE CASCADE
     )
   `);
+
+  // Better Auth tables
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS "user" (
+      "id" text not null primary key,
+      "name" text not null,
+      "email" text not null unique,
+      "emailVerified" integer not null,
+      "image" text,
+      "createdAt" date not null,
+      "updatedAt" date not null
+    )
+  `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS "session" (
+      "id" text not null primary key,
+      "expiresAt" date not null,
+      "token" text not null unique,
+      "createdAt" date not null,
+      "updatedAt" date not null,
+      "ipAddress" text,
+      "userAgent" text,
+      "userId" text not null references "user" ("id") on delete cascade
+    )
+  `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS "account" (
+      "id" text not null primary key,
+      "accountId" text not null,
+      "providerId" text not null,
+      "userId" text not null references "user" ("id") on delete cascade,
+      "accessToken" text,
+      "refreshToken" text,
+      "idToken" text,
+      "accessTokenExpiresAt" date,
+      "refreshTokenExpiresAt" date,
+      "scope" text,
+      "password" text,
+      "createdAt" date not null,
+      "updatedAt" date not null
+    )
+  `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS "verification" (
+      "id" text not null primary key,
+      "identifier" text not null,
+      "value" text not null,
+      "expiresAt" date not null,
+      "createdAt" date not null,
+      "updatedAt" date not null
+    )
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS "session_userId_idx" on "session" ("userId")
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS "account_userId_idx" on "account" ("userId")
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier")
+  `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS custom_tools (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      input_schema TEXT NOT NULL,
+      code TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(user_id, name),
+      FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE CASCADE
+    )
+  `);
 }
 
 // ── Markdown Parser for Migration ──────────────────────────────────────────────
 
 // ── Lazy DB Connection Initialization ──────────────────────────────────────────
 
-let dbInitialized: Promise<void> | null = null;
+export const dbInitialized = initDb();
 
 async function ensureDb(): Promise<void> {
-  if (!dbInitialized) {
-    dbInitialized = initDb();
-  }
   return dbInitialized;
 }
 
@@ -105,7 +195,7 @@ export interface WriteNoteInput {
 }
 
 /** Create a new atomic note in the database. */
-export async function writeNote(input: WriteNoteInput): Promise<Note> {
+export async function writeNote(userId: string, input: WriteNoteInput): Promise<Note> {
   await ensureDb();
 
   const now = new Date();
@@ -137,8 +227,8 @@ export async function writeNote(input: WriteNoteInput): Promise<Note> {
 
   // Write Note
   await client.execute({
-    sql: "INSERT INTO notes (id, title, created, source, body) VALUES (?, ?, ?, ?, ?)",
-    args: [id, title, created, source, input.content],
+    sql: "INSERT INTO notes (id, user_id, title, created, source, body) VALUES (?, ?, ?, ?, ?, ?)",
+    args: [id, userId, title, created, source, input.content],
   });
 
   // Write Tags
@@ -169,12 +259,12 @@ export async function writeNote(input: WriteNoteInput): Promise<Note> {
 }
 
 /** Read a single note by id from the database, or null if it does not exist. */
-export async function readNote(id: string): Promise<Note | null> {
+export async function readNote(userId: string, id: string): Promise<Note | null> {
   await ensureDb();
 
   const noteRes = await client.execute({
-    sql: "SELECT id, title, created, source, body FROM notes WHERE id = ?",
-    args: [id],
+    sql: "SELECT id, title, created, source, body FROM notes WHERE id = ? AND user_id = ?",
+    args: [id, userId],
   });
   if (noteRes.rows.length === 0) return null;
 
@@ -202,14 +292,23 @@ export async function readNote(id: string): Promise<Note | null> {
 }
 
 /** List every note, newest first (by id, which is timestamp-sortable). */
-export async function listNotes(): Promise<Note[]> {
+export async function listNotes(userId: string): Promise<Note[]> {
   await ensureDb();
 
-  const notesRes = await client.execute("SELECT id, title, created, source, body FROM notes ORDER BY id DESC");
+  const notesRes = await client.execute({
+    sql: "SELECT id, title, created, source, body FROM notes WHERE user_id = ? ORDER BY id DESC",
+    args: [userId],
+  });
   if (notesRes.rows.length === 0) return [];
 
-  const tagsRes = await client.execute("SELECT note_id, tag FROM note_tags");
-  const linksRes = await client.execute("SELECT from_id, to_id FROM note_links");
+  const tagsRes = await client.execute({
+    sql: "SELECT note_id, tag FROM note_tags WHERE note_id IN (SELECT id FROM notes WHERE user_id = ?)",
+    args: [userId],
+  });
+  const linksRes = await client.execute({
+    sql: "SELECT from_id, to_id FROM note_links WHERE from_id IN (SELECT id FROM notes WHERE user_id = ?)",
+    args: [userId],
+  });
 
   const tagsMap = new Map<string, string[]>();
   for (const row of tagsRes.rows) {
@@ -239,20 +338,21 @@ export async function listNotes(): Promise<Note[]> {
 }
 
 /** Case-insensitive search over title + tags + body using SQLite. */
-export async function searchNotes(query: string, limit = 10): Promise<NoteSearchResult[]> {
+export async function searchNotes(userId: string, query: string, limit = 10): Promise<NoteSearchResult[]> {
   await ensureDb();
 
   const q = `%${query.trim().toLowerCase()}%`;
   const res = await client.execute({
     sql: `
       SELECT id, title, body FROM notes
-      WHERE lower(title) LIKE ?
+      WHERE user_id = ?
+        AND (lower(title) LIKE ?
          OR lower(body) LIKE ?
-         OR id IN (SELECT note_id FROM note_tags WHERE lower(tag) LIKE ?)
+         OR id IN (SELECT note_id FROM note_tags WHERE lower(tag) LIKE ?))
       ORDER BY id DESC
       LIMIT ?
     `,
-    args: [q, q, q, limit],
+    args: [userId, q, q, q, limit],
   });
 
   return res.rows.map((row) => ({
@@ -275,13 +375,13 @@ function snippetFor(body: string, q: string): string {
  * Add a bidirectional link between two notes. Updates the `links` table
  * for both notes so backlinks resolve in either direction.
  */
-export async function addLink(fromId: string, toId: string): Promise<void> {
+export async function addLink(userId: string, fromId: string, toId: string): Promise<void> {
   if (fromId === toId) return;
   await ensureDb();
 
   const [fromExists, toExists] = await Promise.all([
-    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ?", args: [fromId] }),
-    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ?", args: [toId] }),
+    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?", args: [fromId, userId] }),
+    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?", args: [toId, userId] }),
   ]);
 
   if (fromExists.rows.length === 0 || toExists.rows.length === 0) {
@@ -295,11 +395,104 @@ export async function addLink(fromId: string, toId: string): Promise<void> {
 }
 
 /** Return every note id that links to the given note (bidirectional). */
-export async function backlinksOf(id: string): Promise<string[]> {
+export async function backlinksOf(userId: string, id: string): Promise<string[]> {
   await ensureDb();
   const res = await client.execute({
-    sql: "SELECT to_id FROM note_links WHERE from_id = ?",
-    args: [id],
+    sql: "SELECT to_id FROM note_links WHERE from_id = ? AND from_id IN (SELECT id FROM notes WHERE user_id = ?)",
+    args: [id, userId],
   });
   return res.rows.map((row) => row.to_id as string);
+}
+
+// ── Custom Tools Operations ───────────────────────────────────────────────────
+
+export interface CustomTool {
+  id: string;
+  name: string;
+  description: string;
+  inputSchema: string;
+  code: string;
+  createdAt: string;
+}
+
+export interface WriteCustomToolInput {
+  name: string;
+  description: string;
+  inputSchema: string;
+  code: string;
+}
+
+/** Create or update a custom tool. DB-only — no filesystem writes. */
+export async function writeCustomTool(userId: string, input: WriteCustomToolInput & { id?: string }): Promise<CustomTool> {
+  await ensureDb();
+  
+  const id = input.id ?? Math.random().toString(36).substring(2, 15);
+  const createdAt = new Date().toISOString();
+
+  await client.execute({
+    sql: `
+      INSERT OR REPLACE INTO custom_tools (id, user_id, name, description, input_schema, code, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `,
+    args: [id, userId, input.name, input.description, input.inputSchema, input.code, createdAt],
+  });
+
+  return {
+    id,
+    name: input.name,
+    description: input.description,
+    inputSchema: input.inputSchema,
+    code: input.code,
+    createdAt,
+  };
+}
+
+export async function listCustomTools(userId: string): Promise<CustomTool[]> {
+  await ensureDb();
+  const res = await client.execute({
+    sql: "SELECT id, name, description, input_schema, code, created_at FROM custom_tools WHERE user_id = ? ORDER BY created_at DESC",
+    args: [userId],
+  });
+  return res.rows.map((row) => ({
+    id: row.id as string,
+    name: row.name as string,
+    description: row.description as string,
+    inputSchema: row.input_schema as string,
+    code: row.code as string,
+    createdAt: row.created_at as string,
+  }));
+}
+
+/** Delete a custom tool. DB-only — no filesystem cleanup needed. */
+export async function deleteCustomTool(userId: string, id: string): Promise<void> {
+  await ensureDb();
+  await client.execute({
+    sql: "DELETE FROM custom_tools WHERE id = ? AND user_id = ?",
+    args: [id, userId],
+  });
+}
+
+/**
+ * Materialize a tool's TypeScript source to a temporary file just before
+ * jiti needs to import it. Returns the absolute path to the .ts file.
+ *
+ * The file is written to os.tmpdir() so it works on read-only app filesystems
+ * and is automatically cleaned up by the OS.
+ */
+export async function materializeToolFile(userId: string, toolName: string): Promise<string | null> {
+  await ensureDb();
+
+  const res = await client.execute({
+    sql: "SELECT code FROM custom_tools WHERE user_id = ? AND name = ?",
+    args: [userId, toolName],
+  });
+  if (res.rows.length === 0) return null;
+
+  const code = res.rows[0].code as string;
+  const dir = path.join(os.tmpdir(), "agentx-tools", userId);
+  await fs.mkdir(dir, { recursive: true });
+
+  const filePath = path.join(dir, `${toolName}.ts`);
+  await fs.writeFile(filePath, code, "utf-8");
+  return filePath;
 }
