@@ -48,11 +48,17 @@ export const client = createClient({
   url: dbUrl,
   authToken: dbAuthToken,
   timeout: 5000, // Wait up to 5s for locks to clear (resolves SQLITE_BUSY in concurrent tests/threads)
-});
+} as any);
 
 // ── Database Schema Initialization ─────────────────────────────────────────────
 
 async function initDb(): Promise<void> {
+  try {
+    await client.execute("PRAGMA busy_timeout = 5000");
+  } catch {
+    // Ignore if not supported (e.g., remote HTTP database)
+  }
+
   if (dbUrl.startsWith("file:")) {
     await fs.mkdir(zettelDir(), { recursive: true });
   }
