@@ -1,6 +1,7 @@
 import { streamText, stepCountIs, type ModelMessage, type ToolSet, type LanguageModel } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createVertex } from "@ai-sdk/google-vertex";
 import { classifyModel, type InferenceStepResult } from "./tools.js";
 
 /**
@@ -26,6 +27,7 @@ import { classifyModel, type InferenceStepResult } from "./tools.js";
 export class LLMOrchestrator {
   private openai: ReturnType<typeof createOpenAICompatible>;
   private anthropic: ReturnType<typeof createAnthropic>;
+  private vertex: ReturnType<typeof createVertex>;
   private defaultModel: string;
 
   constructor(
@@ -35,11 +37,15 @@ export class LLMOrchestrator {
       /** Separate base URL for the Anthropic Messages family (defaults to baseURL). */
       anthropicBaseURL?: string;
       model?: string;
+      googleProject?: string;
+      googleLocation?: string;
     } = {},
   ) {
     const apiKey = opts.apiKey || process.env.OPENAI_API_KEY || "";
     const baseURL = opts.baseURL || process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
     const anthropicBaseURL = opts.anthropicBaseURL || process.env.ANTHROPIC_BASE_URL || baseURL;
+    const googleProject = opts.googleProject || process.env.GOOGLE_VERTEX_PROJECT;
+    const googleLocation = opts.googleLocation || process.env.GOOGLE_VERTEX_LOCATION || "us-central1";
 
     // chat family — OpenAI-compatible, Bearer auth, /chat/completions.
     this.openai = createOpenAICompatible({
@@ -59,15 +65,25 @@ export class LLMOrchestrator {
       },
     });
 
+    // vertex family — Google Cloud Vertex AI API (Gemini models).
+    this.vertex = createVertex({
+      project: googleProject,
+      location: googleLocation,
+    });
+
     this.defaultModel = opts.model || process.env.AGENT_MODEL || "gpt-4o";
   }
 
   /**
    * Select the provider/model for a given model id based on its family.
-   * qwen* → Anthropic Messages; everything else → OpenAI Chat Completions.
+   * qwen* → Anthropic Messages; gemini* / google* → Vertex AI; everything else → OpenAI Chat Completions.
    */
   private route(modelId: string): LanguageModel {
-    return classifyModel(modelId) === "messages" ? this.anthropic(modelId) : this.openai(modelId);
+    const family = classifyModel(modelId);
+    if (family === "vertex") {
+      return this.vertex(modelId);
+    }
+    return family === "messages" ? this.anthropic(modelId) : this.openai(modelId);
   }
 
   /**

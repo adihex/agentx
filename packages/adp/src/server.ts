@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { EventEmitter } from "events";
+import type { Server } from "node:http";
 import {
   JsonRpcRequestSchema,
   type JsonRpcResponse,
@@ -22,11 +23,12 @@ export class AdpServer extends EventEmitter {
 
   /**
    * Create a new ADP server.
-   * @param port - The port to listen on.
+   * @param portOrOptions - The port to listen on or WebSocket server options.
    */
-  constructor(port: number) {
+  constructor(portOrOptions: number | { port?: number; server?: Server }) {
     super();
-    this.wss = new WebSocketServer({ port });
+    const options = typeof portOrOptions === "number" ? { port: portOrOptions } : portOrOptions;
+    this.wss = new WebSocketServer(options);
 
     this.wss.on("connection", (ws: WebSocket) => {
       console.log("[ADP] Client connected");
@@ -81,7 +83,13 @@ export class AdpServer extends EventEmitter {
       });
     });
 
-    console.log(`[ADP] Control-plane listening on ws://localhost:${port}`);
+    if (typeof portOrOptions === "number") {
+      console.log(`[ADP] Control-plane listening on ws://localhost:${portOrOptions}`);
+    } else if (portOrOptions.port) {
+      console.log(`[ADP] Control-plane listening on ws://localhost:${portOrOptions.port}`);
+    } else {
+      console.log("[ADP] Control-plane attached to existing HTTP server");
+    }
   }
 
   /**

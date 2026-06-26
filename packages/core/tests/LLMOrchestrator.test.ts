@@ -18,6 +18,10 @@ vi.mock("@ai-sdk/anthropic", () => ({
   createAnthropic: vi.fn(() => vi.fn(() => ({ modelId: "messages-model" }))),
 }));
 
+vi.mock("@ai-sdk/google-vertex", () => ({
+  createVertex: vi.fn(() => vi.fn(() => ({ modelId: "vertex-model" }))),
+}));
+
 describe("LLMOrchestrator", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -70,5 +74,29 @@ describe("LLMOrchestrator", () => {
 
     const orchestrator = new LLMOrchestrator();
     expect(orchestrator).toBeDefined();
+  });
+
+  it("should route to Vertex AI when gemini model is requested", async () => {
+    const orchestrator = new LLMOrchestrator({ apiKey: "test" });
+    
+    (streamText as any).mockReturnValue({
+      fullStream: (async function* () {})(),
+      response: Promise.resolve({ messages: [] }),
+      toolCalls: Promise.resolve([]),
+      text: Promise.resolve(""),
+    });
+
+    await orchestrator.runStep(
+      [{ role: "user", content: "hi" }],
+      {},
+      new AbortController().signal,
+      "gemini-2.5-flash"
+    );
+
+    expect(streamText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: expect.objectContaining({ modelId: "vertex-model" }),
+      })
+    );
   });
 });
