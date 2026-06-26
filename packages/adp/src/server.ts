@@ -28,11 +28,31 @@ export class AdpServer extends EventEmitter {
   constructor(portOrOptions: number | { port?: number; server?: Server }) {
     super();
     const options = typeof portOrOptions === "number" ? { port: portOrOptions } : portOrOptions;
-    this.wss = new WebSocketServer(options);
+    if (typeof portOrOptions === "object" && portOrOptions.server) {
+      const httpServer = portOrOptions.server;
+      this.wss = new WebSocketServer({ noServer: true });
+      httpServer.on("upgrade", (request, socket, head) => {
+        const pathname = request.url ? request.url.split("?")[0] : "";
+        if (pathname === "/adp") {
+          this.wss.handleUpgrade(request, socket, head, (ws) => {
+            this.wss.emit("connection", ws, request);
+          });
+        }
+      });
+    } else {
+      this.wss = new WebSocketServer(options);
+    }
+    this.wss.on("error", (err) => {
+      console.error("[ADP] Server error:", err);
+    });
 
     this.wss.on("connection", (ws: WebSocket) => {
       console.log("[ADP] Client connected");
       this.clients.add(ws);
+
+      ws.on("error", (err) => {
+        console.error("[ADP] Socket error:", err);
+      });
 
       ws.on("message", (raw) => {
         const message = typeof raw === "string" ? raw : (raw as Buffer).toString();

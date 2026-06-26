@@ -819,3 +819,299 @@ body {
   background-clip: padding-box;
   border: 3px solid transparent;
 }
+
+/* ---- Auth Portal (Calm, paper-honest, centered) ---- */
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--paper-rail);
+  padding: var(--s4);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 24rem;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-md);
+  padding: var(--s6);
+  box-shadow: var(--shadow-pop);
+}
+
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--paper);
+}
+
+.signout-btn {
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink-2);
+  font-family: inherit;
+  font-size: var(--t-xs);
+  padding: var(--s1) var(--s2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  margin-left: auto;
+  transition: all var(--dur) var(--ease);
+}
+
+.signout-btn:hover {
+  border-color: var(--clay-rule);
+  color: var(--clay);
+  background: var(--clay-tint);
+}
+
+/* ============================ TOOLS MANAGER ============================ */
+.tools-manager {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--s6) var(--s6) var(--s9);
+  animation: rise var(--dur) var(--ease);
+}
+
+.tools-header {
+  margin-bottom: var(--s6);
+}
+
+.tools-title {
+  font-family: var(--serif);
+  font-size: var(--t-title);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  margin: var(--s4) 0 var(--s3);
+  color: var(--ink);
+}
+
+.tools-subtitle {
+  font-size: var(--t-base);
+  color: var(--ink-2);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 46ch;
+}
+
+.tool-new-btn {
+  margin-bottom: var(--s5);
+}
+
+/* ---- Tool cards list ---- */
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.tool-card {
+  background: var(--paper-rail);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--s4);
+  transition: border-color var(--dur) var(--ease);
+}
+.tool-card:hover {
+  border-color: var(--rule-strong);
+}
+
+.tool-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  margin-bottom: var(--s2);
+}
+
+.tool-card-name {
+  font-family: var(--mono);
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tool-card-date {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.tool-card-desc {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  line-height: 1.45;
+  margin-bottom: var(--s3);
+}
+
+.tool-card-actions {
+  display: flex;
+  gap: var(--s2);
+}
+
+.tool-action-btn {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  padding: var(--s1) var(--s3);
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+}
+.tool-action-btn:hover {
+  border-color: var(--clay-rule);
+  color: var(--clay);
+}
+.tool-action-delete:hover {
+  border-color: oklch(0.62 0.19 26);
+  color: oklch(0.52 0.19 26);
+}
+
+/* ---- Tool form ---- */
+.tool-form {
+  animation: rise var(--dur) var(--ease);
+}
+
+.tool-form-heading {
+  font-family: var(--serif);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--s5);
+}
+
+.tool-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  margin-bottom: var(--s4);
+}
+
+.tool-hint {
+  font-weight: 400;
+  color: var(--ink-3);
+  opacity: 0.7;
+}
+
+.tool-input {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tool-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--s3) var(--s4);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  outline: none;
+  transition: border-color var(--dur) var(--ease);
+  tab-size: 2;
+}
+.tool-textarea:focus {
+  border-color: var(--clay);
+}
+
+/* ---- Monaco editor wrappers ---- */
+.tool-editor-wrap {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-bottom: var(--s4);
+  transition: border-color var(--dur) var(--ease);
+}
+.tool-editor-wrap:focus-within {
+  border-color: var(--clay);
+}
+.tool-editor-sm {
+  /* shorter, for JSON schema */
+}
+.tool-editor-lg {
+  /* taller, for TS code */
+}
+
+.tool-error {
+  color: oklch(0.52 0.19 26);
+  font-size: var(--t-sm);
+  margin: 0 0 var(--s3);
+}
+
+.tool-form-actions {
+  display: flex;
+  gap: var(--s3);
+  align-items: center;
+  margin-top: var(--s4);
+}
+
+.tool-cancel {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: 0 var(--s5);
+  height: 2.5rem;
+  font-family: var(--sans);
+  font-size: var(--t-base);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+}
+.tool-cancel:hover {
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.tool-empty {
+  padding: var(--s6) var(--s4);
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.tool-loading {
+  padding: var(--s4) 0;
+}
+
+/* ---- Rail tools tab button ---- */
+.rail-tools-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  width: calc(100% - var(--s5) * 2);
+  margin: 0 var(--s5) var(--s3);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--s2) var(--s3);
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+}
+.rail-tools-btn:hover {
+  border-color: var(--clay-rule);
+  color: var(--clay);
+}
+.rail-tools-btn.active {
+  background: var(--clay-tint);
+  border-color: var(--clay-rule);
+  color: var(--clay-strong);
+}

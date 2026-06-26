@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AdpClient } from "@agentx/agx-core";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { authClient } from "./auth-client";
+import { api } from "./api-client";
+import ToolsManager from "./ToolsManager";
 import "./App.css";
 
 interface Note {
@@ -26,11 +29,19 @@ interface ChatMessage {
   text: string;
 }
 
-const ADP_URL = "ws://localhost:9225";
+const isHttps = window.location.protocol === "https:";
+const ADP_URL = `${isHttps ? "wss:" : "ws:"}//${window.location.host}/adp`;
 
 const GREETING_ID = "1";
 
 export default function App() {
+  const { data: session, isPending } = authClient.useSession();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const [connected, setConnected] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -53,6 +64,27 @@ export default function App() {
   const [transcribing, setTranscribing] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordSecs, setRecordSecs] = useState(0);
+  const [showTools, setShowTools] = useState(false);
+
+  // Reset registration mode and clear user-specific data when user logs out
+  useEffect(() => {
+    if (!session) {
+      setIsRegistering(false);
+      setNotes([]);
+      setResults([]);
+      setQuery("");
+      setSelected(null);
+      setSelectedBacklinks([]);
+      setGraph({ nodes: [], edges: [] });
+      setMessages([
+        {
+          id: GREETING_ID,
+          role: "assistant",
+          text: "greeting",
+        },
+      ]);
+    }
+  }, [session]);
 
   const clientRef = useRef<AdpClient | null>(null);
   const threadEndRef = useRef<HTMLDivElement | null>(null);
@@ -62,35 +94,38 @@ export default function App() {
   const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchNotes = useCallback(async () => {
+    if (!session) return;
     try {
       const [notesRes, graphRes] = await Promise.all([
-        fetch("/api/notes"),
-        fetch("/api/graph"),
+        api.notes.$get(),
+        api.graph.$get(),
       ]);
       if (notesRes.ok) {
-        const data = (await notesRes.json()) as { notes: Note[] };
+        const data = await notesRes.json();
         setNotes(data.notes || []);
       }
       if (graphRes.ok) {
-        setGraph((await graphRes.json()) as typeof graph);
+        setGraph(await graphRes.json());
       }
     } catch (e) {
       console.error("Failed to fetch notes", e);
     } finally {
       setLoaded(true);
     }
-  }, []);
+  }, [session]);
 
   useEffect(() => {
+    if (!session) return;
     void fetchNotes();
     const interval = setInterval(() => {
       void fetchNotes();
     }, 2500);
     return () => clearInterval(interval);
-  }, [fetchNotes]);
+  }, [fetchNotes, session]);
 
   // Connect to the agent via ADP WebSocket.
   useEffect(() => {
+    if (!session) return;
     const client = new AdpClient(ADP_URL);
     clientRef.current = client;
 
@@ -148,11 +183,120 @@ export default function App() {
       offEvent();
       client.destroy();
     };
-  }, [fetchNotes]);
+  }, [fetchNotes, session]);
 
   useEffect(() => {
+    if (!session) return;
     threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, session]);
+
+  // Stop the mic + timer if the component unmounts mid-recording.
+  useEffect(() => {
+    return () => {
+      try {
+        mediaRecorderRef.current?.stop();
+      } catch {
+        /* already stopped */
+      }
+      recordStreamRef.current?.getTracks().forEach((t) => t.stop());
+      if (recordTimerRef.current) clearInterval(recordTimerRef.current);
+    };
+  }, []);
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    try {
+      if (isRegistering) {
+        await authClient.signUp.email({
+          email,
+          password,
+          name,
+          callbackURL: "/",
+        });
+      } else {
+        await authClient.signIn.email({
+          email,
+          password,
+          callbackURL: "/",
+        });
+      }
+    } catch (err: any) {
+      console.error("AUTH ERROR:", err);
+      setErrorMsg(err.message || "Authentication failed.");
+    }
+  };
+
+  if (isPending) {
+    return (
+      <div className="auth-loading">
+        <div className="skeleton" style={{ width: "120px", height: "20px" }} />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <div className="brand" style={{ marginBottom: "1.5rem" }}>
+            <span className="wordmark">zettel<b>kattan</b></span>
+          </div>
+          <h2 className="auth-title" style={{ fontFamily: "inherit", fontWeight: 400, fontSize: "1.2rem", marginBottom: "1.5rem" }}>
+            {isRegistering ? "Create your workspace" : "Sign in to your study"}
+          </h2>
+          
+          <form onSubmit={handleAuth} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+            {isRegistering && (
+              <input
+                className="search"
+                style={{ width: "100%", boxSizing: "border-box" }}
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            )}
+            <input
+              className="search"
+              style={{ width: "100%", boxSizing: "border-box" }}
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className="search"
+              style={{ width: "100%", boxSizing: "border-box" }}
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {errorMsg && <p className="auth-error" style={{ color: "#d93838", fontSize: "0.85rem", margin: "0.2rem 0" }}>{errorMsg}</p>}
+            <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "0.5rem" }}>
+              {isRegistering ? "Sign Up" : "Sign In"}
+            </button>
+          </form>
+
+          <p className="auth-switch" style={{ fontSize: "0.85rem", marginTop: "1.5rem", color: "#666" }}>
+            {isRegistering ? "Already have an account?" : "Need a workspace?"}{" "}
+            <button
+              type="button"
+              style={{ background: "none", border: "none", padding: 0, textDecoration: "underline", cursor: "pointer", color: "#111" }}
+              onClick={() => setIsRegistering(!isRegistering)}
+            >
+              {isRegistering ? "Sign in" : "Register"}
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSend = () => {
     if (!input.trim() || !clientRef.current || !connected) return;
@@ -196,10 +340,10 @@ export default function App() {
 
   const openNote = async (id: string) => {
     try {
-      const res = await fetch(`/api/note?id=${encodeURIComponent(id)}`);
+      const res = await api.note.$get({ query: { id } });
       if (res.ok) {
-        const data = (await res.json()) as { note: Note | null; backlinks: string[] };
-        setSelected(data.note);
+        const data = await res.json();
+        setSelected(data.note as any);
         setSelectedBacklinks(data.backlinks || []);
       }
     } catch (e) {
@@ -214,13 +358,12 @@ export default function App() {
       { id: Math.random().toString(), role: "system", text: `transcribing ${file.name}` },
     ]);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch("/api/transcribe", { method: "POST", body: form });
-      const data = (await res.json()) as {
-        note: Note | null;
-        transcript: { text: string; error?: string };
-      };
+      const res = await api.transcribe.$post({
+        form: {
+          file,
+        },
+      });
+      const data = await res.json() as any;
       if (data.note) {
         void fetchNotes();
         void openNote(data.note.id);
@@ -310,18 +453,7 @@ export default function App() {
     else void startRecording();
   };
 
-  // Stop the mic + timer if the component unmounts mid-recording.
-  useEffect(() => {
-    return () => {
-      try {
-        mediaRecorderRef.current?.stop();
-      } catch {
-        /* already stopped */
-      }
-      recordStreamRef.current?.getTracks().forEach((t) => t.stop());
-      if (recordTimerRef.current) clearInterval(recordTimerRef.current);
-    };
-  }, []);
+
 
   const titleFor = (id: string): string =>
     graph.nodes.find((n) => n.id === id)?.title ?? notes.find((n) => n.id === id)?.title ?? id;
@@ -417,17 +549,40 @@ export default function App() {
           )}
         </nav>
 
+        <button
+          className={`rail-tools-btn ${showTools ? "active" : ""}`}
+          onClick={() => {
+            setShowTools(!showTools);
+            if (!showTools) setSelected(null);
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+          Tools
+        </button>
+
         <div className="rail-foot">
           <span className={`status-dot ${connected ? "on" : ""}`} />
           <span>{connected ? "Connected" : "Connecting…"}</span>
-          <span className="port">:9225</span>
+          <span className="port">:{window.location.port || (window.location.protocol === "https:" ? "443" : "80")}</span>
+          <button
+            type="button"
+            className="signout-btn"
+            onClick={() => void authClient.signOut()}
+            title="Sign out of your Zettelkasten"
+          >
+            Sign Out
+          </button>
         </div>
       </aside>
 
       {/* ---------- Manuscript canvas ---------- */}
       <main className="canvas">
         <div className="canvas-scroll">
-          {selected ? (
+          {showTools ? (
+            <ToolsManager onClose={() => setShowTools(false)} />
+          ) : selected ? (
             <>
               <button className="canvas-back" onClick={() => setSelected(null)}>
                 ← all notes

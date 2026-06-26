@@ -4,6 +4,7 @@ import { LLMOrchestrator } from "./LLMOrchestrator.js";
 import { buildToolSet, type ToolDefinition } from "./tools.js";
 import type { ModelMessage, ToolSet } from "ai";
 import { EventEmitter } from "node:events";
+import type { Server } from "node:http";
 
 /**
  * Microtask
@@ -37,6 +38,8 @@ const MAX_STEPS_PER_RUN = 12;
 export interface AgentEventLoopOptions {
   /** Port for the ADP control plane (default: 9222) */
   adpPort?: number;
+  /** Existing HTTP server to attach the ADP control plane WebSocket server to */
+  adpServer?: any;
   /** LLM API Key */
   llmApiKey?: string;
   /** LLM Base URL */
@@ -104,8 +107,12 @@ export class AgentEventLoop extends EventEmitter {
   constructor(opts: AgentEventLoopOptions = {}) {
     super();
     this.autoTick = opts.autoTick ?? false;
-    const adpPort = opts.adpPort ?? 9222;
-    this.adp = new AdpServer(adpPort);
+    if (opts.adpServer) {
+      this.adp = new AdpServer({ server: opts.adpServer });
+    } else {
+      const adpPort = opts.adpPort ?? 9222;
+      this.adp = new AdpServer(adpPort);
+    }
     this.toolDefs = opts.tools ?? {};
     this.toolSet = buildToolSet(this.toolDefs);
     this.threadPool = new AgenticThreadPool(opts.threadPoolSize ?? 4, this.toolDefs);

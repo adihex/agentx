@@ -25,6 +25,7 @@
     "@ai-sdk/google-vertex": "catalog:",
     "@ai-sdk/openai-compatible": "catalog:",
     "ai": "catalog:",
+    "jiti": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -40,6 +40,7 @@ RUN pnpm run build
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 3000
 ENV PORT=3000
 USER node
@@ -58,6 +59,7 @@ RUN apt-get update && apt-get install -y \
     && pip3 install yt-dlp --break-system-packages \
     && rm -rf /var/lib/apt/lists/*
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 9222
 USER node
 CMD ["pnpm", "--filter", "@agentx/music-scanner-service", "start"]
@@ -65,6 +67,7 @@ CMD ["pnpm", "--filter", "@agentx/music-scanner-service", "start"]
 # ─── Demo Agent (ADP :9222) ─────────────────────────────────────────────────
 FROM base AS demo
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 9222
 USER node
 CMD ["pnpm", "--filter", "@agentx/demo", "start"]
@@ -72,6 +75,7 @@ CMD ["pnpm", "--filter", "@agentx/demo", "start"]
 # ─── AGX Web Dashboard (Vite — :5173) ───────────────────────────────────────
 FROM base AS agx-web
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 5173
 USER node
 CMD ["pnpm", "--filter", "@agentx/agx-web", "preview"]
@@ -79,12 +83,14 @@ CMD ["pnpm", "--filter", "@agentx/agx-web", "preview"]
 # ─── Orchestrator Demo ──────────────────────────────────────────────────────
 FROM base AS orchestrator-demo
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 USER node
 CMD ["pnpm", "--filter", "@agentx/orchestrator-demo", "start"]
 
-# ─── Daily Planner (Agent + Vite — ADP :9224, Web :5173) ────────────────────
+# ─── Daily Planner (Agent + Vite — ADP :9244, Web :5173) ────────────────────
 FROM base AS daily-planner
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 5173 9224
 USER node
 CMD ["pnpm", "--filter", "@agentx/daily-planner", "start"]
@@ -92,6 +98,7 @@ CMD ["pnpm", "--filter", "@agentx/daily-planner", "start"]
 # ─── Zettel (Agent + Vite) ──────────────────────────────────────────────────
 FROM base AS zettel
 COPY --chown=node:node --from=builder /app ./
+ENV NODE_ENV=production
 EXPOSE 5174 9225
 USER node
 CMD ["pnpm", "--filter", "@agentx/zettel", "start"]

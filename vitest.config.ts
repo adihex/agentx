@@ -26,6 +26,7 @@ export default defineConfig({
         "packages/adp/src/**/*.ts",
         "packages/core/src/**/*.ts",
         "packages/orchestrator/src/**/*.ts",
+        "apps/zettel/src/**/*.ts",
       ],
       exclude: ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**", "**/dist/**"],
     },
