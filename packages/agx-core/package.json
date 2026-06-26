@@ -9,7 +9,6 @@
     "dev": "tsc --noEmit --watch",
     "start": "echo 'Library package, no start command needed'",
     "docs": "typedoc",
-    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "devDependencies": {

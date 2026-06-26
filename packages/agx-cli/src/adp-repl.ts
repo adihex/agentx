@@ -70,10 +70,7 @@ export function handleReplInput(
 /**
  * Handle ADP connection status changes.
  */
-export function handleConnectionStatus(
-  connected: boolean,
-  rl: readline.Interface,
-) {
+export function handleConnectionStatus(connected: boolean, rl: readline.Interface) {
   if (connected) {
     console.log(`\n${REPL_COLORS.green}Connected to AgentX Runtime.${REPL_COLORS.reset}`);
     logToDashboard("REPL Connected to ADP Server");

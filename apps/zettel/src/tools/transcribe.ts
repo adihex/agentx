@@ -49,10 +49,7 @@ function binaryAvailable(bin: string): boolean {
   }
 }
 
-async function transcribeWithGroq(
-  audioPath: string,
-  apiKey: string,
-): Promise<TranscribeResult> {
+async function transcribeWithGroq(audioPath: string, apiKey: string): Promise<TranscribeResult> {
   const { experimental_transcribe: transcribe } = await import("ai");
   const { createGroq } = await import("@ai-sdk/groq");
   const groq = createGroq({ apiKey });

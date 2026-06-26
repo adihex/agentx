@@ -10,7 +10,6 @@
     "start": "tsx src/index.ts",
     "dev": "tsx src/index.ts",
     "start:repl": "tsx src/adp-repl.ts",
-    "build": "tsdown src/index.ts --format esm --dts",
     "test": "echo 'No tests yet'"
   },
   "dependencies": {

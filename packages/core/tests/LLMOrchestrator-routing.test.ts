@@ -121,11 +121,7 @@ describe("LLMOrchestrator routing", () => {
     });
 
     // Call without providing model arg
-    await orchestrator.runStep(
-      [{ role: "user", content: "hi" }],
-      {},
-      new AbortController().signal,
-    );
+    await orchestrator.runStep([{ role: "user", content: "hi" }], {}, new AbortController().signal);
 
     expect(streamText).toHaveBeenCalledWith(
       expect.objectContaining({

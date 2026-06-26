@@ -196,7 +196,11 @@ describe("AgentEventLoop", () => {
           ],
         };
       }
-      return { text: "done", toolCalls: [], responseMessages: [{ role: "assistant", content: "done" }] };
+      return {
+        text: "done",
+        toolCalls: [],
+        responseMessages: [{ role: "assistant", content: "done" }],
+      };
     });
 
     // Staggered completions: toolA finishes well before toolB, so a broken

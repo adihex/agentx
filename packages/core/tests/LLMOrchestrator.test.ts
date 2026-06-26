@@ -78,7 +78,7 @@ describe("LLMOrchestrator", () => {
 
   it("should route to Vertex AI when gemini model is requested", async () => {
     const orchestrator = new LLMOrchestrator({ apiKey: "test" });
-    
+
     (streamText as any).mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
@@ -90,13 +90,13 @@ describe("LLMOrchestrator", () => {
       [{ role: "user", content: "hi" }],
       {},
       new AbortController().signal,
-      "gemini-2.5-flash"
+      "gemini-2.5-flash",
     );
 
     expect(streamText).toHaveBeenCalledWith(
       expect.objectContaining({
         model: expect.objectContaining({ modelId: "vertex-model" }),
-      })
+      }),
     );
   });
 });

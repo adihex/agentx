@@ -13,8 +13,14 @@ describe("ADP Client-Server Integration", () => {
   let client: AdpClient | null = null;
 
   afterEach(async () => {
-    if (client) { client.close(); client = null; }
-    if (server) { await server.close(); server = null; }
+    if (client) {
+      client.close();
+      client = null;
+    }
+    if (server) {
+      await server.close();
+      server = null;
+    }
   });
 
   it("should handle complete request-response cycle", async () => {
@@ -54,10 +60,10 @@ describe("ADP Client-Server Integration", () => {
   it("should handle multiple concurrent clients", async () => {
     port++;
     server = new AdpServer(port);
-    
+
     const clientA = new AdpClient(`ws://localhost:${port}`);
     const clientB = new AdpClient(`ws://localhost:${port}`);
-    
+
     await clientA.connect();
     await clientB.connect();
 

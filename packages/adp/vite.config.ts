@@ -1,16 +1,13 @@
 import { defineConfig } from "vite-plus";
-import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
   run: {
     tasks: {
       build: {
-        command: "tsc -b && vite build",
+        command: "tsdown src/index.ts --format cjs,esm --dts",
         output: ["dist/**"],
         input: [{ auto: true }, "!dist/**", "!node_modules/**"],
-        dependsOn: ["@agentx/agx-core#build"],
       },
     },
   },
-} as any);
+});

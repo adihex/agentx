@@ -120,7 +120,9 @@ export class AgenticThreadPool {
         const mod = await jiti.import<any>(def.modulePath);
         const fn = mod[def.exportName ?? "default"];
         if (typeof fn !== "function") {
-          throw new Error(`Tool "${req.toolName}" export "${def.exportName ?? "default"}" is not a function`);
+          throw new Error(
+            `Tool "${req.toolName}" export "${def.exportName ?? "default"}" is not a function`,
+          );
         }
         const data = await fn(req.args);
         return {

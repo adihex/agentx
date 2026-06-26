@@ -49,8 +49,14 @@ describe("AgentEventLoop + ADP Integration", () => {
   let client: AdpClient | null = null;
 
   afterEach(async () => {
-    if (client) { client.close(); client = null; }
-    if (loop) { await loop.shutdown(); loop = null; }
+    if (client) {
+      client.close();
+      client = null;
+    }
+    if (loop) {
+      await loop.shutdown();
+      loop = null;
+    }
   });
 
   it("should receive ADP commands when connected", async () => {

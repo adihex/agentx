@@ -10,9 +10,5 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext"
   },
-  "include": [
-    "src/index.ts",
-    "src/notes/**/*.ts",
-    "src/tools/**/*.ts"
-  ]
+  "include": ["src/index.ts", "src/notes/**/*.ts", "src/tools/**/*.ts"]
 }

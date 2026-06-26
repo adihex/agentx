@@ -1,17 +1,17 @@
 steps:
   # 1. Create and select a Buildx builder that supports remote registry caching
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['buildx', 'create', '--name', 'mybuilder', '--use']
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["buildx", "create", "--name", "mybuilder", "--use"]
 
   # 2. Build and push the Zettel target with remote cache
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
-      - 'buildx'
-      - 'build'
-      - '--cache-from=type=registry,ref=asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:cache'
-      - '--cache-to=type=registry,ref=asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:cache,mode=max'
-      - '--target=zettel'
-      - '-t'
-      - 'asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:latest'
-      - '--push'
-      - '.'
+      - "buildx"
+      - "build"
+      - "--cache-from=type=registry,ref=asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:cache"
+      - "--cache-to=type=registry,ref=asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:cache,mode=max"
+      - "--target=zettel"
+      - "-t"
+      - "asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:latest"
+      - "--push"
+      - "."

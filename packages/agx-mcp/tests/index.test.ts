@@ -23,7 +23,10 @@ vi.mock("@modelcontextprotocol/sdk/types.js", () => ({
   ListToolsRequestSchema: Symbol("ListToolsRequest"),
   ErrorCode: { MethodNotFound: -32601, InvalidParams: -32602 },
   McpError: class McpError extends Error {
-    constructor(public code: number, message: string) {
+    constructor(
+      public code: number,
+      message: string,
+    ) {
       super(message);
       this.name = "McpError";
     }
@@ -40,11 +43,11 @@ vi.mock("@agentx/orchestrator", () => ({
 describe("AgxMcpServer", () => {
   it("can be imported and creates server instance", async () => {
     const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
-    
+
     // Import the module — it creates a server instance
     const mod = await import("../src/index");
     expect(mod).toBeDefined();
-    
+
     // The Server constructor should have been called
     expect(Server).toHaveBeenCalled();
   });

@@ -121,7 +121,10 @@ describe("Orchestrator Integration — Full Workflow", () => {
 
     // Should have scheduled retry
     const retryAssignment = events.find(
-      (e) => e.type === "plan.step.assigned" && e.stepId === "step-1" && (e as any).executorId === "auto-retry",
+      (e) =>
+        e.type === "plan.step.assigned" &&
+        e.stepId === "step-1" &&
+        (e as any).executorId === "auto-retry",
     );
     expect(retryAssignment).toBeDefined();
 
@@ -194,8 +197,22 @@ describe("Orchestrator Integration — Full Workflow", () => {
       goal: "Cyclic",
       createdAt: new Date().toISOString(),
       steps: [
-        { id: "A", description: "A", dependencies: ["B"], acceptanceCriteria: [], assignedExecutorRole: "x", maxRetries: 1 },
-        { id: "B", description: "B", dependencies: ["A"], acceptanceCriteria: [], assignedExecutorRole: "x", maxRetries: 1 },
+        {
+          id: "A",
+          description: "A",
+          dependencies: ["B"],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "x",
+          maxRetries: 1,
+        },
+        {
+          id: "B",
+          description: "B",
+          dependencies: ["A"],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "x",
+          maxRetries: 1,
+        },
       ],
       milestones: [],
       successCriteria: [],

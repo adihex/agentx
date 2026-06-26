@@ -15,7 +15,10 @@ test.describe("Zettel Production E2E (cross-origin)", () => {
         if (postData) console.log(`  Body: ${postData}`);
         if (res.status() >= 400) {
           failures.push({ url: res.url(), status: res.status(), method: res.request().method() });
-          res.text().then((body) => console.log(`  Response: ${body}`)).catch(() => {});
+          res
+            .text()
+            .then((body) => console.log(`  Response: ${body}`))
+            .catch(() => {});
         }
       }
     });
@@ -25,7 +28,9 @@ test.describe("Zettel Production E2E (cross-origin)", () => {
     page.on("pageerror", (err) => console.log("PAGE ERROR:", err.message));
 
     // Go to the GitHub Pages production URL with cache bust
-    await page.goto("https://adihex.github.io/zettel/?v=" + Date.now(), { waitUntil: "networkidle" });
+    await page.goto("https://adihex.github.io/zettel/?v=" + Date.now(), {
+      waitUntil: "networkidle",
+    });
 
     // Should see the auth form
     await expect(page.getByText("Sign in to your study")).toBeVisible({ timeout: 10000 });
@@ -38,7 +43,7 @@ test.describe("Zettel Production E2E (cross-origin)", () => {
     await page.getByPlaceholder("Name").fill("Prod Test");
     await page.getByPlaceholder("Email address").fill(email);
     await page.getByPlaceholder("Password").fill(password);
-    
+
     // Click Sign Up
     await page.getByRole("button", { name: "Sign Up" }).click();
 

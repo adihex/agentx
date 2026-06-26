@@ -12,7 +12,6 @@
     }
   },
   "scripts": {
-    "build": "tsc",
     "docs": "typedoc",
     "dev": "tsc --watch",
     "start": "echo 'Library package, no start command needed'",

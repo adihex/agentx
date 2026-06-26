@@ -27,7 +27,9 @@ vi.mock("../src/LLMOrchestrator", () => ({
 vi.mock("../src/AgenticThreadPool", () => ({
   AgenticThreadPool: vi.fn().mockImplementation(function () {
     return {
-      execute: vi.fn().mockResolvedValue({ id: "1", toolCallId: "tc", success: true, data: {}, durationMs: 1 }),
+      execute: vi
+        .fn()
+        .mockResolvedValue({ id: "1", toolCallId: "tc", success: true, data: {}, durationMs: 1 }),
       terminateAll: vi.fn().mockResolvedValue(undefined),
     };
   }),
@@ -43,8 +45,14 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
   let client: AdpClient | null = null;
 
   afterEach(async () => {
-    if (client) { client.close(); client = null; }
-    if (loop) { await loop.shutdown(); loop = null; }
+    if (client) {
+      client.close();
+      client = null;
+    }
+    if (loop) {
+      await loop.shutdown();
+      loop = null;
+    }
   });
 
   it("E2E: Connect → Inspect → Run → Halt cycle", async () => {

@@ -9,24 +9,37 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { WebSocketServer } from "ws";
 import { auth } from "./notes/auth.js";
-import {
-  createNoteTool,
-  linkNotesTool,
-  searchNotesTool,
-  getNoteTool,
-} from "./tools/notes.js";
+import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool } from "./tools/notes.js";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
-import { listNotes, readNote, backlinksOf, writeNote, listCustomTools, writeCustomTool, deleteCustomTool } from "./notes/store.js";
+import {
+  listNotes,
+  readNote,
+  backlinksOf,
+  writeNote,
+  listCustomTools,
+  writeCustomTool,
+  deleteCustomTool,
+} from "./notes/store.js";
 
 dotenv.config();
 console.log("[zettel] Startup - BETTER_AUTH_URL:", process.env.BETTER_AUTH_URL);
 
 if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
-  console.log("[zettel] 🛠️  NODE_ENV=test or MOCK_LLM=true detected. Injecting LLMOrchestrator prototype stub...");
-  LLMOrchestrator.prototype.runStep = async function (messages, tools, abortSignal, model, onTextDelta) {
-    const lastUserMsg = String([...messages].reverse().find(m => m.role === "user")?.content ?? "");
-    const hasToolResult = messages.some(m => m.role === "tool");
-    
+  console.log(
+    "[zettel] 🛠️  NODE_ENV=test or MOCK_LLM=true detected. Injecting LLMOrchestrator prototype stub...",
+  );
+  LLMOrchestrator.prototype.runStep = async function (
+    messages,
+    tools,
+    abortSignal,
+    model,
+    onTextDelta,
+  ) {
+    const lastUserMsg = String(
+      [...messages].reverse().find((m) => m.role === "user")?.content ?? "",
+    );
+    const hasToolResult = messages.some((m) => m.role === "tool");
+
     if (hasToolResult) {
       const text = "I have successfully created the note for you.";
       onTextDelta?.(text);
@@ -37,15 +50,15 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
           {
             role: "assistant",
             content: text,
-            toolCalls: []
-          }
-        ]
+            toolCalls: [],
+          },
+        ],
       };
     }
 
     let text = "I am a helpful assistant.";
     let toolCalls: any[] = [];
-    
+
     if (lastUserMsg.includes("apples")) {
       toolCalls.push({
         toolCallId: "tc-apples",
@@ -53,8 +66,8 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
         input: {
           content: "Apples are delicious fruits.",
           title: "About Apples",
-          tags: ["apples", "fruit"]
-        }
+          tags: ["apples", "fruit"],
+        },
       });
       text = "I have created a note about apples for you.";
     } else if (lastUserMsg.includes("oranges")) {
@@ -64,14 +77,14 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
         input: {
           content: "Oranges are citrus fruits.",
           title: "About Oranges",
-          tags: ["oranges", "fruit"]
-        }
+          tags: ["oranges", "fruit"],
+        },
       });
       text = "I have created a note about oranges for you.";
     }
-    
+
     onTextDelta?.(text);
-    
+
     return {
       text,
       toolCalls,
@@ -79,13 +92,13 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
         {
           role: "assistant",
           content: text,
-          toolCalls: toolCalls.map(tc => ({
+          toolCalls: toolCalls.map((tc) => ({
             id: tc.toolCallId,
             type: "function",
-            function: { name: tc.toolName, arguments: JSON.stringify(tc.input) }
-          }))
-        }
-      ]
+            function: { name: tc.toolName, arguments: JSON.stringify(tc.input) },
+          })),
+        },
+      ],
     };
   };
 }
@@ -186,7 +199,7 @@ const routes = api
 
       const arrayBuffer = await file.arrayBuffer();
       const data = Buffer.from(arrayBuffer);
-      
+
       const tmpPath = path.join(
         os.tmpdir(),
         `zettel-audio-${Date.now()}-${path.basename(file.name)}`,
@@ -222,7 +235,10 @@ const routes = api
       const body = await c.req.json();
       const { name, description, inputSchema, code, id } = body;
       if (!name || !description || !inputSchema || !code) {
-        return c.json({ error: "Missing required fields: name, description, inputSchema, code" }, 400);
+        return c.json(
+          { error: "Missing required fields: name, description, inputSchema, code" },
+          400,
+        );
       }
       const tool = await writeCustomTool(user.id, { name, description, inputSchema, code, id });
       return c.json({ tool });
@@ -295,7 +311,9 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
     });
 
     // Intercept/override the thread pool execute method to inject the userId into req.args
-    const originalExecute = (userAgent as any).threadPool.execute.bind((userAgent as any).threadPool);
+    const originalExecute = (userAgent as any).threadPool.execute.bind(
+      (userAgent as any).threadPool,
+    );
     (userAgent as any).threadPool.execute = async (req: any) => {
       req.args = { ...req.args, userId };
       return originalExecute(req);
@@ -330,7 +348,10 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         try {
           await currentAgent.run(prompt);
         } catch (err) {
-          console.error(`[zettel] agent.run failed for user ${userId}:`, err instanceof Error ? err.message : err);
+          console.error(
+            `[zettel] agent.run failed for user ${userId}:`,
+            err instanceof Error ? err.message : err,
+          );
         }
       }
     })();

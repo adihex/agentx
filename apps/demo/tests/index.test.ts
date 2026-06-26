@@ -18,12 +18,7 @@ vi.mock("@agentx/core", () => {
   return { AgentEventLoop: MockAgentEventLoop };
 });
 
-import {
-  DEMO_SYSTEM_PROMPT,
-  DEMO_ADP_PORT,
-  DEMO_BANNER,
-  createDemoAgent,
-} from "../src/index";
+import { DEMO_SYSTEM_PROMPT, DEMO_ADP_PORT, DEMO_BANNER, createDemoAgent } from "../src/index";
 
 describe("demo/index.ts — extracted functions", () => {
   it("DEMO_SYSTEM_PROMPT is a non-empty string", () => {

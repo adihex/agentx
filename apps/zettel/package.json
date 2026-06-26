@@ -8,7 +8,6 @@
     "dev:server": "tsx watch src/index.ts",
     "dev:client": "vite",
     "start": "node dist-server/index.js",
-    "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

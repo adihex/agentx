@@ -206,7 +206,7 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
 
   let id = base;
   let suffix = 0;
-  
+
   // Find a collision-free ID in the DB
   while (true) {
     const existsRes = await client.execute({
@@ -242,8 +242,14 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
   // Write Links (Bidirectional)
   for (const target of links) {
     await client.batch([
-      { sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)", args: [id, target] },
-      { sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)", args: [target, id] },
+      {
+        sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+        args: [id, target],
+      },
+      {
+        sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+        args: [target, id],
+      },
     ]);
   }
 
@@ -338,7 +344,11 @@ export async function listNotes(userId: string): Promise<Note[]> {
 }
 
 /** Case-insensitive search over title + tags + body using SQLite. */
-export async function searchNotes(userId: string, query: string, limit = 10): Promise<NoteSearchResult[]> {
+export async function searchNotes(
+  userId: string,
+  query: string,
+  limit = 10,
+): Promise<NoteSearchResult[]> {
   await ensureDb();
 
   const q = `%${query.trim().toLowerCase()}%`;
@@ -380,8 +390,14 @@ export async function addLink(userId: string, fromId: string, toId: string): Pro
   await ensureDb();
 
   const [fromExists, toExists] = await Promise.all([
-    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?", args: [fromId, userId] }),
-    client.execute({ sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?", args: [toId, userId] }),
+    client.execute({
+      sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?",
+      args: [fromId, userId],
+    }),
+    client.execute({
+      sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?",
+      args: [toId, userId],
+    }),
   ]);
 
   if (fromExists.rows.length === 0 || toExists.rows.length === 0) {
@@ -389,8 +405,14 @@ export async function addLink(userId: string, fromId: string, toId: string): Pro
   }
 
   await client.batch([
-    { sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)", args: [fromId, toId] },
-    { sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)", args: [toId, fromId] },
+    {
+      sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+      args: [fromId, toId],
+    },
+    {
+      sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+      args: [toId, fromId],
+    },
   ]);
 }
 
@@ -423,9 +445,12 @@ export interface WriteCustomToolInput {
 }
 
 /** Create or update a custom tool. DB-only — no filesystem writes. */
-export async function writeCustomTool(userId: string, input: WriteCustomToolInput & { id?: string }): Promise<CustomTool> {
+export async function writeCustomTool(
+  userId: string,
+  input: WriteCustomToolInput & { id?: string },
+): Promise<CustomTool> {
   await ensureDb();
-  
+
   const id = input.id ?? Math.random().toString(36).substring(2, 15);
   const createdAt = new Date().toISOString();
 
@@ -479,7 +504,10 @@ export async function deleteCustomTool(userId: string, id: string): Promise<void
  * The file is written to os.tmpdir() so it works on read-only app filesystems
  * and is automatically cleaned up by the OS.
  */
-export async function materializeToolFile(userId: string, toolName: string): Promise<string | null> {
+export async function materializeToolFile(
+  userId: string,
+  toolName: string,
+): Promise<string | null> {
   await ensureDb();
 
   const res = await client.execute({

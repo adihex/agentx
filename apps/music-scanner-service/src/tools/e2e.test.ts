@@ -41,7 +41,10 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
       .mockReturnValueOnce("") // gcloud upload
       .mockReturnValueOnce(""); // rm cleanup
 
-    const downloadResult = await downloadAndUpload({ id: bestId, bucket: "guitar-extractor-input" });
+    const downloadResult = await downloadAndUpload({
+      id: bestId,
+      bucket: "guitar-extractor-input",
+    });
     expect(downloadResult.success).toBe(true);
     expect(downloadResult.gcsPath).toBe(`gs://guitar-extractor-input/${bestId}.mp3`);
     expect(downloadResult.fileName).toBe(`${bestId}.mp3`);

@@ -129,10 +129,7 @@ export default function App() {
   const fetchNotes = useCallback(async () => {
     if (!session) return;
     try {
-      const [notesRes, graphRes] = await Promise.all([
-        api.notes.$get(),
-        api.graph.$get(),
-      ]);
+      const [notesRes, graphRes] = await Promise.all([api.notes.$get(), api.graph.$get()]);
       if (notesRes.ok) {
         const data = await notesRes.json();
         setNotes(data.notes || []);
@@ -370,11 +367,7 @@ export default function App() {
               </p>
             )}
 
-            <button
-              type="submit"
-              className="btn-primary auth-submit"
-              disabled={isSubmitting}
-            >
+            <button type="submit" className="btn-primary auth-submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <span className="auth-spinner" aria-hidden="true" />
@@ -435,9 +428,7 @@ export default function App() {
       return;
     }
     const matched = notes
-      .filter((n) =>
-        `${n.title}\n${n.tags.join(" ")}\n${n.body}`.toLowerCase().includes(term),
-      )
+      .filter((n) => `${n.title}\n${n.tags.join(" ")}\n${n.body}`.toLowerCase().includes(term))
       .slice(0, 30)
       .map((n) => ({
         id: n.id,
@@ -472,7 +463,7 @@ export default function App() {
           file,
         },
       });
-      const data = await res.json() as any;
+      const data = (await res.json()) as any;
       if (data.note) {
         void fetchNotes();
         void openNote(data.note.id);
@@ -511,9 +502,7 @@ export default function App() {
         candidates.find(
           (c) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(c),
         ) ?? "";
-      const rec = mimeType
-        ? new MediaRecorder(stream, { mimeType })
-        : new MediaRecorder(stream);
+      const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       recordChunksRef.current = [];
       rec.ondataavailable = (e) => {
         if (e.data.size > 0) recordChunksRef.current.push(e.data);
@@ -561,8 +550,6 @@ export default function App() {
     if (recording) stopRecording();
     else void startRecording();
   };
-
-
 
   const titleFor = (id: string): string =>
     graph.nodes.find((n) => n.id === id)?.title ?? notes.find((n) => n.id === id)?.title ?? id;
@@ -622,7 +609,9 @@ export default function App() {
             </>
           ) : listForRail.length === 0 ? (
             <div className="index-empty">
-              {query.trim() ? "No notes match that." : "No notes yet.\nCapture your first thought below."}
+              {query.trim()
+                ? "No notes match that."
+                : "No notes yet.\nCapture your first thought below."}
             </div>
           ) : (
             listForRail.map((r) => (
@@ -647,7 +636,17 @@ export default function App() {
             if (!showTools) setSelected(null);
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
           Tools
@@ -656,7 +655,9 @@ export default function App() {
         <div className="rail-foot">
           <span className={`status-dot ${connected ? "on" : ""}`} />
           <span>{connected ? "Connected" : "Connecting…"}</span>
-          <span className="port">:{window.location.port || (window.location.protocol === "https:" ? "443" : "80")}</span>
+          <span className="port">
+            :{window.location.port || (window.location.protocol === "https:" ? "443" : "80")}
+          </span>
           <button
             type="button"
             className="signout-btn"
@@ -782,7 +783,17 @@ export default function App() {
                 title="Upload an audio file"
                 aria-label="Upload an audio file"
               >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
                   <path d="M12 15V3" />
                   <path d="m7 8 5-5 5 5" />
                   <path d="M5 21h14" />
@@ -811,14 +822,28 @@ export default function App() {
                     <rect x="5" y="5" width="14" height="14" rx="2.5" fill="currentColor" />
                   </svg>
                 ) : (
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
                     <rect x="9" y="2" width="6" height="12" rx="3" />
                     <path d="M5 10a7 7 0 0 0 14 0" />
                     <path d="M12 17v4" />
                   </svg>
                 )}
               </button>
-              <button className="btn-primary" onClick={handleSend} disabled={!connected || !input.trim()}>
+              <button
+                className="btn-primary"
+                onClick={handleSend}
+                disabled={!connected || !input.trim()}
+              >
                 Capture
               </button>
             </div>

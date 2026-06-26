@@ -93,7 +93,9 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("should handle Error with 'aborted' in message", async () => {
     loop = new AgentEventLoop({ adpPort: 9903 });
-    (loop as any).llm.runStep = vi.fn().mockRejectedValue(new Error("The operation was aborted by the user"));
+    (loop as any).llm.runStep = vi
+      .fn()
+      .mockRejectedValue(new Error("The operation was aborted by the user"));
 
     const result = await loop.run("trigger aborted message");
     expect(result).toBe("[inference halted by operator]");
@@ -134,7 +136,9 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("Toolchain.intercept with missing toolName returns error", async () => {
     loop = new AgentEventLoop({ adpPort: 9908 });
     const adp = loop.adp as any;
-    const interceptHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Toolchain.intercept")[1];
+    const interceptHandler = adp.handle.mock.calls.find(
+      (c: any) => c[0] === "Toolchain.intercept",
+    )[1];
 
     const cb = vi.fn();
     interceptHandler({ args: {} }, cb);
@@ -195,9 +199,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
     const cb = vi.fn();
     handler({ expression: "hello" }, cb);
-    expect(cb).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "injected" }),
-    );
+    expect(cb).toHaveBeenCalledWith(expect.objectContaining({ status: "injected" }));
   });
 
   it("registerAdpHandler delegates to adp.on", async () => {
@@ -294,8 +296,10 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("should handle tool dispatch with emit events", async () => {
     loop = new AgentEventLoop({ adpPort: 9920 });
     const events: string[] = [];
-    loop.on("tool.dispatch", (evt: any) => { events.push("dispatch"); });
-    
+    loop.on("tool.dispatch", (evt: any) => {
+      events.push("dispatch");
+    });
+
     loop.dispatchTool("testTool", { arg: 1 }, "tc-test");
     expect(events).toContain("dispatch");
 

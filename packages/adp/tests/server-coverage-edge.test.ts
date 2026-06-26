@@ -45,7 +45,7 @@ describe("AdpServer — HTTP server attach", () => {
     await new Promise<void>((resolve) => srv.listen(port, resolve));
 
     const adp = new AdpServer({ server: srv });
-    
+
     // Just verify construction with server option works
     expect(adp).toBeDefined();
 

@@ -11,7 +11,6 @@
     "dev": "bun src/index.tsx",
     "start:repl": "tsx src/adp-repl.ts",
     "docs": "typedoc",
-    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "dependencies": {

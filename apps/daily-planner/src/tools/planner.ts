@@ -23,10 +23,7 @@ export type AddTaskInput = z.infer<typeof addTaskSchema>;
 
 export const scheduleReminderSchema = z.object({
   message: z.string().min(1).describe("Reminder message"),
-  time: z
-    .string()
-    .min(1)
-    .describe("Time to trigger, HH:MM or relative minutes like '+5'"),
+  time: z.string().min(1).describe("Time to trigger, HH:MM or relative minutes like '+5'"),
 });
 export type ScheduleReminderInput = z.infer<typeof scheduleReminderSchema>;
 

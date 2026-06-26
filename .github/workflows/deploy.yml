@@ -6,8 +6,8 @@ on:
       - main
 
 permissions:
-  contents: 'read'
-  id-token: 'write' # Required for Workload Identity Federation OIDC token exchange
+  contents: "read"
+  id-token: "write" # Required for Workload Identity Federation OIDC token exchange
 
 jobs:
   validate-and-test:
@@ -25,13 +25,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.14.0
-          cache: 'pnpm'
+          cache: "pnpm"
+
+      - name: Cache Vite+ Task Cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.vite/task-cache
+          key: ${{ runner.os }}-vite-plus-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-vite-plus-${{ hashFiles('pnpm-lock.yaml') }}-
+            ${{ runner.os }}-vite-plus-
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck and Build Zettel
-        run: pnpm --filter @agentx/zettel build
+      - name: Build Zettel and dependencies
+        run: pnpm exec vp run @agentx/zettel#build
 
       - name: Run Zettel Tests
         run: pnpm exec vitest run apps/zettel
@@ -48,9 +57,9 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          token_format: 'access_token'
-          workload_identity_provider: 'projects/agentx-zettel-adi-3291/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com'
+          token_format: "access_token"
+          workload_identity_provider: "projects/agentx-zettel-adi-3291/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com"
 
       # 2. Log in to Google Artifact Registry
       - name: Log in to Artifact Registry

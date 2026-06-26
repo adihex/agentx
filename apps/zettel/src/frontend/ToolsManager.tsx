@@ -168,16 +168,14 @@ export default function ToolsManager({ onClose }: ToolsManagerProps) {
         </button>
         <h2 className="tools-title">Tools</h2>
         <p className="tools-subtitle">
-          Extend your Zettelkasten with custom tools.
-          Write a TypeScript function and it becomes available to the agent.
+          Extend your Zettelkasten with custom tools. Write a TypeScript function and it becomes
+          available to the agent.
         </p>
       </div>
 
       {showForm ? (
         <div className="tool-form" key={editing?.id ?? "new"}>
-          <div className="tool-form-heading">
-            {editing ? "Edit tool" : "New tool"}
-          </div>
+          <div className="tool-form-heading">{editing ? "Edit tool" : "New tool"}</div>
 
           <label className="tool-label">
             Name
@@ -261,11 +259,7 @@ export default function ToolsManager({ onClose }: ToolsManagerProps) {
           {error && <p className="tool-error">{error}</p>}
 
           <div className="tool-form-actions">
-            <button
-              className="btn-primary"
-              onClick={handleSave}
-              disabled={saving}
-            >
+            <button className="btn-primary" onClick={handleSave} disabled={saving}>
               {saving ? "Saving…" : editing ? "Update" : "Create"}
             </button>
             <button
@@ -312,10 +306,7 @@ export default function ToolsManager({ onClose }: ToolsManagerProps) {
                   </div>
                   <div className="tool-card-desc">{t.description}</div>
                   <div className="tool-card-actions">
-                    <button
-                      className="tool-action-btn"
-                      onClick={() => openEdit(t)}
-                    >
+                    <button className="tool-action-btn" onClick={() => openEdit(t)}>
                       Edit
                     </button>
                     <button

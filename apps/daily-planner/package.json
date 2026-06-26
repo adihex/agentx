@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
-    "build": "tsc -b && vite build",
     "test": "vitest run"
   },
   "dependencies": {

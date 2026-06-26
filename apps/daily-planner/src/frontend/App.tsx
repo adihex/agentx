@@ -56,7 +56,9 @@ export default function App() {
 
   useEffect(() => {
     void fetchData();
-    const interval = setInterval(() => { void fetchData(); }, 2000);
+    const interval = setInterval(() => {
+      void fetchData();
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -223,7 +225,9 @@ export default function App() {
                     <div className="task-item-left">
                       <div
                         className={`checkbox-custom ${task.completed ? "completed" : ""}`}
-                        onClick={() => { void toggleTask(task.id); }}
+                        onClick={() => {
+                          void toggleTask(task.id);
+                        }}
                       />
                       <span className={`task-text ${task.completed ? "completed" : ""}`}>
                         {task.task}

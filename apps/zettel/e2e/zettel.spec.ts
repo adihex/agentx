@@ -6,17 +6,22 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
   const emailB = `userb-${timestamp}@example.com`;
   const password = "password123";
 
-  test("should register, write notes via agent chat, and isolate data between tenants", async ({ page }) => {
-    page.on('console', msg => console.log('BROWSER LOG:', msg.type(), msg.text()));
-    page.on('pageerror', err => console.log('BROWSER ERROR:', err.stack || err.message));
-    page.on('request', req => {
+  test("should register, write notes via agent chat, and isolate data between tenants", async ({
+    page,
+  }) => {
+    page.on("console", (msg) => console.log("BROWSER LOG:", msg.type(), msg.text()));
+    page.on("pageerror", (err) => console.log("BROWSER ERROR:", err.stack || err.message));
+    page.on("request", (req) => {
       if (req.url().includes("/api/auth")) {
         console.log("PLAYWRIGHT REQ:", req.method(), req.url(), req.postData() || "");
       }
     });
-    page.on('response', res => {
+    page.on("response", (res) => {
       if (res.url().includes("/api/auth")) {
-        res.text().then(t => console.log("PLAYWRIGHT RES:", res.status(), res.url(), t)).catch(() => {});
+        res
+          .text()
+          .then((t) => console.log("PLAYWRIGHT RES:", res.status(), res.url(), t))
+          .catch(() => {});
       }
     });
 
@@ -24,10 +29,10 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
     // 1. Sign up User A
     // -------------------------------------------------------------
     await page.goto("/");
-    
+
     // Switch to Register mode
     await page.getByRole("button", { name: "Register" }).click();
-    
+
     // Fill in signup fields
     await page.getByPlaceholder("Name").fill("User A");
     await page.getByPlaceholder("Email address").fill(emailA);

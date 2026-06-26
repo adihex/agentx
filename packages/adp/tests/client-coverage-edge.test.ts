@@ -87,17 +87,17 @@ describe("AdpClient error and edge paths", () => {
   it("should handle server request rejection via close", async () => {
     port++;
     server = new AdpServer(port);
-    
+
     server.on("Quick.method", (params, cb) => {
       cb({ ok: true });
     });
-    
+
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
-    
+
     const result = await client.send("Quick.method");
     expect(result).toEqual({ ok: true });
-    
+
     await server.close();
     server = null;
   }, 10000);

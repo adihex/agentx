@@ -8,21 +8,12 @@ mkdirSync(testDir, { recursive: true });
 process.env.ZETTEL_DIR = testDir;
 
 import { describe, it, expect } from "vitest";
-import {
-  writeNote,
-  listNotes,
-  readNote,
-  searchNotes,
-  addLink,
-  backlinksOf,
-} from "./store.js";
+import { writeNote, listNotes, readNote, searchNotes, addLink, backlinksOf } from "./store.js";
 import fs from "node:fs/promises";
 
 describe("Multi-tenant Notes Database Isolation", () => {
   const userA = "user-A-" + Date.now();
   const userB = "user-B-" + Date.now();
-
-
 
   it("should isolate note creation and listing between users", async () => {
     // 1. Create note for User A

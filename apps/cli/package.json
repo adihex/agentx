@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "bun src/index.tsx",
     "start": "bun src/index.tsx",
-    "build": "tsc",
     "test": "echo 'No tests'"
   },
   "dependencies": {

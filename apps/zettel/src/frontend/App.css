@@ -735,12 +735,7 @@ body {
 .skeleton {
   height: 0.7rem;
   border-radius: var(--r-sm);
-  background: linear-gradient(
-    90deg,
-    var(--paper-sunk),
-    oklch(0.96 0.004 255),
-    var(--paper-sunk)
-  );
+  background: linear-gradient(90deg, var(--paper-sunk), oklch(0.96 0.004 255), var(--paper-sunk));
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
   margin: var(--s3);

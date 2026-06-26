@@ -58,10 +58,15 @@ vi.spyOn(AgenticThreadPool.prototype, "execute").mockImplementation(async (req) 
 // Mock the LLMOrchestrator to avoid hitting any real APIs during tests
 vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
   async (messages: any[], tools: any, abortSignal: any, model?: string, onTextDelta?: any) => {
-    const lastUserMsg = [...messages].reverse().find(m => m.role === "user")?.content || "";
-    const hasToolResult = messages.some(m => m.role === "tool");
-    console.log("[Mock LLM] messages history roles:", messages.map(m => m.role), "hasToolResult:", hasToolResult);
-    
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user")?.content || "";
+    const hasToolResult = messages.some((m) => m.role === "tool");
+    console.log(
+      "[Mock LLM] messages history roles:",
+      messages.map((m) => m.role),
+      "hasToolResult:",
+      hasToolResult,
+    );
+
     if (hasToolResult) {
       const text = "I have successfully created the note for you.";
       onTextDelta?.(text);
@@ -72,17 +77,17 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
           {
             role: "assistant",
             content: text,
-            toolCalls: []
-          }
-        ]
+            toolCalls: [],
+          },
+        ],
       };
     }
 
     console.log("[Mock LLM] Intercepted user prompt:", lastUserMsg);
-    
+
     let text = "I am a helpful assistant.";
     let toolCalls: any[] = [];
-    
+
     if (lastUserMsg.includes("apples")) {
       toolCalls.push({
         toolCallId: "tc-apples",
@@ -90,8 +95,8 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
         input: {
           content: "Apples are delicious fruits.",
           title: "About Apples",
-          tags: ["apples", "fruit"]
-        }
+          tags: ["apples", "fruit"],
+        },
       });
       text = "I have created a note about apples for you.";
     } else if (lastUserMsg.includes("oranges")) {
@@ -101,14 +106,14 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
         input: {
           content: "Oranges are citrus fruits.",
           title: "About Oranges",
-          tags: ["oranges", "fruit"]
-        }
+          tags: ["oranges", "fruit"],
+        },
       });
       text = "I have created a note about oranges for you.";
     }
-    
+
     onTextDelta?.(text);
-    
+
     return {
       text,
       toolCalls,
@@ -116,15 +121,15 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
         {
           role: "assistant",
           content: text,
-          toolCalls: toolCalls.map(tc => ({
+          toolCalls: toolCalls.map((tc) => ({
             id: tc.toolCallId,
             type: "function",
-            function: { name: tc.toolName, arguments: JSON.stringify(tc.input) }
-          }))
-        }
-      ]
+            function: { name: tc.toolName, arguments: JSON.stringify(tc.input) },
+          })),
+        },
+      ],
     };
-  }
+  },
 );
 
 // Import after env vars are set
@@ -136,16 +141,31 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
 
   beforeAll(async () => {
     await fs.mkdir(testDir, { recursive: true });
-    
+
     // Initialize Better Auth schema tables/indexes in the test DB
     await client.batch([
-      { sql: 'CREATE TABLE IF NOT EXISTS "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null)', args: [] },
-      { sql: 'CREATE TABLE IF NOT EXISTS "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade)', args: [] },
-      { sql: 'CREATE TABLE IF NOT EXISTS "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null)', args: [] },
-      { sql: 'CREATE TABLE IF NOT EXISTS "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null)', args: [] },
+      {
+        sql: 'CREATE TABLE IF NOT EXISTS "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null)',
+        args: [],
+      },
+      {
+        sql: 'CREATE TABLE IF NOT EXISTS "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade)',
+        args: [],
+      },
+      {
+        sql: 'CREATE TABLE IF NOT EXISTS "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null)',
+        args: [],
+      },
+      {
+        sql: 'CREATE TABLE IF NOT EXISTS "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null)',
+        args: [],
+      },
       { sql: 'CREATE INDEX IF NOT EXISTS "session_userId_idx" on "session" ("userId")', args: [] },
       { sql: 'CREATE INDEX IF NOT EXISTS "account_userId_idx" on "account" ("userId")', args: [] },
-      { sql: 'CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier")', args: [] },
+      {
+        sql: 'CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier")',
+        args: [],
+      },
     ]);
 
     // Ensure the server has bound and get the ephemeral port
@@ -249,23 +269,26 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
     const wsB = await connectWs(cookieB);
 
     // 4. User A prompts their agent to write about apples
-    wsA.send(JSON.stringify({
-      jsonrpc: "2.0",
-      id: "prompt-A",
-      method: "Session.prompt",
-      params: { prompt: "Write a note about apples." }
-    }));
+    wsA.send(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: "prompt-A",
+        method: "Session.prompt",
+        params: { prompt: "Write a note about apples." },
+      }),
+    );
     await waitForToolComplete(wsA);
 
     // 5. User B prompts their agent to write about oranges
-    wsB.send(JSON.stringify({
-      jsonrpc: "2.0",
-      id: "prompt-B",
-      method: "Session.prompt",
-      params: { prompt: "Write a note about oranges." }
-    }));
+    wsB.send(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: "prompt-B",
+        method: "Session.prompt",
+        params: { prompt: "Write a note about oranges." },
+      }),
+    );
     await waitForToolComplete(wsB);
-
 
     // 6. Verify User A note list has apples note, no oranges note
     const notesA1 = await getNotes(cookieA);

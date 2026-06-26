@@ -23,9 +23,7 @@ describe("ADP protocol — property tests", () => {
         fc.string({ minLength: 1 }).filter((s) => /^[a-zA-Z]/.test(s)),
         fc.array(fc.string()),
         (cmd, args) => {
-          const input = args.length > 0
-            ? `/${cmd} ${args.join(" ")}`
-            : `/${cmd}`;
+          const input = args.length > 0 ? `/${cmd} ${args.join(" ")}` : `/${cmd}`;
           const result = parseReplCommand(input);
           expect(result).not.toBeNull();
           expect(result!.method).toMatch(/^Debugger\./);

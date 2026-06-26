@@ -6,7 +6,7 @@ product
 
 ## Users
 
-A single thinker/knowledge-worker (the maker) capturing ideas as they happen — typed thoughts and spoken voice memos — and returning later to traverse the web of connections they've built. Context of use: mid-thought at a desk, or offloading an idea on the move. They want to get a thought *out of their head and into the system* with near-zero friction, and to trust that it will resurface and connect to prior thinking when it matters.
+A single thinker/knowledge-worker (the maker) capturing ideas as they happen — typed thoughts and spoken voice memos — and returning later to traverse the web of connections they've built. Context of use: mid-thought at a desk, or offloading an idea on the move. They want to get a thought _out of their head and into the system_ with near-zero friction, and to trust that it will resurface and connect to prior thinking when it matters.
 
 ## Product Purpose
 

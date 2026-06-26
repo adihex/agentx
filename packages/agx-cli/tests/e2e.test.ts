@@ -16,11 +16,15 @@ vi.mock("ws", () => {
   const MockWS = vi.fn().mockImplementation(function () {
     const handlers: Record<string, Function> = {};
     return {
-      on: vi.fn((event: string, cb: Function) => { handlers[event] = cb; }),
+      on: vi.fn((event: string, cb: Function) => {
+        handlers[event] = cb;
+      }),
       send: vi.fn(),
       close: vi.fn(),
       readyState: 1,
-      addEventListener: vi.fn((event: string, cb: Function) => { handlers[event] = cb; }),
+      addEventListener: vi.fn((event: string, cb: Function) => {
+        handlers[event] = cb;
+      }),
       _trigger: (event: string, ...args: any[]) => handlers[event]?.(...args),
     };
   });
@@ -37,8 +41,14 @@ vi.mock("@agentx/agx-core", async (importOriginal) => {
       const listeners = new Set<(event: any) => void>();
       const statusListeners = new Set<(connected: boolean) => void>();
       return {
-        onEvent: (fn: any) => { listeners.add(fn); return () => listeners.delete(fn); },
-        onStatus: (fn: any) => { statusListeners.add(fn); return () => statusListeners.delete(fn); },
+        onEvent: (fn: any) => {
+          listeners.add(fn);
+          return () => listeners.delete(fn);
+        },
+        onStatus: (fn: any) => {
+          statusListeners.add(fn);
+          return () => statusListeners.delete(fn);
+        },
         send: vi.fn().mockReturnValue(true),
         connect: vi.fn(),
         destroy: vi.fn(),

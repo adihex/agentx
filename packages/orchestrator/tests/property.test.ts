@@ -30,33 +30,29 @@ function makePlan(steps: Array<{ id: string; deps: string[] }>): ExecutionPlan {
 describe("DependencyGraph — property tests", () => {
   it("isPlanComplete iff all steps completed", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 10 }),
-        fc.boolean(),
-        (numSteps, completeAll) => {
-          const steps = Array.from({ length: numSteps }, (_, i) => ({
-            id: `s${i}`,
-            deps: i > 0 ? [`s${i - 1}`] : [],
-          }));
+      fc.property(fc.integer({ min: 1, max: 10 }), fc.boolean(), (numSteps, completeAll) => {
+        const steps = Array.from({ length: numSteps }, (_, i) => ({
+          id: `s${i}`,
+          deps: i > 0 ? [`s${i - 1}`] : [],
+        }));
 
-          let graph: DependencyGraph;
-          try {
-            graph = new DependencyGraph(makePlan(steps));
-          } catch {
-            return;
-          }
+        let graph: DependencyGraph;
+        try {
+          graph = new DependencyGraph(makePlan(steps));
+        } catch {
+          return;
+        }
 
-          if (completeAll) {
-            for (const s of steps) {
-              graph.markStarted(s.id);
-              graph.markCompleted(s.id);
-            }
-            expect(graph.isPlanComplete()).toBe(true);
-          } else {
-            expect(graph.isPlanComplete()).toBe(false);
+        if (completeAll) {
+          for (const s of steps) {
+            graph.markStarted(s.id);
+            graph.markCompleted(s.id);
           }
-        },
-      ),
+          expect(graph.isPlanComplete()).toBe(true);
+        } else {
+          expect(graph.isPlanComplete()).toBe(false);
+        }
+      }),
     );
   });
 
@@ -106,7 +102,10 @@ describe("OrchestrationBus — property tests", () => {
           for (const type of eventTypes) {
             const base: any = { type, planId: "p1", stepId: "s1" };
             if (type === "plan.step.completed") base.result = "ok";
-            if (type === "plan.step.failed") { base.error = "e"; base.attempt = 1; }
+            if (type === "plan.step.failed") {
+              base.error = "e";
+              base.attempt = 1;
+            }
             bus.dispatch(base);
           }
 
@@ -124,7 +123,11 @@ describe("RetryLedger — property tests", () => {
         fc.array(
           fc.record({
             stepId: fc.string({ minLength: 1, maxLength: 4 }),
-            action: fc.constantFrom("executorRetry" as const, "reviewRound" as const, "clarification" as const),
+            action: fc.constantFrom(
+              "executorRetry" as const,
+              "reviewRound" as const,
+              "clarification" as const,
+            ),
           }),
           { minLength: 0, maxLength: 30 },
         ),

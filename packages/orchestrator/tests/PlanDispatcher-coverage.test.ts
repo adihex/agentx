@@ -45,9 +45,7 @@ describe("PlanDispatcher — session.complete and edge coverage", () => {
       result: "ok",
     });
 
-    expect(completeSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "session.complete" }),
-    );
+    expect(completeSpy).toHaveBeenCalledWith(expect.objectContaining({ type: "session.complete" }));
   });
 
   it("should dispatch session.failed on unrecoverable review fail", () => {
@@ -97,9 +95,7 @@ describe("PlanDispatcher — session.complete and edge coverage", () => {
       },
     });
 
-    expect(failSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "session.failed" }),
-    );
+    expect(failSpy).toHaveBeenCalledWith(expect.objectContaining({ type: "session.failed" }));
   });
 
   it("should dispatch session.failed on max executor retries", () => {
@@ -142,9 +138,7 @@ describe("PlanDispatcher — session.complete and edge coverage", () => {
       attempt: 2,
     });
 
-    expect(failSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "session.failed" }),
-    );
+    expect(failSpy).toHaveBeenCalledWith(expect.objectContaining({ type: "session.failed" }));
   });
 
   it("should dispatch review.started when step has review passes", () => {

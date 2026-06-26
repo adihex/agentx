@@ -102,8 +102,7 @@ export async function getNote(args: GetNoteInput & { userId?: string }) {
 
 export const createNoteTool: ToolDefinition<CreateNoteInput> = {
   name: "createNote",
-  description:
-    "Capture a single atomic thought as a Zettelkasten note. Returns the new note's id.",
+  description: "Capture a single atomic thought as a Zettelkasten note. Returns the new note's id.",
   inputSchema: createNoteSchema,
   modulePath: new URL(import.meta.url).pathname,
   exportName: "createNote",

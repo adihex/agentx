@@ -11,7 +11,7 @@ import {
   MUSIC_SCANNER_SYSTEM_PROMPT,
   MUSIC_SCANNER_TOOLS,
   MUSIC_SCANNER_PORT,
-} from "../src/index";
+} from "../src/index.js";
 
 describe("music-scanner-service/index.ts — constants", () => {
   it("MUSIC_SCANNER_SYSTEM_PROMPT contains workflow instructions", () => {
@@ -86,8 +86,6 @@ describe("music-scanner-service — extraction handler logic", () => {
 
     const cb = vi.fn();
     handleExtraction({ songName: "Stairway to Heaven" }, cb);
-    expect(cb).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "started" }),
-    );
+    expect(cb).toHaveBeenCalledWith(expect.objectContaining({ status: "started" }));
   });
 });

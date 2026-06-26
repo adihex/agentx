@@ -6,7 +6,6 @@
   "scripts": {
     "start": "bun src/index.tsx",
     "dev": "bun src/index.tsx",
-    "build": "tsc",
     "test": "vitest run"
   },
   "dependencies": {

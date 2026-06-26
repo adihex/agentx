@@ -12,7 +12,9 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 vi.mock("ws", () => {
-  const MockWS = vi.fn().mockImplementation(function () { return { on: vi.fn(), send: vi.fn(), close: vi.fn(), readyState: 1 }; });
+  const MockWS = vi.fn().mockImplementation(function () {
+    return { on: vi.fn(), send: vi.fn(), close: vi.fn(), readyState: 1 };
+  });
   (MockWS as any).OPEN = 1;
   return { default: MockWS };
 });
@@ -63,11 +65,14 @@ describe("E2E: agx-herdr Lifecycle", () => {
     const testPlanDir = path.join(__dirname, "..", "plans");
     fs.mkdirSync(testPlanDir, { recursive: true });
     const testPlanFile = path.join(testPlanDir, "test-e2e.plan.json");
-    fs.writeFileSync(testPlanFile, JSON.stringify({
-      planId: "e2e-dag",
-      goal: "E2E DAG test",
-      steps: [],
-    }));
+    fs.writeFileSync(
+      testPlanFile,
+      JSON.stringify({
+        planId: "e2e-dag",
+        goal: "E2E DAG test",
+        steps: [],
+      }),
+    );
 
     expect(fs.existsSync(testPlanFile)).toBe(true);
 

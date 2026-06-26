@@ -45,7 +45,8 @@ export class LLMOrchestrator {
     const baseURL = opts.baseURL || process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
     const anthropicBaseURL = opts.anthropicBaseURL || process.env.ANTHROPIC_BASE_URL || baseURL;
     const googleProject = opts.googleProject || process.env.GOOGLE_VERTEX_PROJECT;
-    const googleLocation = opts.googleLocation || process.env.GOOGLE_VERTEX_LOCATION || "us-central1";
+    const googleLocation =
+      opts.googleLocation || process.env.GOOGLE_VERTEX_LOCATION || "us-central1";
 
     // chat family — OpenAI-compatible, Bearer auth, /chat/completions.
     this.openai = createOpenAICompatible({
