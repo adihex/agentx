@@ -1,3 +1,12 @@
+import path from "node:path";
+import os from "node:os";
+import { mkdirSync } from "node:fs";
+
+// Force a fresh test directory for the database before importing auth.js
+const testDir = path.join(os.tmpdir(), "agentx-zettel-auth-test-" + Date.now());
+mkdirSync(testDir, { recursive: true });
+process.env.ZETTEL_DIR = testDir;
+
 import { describe, it, expect } from "vitest";
 import { auth } from "./auth.js";
 
