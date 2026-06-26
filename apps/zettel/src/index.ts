@@ -4,6 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import * as dotenv from "dotenv";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { WebSocketServer } from "ws";
@@ -90,6 +91,24 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
 }
 
 const app = new Hono();
+
+// CORS for GitHub Pages and local dev
+app.use(
+  "*",
+  cors({
+    origin: (origin) => {
+      const allowed = [
+        "https://adihex.github.io",
+        "http://localhost:5173",
+        "http://localhost:5174",
+      ];
+      return allowed.includes(origin) ? origin : allowed[0];
+    },
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "Cookie"],
+    credentials: true,
+  }),
+);
 
 // Better Auth endpoints (GET/POST)
 app.on(["POST", "GET"], "/api/auth/*", (c) => {

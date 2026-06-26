@@ -30,9 +30,36 @@ interface ChatMessage {
 }
 
 const isHttps = window.location.protocol === "https:";
-const ADP_URL = `${isHttps ? "wss:" : "ws:"}//${window.location.host}/adp`;
+const API_BASE = isHttps
+  ? "https://zettel-service-594828290101.asia-south1.run.app"
+  : window.location.origin;
+const ADP_URL = `${isHttps ? "wss:" : "ws:"}//${isHttps ? "zettel-service-594828290101.asia-south1.run.app" : window.location.host}/adp`;
 
 const GREETING_ID = "1";
+
+function BrandMark({ size = 20, className }: { size?: number; className?: string }) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M7 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
+      <path d="M11 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
+      <path d="M15 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
+      <path d="M4 8h13v3.5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z" />
+      <path d="M17 9.5h2a2.5 2.5 0 0 1 0 5h-2" />
+      <path d="M5.5 20h10" />
+    </svg>
+  );
+}
 
 export default function App() {
   const { data: session, isPending } = authClient.useSession();
@@ -41,6 +68,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [connected, setConnected] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -70,6 +98,11 @@ export default function App() {
   useEffect(() => {
     if (!session) {
       setIsRegistering(false);
+      setEmail("");
+      setPassword("");
+      setName("");
+      setErrorMsg("");
+      setIsSubmitting(false);
       setNotes([]);
       setResults([]);
       setQuery("");
@@ -205,33 +238,39 @@ export default function App() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setErrorMsg("");
+    setIsSubmitting(true);
 
     try {
-      if (isRegistering) {
-        await authClient.signUp.email({
-          email,
-          password,
-          name,
-          callbackURL: "/",
-        });
-      } else {
-        await authClient.signIn.email({
-          email,
-          password,
-          callbackURL: "/",
-        });
+      const callbackURL = window.location.origin + "/zettel/";
+      // better-auth resolves with { data, error } rather than throwing on
+      // bad credentials, so we surface res.error too — not just exceptions.
+      const res = isRegistering
+        ? await authClient.signUp.email({ email, password, name, callbackURL })
+        : await authClient.signIn.email({ email, password, callbackURL });
+      if (res?.error) {
+        setErrorMsg(
+          res.error.message ||
+            (isRegistering
+              ? "Couldn't create your workspace. Try a different email."
+              : "Those details didn't match. Check your email and password."),
+        );
       }
+      // On success the session updates and the app renders in place.
     } catch (err: any) {
       console.error("AUTH ERROR:", err);
-      setErrorMsg(err.message || "Authentication failed.");
+      setErrorMsg(err?.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (isPending) {
     return (
       <div className="auth-loading">
-        <div className="skeleton" style={{ width: "120px", height: "20px" }} />
+        <BrandMark size={30} className="auth-mark" />
+        <span className="visually-hidden">Loading your study…</span>
       </div>
     );
   }
@@ -240,57 +279,127 @@ export default function App() {
     return (
       <div className="auth-container">
         <div className="auth-card">
-          <div className="brand" style={{ marginBottom: "1.5rem" }}>
-            <span className="wordmark">zettel<b>kattan</b></span>
+          <div className="auth-head">
+            <span className="auth-brand">
+              <BrandMark size={24} className="auth-mark" />
+              <span className="auth-wordmark">
+                zettel<b>kattan</b>
+              </span>
+            </span>
+            <h1 className="auth-title">
+              {isRegistering ? "Create your workspace" : "Sign in to your study"}
+            </h1>
+            <p className="auth-sub">
+              {isRegistering
+                ? "A quiet place for your thoughts to gather and connect."
+                : "Pick up where your thinking left off."}
+            </p>
           </div>
-          <h2 className="auth-title" style={{ fontFamily: "inherit", fontWeight: 400, fontSize: "1.2rem", marginBottom: "1.5rem" }}>
-            {isRegistering ? "Create your workspace" : "Sign in to your study"}
-          </h2>
-          
-          <form onSubmit={handleAuth} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+
+          <form onSubmit={handleAuth} className="auth-form" noValidate>
             {isRegistering && (
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="auth-name">
+                  Name
+                </label>
+                <input
+                  id="auth-name"
+                  className="auth-input"
+                  type="text"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isSubmitting}
+                  required
+                  autoFocus
+                />
+              </div>
+            )}
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="auth-email">
+                Email
+              </label>
               <input
-                className="search"
-                style={{ width: "100%", boxSizing: "border-box" }}
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                id="auth-email"
+                className="auth-input"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                required
+                autoFocus={!isRegistering}
+              />
+            </div>
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="auth-password">
+                Password
+              </label>
+              <input
+                id="auth-password"
+                className="auth-input"
+                type="password"
+                autoComplete={isRegistering ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
                 required
               />
+            </div>
+
+            {errorMsg && (
+              <p className="auth-error" role="alert">
+                <svg
+                  className="auth-error-icon"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v5" />
+                  <path d="M12 16.4h.01" />
+                </svg>
+                <span>{errorMsg}</span>
+              </p>
             )}
-            <input
-              className="search"
-              style={{ width: "100%", boxSizing: "border-box" }}
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              className="search"
-              style={{ width: "100%", boxSizing: "border-box" }}
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            {errorMsg && <p className="auth-error" style={{ color: "#d93838", fontSize: "0.85rem", margin: "0.2rem 0" }}>{errorMsg}</p>}
-            <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "0.5rem" }}>
-              {isRegistering ? "Sign Up" : "Sign In"}
+
+            <button
+              type="submit"
+              className="btn-primary auth-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="auth-spinner" aria-hidden="true" />
+                  {isRegistering ? "Creating…" : "Signing in…"}
+                </>
+              ) : isRegistering ? (
+                "Create workspace"
+              ) : (
+                "Sign in"
+              )}
             </button>
           </form>
 
-          <p className="auth-switch" style={{ fontSize: "0.85rem", marginTop: "1.5rem", color: "#666" }}>
-            {isRegistering ? "Already have an account?" : "Need a workspace?"}{" "}
+          <p className="auth-switch">
+            {isRegistering ? "Already have an account?" : "New here?"}{" "}
             <button
               type="button"
-              style={{ background: "none", border: "none", padding: 0, textDecoration: "underline", cursor: "pointer", color: "#111" }}
-              onClick={() => setIsRegistering(!isRegistering)}
+              className="auth-switch-btn"
+              onClick={() => {
+                setIsRegistering(!isRegistering);
+                setErrorMsg("");
+              }}
+              disabled={isSubmitting}
             >
-              {isRegistering ? "Sign in" : "Register"}
+              {isRegistering ? "Sign in" : "Create a workspace"}
             </button>
           </p>
         </div>
@@ -487,25 +596,7 @@ export default function App() {
       <aside className="rail">
         <div className="rail-head">
           <div className="brand">
-            <svg
-              className="brand-mark"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M7 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
-              <path d="M11 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
-              <path d="M15 2.5c-.6 1 .6 1.9 0 2.9" opacity="0.6" />
-              <path d="M4 8h13v3.5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z" />
-              <path d="M17 9.5h2a2.5 2.5 0 0 1 0 5h-2" />
-              <path d="M5.5 20h10" />
-            </svg>
+            <BrandMark size={20} className="brand-mark" />
             <span className="wordmark">
               zettel<b>kattan</b>
             </span>

@@ -12,7 +12,7 @@ export default defineConfig({
       "apps/*/src/**/*.test.{ts,tsx}",
     ],
     setupFiles: ["./apps/web/vitest-setup.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**", "**/*.spec.ts", "**/e2e/**"],
+    exclude: ["**/node_modules/**", "**/dist/**", "**/dist-server/**", "**/*.spec.ts", "**/e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],

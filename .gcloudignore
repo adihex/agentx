@@ -1,0 +1,30 @@
+# Ignore git files
+.git/
+.gitignore
+
+# Ignore node_modules
+node_modules/
+
+# Ignore local build outputs & test logs
+dist/
+coverage/
+build/
+.next/
+.vinxi/
+routeTree.gen.ts
+
+# Ignore environment variables
+.env
+.env.*
+
+# Ignore agent/IDE workspace files
+.agents/
+.claude/
+.commandcode/
+.serena/
+.understand-anything/
+.goose/
+.pi/
+.kiro/
+.stryker-tmp/
+.vscode/

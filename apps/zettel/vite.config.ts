@@ -5,6 +5,7 @@ const clientPort = process.env.VITE_PORT ? parseInt(process.env.VITE_PORT, 10) :
 const serverPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 5174;
 
 export default defineConfig({
+  base: "/zettel/",
   plugins: [react()],
   server: {
     port: clientPort,

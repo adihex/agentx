@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM node:24.14.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -35,7 +36,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 # ─── Stage 2: Build all packages ────────────────────────────────────────────
 FROM deps AS builder
 COPY . .
-RUN pnpm run build
+# Build only zettel + its workspace dependencies (core, adp, agx-core)
+RUN pnpm --filter @agentx/zettel --filter @agentx/core --filter @agentx/adp --filter @agentx/agx-core build
+RUN pnpm --filter @agentx/zettel exec vite build
 
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web

@@ -27,6 +27,12 @@
   --clay-rule: oklch(0.82 0.07 32);
   --on-clay: oklch(0.99 0 0);
 
+  /* Semantic — error / destructive. Mirrors the clay ramp (≥4.5:1 on paper). */
+  --error: oklch(0.52 0.19 26);
+  --error-strong: oklch(0.46 0.2 26);
+  --error-tint: oklch(0.955 0.03 26);
+  --error-rule: oklch(0.84 0.07 26);
+
   /* Type families — system book serif + system sans + system mono */
   --serif: "Iowan Old Style", "Charter", "Palatino", "Palatino Linotype", Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -765,6 +771,24 @@ body {
     background-position: -200% 0;
   }
 }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- A11y utility ---- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -820,32 +844,196 @@ body {
   border: 3px solid transparent;
 }
 
-/* ---- Auth Portal (Calm, paper-honest, centered) ---- */
+/* ============================ AUTH ============================ */
+/* The threshold to the study — calm, paper-honest, centered.
+   One quiet entrance; brand carried by mark + serif, not chrome. */
 .auth-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--s5) var(--s4);
   background: var(--paper-rail);
-  padding: var(--s4);
 }
 
 .auth-card {
   width: 100%;
-  max-width: 24rem;
+  max-width: 25rem;
   background: var(--paper);
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--r-md);
-  padding: var(--s6);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  padding: var(--s7) var(--s6) var(--s6);
   box-shadow: var(--shadow-pop);
+  animation: rise var(--dur) var(--ease);
+}
+
+.auth-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--s6);
+}
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.auth-mark {
+  flex: none;
+  color: var(--clay);
+}
+.auth-wordmark {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.auth-wordmark b {
+  font-weight: 600;
+  color: var(--clay);
+}
+.auth-title {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  margin: var(--s4) 0 0;
+  text-wrap: balance;
+}
+.auth-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+  margin: var(--s2) 0 0;
+  max-width: 32ch;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+}
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+.auth-label {
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.auth-input {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--s3);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-base);
+  line-height: 1.4;
+  outline: none;
+  transition: border-color var(--dur) var(--ease);
+}
+.auth-input::placeholder {
+  color: var(--ink-3);
+}
+.auth-input:focus {
+  border-color: var(--clay);
+}
+.auth-input:disabled {
+  background: var(--paper-sunk);
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+.auth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  margin: 0;
+  padding: var(--s2) var(--s3);
+  background: var(--error-tint);
+  border: 1px solid var(--error-rule);
+  border-radius: var(--r-md);
+  color: var(--error-strong);
+  font-size: var(--t-sm);
+  line-height: 1.4;
+}
+.auth-error-icon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--error);
+}
+
+.auth-submit {
+  width: 100%;
+  height: 2.75rem;
+  margin-top: var(--s2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+}
+.auth-spinner {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  border: 2px solid color-mix(in oklch, var(--on-clay) 35%, transparent);
+  border-top-color: var(--on-clay);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.auth-switch {
+  margin: var(--s6) 0 0;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+.auth-switch-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--clay);
+  cursor: pointer;
+  border-bottom: 1px solid var(--clay-rule);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.auth-switch-btn:hover {
+  color: var(--clay-strong);
+  border-bottom-color: var(--clay);
+}
+.auth-switch-btn:disabled {
+  color: var(--ink-3);
+  border-bottom-color: transparent;
+  cursor: not-allowed;
 }
 
 .auth-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: var(--paper);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--paper-rail);
+  color: var(--clay);
+}
+.auth-loading .auth-mark {
+  animation: pulse 1.6s var(--ease) infinite;
 }
 
 .signout-btn {
