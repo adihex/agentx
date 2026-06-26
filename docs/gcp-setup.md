@@ -101,11 +101,11 @@ The `# syntax=docker/dockerfile:1` directive at the top is required to enable Bu
 ### Environment variables injected at deploy time
 | Var | Value | Purpose |
 |-----|-------|---------|
-| `COMMIT_SHA` | `${{ github.sha }}` | Reported by `GET /api/health` |
+| `COMMIT_SHA` | `${{ github.sha }}` | Reported by `GET /_health` |
 
 ### Health check / liveness probe
 ```
-GET /api/health → 200 { "status": "ok", "sha": "<sha>" }
+GET /_health → 200 { "status": "ok", "sha": "<sha>" }
 ```
 This endpoint is unauthenticated and used by:
 - CI smoke test (3 retries, 5 s apart) before frontend ships

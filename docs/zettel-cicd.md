@@ -45,7 +45,7 @@ the new backend is live and healthy before the frontend that depends on it ships
 - Authenticates to GCP via **Workload Identity Federation** (keyless, no static keys)
 - Builds and pushes to Artifact Registry tagged with both `$COMMIT_SHA` and `latest`
 - Deploys to Cloud Run (`zettel-service`, `asia-south1`) with `COMMIT_SHA` env var injected
-- **Smoke tests** `GET /api/health` — 3 attempts, 5 s apart
+- **Smoke tests** `GET /_health` — 12 attempts, 10 s apart
   - On failure: auto-rolls back Cloud Run to previous revision and aborts the pipeline
 
 ### `deploy-frontend`
@@ -95,7 +95,7 @@ git push
 
 ### Check backend health
 ```sh
-curl https://<cloud-run-url>/api/health
+curl https://<cloud-run-url>/_health
 # → { "status": "ok", "sha": "<commit-sha>" }
 ```
 

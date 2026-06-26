@@ -124,7 +124,8 @@ app.use(
 );
 
 // Public health check — used by CI smoke test and Cloud Run liveness probe
-app.get("/api/health", (c) => {
+// Mounted outside /api/* to avoid the auth middleware on the api sub-router
+app.get("/_health", (c) => {
   return c.json({ status: "ok", sha: process.env.COMMIT_SHA ?? "dev" });
 });
 
