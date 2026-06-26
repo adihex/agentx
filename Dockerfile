@@ -36,8 +36,16 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 # ─── Stage 2: Build all packages ────────────────────────────────────────────
 FROM deps AS builder
 COPY . .
+
+# Copy the Vite+ task cache if populated from GHA cache
+COPY .vite-task-cach[e] /tmp/vite-cache/
 # Build only zettel + its workspace dependencies (core, adp, agx-core) via Vite+
-RUN --mount=type=cache,id=vite-plus,target=/app/node_modules/.vite/task-cache pnpm exec vp run @agentx/zettel#build
+RUN --mount=type=cache,id=vite-plus,target=/app/node_modules/.vite/task-cache \
+    if [ -d /tmp/vite-cache ] && [ "$(ls -A /tmp/vite-cache)" ]; then \
+      echo "Seeding Vite+ cache mount from GHA cache..." && \
+      cp -r /tmp/vite-cache/* /app/node_modules/.vite/task-cache/; \
+    fi && \
+    pnpm exec vp run @agentx/zettel#build
 
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
