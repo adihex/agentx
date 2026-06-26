@@ -36,16 +36,16 @@ test.describe("Zettel Production E2E (cross-origin)", () => {
     await expect(page.getByText("Sign in to your study")).toBeVisible({ timeout: 10000 });
 
     // Switch to Register
-    await page.getByRole("button", { name: "Register" }).click();
-    await expect(page.getByPlaceholder("Name")).toBeVisible();
+    await page.getByRole("button", { name: "Create a workspace" }).click();
+    await expect(page.locator("#auth-name")).toBeVisible();
 
     // Fill signup form
-    await page.getByPlaceholder("Name").fill("Prod Test");
-    await page.getByPlaceholder("Email address").fill(email);
-    await page.getByPlaceholder("Password").fill(password);
+    await page.locator("#auth-name").fill("Prod Test");
+    await page.locator("#auth-email").fill(email);
+    await page.locator("#auth-password").fill(password);
 
-    // Click Sign Up
-    await page.getByRole("button", { name: "Sign Up" }).click();
+    // Click Create workspace
+    await page.getByRole("button", { name: "Create workspace", exact: true }).click();
 
     // Wait for either success or error
     try {

@@ -409,24 +409,21 @@ export default function App() {
     );
   }
 
+  const sendPrompt = (promptText: string) => {
+    if (!clientRef.current || !connected) return;
+    clientRef.current.send({
+      method: "Session.prompt",
+      params: { prompt: promptText },
+    });
+  };
+
   const handleSend = () => {
     if (!input.trim() || !clientRef.current || !connected) return;
     const userMsg = input.trim();
     setMessages((p) => [...p, { id: Math.random().toString(), role: "user", text: userMsg }]);
     setInput("");
     setSelected(null); // return to the thread so the response is visible
-
-    const ws = (clientRef.current as unknown as { ws?: WebSocket }).ws;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(
-        JSON.stringify({
-          jsonrpc: "2.0",
-          id: Date.now().toString(),
-          method: "Session.prompt",
-          params: { prompt: userMsg },
-        }),
-      );
-    }
+    sendPrompt(userMsg);
   };
 
   const runSearch = (q: string) => {
@@ -473,9 +470,11 @@ export default function App() {
         },
       });
       const data = (await res.json()) as any;
-      if (data.note) {
-        void fetchNotes();
-        void openNote(data.note.id);
+      if (data.transcript?.text) {
+        const text = data.transcript.text;
+        setMessages((p) => [...p, { id: Math.random().toString(), role: "user", text }]);
+        setSelected(null); // return to thread so responses are visible
+        sendPrompt(text);
       } else {
         setMessages((p) => [
           ...p,
@@ -664,9 +663,6 @@ export default function App() {
         <div className="rail-foot">
           <span className={`status-dot ${connected ? "on" : ""}`} />
           <span>{connected ? "Connected" : "Connecting…"}</span>
-          <span className="port">
-            :{window.location.port || (window.location.protocol === "https:" ? "443" : "80")}
-          </span>
           <button
             type="button"
             className="signout-btn"

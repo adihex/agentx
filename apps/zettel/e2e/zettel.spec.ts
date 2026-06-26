@@ -31,13 +31,14 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
     await page.goto("/");
 
     // Switch to Register mode
-    await page.getByRole("button", { name: "Register" }).click();
+    await page.getByRole("button", { name: "Create a workspace" }).click();
+    await expect(page.locator("#auth-name")).toBeVisible();
 
     // Fill in signup fields
-    await page.getByPlaceholder("Name").fill("User A");
-    await page.getByPlaceholder("Email address").fill(emailA);
-    await page.getByPlaceholder("Password").fill(password);
-    await page.getByRole("button", { name: "Sign Up" }).click();
+    await page.locator("#auth-name").fill("User A");
+    await page.locator("#auth-email").fill(emailA);
+    await page.locator("#auth-password").fill(password);
+    await page.getByRole("button", { name: "Create workspace", exact: true }).click();
 
     // Verify main page loaded
     await expect(page.locator("text=A quiet place to think.")).toBeVisible();
@@ -68,11 +69,12 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
     // -------------------------------------------------------------
     // 3. Sign up User B
     // -------------------------------------------------------------
-    await page.getByRole("button", { name: "Register" }).click();
-    await page.getByPlaceholder("Name").fill("User B");
-    await page.getByPlaceholder("Email address").fill(emailB);
-    await page.getByPlaceholder("Password").fill(password);
-    await page.getByRole("button", { name: "Sign Up" }).click();
+    await page.getByRole("button", { name: "Create a workspace" }).click();
+    await expect(page.locator("#auth-name")).toBeVisible();
+    await page.locator("#auth-name").fill("User B");
+    await page.locator("#auth-email").fill(emailB);
+    await page.locator("#auth-password").fill(password);
+    await page.getByRole("button", { name: "Create workspace", exact: true }).click();
 
     // Verify User B main page loaded, starting with 0 notes
     await expect(page.locator("text=A quiet place to think.")).toBeVisible();
@@ -105,9 +107,9 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
     // -------------------------------------------------------------
     // 5. Log back in as User A and verify note persistence and isolation
     // -------------------------------------------------------------
-    await page.getByPlaceholder("Email address").fill(emailA);
-    await page.getByPlaceholder("Password").fill(password);
-    await page.getByRole("button", { name: "Sign In" }).click();
+    await page.locator("#auth-email").fill(emailA);
+    await page.locator("#auth-password").fill(password);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
 
     // Verify User A's note is restored and User B's note is NOT visible
     await expect(page.locator("text=A quiet place to think.")).toBeVisible();

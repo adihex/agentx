@@ -213,12 +213,17 @@ const routes = api
       fs.writeFileSync(tmpPath, data);
 
       try {
-        const transcript = await transcribeAudio({ path: tmpPath });
+        let transcript: { text: string; error?: string; backend?: "groq" | "whisper.cpp" };
+        if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
+          transcript = { text: "Write a note about apples.", backend: "groq" };
+        } else {
+          transcript = await transcribeAudio({ path: tmpPath });
+        }
+
         if (!transcript.text) {
           return c.json({ note: null, transcript });
         }
-        const note = await writeNote(user.id, { content: transcript.text, source: "audio" });
-        return c.json({ note, transcript });
+        return c.json({ transcript });
       } finally {
         if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
       }
