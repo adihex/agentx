@@ -42,6 +42,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Clean dist (prevent stale hashed assets from cache replays)
+        run: rm -rf apps/zettel/dist apps/zettel/dist-server
+
       - name: Build Zettel and dependencies
         run: pnpm exec vp run @agentx/zettel#build
 
@@ -135,16 +138,25 @@ jobs:
         run: |
           URL="${{ steps.deploy.outputs.url }}"
           echo "Testing $URL/api/health ..."
-          for i in 1 2 3; do
-            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "$URL/api/health" || echo "000")
-            echo "Attempt $i: HTTP $STATUS"
+          # 12 retries × 10s = 2 min total — covers Cloud Run cold starts
+          for i in $(seq 1 12); do
+            STATUS=$(curl -sf --max-time 30 -o /dev/null -w "%{http_code}" "$URL/api/health" || echo "000")
+            echo "Attempt $i/12: HTTP $STATUS"
             [ "$STATUS" = "200" ] && exit 0
-            sleep 5
+            sleep 10
           done
-          echo "Smoke test failed — rolling back Cloud Run to previous revision"
-          gcloud run services update-traffic zettel-service \
-            --to-revisions=CURRENT-1=100 \
-            --region=asia-south1
+          echo "Smoke test failed after 2 min — rolling back Cloud Run to previous revision"
+          PREV=$(gcloud run revisions list \
+            --service zettel-service \
+            --region asia-south1 \
+            --format="value(name)" \
+            --limit=2 | tail -1)
+          if [ -n "$PREV" ]; then
+            gcloud run services update-traffic zettel-service \
+              --to-revisions="$PREV=100" \
+              --region asia-south1
+            echo "Rolled back to $PREV"
+          fi
           exit 1
 
       - name: Show Service URL
