@@ -13,6 +13,7 @@
     "@opentui/core": "catalog:",
     "@opentui/react": "catalog:",
     "dotenv": "^17.4.2",
+    "jiti": "catalog:",
     "react": "catalog:",
     "zod": "catalog:"
   },

@@ -378,6 +378,9 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      jiti:
+        specifier: 'catalog:'
+        version: 2.7.0
       react:
         specifier: 'catalog:'
         version: 19.2.7

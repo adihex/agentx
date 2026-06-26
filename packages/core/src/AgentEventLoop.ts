@@ -54,6 +54,14 @@ export interface AgentEventLoopOptions {
   tools?: Record<string, ToolDefinition>;
   /** Automatically run tick when async tasks complete or new ones are scheduled (default: false) */
   autoTick?: boolean;
+  /**
+   * Silence all direct diagnostic output — the loop/phase/ADP `console` logs and
+   * the streamed answer written to `process.stdout`. A host that renders via the
+   * emitted events and owns the screen (e.g. a TUI built on OpenTUI/Ink) should
+   * set this so raw writes don't land on top of its frame. Events are unaffected.
+   * (default: false — preserves plain-CLI printing)
+   */
+  quiet?: boolean;
 }
 
 /**
@@ -99,6 +107,7 @@ export class AgentEventLoop extends EventEmitter {
   private promptResolver: (() => void) | null = null;
   private shutdownRequested = false;
   private autoTick = false;
+  private quiet = false;
 
   /**
    * Create a new AgentEventLoop.
@@ -107,6 +116,7 @@ export class AgentEventLoop extends EventEmitter {
   constructor(opts: AgentEventLoopOptions = {}) {
     super();
     this.autoTick = opts.autoTick ?? false;
+    this.quiet = opts.quiet ?? false;
     if (opts.adpServer) {
       this.adp = new AdpServer({ server: opts.adpServer });
     } else {
@@ -155,12 +165,12 @@ export class AgentEventLoop extends EventEmitter {
     const id = this.uid();
     const args = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
     this.pendingToolCalls++;
-    console.log(`[Loop] 🚀  Dispatching tool "${toolName}" (id=${id}) to thread pool`);
+    this.log(`[Loop] 🚀  Dispatching tool "${toolName}" (id=${id}) to thread pool`);
 
     // Fire and forget — the promise resolves asynchronously and pushes onto
     // the macrotask queue, exactly like libuv posts I/O completions.
     void this.threadPool.execute({ id, toolCallId, toolName, args }).then((result) => {
-      console.log(`[Loop] 📬  Tool "${toolName}" completed in ${result.durationMs}ms`);
+      this.log(`[Loop] 📬  Tool "${toolName}" completed in ${result.durationMs}ms`);
       this.macrotaskQueue.push({ source: toolName, toolCallId, toolName, result });
       this.pendingToolCalls--;
       this.emit("tool.complete", { toolName, id, result });
@@ -238,7 +248,7 @@ export class AgentEventLoop extends EventEmitter {
 
   /** Graceful shutdown. */
   public async shutdown(): Promise<void> {
-    console.log("[Loop] Shutting down…");
+    this.log("[Loop] Shutting down…");
     this.shutdownRequested = true;
     if (this.promptResolver) {
       this.promptResolver();
@@ -260,20 +270,20 @@ export class AgentEventLoop extends EventEmitter {
 
     const iter = this.iteration;
     this.emit("tick.start", { iteration: iter });
-    console.log(`\n${"═".repeat(60)}`);
-    console.log(`  EVENT LOOP — iteration ${iter}`);
-    console.log(`${"═".repeat(60)}`);
+    this.log(`\n${"═".repeat(60)}`);
+    this.log(`  EVENT LOOP — iteration ${iter}`);
+    this.log(`${"═".repeat(60)}`);
 
     // ── Phase 1: Timers ─────────────────────────────────────────────────────
-    console.log(`[Phase 1/4] ⏱  Timers`);
+    this.log(`[Phase 1/4] ⏱  Timers`);
     // (placeholder for TTL / cache-purge logic)
 
     // ── Phase 2: I/O Callbacks (drain macrotask queue) ──────────────────────
-    console.log(`[Phase 2/4] 📥  I/O Callbacks — ${this.macrotaskQueue.length} macrotask(s)`);
+    this.log(`[Phase 2/4] 📥  I/O Callbacks — ${this.macrotaskQueue.length} macrotask(s)`);
     while (this.macrotaskQueue.length > 0) {
       const item = this.macrotaskQueue.shift()!;
       const r = item.result;
-      console.log(`           └─ ingesting result from "${item.source}"`);
+      this.log(`           └─ ingesting result from "${item.source}"`);
       // Record the worker result as a proper tool-result message, paired to the
       // assistant tool_call by toolCallId, so native tool calling stays valid.
       // Unwrap the ToolResult: the model sees the tool's actual return value (or
@@ -294,14 +304,14 @@ export class AgentEventLoop extends EventEmitter {
     }
 
     // ── Phase 3: Inference (native-tools step) ──────────────────────────────
-    console.log(`[Phase 3/4] 🧠  Inference`);
+    this.log(`[Phase 3/4] 🧠  Inference`);
     let assistantText = "";
     this.stepCount++;
 
     try {
       this.inferenceAbort = new AbortController();
 
-      process.stdout.write("  Agent ▸ ");
+      this.write("  Agent ▸ ");
       this.emit("inference.start", { iteration: iter });
 
       const result = await this.llm.runStep(
@@ -310,12 +320,12 @@ export class AgentEventLoop extends EventEmitter {
         this.inferenceAbort.signal,
         undefined,
         (chunk) => {
-          process.stdout.write(chunk);
+          this.write(chunk);
           assistantText += chunk;
           this.emit("inference.chunk", { chunk });
         },
       );
-      process.stdout.write("\n");
+      this.write("\n");
 
       // Record the assistant turn verbatim — this carries the tool_calls
       // correctly (replacing the old assistant-as-string push).
@@ -332,17 +342,17 @@ export class AgentEventLoop extends EventEmitter {
       // guard on every re-tick trigger, so tool results still get recorded
       // (keeping history valid) — we simply stop inferring further.
       if (result.toolCalls.length === 0) {
-        console.log(`[Loop] ✅  Terminal answer (no tool calls) — run complete`);
+        this.log(`[Loop] ✅  Terminal answer (no tool calls) — run complete`);
       } else if (this.stepCount >= MAX_STEPS_PER_RUN) {
-        console.log(`[Loop] 🛑  Step cap (${MAX_STEPS_PER_RUN}) reached — no further inference`);
+        this.log(`[Loop] 🛑  Step cap (${MAX_STEPS_PER_RUN}) reached — no further inference`);
       }
     } catch (err: any) {
       if (err.name === "AbortError" || (err instanceof Error && err.message?.includes("aborted"))) {
-        console.log("\n  ⚠️  Inference HALTED via ADP (AbortSignal fired)");
+        this.log("\n  ⚠️  Inference HALTED via ADP (AbortSignal fired)");
         assistantText = "[inference halted by operator]";
         this.context.push({ role: "assistant", content: assistantText });
       } else {
-        console.error("\n  ❌  Inference error:", (err as Error).message ?? err);
+        this.logError("\n  ❌  Inference error:", (err as Error).message ?? err);
         assistantText = `[inference error: ${(err as Error).message}]`;
         this.context.push({ role: "assistant", content: assistantText });
       }
@@ -351,20 +361,20 @@ export class AgentEventLoop extends EventEmitter {
     }
 
     // ── Phase 4: Check (drain microtask queue) ──────────────────────────────
-    console.log(`[Phase 4/4] 🔍  Check — ${this.microtaskQueue.length} microtask(s)`);
+    this.log(`[Phase 4/4] 🔍  Check — ${this.microtaskQueue.length} microtask(s)`);
     while (this.microtaskQueue.length > 0) {
       const task = this.microtaskQueue.shift()!;
-      console.log(`           └─ running "${task.name}"`);
+      this.log(`           └─ running "${task.name}"`);
       await task.fn();
     }
 
     // ── Pause gate (Metacognition.pause) ────────────────────────────────────
     if (this.paused) {
-      console.log("[Loop] ⏸  Paused by ADP. Waiting for Metacognition.resume…");
+      this.log("[Loop] ⏸  Paused by ADP. Waiting for Metacognition.resume…");
       while (this.paused) {
         await sleep(300);
       }
-      console.log("[Loop] ▶  Resumed");
+      this.log("[Loop] ▶  Resumed");
     }
 
     this.running = false;
@@ -395,7 +405,7 @@ export class AgentEventLoop extends EventEmitter {
   private wireAdp() {
     // Inference.halt — abort the active LLM stream instantly
     this.adp.handle(AdpDomains.Inference.halt, (_params, cb) => {
-      console.log("[ADP] 🛑  Inference.halt received");
+      this.log("[ADP] 🛑  Inference.halt received");
       if (this.inferenceAbort) {
         this.inferenceAbort.abort();
         this.inferenceAbort = null;
@@ -408,20 +418,20 @@ export class AgentEventLoop extends EventEmitter {
     // Inference.evaluate — inject a thought into context without queuing
     this.adp.handle(AdpDomains.Inference.evaluate, (params, cb) => {
       const expr = params?.expression ?? "";
-      console.log(`[ADP] 💉  Inference.evaluate: "${JSON.stringify(expr)}"`);
+      this.log(`[ADP] 💉  Inference.evaluate: "${JSON.stringify(expr)}"`);
       this.context.push({ role: "user", content: `[ADP Injected]: ${JSON.stringify(expr)}` });
       cb({ status: "injected", contextLength: this.context.length });
     });
 
     // Metacognition.pause / resume
     this.adp.handle(AdpDomains.Metacognition.pause, (_params, cb) => {
-      console.log("[ADP] ⏸  Metacognition.pause");
+      this.log("[ADP] ⏸  Metacognition.pause");
       this.paused = true;
       cb({ status: "paused", iteration: this.iteration });
     });
 
     this.adp.handle(AdpDomains.Metacognition.resume, (_params, cb) => {
-      console.log("[ADP] ▶  Metacognition.resume");
+      this.log("[ADP] ▶  Metacognition.resume");
       this.paused = false;
       cb({ status: "resumed", iteration: this.iteration });
     });
@@ -463,7 +473,7 @@ export class AgentEventLoop extends EventEmitter {
         cb({ status: "error", reason: "missing prompt" });
         return;
       }
-      console.log(
+      this.log(
         `[ADP] 📥  Session.prompt: "${prompt.slice(0, 80)}${prompt.length > 80 ? "..." : ""}"`,
       );
       this.promptQueue.push(prompt);
@@ -475,7 +485,7 @@ export class AgentEventLoop extends EventEmitter {
 
     // Session.shutdown — graceful shutdown
     this.adp.handle(AdpDomains.Session.shutdown, (_params, cb) => {
-      console.log("[ADP] 🔌  Session.shutdown received");
+      this.log("[ADP] 🔌  Session.shutdown received");
       this.shutdownRequested = true;
       if (this.promptResolver) {
         this.promptResolver();
@@ -504,7 +514,7 @@ export class AgentEventLoop extends EventEmitter {
         cb({ status: "error", reason: "missing toolName" });
         return;
       }
-      console.log(`[ADP] 🔧  Toolchain.intercept: ${toolName}`);
+      this.log(`[ADP] 🔧  Toolchain.intercept: ${toolName}`);
       const toolCallId = `intercept_${this.uid()}`;
       this.dispatchTool(toolName, args, toolCallId);
       cb({ status: "dispatched", toolName, toolCallId });
@@ -528,6 +538,21 @@ export class AgentEventLoop extends EventEmitter {
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
+
+  /** Diagnostic log — gated by `quiet` so a TUI host can stay frame-clean. */
+  private log(...args: unknown[]): void {
+    if (!this.quiet) console.log(...args);
+  }
+
+  /** Diagnostic error log — gated by `quiet`. */
+  private logError(...args: unknown[]): void {
+    if (!this.quiet) console.error(...args);
+  }
+
+  /** Raw stdout write (streamed answer) — gated by `quiet`. */
+  private write(text: string): void {
+    if (!this.quiet) process.stdout.write(text);
+  }
 
   private uid(): string {
     return Math.random().toString(36).slice(2, 10);

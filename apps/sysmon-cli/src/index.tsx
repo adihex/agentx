@@ -1,8 +1,8 @@
 // Required env vars: OPENAI_API_KEY, OPENAI_BASE_URL (OpenCode Zen endpoint), AGENT_MODEL
 import "dotenv/config";
 import React, { useState, useEffect, useRef } from "react";
-import { createRoot, useKeyboard } from "@opentui/react";
-import { createCliRenderer } from "@opentui/core";
+import { createRoot, useKeyboard, useTerminalDimensions } from "@opentui/react";
+import { createCliRenderer, TextAttributes } from "@opentui/core";
 import { AgentEventLoop } from "@agentx/core";
 import os from "node:os";
 import {
@@ -11,68 +11,92 @@ import {
   killProcessTool,
   cleanTempFilesTool,
 } from "./tools/system.js";
+import {
+  RAW,
+  col,
+  REDUCED_MOTION,
+  sevColor,
+  sevGlyph,
+  pctSeverity,
+  loadSeverity,
+  sparkline,
+  gauge,
+  formatUptime,
+  parsePercent,
+  isDestructiveTool,
+  SPINNER_FRAMES,
+  type Severity,
+} from "./theme.js";
 
-// Layout types
-interface BoxProps {
-  children?: React.ReactNode;
-  borderStyle?: "single" | "double" | "round" | "bold" | "classic";
-  borderColor?: string;
-  paddingX?: number;
-  paddingY?: number;
-  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
-  justifyContent?: "flex-start" | "center" | "flex-end" | "space-between" | "space-around";
-  alignItems?: "flex-start" | "center" | "flex-end" | "stretch";
-  flexGrow?: number;
-  width?: string | number;
-  height?: string | number;
-  gap?: number;
-  flexWrap?: "wrap" | "nowrap" | "wrap-reverse";
-  marginLeft?: string | number;
-}
+const { BOLD, DIM } = TextAttributes;
+const SEV_RANK: Record<Severity, number> = { ok: 0, warn: 1, crit: 2 };
+const worst = (...s: Severity[]): Severity =>
+  s.reduce((a, b) => (SEV_RANK[b] > SEV_RANK[a] ? b : a), "ok" as Severity);
 
-interface TextProps {
-  children?: React.ReactNode;
-  color?: string;
-  bold?: boolean;
-  dimColor?: boolean;
-}
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      box: BoxProps;
-      text: TextProps;
-    }
-  }
-}
-
-const Box = (props: BoxProps) => (
-  // @ts-expect-error custom TUI intrinsic element
-  <box {...props}>{props.children}</box>
-);
-const Text = (props: TextProps) => <text {...props}>{props.children}</text>;
-
+type Tone = "info" | "ok" | "warn" | "error";
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   text: string;
+  tone?: Tone;
 }
 
+/** Visual treatment for a message's gutter label + body, NO_COLOR-aware. */
+function describe(msg: ChatMessage): {
+  label: string;
+  labelColor?: string;
+  labelAttrs: number;
+  textColor?: string;
+  textAttrs: number;
+} {
+  if (msg.role === "user")
+    return { label: "you", labelColor: col(RAW.accent), labelAttrs: BOLD, textAttrs: 0 };
+  if (msg.role === "assistant")
+    return { label: "sysmon", labelColor: col(RAW.ink), labelAttrs: BOLD, textAttrs: 0 };
+  switch (msg.tone) {
+    case "ok":
+      return { label: "✓", labelColor: col(RAW.ok), labelAttrs: 0, textColor: col(RAW.muted), textAttrs: 0 };
+    case "warn":
+      return { label: "!", labelColor: col(RAW.warn), labelAttrs: BOLD, textColor: col(RAW.warn), textAttrs: 0 };
+    case "error":
+      return { label: "✗", labelColor: col(RAW.crit), labelAttrs: BOLD, textColor: col(RAW.crit), textAttrs: 0 };
+    default:
+      return { label: "→", labelColor: col(RAW.muted), labelAttrs: DIM, textColor: col(RAW.muted), textAttrs: DIM };
+  }
+}
+
+/** A labeled telemetry cell: dim lowercase label stacked over its readout. */
+const Metric = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <box flexDirection="column" minWidth={14}>
+    <text fg={col(RAW.muted)} attributes={DIM}>
+      {label}
+    </text>
+    <box flexDirection="row" gap={1} alignItems="center">
+      {children}
+    </box>
+  </box>
+);
+
 const SysmonApp = ({ onExit }: { onExit: () => void }) => {
+  const { width } = useTerminalDimensions();
   const [stats, setStats] = useState({
     cpu: "0%",
     mem: "0%",
-    freeMem: "0 GB",
-    totalMem: "0 GB",
-    load: [0, 0, 0],
+    freeMem: "0.00",
+    totalMem: "0.00",
+    load: [0, 0, 0] as number[],
+    uptime: 0,
   });
+  const [cpuHistory, setCpuHistory] = useState<number[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "system",
-      text: "System Optimizer Agent initialized. Type commands or ask about system load.",
-    },
+    { role: "system", text: "ready — ask about cpu, memory, or processes.", tone: "info" },
   ]);
   const [command, setCommand] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  const [spinner, setSpinner] = useState(0);
   const agentRef = useRef<AgentEventLoop | undefined>(undefined);
+
+  const addSystem = (text: string, tone: Tone = "info") =>
+    setMessages((prev) => [...prev, { role: "system", text, tone }]);
 
   // Initialize Agent
   if (!agentRef.current) {
@@ -93,92 +117,86 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
       },
       autoTick: true,
       adpPort: 9223, // custom port to avoid conflict
+      quiet: true, // TUI owns the screen — suppress the core's direct stdout/console writes
     });
   }
 
-  // Telemetry Polling
+  // Telemetry polling (2s cadence — a monitor at rest should stay at rest)
   useEffect(() => {
     let lastCpuTimes = os.cpus().map((c) => c.times);
 
-    const interval = setInterval(() => {
-      // Memory
+    const sample = () => {
       const total = os.totalmem();
       const free = os.freemem();
       const used = total - free;
       const memPercent = ((used / total) * 100).toFixed(1) + "%";
-      const freeGB = (free / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-      const totalGB = (total / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+      const toGB = (b: number) => (b / 1024 ** 3).toFixed(2);
 
-      // CPU
       const cpus = os.cpus();
       let totalDiff = 0;
       let idleDiff = 0;
       cpus.forEach((cpu, i) => {
         const last = lastCpuTimes[i];
-        const current = cpu.times;
         if (!last) return;
-
         const lastTotal = last.user + last.nice + last.sys + last.idle + last.irq;
-        const currentTotal = current.user + current.nice + current.sys + current.idle + current.irq;
-
-        totalDiff += currentTotal - lastTotal;
-        idleDiff += current.idle - last.idle;
+        const curr = cpu.times;
+        const currTotal = curr.user + curr.nice + curr.sys + curr.idle + curr.irq;
+        totalDiff += currTotal - lastTotal;
+        idleDiff += curr.idle - last.idle;
       });
       lastCpuTimes = cpus.map((c) => c.times);
-      const cpuPercent =
-        totalDiff > 0 ? (((totalDiff - idleDiff) / totalDiff) * 100).toFixed(1) + "%" : "0%";
+      const cpuValue = totalDiff > 0 ? ((totalDiff - idleDiff) / totalDiff) * 100 : 0;
 
       setStats({
-        cpu: cpuPercent,
+        cpu: cpuValue.toFixed(1) + "%",
         mem: memPercent,
-        freeMem: freeGB,
-        totalMem: totalGB,
+        freeMem: toGB(free),
+        totalMem: toGB(total),
         load: os.loadavg(),
+        uptime: os.uptime(),
       });
-    }, 2000);
+      setCpuHistory((prev) => [...prev, cpuValue].slice(-60));
+    };
 
+    sample();
+    const interval = setInterval(sample, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  // Agent Event Integration
+  // Gentle "thinking" spinner — disabled under reduced motion
+  useEffect(() => {
+    if (!isThinking || REDUCED_MOTION) return;
+    const interval = setInterval(() => setSpinner((f) => (f + 1) % SPINNER_FRAMES.length), 90);
+    return () => clearInterval(interval);
+  }, [isThinking]);
+
+  // Agent event integration
   useEffect(() => {
     const agent = agentRef.current!;
 
-    const onInferenceStart = () => {
+    const onInferenceStart = () =>
       setMessages((prev) => [...prev, { role: "assistant", text: "" }]);
-    };
 
-    const onInferenceChunk = (payload: { chunk: string }) => {
+    const onInferenceChunk = (payload: { chunk: string }) =>
       setMessages((prev) => {
         const last = prev[prev.length - 1];
-        if (last && last.role === "assistant") {
+        if (last?.role === "assistant") {
           const updated = [...prev];
-          updated[updated.length - 1] = {
-            ...last,
-            text: last.text + payload.chunk,
-          };
+          updated[updated.length - 1] = { ...last, text: last.text + payload.chunk };
           return updated;
         }
         return prev;
       });
-    };
 
-    const onToolDispatch = (payload: { toolName: string; id: string; args: unknown }) => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "system", text: `🔧 Running tool: ${payload.toolName}...` },
-      ]);
-    };
+    const onToolDispatch = (payload: { toolName: string }) =>
+      addSystem(payload.toolName, isDestructiveTool(payload.toolName) ? "warn" : "info");
 
-    const onToolComplete = (payload: any) => {
-      setMessages((prev) => [...prev, { role: "system", text: `✅ ${payload.toolName} done.` }]);
-    };
+    const onToolComplete = (payload: { toolName: string }) => addSystem(payload.toolName, "ok");
 
     agent.on("inference.start", onInferenceStart);
     agent.on("inference.chunk", onInferenceChunk);
     agent.on("tool.dispatch", onToolDispatch);
     agent.on("tool.complete", onToolComplete);
-
     return () => {
       agent.off("inference.start", onInferenceStart);
       agent.off("inference.chunk", onInferenceChunk);
@@ -187,104 +205,175 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
     };
   }, []);
 
-  // Keyboard controls
-  useKeyboard((event) => {
-    if (event.name === "return" || event.name === "enter") {
-      if (command.trim()) {
-        const userMsg = command.trim();
-        setMessages((prev) => [...prev, { role: "user", text: userMsg }]);
-        setCommand("");
+  // Zero-arg so it satisfies opentui's intersected onSubmit type; the controlled
+  // `command` state is always current (updated on every onInput before Enter).
+  const handleSubmit = () => {
+    const text = command.trim();
+    if (!text || isThinking) return;
+    setMessages((prev) => [...prev, { role: "user", text }]);
+    setCommand("");
+    setIsThinking(true);
+    agentRef
+      .current!.run(text)
+      .catch((err: unknown) => addSystem(err instanceof Error ? err.message : String(err), "error"))
+      .finally(() => setIsThinking(false));
+  };
 
-        agentRef.current!.run(userMsg).catch((err: any) => {
-          setMessages((prev) => [
-            ...prev,
-            { role: "system", text: `[Error] ${err.message || err}` },
-          ]);
-        });
-      }
-    } else if (event.ctrl && event.name === "c") {
-      void agentRef.current!.shutdown().then(() => {
-        onExit();
-      });
-    } else if (event.name === "backspace") {
-      setCommand((p) => p.slice(0, -1));
-    } else if (event.name === "space") {
-      setCommand((p) => p + " ");
-    } else if (!event.ctrl && !event.meta && !event.option && event.name.length === 1) {
-      setCommand((p) => p + event.name);
+  // Ctrl+C → graceful agent shutdown, then exit
+  useKeyboard((event) => {
+    if (event.ctrl && event.name === "c") {
+      void agentRef.current!.shutdown().then(onExit);
     }
   });
 
+  // Derived view state
+  const cpuPct = parsePercent(stats.cpu);
+  const memPct = parsePercent(stats.mem);
+  const cores = os.cpus().length;
+  const cpuSev = pctSeverity(cpuPct);
+  const memSev = pctSeverity(memPct, 75, 90);
+  const loadSev = loadSeverity(stats.load[0] ?? 0, cores);
+  const overall = worst(cpuSev, memSev, loadSev);
+
+  // Responsive sizing
+  const sparkWidth = Math.max(8, Math.min(22, Math.floor(width / 6)));
+  const gaugeWidth = width < 72 ? 8 : 12;
+  const showBytes = width >= 84;
+  const spark = sparkline(cpuHistory, sparkWidth);
+  const bar = gauge(memPct, gaugeWidth);
+  const [l1, l2, l3] = stats.load.map((l) => l.toFixed(2));
+
   return (
-    <Box flexDirection="column" width="100%" height="100%">
-      {/* Title Header */}
-      <Box borderStyle="single" borderColor="magenta" paddingX={1} justifyContent="space-between">
-        <Text bold color="magenta">
-          SYSTEM OPTIMIZER CLI v0.1
-        </Text>
-        <Box gap={2}>
-          <Text dimColor>Uptime:</Text>
-          <Text color="cyan">{Math.floor(os.uptime() / 60)}m</Text>
-        </Box>
-      </Box>
+    <box flexDirection="column" width="100%" height="100%">
+      {/* ── Header band: identity + telemetry, closed by a dim rule ── */}
+      <box border={["bottom"]} borderColor={col(RAW.border)} flexShrink={0} paddingX={2} paddingTop={1}>
+        <box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <box flexDirection="row" gap={1} alignItems="center">
+            <text fg={col(RAW.accent)} attributes={BOLD}>
+              sysmon
+            </text>
+            <text fg={col(RAW.border)}>·</text>
+            <text fg={col(RAW.muted)}>system optimizer</text>
+          </box>
+          <box flexDirection="row" gap={1} alignItems="center">
+            <text fg={col(RAW.muted)} attributes={DIM}>
+              uptime
+            </text>
+            <text fg={col(RAW.ink)}>{formatUptime(stats.uptime)}</text>
+          </box>
+        </box>
 
-      {/* Stats row */}
-      <Box
-        borderStyle="single"
-        borderColor="gray"
-        height={6}
-        flexDirection="row"
-        paddingX={1}
-        gap={4}
+        <box flexDirection="row" gap={5} flexWrap="wrap" paddingTop={1} paddingBottom={1}>
+          <Metric label="cpu">
+            <text attributes={BOLD} fg={sevColor(cpuSev)}>
+              {stats.cpu}
+            </text>
+            <text fg={col(RAW.accent)} attributes={DIM}>
+              {spark}
+            </text>
+          </Metric>
+
+          <Metric label="memory">
+            <text>
+              <span fg={sevColor(memSev) ?? col(RAW.ok)}>{bar.filled}</span>
+              <span fg={col(RAW.track)}>{bar.empty}</span>
+            </text>
+            <text attributes={BOLD} fg={sevColor(memSev)}>
+              {stats.mem}
+            </text>
+            {showBytes && (
+              <text fg={col(RAW.muted)} attributes={DIM}>
+                {stats.freeMem} free / {stats.totalMem} gb
+              </text>
+            )}
+          </Metric>
+
+          <Metric label="load">
+            <text attributes={BOLD} fg={sevColor(loadSev)}>
+              {l1}
+            </text>
+            <text fg={col(RAW.muted)}>{l2}</text>
+            <text fg={col(RAW.muted)}>{l3}</text>
+            <text fg={col(RAW.muted)} attributes={DIM}>
+              · {cores} cores
+            </text>
+          </Metric>
+        </box>
+      </box>
+
+      {/* ── Console: scrollable chat, auto-sticks to newest ── */}
+      <scrollbox
+        flexGrow={1}
+        stickyScroll
+        stickyStart="bottom"
+        paddingX={2}
+        paddingTop={1}
+        contentOptions={{ gap: 0 }}
       >
-        <Box flexDirection="column">
-          <Text color="cyan" bold>
-            CPU Usage
-          </Text>
-          <Text color="white">{stats.cpu}</Text>
-        </Box>
-        <Box flexDirection="column">
-          <Text color="cyan" bold>
-            Memory Usage
-          </Text>
-          <Text color="white">
-            {stats.mem} ({stats.freeMem} free / {stats.totalMem})
-          </Text>
-        </Box>
-        <Box flexDirection="column">
-          <Text color="cyan" bold>
-            Load Avg
-          </Text>
-          <Text color="white">{stats.load.map((l) => l.toFixed(2)).join(", ")}</Text>
-        </Box>
-      </Box>
+        {messages.map((msg, i) => {
+          const d = describe(msg);
+          const streaming = isThinking && i === messages.length - 1 && msg.role === "assistant";
+          return (
+            <box key={i} flexDirection="row" gap={1}>
+              <box width={8} flexShrink={0} justifyContent="flex-end" flexDirection="row">
+                <text fg={d.labelColor} attributes={d.labelAttrs}>
+                  {d.label}
+                </text>
+              </box>
+              <box flexGrow={1}>
+                <text fg={d.textColor} attributes={d.textAttrs}>
+                  {msg.text}
+                  {streaming ? <span fg={col(RAW.accent)}>▍</span> : null}
+                </text>
+              </box>
+            </box>
+          );
+        })}
+      </scrollbox>
 
-      {/* Main Console */}
-      <Box flexGrow={1} borderStyle="single" borderColor="gray" flexDirection="column" paddingX={1}>
-        <Text color="gray">─── Console & Chat ───</Text>
-        <Box flexGrow={1} flexDirection="column" justifyContent="flex-end">
-          {messages.slice(-15).map((msg, i) => (
-            <Box key={i} flexDirection="row" gap={1}>
-              {msg.role === "user" && <Text color="green">[User]:</Text>}
-              {msg.role === "assistant" && <Text color="magenta">[Agent]:</Text>}
-              {msg.role === "system" && <Text color="yellow">[Sys]:</Text>}
-              <Text>{msg.text}</Text>
-            </Box>
-          ))}
-        </Box>
-      </Box>
+      {/* ── Input band: prompt + key hints / live status, opened by a dim rule ── */}
+      <box border={["top"]} borderColor={col(RAW.border)} flexShrink={0} paddingX={2} paddingTop={1}>
+        <box flexDirection="row" gap={1} alignItems="center">
+          <text fg={col(RAW.accent)} attributes={BOLD}>
+            ›
+          </text>
+          <input
+            flexGrow={1}
+            focused
+            value={command}
+            onInput={setCommand}
+            onSubmit={handleSubmit}
+            placeholder="ask sysmon something…"
+            textColor={col(RAW.ink)}
+            focusedTextColor={col(RAW.ink)}
+            placeholderColor={col(RAW.muted)}
+          />
+        </box>
 
-      {/* Input Prompter */}
-      <Box paddingX={1}>
-        <Text color="cyan">sysmon@agentx:~$ {command}█</Text>
-        <Text dimColor>Ctrl+C to Exit</Text>
-      </Box>
-    </Box>
+        <box flexDirection="row" justifyContent="space-between" paddingTop={1}>
+          <text fg={col(RAW.muted)} attributes={DIM}>
+            enter send · ctrl+c quit
+          </text>
+          {isThinking ? (
+            <text fg={col(RAW.accent)}>
+              {REDUCED_MOTION ? "◆" : SPINNER_FRAMES[spinner]} working…
+            </text>
+          ) : overall === "ok" ? (
+            <text fg={col(RAW.ok)}>● ready</text>
+          ) : (
+            <text fg={sevColor(overall)} attributes={BOLD}>
+              {sevGlyph(overall)} {cpuSev === overall ? "cpu" : memSev === overall ? "memory" : "load"}{" "}
+              {overall === "crit" ? "critical" : "elevated"}
+            </text>
+          )}
+        </box>
+      </box>
+    </box>
   );
 };
 
 const main = async () => {
-  const renderer = await createCliRenderer();
+  const renderer = await createCliRenderer({ exitOnCtrlC: false });
   const root = createRoot(renderer);
 
   const handleExit = () => {
