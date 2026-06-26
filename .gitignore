@@ -42,3 +42,5 @@ coverage/
 findings.md
 progress.md
 task_plan.md
+apps/zettel/e2e/screenshots
+apps/zettel/test-results

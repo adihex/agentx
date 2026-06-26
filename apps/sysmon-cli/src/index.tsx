@@ -93,6 +93,7 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
   const [command, setCommand] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [spinner, setSpinner] = useState(0);
+  const [toolsInFlight, setToolsInFlight] = useState(0);
   const agentRef = useRef<AgentEventLoop | undefined>(undefined);
 
   const addSystem = (text: string, tone: Tone = "info") =>
@@ -188,10 +189,15 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
         return prev;
       });
 
-    const onToolDispatch = (payload: { toolName: string }) =>
+    const onToolDispatch = (payload: { toolName: string }) => {
+      setToolsInFlight((n) => n + 1);
       addSystem(payload.toolName, isDestructiveTool(payload.toolName) ? "warn" : "info");
+    };
 
-    const onToolComplete = (payload: { toolName: string }) => addSystem(payload.toolName, "ok");
+    const onToolComplete = (payload: { toolName: string }) => {
+      setToolsInFlight((n) => Math.max(0, n - 1));
+      addSystem(payload.toolName, "ok");
+    };
 
     agent.on("inference.start", onInferenceStart);
     agent.on("inference.chunk", onInferenceChunk);
@@ -216,7 +222,10 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
     agentRef
       .current!.run(text)
       .catch((err: unknown) => addSystem(err instanceof Error ? err.message : String(err), "error"))
-      .finally(() => setIsThinking(false));
+      .finally(() => {
+        setIsThinking(false);
+        setToolsInFlight(0);
+      });
   };
 
   // Ctrl+C → graceful agent shutdown, then exit
@@ -242,6 +251,13 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
   const spark = sparkline(cpuHistory, sparkWidth);
   const bar = gauge(memPct, gaugeWidth);
   const [l1, l2, l3] = stats.load.map((l) => l.toFixed(2));
+
+  // Agent activity: while a turn is in flight and nothing is actively streaming
+  // text, surface a contextual placeholder instead of a blank assistant line.
+  const lastMsg = messages[messages.length - 1];
+  const streamingAnswer = lastMsg?.role === "assistant" && lastMsg.text.length > 0;
+  const showActivity = isThinking && !streamingAnswer;
+  const activityLabel = toolsInFlight > 0 ? "running tools…" : "thinking…";
 
   return (
     <box flexDirection="column" width="100%" height="100%">
@@ -311,6 +327,9 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
         contentOptions={{ gap: 0 }}
       >
         {messages.map((msg, i) => {
+          // Empty assistant turns (a pure tool-call decision, or a just-started
+          // stream) are represented by the activity row below — skip the blank.
+          if (msg.role === "assistant" && msg.text.length === 0) return null;
           const d = describe(msg);
           const streaming = isThinking && i === messages.length - 1 && msg.role === "assistant";
           return (
@@ -329,6 +348,22 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
             </box>
           );
         })}
+
+        {showActivity && (
+          <box flexDirection="row" gap={1}>
+            <box width={8} flexShrink={0} justifyContent="flex-end" flexDirection="row">
+              <text fg={col(RAW.ink)} attributes={BOLD}>
+                sysmon
+              </text>
+            </box>
+            <box flexGrow={1} flexDirection="row" gap={1}>
+              <text fg={col(RAW.accent)}>{REDUCED_MOTION ? "◆" : SPINNER_FRAMES[spinner]}</text>
+              <text fg={col(RAW.muted)} attributes={DIM}>
+                {activityLabel}
+              </text>
+            </box>
+          </box>
+        )}
       </scrollbox>
 
       {/* ── Input band: prompt + key hints / live status, opened by a dim rule ── */}
@@ -354,12 +389,8 @@ const SysmonApp = ({ onExit }: { onExit: () => void }) => {
           <text fg={col(RAW.muted)} attributes={DIM}>
             enter send · ctrl+c quit
           </text>
-          {isThinking ? (
-            <text fg={col(RAW.accent)}>
-              {REDUCED_MOTION ? "◆" : SPINNER_FRAMES[spinner]} working…
-            </text>
-          ) : overall === "ok" ? (
-            <text fg={col(RAW.ok)}>● ready</text>
+          {overall === "ok" ? (
+            <text fg={col(RAW.ok)}>● nominal</text>
           ) : (
             <text fg={sevColor(overall)} attributes={BOLD}>
               {sevGlyph(overall)} {cpuSev === overall ? "cpu" : memSev === overall ? "memory" : "load"}{" "}
