@@ -1,4 +1,13 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import path from "node:path";
+import os from "node:os";
+import { mkdirSync } from "node:fs";
+
+// Force a fresh test directory for the database before importing store.js
+const testDir = path.join(os.tmpdir(), "agentx-zettel-test-" + Date.now());
+mkdirSync(testDir, { recursive: true });
+process.env.ZETTEL_DIR = testDir;
+
+import { describe, it, expect } from "vitest";
 import {
   writeNote,
   listNotes,
@@ -7,20 +16,13 @@ import {
   addLink,
   backlinksOf,
 } from "./store.js";
-import path from "node:path";
-import os from "node:os";
 import fs from "node:fs/promises";
 
 describe("Multi-tenant Notes Database Isolation", () => {
   const userA = "user-A-" + Date.now();
   const userB = "user-B-" + Date.now();
 
-  beforeAll(async () => {
-    // Force a fresh test directory for the database to ensure a clean slate
-    const testDir = path.join(os.tmpdir(), "agentx-zettel-test-" + Date.now());
-    process.env.ZETTEL_DIR = testDir;
-    await fs.mkdir(testDir, { recursive: true });
-  });
+
 
   it("should isolate note creation and listing between users", async () => {
     // 1. Create note for User A
