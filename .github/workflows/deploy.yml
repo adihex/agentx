@@ -1,0 +1,49 @@
+name: Deploy Zettel to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: 'read'
+  id-token: 'write' # Required for Workload Identity Federation OIDC token exchange
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Authenticate to GCP using Workload Identity Federation
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/agentx-zettel-adi-3291/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com'
+
+      # 2. Log in to Google Artifact Registry
+      - name: Log in to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: asia-south1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      # 3. Set up Docker Buildx (required for advanced caching features)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 4. Build and Push Docker Image with GitHub Actions cache backend
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: zettel
+          push: true
+          tags: asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
