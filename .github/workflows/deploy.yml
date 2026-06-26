@@ -8,7 +8,6 @@ on:
 permissions:
   contents: "read"
   id-token: "write" # Required for Workload Identity Federation OIDC token exchange
-  pages: "write"    # Required for GitHub Pages deployment
 
 jobs:
   validate-and-test:
@@ -46,10 +45,12 @@ jobs:
       - name: Run Zettel Tests
         run: pnpm exec vitest run apps/zettel
 
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: zettel-frontend
           path: apps/zettel/dist
+          retention-days: 1
 
   build-and-push:
     needs: validate-and-test
@@ -128,10 +129,29 @@ jobs:
   deploy-frontend:
     needs: validate-and-test
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zettel-frontend
+          path: dist
+
+      - name: Push to adihex.github.io
+        env:
+          PAGES_PAT: ${{ secrets.PAGES_PAT }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git clone https://x-access-token:${PAGES_PAT}@github.com/adihex/adihex.github.io.git pages-repo
+          # Sync dist/ → pages-repo/zettel/ (delete removed files, copy new ones)
+          rsync -av --delete dist/ pages-repo/zettel/
+          cd pages-repo
+          git add -A
+          # Only commit+push if there are actual changes
+          if git diff --staged --quiet; then
+            echo "No changes to deploy."
+          else
+            git commit -m "Deploy zettel frontend @ ${{ github.sha }}"
+            git push
+            echo "Deployed to https://adihex.github.io/zettel/"
+          fi
