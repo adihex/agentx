@@ -132,6 +132,7 @@ jobs:
           region: asia-south1
           env_vars: |
             COMMIT_SHA=${{ github.sha }}
+            AGENT_MODEL=mimo-v2.5
 
       - name: Smoke Test — verify new revision is healthy
         id: smoke

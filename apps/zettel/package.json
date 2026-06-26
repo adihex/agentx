@@ -16,6 +16,7 @@
     "@agentx/agx-core": "workspace:*",
     "@agentx/core": "workspace:*",
     "@ai-sdk/groq": "catalog:",
+    "jiti": "catalog:",
     "@better-auth/infra": "^0.3.2",
     "@hono/node-server": "catalog:",
     "@libsql/client": "catalog:",

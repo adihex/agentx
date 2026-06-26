@@ -351,10 +351,12 @@ export class AgentEventLoop extends EventEmitter {
         this.log("\n  ⚠️  Inference HALTED via ADP (AbortSignal fired)");
         assistantText = "[inference halted by operator]";
         this.context.push({ role: "assistant", content: assistantText });
+        this.emit("inference.end", { text: assistantText });
       } else {
         this.logError("\n  ❌  Inference error:", (err as Error).message ?? err);
         assistantText = `[inference error: ${(err as Error).message}]`;
         this.context.push({ role: "assistant", content: assistantText });
+        this.emit("inference.end", { text: assistantText });
       }
     } finally {
       this.inferenceAbort = null;
