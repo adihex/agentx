@@ -10,7 +10,7 @@ test.describe("Zettel Prompt E2E (production)", () => {
   const password = "Test1234!";
 
   test("should register, submit a prompt, and receive an agent response", async ({ page }) => {
-    test.setTimeout(60000); // 60s timeout for production LLM generation
+    test.setTimeout(120000); // 120s timeout for production LLM generation
     // Capture console errors and network failures for debugging
     const consoleErrors: string[] = [];
     const networkFailures: { url: string; status: number; method: string; body?: string }[] = [];
@@ -105,7 +105,7 @@ test.describe("Zettel Prompt E2E (production)", () => {
     // Wait up to 30s for a response (production LLM can be slow)
     try {
       const assistantTurn = page.locator(".turn-assistant", { hasText: /[a-zA-Z]/ });
-      await expect(assistantTurn.first()).toBeVisible({ timeout: 55000 });
+      await expect(assistantTurn.first()).toBeVisible({ timeout: 100000 });
       const responseText = await assistantTurn.first().textContent();
       console.log(`✅ Agent responded: "${responseText?.slice(0, 200)}"`);
     } catch (err) {
