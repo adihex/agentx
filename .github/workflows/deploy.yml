@@ -105,3 +105,16 @@ jobs:
             asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # 5. Deploy to Google Cloud Run
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: zettel-service
+          image: asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:${{ github.sha }}
+          region: asia-south1
+
+      # 6. Show the service URL
+      - name: Show Service URL
+        run: echo "Deployed successfully! URL is ${{ steps.deploy.outputs.url }}"
