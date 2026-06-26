@@ -37,8 +37,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 FROM deps AS builder
 COPY . .
 # Build only zettel + its workspace dependencies (core, adp, agx-core)
-RUN pnpm --filter @agentx/zettel --filter @agentx/core --filter @agentx/adp --filter @agentx/agx-core build
-RUN pnpm --filter @agentx/zettel exec vite build
+RUN pnpm exec vp run @agentx/zettel#build
 
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
