@@ -1,16 +1,19 @@
-name: Deploy Zettel to GCP
+name: Zettel CI/CD
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch: # Allow manual triggering from GHA UI or `gh workflow run zettel-ci-cd.yml`
 
 permissions:
   contents: "read"
   id-token: "write" # Required for Workload Identity Federation OIDC token exchange
 
 jobs:
+  # ─── Phase 1: Validate ─────────────────────────────────────────────────────
   validate-and-test:
+    name: Validate & Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -52,9 +55,15 @@ jobs:
           path: apps/zettel/dist
           retention-days: 1
 
-  build-and-push:
+  # ─── Phase 2: Build & Deploy Backend ───────────────────────────────────────
+  # Must succeed before frontend is deployed (expand-contract pattern:
+  # new API is live before the frontend that depends on it)
+  deploy-backend:
+    name: Deploy Backend → Cloud Run
     needs: validate-and-test
     runs-on: ubuntu-latest
+    outputs:
+      service_url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -79,7 +88,6 @@ jobs:
             echo "No Vite+ task cache found on runner."
           fi
 
-      # 1. Authenticate to GCP using Workload Identity Federation
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -88,7 +96,6 @@ jobs:
           workload_identity_provider: "projects/594828290101/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
           service_account: "github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com"
 
-      # 2. Log in to Google Artifact Registry
       - name: Log in to Artifact Registry
         uses: docker/login-action@v3
         with:
@@ -96,11 +103,9 @@ jobs:
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
-      # 3. Set up Docker Buildx (required for advanced caching features)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 4. Build and Push Docker Image with GitHub Actions cache backend
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
@@ -110,10 +115,11 @@ jobs:
           tags: |
             asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:${{ github.sha }}
             asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:latest
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # 5. Deploy to Google Cloud Run
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
@@ -121,13 +127,35 @@ jobs:
           service: zettel-service
           image: asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo/zettel:${{ github.sha }}
           region: asia-south1
+          env_vars: |
+            COMMIT_SHA=${{ github.sha }}
 
-      # 6. Show the service URL
+      - name: Smoke Test — verify new revision is healthy
+        id: smoke
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          echo "Testing $URL/api/health ..."
+          for i in 1 2 3; do
+            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "$URL/api/health" || echo "000")
+            echo "Attempt $i: HTTP $STATUS"
+            [ "$STATUS" = "200" ] && exit 0
+            sleep 5
+          done
+          echo "Smoke test failed — rolling back Cloud Run to previous revision"
+          gcloud run services update-traffic zettel-service \
+            --to-revisions=CURRENT-1=100 \
+            --region=asia-south1
+          exit 1
+
       - name: Show Service URL
-        run: echo "Deployed successfully! URL is ${{ steps.deploy.outputs.url }}"
+        run: echo "Backend deployed → ${{ steps.deploy.outputs.url }}"
 
+  # ─── Phase 3: Deploy Frontend ───────────────────────────────────────────────
+  # Only runs after backend is confirmed healthy (smoke test passed).
+  # Rollback: git revert the commit in adihex.github.io
   deploy-frontend:
-    needs: validate-and-test
+    name: Deploy Frontend → GitHub Pages
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
       - name: Download Frontend Artifact
@@ -149,9 +177,9 @@ jobs:
           git add -A
           # Only commit+push if there are actual changes
           if git diff --staged --quiet; then
-            echo "No changes to deploy."
+            echo "No frontend changes to deploy."
           else
             git commit -m "Deploy zettel frontend @ ${{ github.sha }}"
             git push
-            echo "Deployed to https://adihex.github.io/zettel/"
+            echo "Frontend deployed → https://adihex.github.io/zettel/"
           fi

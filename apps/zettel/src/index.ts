@@ -123,6 +123,11 @@ app.use(
   }),
 );
 
+// Public health check — used by CI smoke test and Cloud Run liveness probe
+app.get("/api/health", (c) => {
+  return c.json({ status: "ok", sha: process.env.COMMIT_SHA ?? "dev" });
+});
+
 // Better Auth endpoints (GET/POST)
 app.on(["POST", "GET"], "/api/auth/*", (c) => {
   return auth.handler(c.req.raw);
