@@ -58,7 +58,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           token_format: "access_token"
-          workload_identity_provider: "projects/agentx-zettel-adi-3291/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          workload_identity_provider: "projects/594828290101/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
           service_account: "github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com"
 
       # 2. Log in to Google Artifact Registry
