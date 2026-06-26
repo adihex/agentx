@@ -140,7 +140,7 @@ jobs:
           echo "Testing $URL/api/health ..."
           # 12 retries × 10s = 2 min total — covers Cloud Run cold starts
           for i in $(seq 1 12); do
-            STATUS=$(curl -sf --max-time 30 -o /dev/null -w "%{http_code}" "$URL/api/health" || echo "000")
+            STATUS=$(curl -s --max-time 30 -o /dev/null -w "%{http_code}" "$URL/api/health" || echo "000")
             echo "Attempt $i/12: HTTP $STATUS"
             [ "$STATUS" = "200" ] && exit 0
             sleep 10
