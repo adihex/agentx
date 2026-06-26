@@ -133,6 +133,8 @@ jobs:
           env_vars: |
             COMMIT_SHA=${{ github.sha }}
             AGENT_MODEL=mimo-v2.5
+            GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          flags: "--memory=1Gi"
 
       - name: Smoke Test — verify new revision is healthy
         id: smoke
