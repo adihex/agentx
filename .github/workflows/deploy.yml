@@ -8,6 +8,7 @@ on:
 permissions:
   contents: "read"
   id-token: "write" # Required for Workload Identity Federation OIDC token exchange
+  pages: "write"    # Required for GitHub Pages deployment
 
 jobs:
   validate-and-test:
@@ -44,6 +45,11 @@ jobs:
 
       - name: Run Zettel Tests
         run: pnpm exec vitest run apps/zettel
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/zettel/dist
 
   build-and-push:
     needs: validate-and-test
@@ -118,3 +124,14 @@ jobs:
       # 6. Show the service URL
       - name: Show Service URL
         run: echo "Deployed successfully! URL is ${{ steps.deploy.outputs.url }}"
+
+  deploy-frontend:
+    needs: validate-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

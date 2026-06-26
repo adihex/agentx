@@ -47,6 +47,7 @@ if (dbUrl.startsWith("file:")) {
 export const client = createClient({
   url: dbUrl,
   authToken: dbAuthToken,
+  timeout: 5000, // Wait up to 5s for locks to clear (resolves SQLITE_BUSY in concurrent tests/threads)
 });
 
 // ── Database Schema Initialization ─────────────────────────────────────────────

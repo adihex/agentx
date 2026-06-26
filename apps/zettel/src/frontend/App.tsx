@@ -94,6 +94,15 @@ export default function App() {
   const [recordSecs, setRecordSecs] = useState(0);
   const [showTools, setShowTools] = useState(false);
 
+  // Store session token for cross-origin API auth (bypasses 3rd-party cookie blocking)
+  useEffect(() => {
+    if (session?.session?.token) {
+      localStorage.setItem("session_token", session.session.token);
+    } else {
+      localStorage.removeItem("session_token");
+    }
+  }, [session]);
+
   // Reset registration mode and clear user-specific data when user logs out
   useEffect(() => {
     if (!session) {

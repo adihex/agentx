@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { dash } from "@better-auth/infra";
+import { bearer } from "better-auth/plugins";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { client } from "./store.js";
 
@@ -16,7 +17,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [dash()],
+  plugins: [dash(), bearer()],
   session: {
     cookieCache: {
       enabled: true,
