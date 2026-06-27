@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import ReactFlow, { Background, type Node, type Edge } from "reactflow";
+import React, { useMemo, memo } from "react";
+import ReactFlow, { Background, Handle, Position, type Node, type Edge } from "reactflow";
 import "reactflow/dist/style.css";
 
 interface Note {
@@ -16,6 +16,54 @@ interface SemanticVisualizerProps {
   notes: Note[];
   backlinks: string[];
 }
+
+// Custom Circular Node with Label Above
+const CircularNode = memo(({ data }: any) => {
+  return (
+    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/* Label floating above the node */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "100%",
+          marginBottom: "6px",
+          whiteSpace: "nowrap",
+          fontFamily: "var(--sans)",
+          fontSize: "9px",
+          color: "var(--ink)",
+          fontWeight: data.isCenter ? "600" : "400",
+          background: "var(--paper-rail)",
+          border: data.isCenter ? "1px solid var(--clay-rule)" : "1px solid var(--rule)",
+          padding: "2px 6px",
+          borderRadius: 0,
+          boxShadow: data.isCenter ? "var(--shadow-sm)" : "none",
+          pointerEvents: "none",
+        }}
+      >
+        {data.label}
+      </div>
+
+      {/* The circle node itself */}
+      <div
+        style={{
+          width: data.isCenter ? "12px" : "8px",
+          height: data.isCenter ? "12px" : "8px",
+          borderRadius: "50%",
+          background: data.isCenter ? "var(--clay)" : "var(--paper-sunk)",
+          border: data.isCenter ? "2px solid var(--clay)" : "1.5px solid var(--rule-strong)",
+          boxShadow: data.isCenter ? "0 0 4px var(--clay-rule)" : "none",
+        }}
+      />
+
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+    </div>
+  );
+});
+
+const nodeTypes = {
+  circular: CircularNode,
+};
 
 export default function SemanticVisualizer({
   selectedNote,
@@ -39,27 +87,17 @@ export default function SemanticVisualizer({
     const nodesList: Node[] = [];
     const edgesList: Edge[] = [];
 
-    // 1. Center node styling
+    // 1. Center node
     nodesList.push({
       id: centerId,
-      data: { label: selectedNote.title || "Untitled" },
+      type: "circular",
+      data: { label: selectedNote.title || "Untitled", isCenter: true },
       position: { x: 150, y: 150 },
-      style: {
-        background: "var(--clay-tint)",
-        border: "1px solid var(--clay-rule)",
-        color: "var(--clay-strong)",
-        fontWeight: "600",
-        borderRadius: 0,
-        fontFamily: "var(--sans)",
-        fontSize: "11px",
-        padding: "8px 12px",
-        boxShadow: "var(--shadow-sm)",
-      },
     });
 
     // 2. Position connected nodes in a circle around the center node
     const count = uniqueConnections.length;
-    const radius = 110;
+    const radius = 100;
 
     uniqueConnections.forEach((connectedId, index) => {
       const angle = (2 * Math.PI * index) / count;
@@ -71,17 +109,9 @@ export default function SemanticVisualizer({
 
       nodesList.push({
         id: connectedId,
-        data: { label },
+        type: "circular",
+        data: { label, isCenter: false },
         position: { x, y },
-        style: {
-          background: "var(--paper-rail)",
-          border: "1px solid var(--rule)",
-          color: "var(--ink)",
-          borderRadius: 0,
-          fontFamily: "var(--sans)",
-          fontSize: "10px",
-          padding: "6px 10px",
-        },
       });
 
       // Draw directed edge
@@ -114,15 +144,16 @@ export default function SemanticVisualizer({
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         nodesConnectable={false}
-        nodesDraggable={false}
-        zoomOnScroll={false}
-        zoomOnDoubleClick={false}
-        zoomOnPinch={false}
-        panOnScroll={false}
-        panOnDrag={false}
+        nodesDraggable={true}
+        zoomOnScroll={true}
+        zoomOnDoubleClick={true}
+        zoomOnPinch={true}
+        panOnScroll={true}
+        panOnDrag={true}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.35 }}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="var(--rule-strong)" gap={16} size={1} />
@@ -140,6 +171,7 @@ export default function SemanticVisualizer({
           border: "1px solid var(--rule)",
           padding: "2px 6px",
           zIndex: 4,
+          pointerEvents: "none",
         }}
       >
         <span className="live" style={{ marginRight: "4px", color: "var(--clay)", animation: "pulse 1.2s infinite" }}>●</span>
