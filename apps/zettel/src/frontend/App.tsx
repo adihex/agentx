@@ -710,16 +710,49 @@ export default function App() {
             </div>
           ) : (
             listForRail.map((r) => (
-              <button
+              <div
                 key={r.id}
+                role="button"
+                tabIndex={0}
                 className={`index-item ${selected?.id === r.id ? "active" : ""}`}
                 onClick={() => {
                   void openNote(r.id);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    void openNote(r.id);
+                  }
+                }}
               >
                 <div className="index-item-title">{r.title}</div>
                 <div className="index-item-snippet">{r.snippet || "…"}</div>
-              </button>
+                {selected?.id === r.id && (
+                  <div className="index-item-actions" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      className="index-action-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditing();
+                      }}
+                      title="Edit note"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: "14px", verticalAlign: "middle" }}>edit</span>
+                      Edit
+                    </button>
+                    <button
+                      className="index-action-btn index-action-delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void deleteCurrentNote();
+                      }}
+                      title="Delete note"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: "14px", verticalAlign: "middle" }}>delete</span>
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             ))
           )}
         </nav>
@@ -778,19 +811,6 @@ export default function App() {
                 >
                   ← all notes
                 </button>
-                {!isEditing && (
-                  <div className="note-actions">
-                    <button className="tool-action-btn" onClick={startEditing}>
-                      Edit
-                    </button>
-                    <button
-                      className="tool-action-btn tool-action-delete"
-                      onClick={deleteCurrentNote}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
               </div>
 
               {isEditing ? (
