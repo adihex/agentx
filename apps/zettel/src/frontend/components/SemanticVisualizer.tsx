@@ -15,6 +15,7 @@ interface SemanticVisualizerProps {
   selectedNote: Note | null;
   notes: Note[];
   backlinks: string[];
+  onNodeClick?: (noteId: string) => void;
 }
 
 // Custom Circular Node with Label Above
@@ -69,9 +70,16 @@ function SemanticVisualizerInner({
   selectedNote,
   notes,
   backlinks,
+  onNodeClick,
 }: SemanticVisualizerProps) {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   const [controlsOpen, setControlsOpen] = useState(false);
+
+  const handleNodeClick = (_event: React.MouseEvent, node: any) => {
+    if (onNodeClick) {
+      onNodeClick(node.id);
+    }
+  };
 
   const { nodes, edges } = useMemo(() => {
     if (!selectedNote) {
@@ -148,6 +156,7 @@ function SemanticVisualizerInner({
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        onNodeClick={handleNodeClick}
         nodesConnectable={false}
         nodesDraggable={true}
         zoomOnScroll={true}

@@ -1160,6 +1160,9 @@ export default function App() {
             selectedNote={selected}
             notes={notes}
             backlinks={selectedBacklinks}
+            onNodeClick={(id) => {
+              void openNote(id);
+            }}
           />
         </div>
 
