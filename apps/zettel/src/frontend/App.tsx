@@ -30,9 +30,6 @@ interface ChatMessage {
 }
 
 const isHttps = window.location.protocol === "https:";
-const API_BASE = isHttps
-  ? "https://zettel-service-594828290101.asia-south1.run.app"
-  : window.location.origin;
 const ADP_URL = `${isHttps ? "wss:" : "ws:"}//${isHttps ? "zettel-service-594828290101.asia-south1.run.app" : window.location.host}/adp`;
 
 const GREETING_ID = "1";
@@ -94,6 +91,12 @@ export default function App() {
   const [recordSecs, setRecordSecs] = useState(0);
   const [showTools, setShowTools] = useState(false);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editBody, setEditBody] = useState("");
+  const [editTags, setEditTags] = useState("");
+  const [editLinks, setEditLinks] = useState<string[]>([]);
+
   // Store session token for cross-origin API auth (bypasses 3rd-party cookie blocking)
   useEffect(() => {
     if (session?.session?.token) {
@@ -125,6 +128,11 @@ export default function App() {
           text: "greeting",
         },
       ]);
+      setIsEditing(false);
+      setEditTitle("");
+      setEditBody("");
+      setEditTags("");
+      setEditLinks([]);
     }
   }, [session]);
 
@@ -451,9 +459,71 @@ export default function App() {
         const data = await res.json();
         setSelected(data.note as any);
         setSelectedBacklinks(data.backlinks || []);
+        setIsEditing(false);
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const startEditing = () => {
+    if (!selected) return;
+    setEditTitle(selected.title || "");
+    setEditBody(selected.body || "");
+    setEditTags(selected.tags ? selected.tags.join(", ") : "");
+    setEditLinks(selected.links || []);
+    setIsEditing(true);
+  };
+
+  const saveEdit = async () => {
+    if (!selected) return;
+    try {
+      const parsedTags = editTags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const res = await api.note.$put({
+        json: {
+          id: selected.id,
+          title: editTitle,
+          content: editBody,
+          tags: parsedTags,
+          links: editLinks,
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSelected(data.note);
+        setIsEditing(false);
+        void fetchNotes();
+      } else {
+        const errData = await res.json();
+        alert(`Failed to save changes: ${errData.error || "Unknown error"}`);
+      }
+    } catch (e) {
+      console.error("Failed to save note edits", e);
+      alert("Failed to save changes due to a network error.");
+    }
+  };
+
+  const deleteCurrentNote = async () => {
+    if (!selected) return;
+    if (!window.confirm("Are you sure you want to delete this note?")) return;
+    try {
+      const res = await api.note.$delete({ query: { id: selected.id } });
+      if (res.ok) {
+        setSelected(null);
+        setIsEditing(false);
+        void fetchNotes();
+      } else {
+        const errData = await res.json();
+        alert(`Failed to delete note: ${errData.error || "Unknown error"}`);
+      }
+    } catch (e) {
+      console.error("Failed to delete note", e);
+      alert("Failed to delete note due to a network error.");
     }
   };
 
@@ -681,57 +751,186 @@ export default function App() {
             <ToolsManager onClose={() => setShowTools(false)} />
           ) : selected ? (
             <>
-              <button className="canvas-back" onClick={() => setSelected(null)}>
-                ← all notes
-              </button>
-              <div className="note-wrap" key={selected.id}>
-                <article>
-                  <h1 className="note-title">{selected.title || "Untitled"}</h1>
-                  <div className="note-metaline">
-                    <span>{selected.id}</span>
-                    <span>
-                      {new Date(selected.created).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                    <span className="src">
-                      {selected.source === "audio" && <span className="status-dot" />}
-                      {selected.source}
-                    </span>
-                    {selected.tags.map((t) => (
-                      <span key={t} className="tag">
-                        #{t}
-                      </span>
-                    ))}
+              <div className="canvas-header">
+                <button
+                  className="canvas-back"
+                  onClick={() => {
+                    setSelected(null);
+                    setIsEditing(false);
+                  }}
+                >
+                  ← all notes
+                </button>
+                {!isEditing && (
+                  <div className="note-actions">
+                    <button className="tool-action-btn" onClick={startEditing}>
+                      Edit
+                    </button>
+                    <button
+                      className="tool-action-btn tool-action-delete"
+                      onClick={deleteCurrentNote}
+                    >
+                      Delete
+                    </button>
                   </div>
-                  <div className="note-body md">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.body}</ReactMarkdown>
-                  </div>
-                </article>
-
-                <aside className="margin">
-                  <div className="margin-label">Links</div>
-                  {linkIds.length === 0 ? (
-                    <div className="margin-empty">
-                      No links yet. Capture a related thought and I&apos;ll connect them.
-                    </div>
-                  ) : (
-                    linkIds.map((id) => (
-                      <button
-                        key={id}
-                        className="margin-link"
-                        onClick={() => {
-                          void openNote(id);
-                        }}
-                      >
-                        {titleFor(id)}
-                      </button>
-                    ))
-                  )}
-                </aside>
+                )}
               </div>
+
+              {isEditing ? (
+                <div className="note-edit-wrap">
+                  <form className="note-edit-form" onSubmit={(e) => e.preventDefault()}>
+                    <div className="edit-field">
+                      <label className="edit-label" htmlFor="edit-title">
+                        Title
+                      </label>
+                      <input
+                        id="edit-title"
+                        type="text"
+                        className="edit-input-title"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        placeholder="Note title"
+                        required
+                      />
+                    </div>
+                    <div className="edit-field">
+                      <label className="edit-label" htmlFor="edit-body">
+                        Content
+                      </label>
+                      <textarea
+                        id="edit-body"
+                        className="edit-input-body"
+                        value={editBody}
+                        onChange={(e) => setEditBody(e.target.value)}
+                        placeholder="Type your markdown content here..."
+                        required
+                      />
+                    </div>
+                    <div className="edit-field">
+                      <label className="edit-label" htmlFor="edit-tags">
+                        Tags (comma-separated)
+                      </label>
+                      <input
+                        id="edit-tags"
+                        type="text"
+                        className="edit-input-tags"
+                        value={editTags}
+                        onChange={(e) => setEditTags(e.target.value)}
+                        placeholder="e.g. thoughts, math, ideas"
+                      />
+                    </div>
+                    <div className="edit-field">
+                      <label className="edit-label" htmlFor="add-link-select">
+                        Links
+                      </label>
+                      <div className="edit-links-list">
+                        {editLinks.length === 0 ? (
+                          <div className="edit-links-empty">No links yet.</div>
+                        ) : (
+                          editLinks.map((linkId) => (
+                            <div key={linkId} className="edit-link-item">
+                              <span className="edit-link-title">{titleFor(linkId)}</span>
+                              <button
+                                type="button"
+                                className="tool-action-btn tool-action-delete btn-sm"
+                                onClick={() =>
+                                  setEditLinks((prev) => prev.filter((id) => id !== linkId))
+                                }
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      <div className="add-link-section">
+                        <select
+                          id="add-link-select"
+                          value=""
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val && !editLinks.includes(val)) {
+                              setEditLinks((prev) => [...prev, val]);
+                            }
+                          }}
+                          className="edit-select-link"
+                        >
+                          <option value="">-- Add Link to Another Note --</option>
+                          {notes
+                            .filter((n) => n.id !== selected.id && !editLinks.includes(n.id))
+                            .map((n) => (
+                              <option key={n.id} value={n.id}>
+                                {n.title || n.id}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="edit-actions">
+                      <button type="button" className="btn-primary" onClick={saveEdit}>
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="tool-action-btn"
+                        onClick={() => setIsEditing(false)}
+                        style={{ height: "2.5rem", padding: "0 1.5rem" }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <div className="note-wrap" key={selected.id}>
+                  <article>
+                    <h1 className="note-title">{selected.title || "Untitled"}</h1>
+                    <div className="note-metaline">
+                      <span>{selected.id}</span>
+                      <span>
+                        {new Date(selected.created).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                      <span className="src">
+                        {selected.source === "audio" && <span className="status-dot" />}
+                        {selected.source}
+                      </span>
+                      {selected.tags.map((t) => (
+                        <span key={t} className="tag">
+                          #{t}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="note-body md">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.body}</ReactMarkdown>
+                    </div>
+                  </article>
+
+                  <aside className="margin">
+                    <div className="margin-label">Links</div>
+                    {linkIds.length === 0 ? (
+                      <div className="margin-empty">
+                        No links yet. Capture a related thought and I&apos;ll connect them.
+                      </div>
+                    ) : (
+                      linkIds.map((id) => (
+                        <button
+                          key={id}
+                          className="margin-link"
+                          onClick={() => {
+                            void openNote(id);
+                          }}
+                        >
+                          {titleFor(id)}
+                        </button>
+                      ))
+                    )}
+                  </aside>
+                </div>
+              )}
             </>
           ) : (
             <div className="home">

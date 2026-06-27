@@ -51,7 +51,9 @@ test.describe("Zettel Audio Transcription E2E", () => {
     // The mocked backend transcription should return "Write a note about apples." or similar,
     // which the agent stub will process to return "successfully created the note".
     const turnAssistant = page.locator(".turn-assistant");
-    await expect(turnAssistant.last()).toContainText("successfully created the note", { timeout: 20000 });
+    await expect(turnAssistant.last()).toContainText("successfully created the note", {
+      timeout: 20000,
+    });
 
     // Verify that the note is added to the sidebar note rail by the agent
     const noteItem = page.locator(".index-item");

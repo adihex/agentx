@@ -79,17 +79,19 @@ test.describe("Zettel Prompt E2E (production)", () => {
 
     // ── Step 3: Wait for WebSocket (ADP) connection ──
     console.log("Step 3: Waiting for WebSocket connection...");
-    
+
     // We should wait until the input placeholder changes from "Connecting to agent..." to "Capture a thought..."
     const promptInput = page.locator("textarea, input[placeholder*='thought']");
     await expect(promptInput).toBeVisible({ timeout: 15000 });
-    
+
     // Let's print out what the current placeholder is
     const placeholder = await promptInput.getAttribute("placeholder");
     console.log(`Current placeholder: ${placeholder}`);
-    
+
     // Wait for the placeholder to become "Capture a thought…" (meaning connected is true)
-    await expect(promptInput).toHaveAttribute("placeholder", "Capture a thought…", { timeout: 30000 });
+    await expect(promptInput).toHaveAttribute("placeholder", "Capture a thought…", {
+      timeout: 30000,
+    });
     console.log("✅ WebSocket connected, placeholder updated to 'Capture a thought…'");
 
     // ── Step 4: Submit a prompt ──

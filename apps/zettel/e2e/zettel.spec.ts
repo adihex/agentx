@@ -122,4 +122,57 @@ test.describe("Zettel Multi-tenant E2E Tests", () => {
     await page.getByRole("button", { name: "Sign Out" }).click();
     await expect(page.locator("text=Sign in to your study")).toBeVisible();
   });
+
+  test("should allow editing and deleting notes and verify cascades", async ({ page }) => {
+    // 1. Sign up user
+    const email = `user-mutation-${Date.now()}@example.com`;
+    await page.goto("/");
+    await page.getByRole("button", { name: "Create a workspace" }).click();
+    await page.locator("#auth-name").fill("Mutation User");
+    await page.locator("#auth-email").fill(email);
+    await page.locator("#auth-password").fill(password);
+    await page.getByRole("button", { name: "Create workspace", exact: true }).click();
+    await expect(page.locator("text=A quiet place to think.")).toBeVisible();
+
+    // 2. Chat with agent to create note
+    const chatInput = page.getByPlaceholder("Capture a thought…");
+    await chatInput.fill("Write a note about apples.");
+    await chatInput.press("Enter");
+    await expect(page.locator(".turn-assistant").last()).toContainText(
+      "successfully created the note",
+    );
+
+    // 3. Select the note from side rail to view details
+    await page.locator(".index-item").click();
+    await expect(page.locator(".note-title")).toContainText("About Apples");
+
+    // 4. Click Edit button
+    await page.getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("#edit-title")).toBeVisible();
+
+    // 5. Change Title and Content and Tags
+    await page.locator("#edit-title").fill("Renamed Apple Note");
+    await page.locator("#edit-body").fill("Apples are tasty and healthy red fruits.");
+    await page.locator("#edit-tags").fill("apple, fruit, healthy");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    // 6. Verify updated read-only view
+    await expect(page.locator(".note-title")).toContainText("Renamed Apple Note");
+    await expect(page.locator(".note-body")).toContainText("Apples are tasty");
+    await expect(page.locator(".note-metaline")).toContainText("#apple");
+    await expect(page.locator(".note-metaline")).toContainText("#fruit");
+    await expect(page.locator(".note-metaline")).toContainText("#healthy");
+
+    // Verify side rail is updated
+    await expect(page.locator(".index-item-title")).toContainText("Renamed Apple Note");
+
+    // 7. Click Delete button
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Delete" }).click();
+
+    // 8. Verify the note is deleted and we are back on home screen
+    await expect(page.locator("text=A quiet place to think.")).toBeVisible();
+    await expect(page.locator(".index-item")).toHaveCount(0);
+    await expect(page.locator("text=No notes yet.")).toBeVisible();
+  });
 });

@@ -1,5 +1,3 @@
-import type { AppType } from "../index.js";
-
 const API_BASE = import.meta.env.PROD
   ? "https://zettel-service-594828290101.asia-south1.run.app"
   : window.location.origin;
@@ -10,7 +8,7 @@ async function authedFetch(path: string, options: RequestInit = {}): Promise<Res
     ...options,
     credentials: "include",
     headers: {
-      ...(options.headers || {}),
+      ...options.headers,
     },
   });
 }
@@ -22,6 +20,18 @@ export const api = {
   note: {
     $get: (opts: { query: { id: string } }) =>
       authedFetch(`/api/note?id=${encodeURIComponent(opts.query.id)}`),
+    $put: (opts: {
+      json: { id: string; title?: string; content?: string; tags?: string[]; links?: string[] };
+    }) =>
+      authedFetch("/api/note", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(opts.json),
+      }),
+    $delete: (opts: { query: { id: string } }) =>
+      authedFetch(`/api/note?id=${encodeURIComponent(opts.query.id)}`, {
+        method: "DELETE",
+      }),
   },
   graph: {
     $get: () => authedFetch("/api/graph"),

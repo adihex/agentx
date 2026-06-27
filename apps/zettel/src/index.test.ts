@@ -134,7 +134,7 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
 
 // Import after env vars are set
 const { httpServer, userAgents } = await import("./index.js");
-const { client } = await import("./notes/store.js");
+const { client, writeNote } = await import("./notes/store.js");
 
 describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
   let port = 0;
@@ -305,5 +305,87 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
     // 8. Cleanup WebSockets
     wsA.close();
     wsB.close();
+  });
+
+  describe("HTTP PUT and DELETE /api/note", () => {
+    it("should edit and delete notes with proper authorization", async () => {
+      const emailA = `usera-api-${Date.now()}@example.com`;
+      const emailB = `userb-api-${Date.now()}@example.com`;
+      const cookieA = await signup(emailA, "User A");
+      const cookieB = await signup(emailB, "User B");
+
+      // Get user IDs from database to seed data
+      const resA = await client.execute({
+        sql: "SELECT id FROM user WHERE email = ?",
+        args: [emailA],
+      });
+      const userIdA = resA.rows[0].id as string;
+
+      // Seed a note for User A
+      const noteA = await writeNote(userIdA, {
+        content: "Original Content",
+        title: "Original Title",
+        tags: ["original"],
+      });
+
+      // 1. User B attempts to edit User A's note (should fail)
+      const editOtherRes = await fetch(`http://localhost:${port}/api/note`, {
+        method: "PUT",
+        headers: {
+          cookie: cookieB,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          id: noteA.id,
+          title: "Hacked Title",
+          content: "Hacked Content",
+        }),
+      });
+      expect(editOtherRes.status).toBeGreaterThanOrEqual(400);
+
+      // 2. User A successfully edits their own note
+      const editOwnRes = await fetch(`http://localhost:${port}/api/note`, {
+        method: "PUT",
+        headers: {
+          cookie: cookieA,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          id: noteA.id,
+          title: "Edited Title",
+          content: "Edited Content",
+          tags: ["edited"],
+        }),
+      });
+      expect(editOwnRes.status).toBe(200);
+      const editOwnData = await editOwnRes.json();
+      expect(editOwnData.note.title).toBe("Edited Title");
+      expect(editOwnData.note.body).toBe("Edited Content");
+      expect(editOwnData.note.tags).toEqual(["edited"]);
+
+      // 3. User B attempts to delete User A's note (should fail)
+      const deleteOtherRes = await fetch(`http://localhost:${port}/api/note?id=${noteA.id}`, {
+        method: "DELETE",
+        headers: {
+          cookie: cookieB,
+        },
+      });
+      expect(deleteOtherRes.status).toBeGreaterThanOrEqual(400);
+
+      // 4. User A successfully deletes their own note
+      const deleteOwnRes = await fetch(`http://localhost:${port}/api/note?id=${noteA.id}`, {
+        method: "DELETE",
+        headers: {
+          cookie: cookieA,
+        },
+      });
+      expect(deleteOwnRes.status).toBe(200);
+      const deleteOwnData = await deleteOwnRes.json();
+      expect(deleteOwnData.ok).toBe(true);
+
+      // Verify note is gone from list
+      const notesA = await getNotes(cookieA);
+      expect(notesA.find((n: any) => n.id === noteA.id)).toBeUndefined();
+    });
   });
 });

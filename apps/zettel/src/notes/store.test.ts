@@ -8,8 +8,16 @@ mkdirSync(testDir, { recursive: true });
 process.env.ZETTEL_DIR = testDir;
 
 import { describe, it, expect } from "vitest";
-import { writeNote, listNotes, readNote, searchNotes, addLink, backlinksOf } from "./store.js";
-import fs from "node:fs/promises";
+import {
+  writeNote,
+  listNotes,
+  readNote,
+  searchNotes,
+  addLink,
+  backlinksOf,
+  updateNote,
+  deleteNote,
+} from "./store.js";
 
 describe("Multi-tenant Notes Database Isolation", () => {
   const userA = "user-A-" + Date.now();
@@ -96,5 +104,98 @@ describe("Multi-tenant Notes Database Isolation", () => {
     await expect(addLink(userB, noteA1.id, noteA2.id)).rejects.toThrow();
     const backlinksB = await backlinksOf(userB, noteA1.id);
     expect(backlinksB.length).toBe(0);
+  });
+
+  it("should update note content, title, tags, and links", async () => {
+    // 1. Create initial note and target link notes for User A
+    const targetA = await writeNote(userA, { content: "Target A Note" });
+    const noteA = await writeNote(userA, {
+      content: "Initial content",
+      title: "Initial Title",
+      tags: ["tag1"],
+      links: [],
+    });
+
+    // 2. Perform update
+    const updated = await updateNote(userA, noteA.id, {
+      content: "Updated content",
+      title: "Updated Title",
+      tags: ["tag2", "tag3"],
+      links: [targetA.id],
+    });
+
+    expect(updated.id).toBe(noteA.id);
+    expect(updated.title).toBe("Updated Title");
+    expect(updated.body).toBe("Updated content");
+    expect(updated.tags).toEqual(["tag2", "tag3"]);
+    expect(updated.links).toEqual([targetA.id]);
+    expect(updated.created).toBe(noteA.created);
+
+    // 3. Verify changes are persisted and queryable
+    const read = await readNote(userA, noteA.id);
+    expect(read).not.toBeNull();
+    expect(read?.title).toBe("Updated Title");
+    expect(read?.body).toBe("Updated content");
+    expect(read?.tags).toEqual(["tag2", "tag3"]);
+    expect(read?.links).toEqual([targetA.id]);
+
+    // 4. Verify bidirectional link update
+    const backlinksTarget = await backlinksOf(userA, targetA.id);
+    expect(backlinksTarget).toContain(noteA.id);
+  });
+
+  it("should enforce multi-tenant isolation on note update", async () => {
+    const noteA = await writeNote(userA, {
+      content: "User A Note",
+      title: "Title A",
+    });
+
+    // User B attempts to update User A's note
+    await expect(
+      updateNote(userB, noteA.id, {
+        content: "Hacked content",
+        title: "Hacked Title",
+      }),
+    ).rejects.toThrow();
+
+    // Verify it was not updated
+    const read = await readNote(userA, noteA.id);
+    expect(read?.title).toBe("Title A");
+    expect(read?.body).toBe("User A Note");
+  });
+
+  it("should delete note and cascade delete tags and links", async () => {
+    const noteA1 = await writeNote(userA, { content: "Note A1", tags: ["deleteme"] });
+    const noteA2 = await writeNote(userA, { content: "Note A2" });
+
+    // Link A1 and A2
+    await addLink(userA, noteA1.id, noteA2.id);
+
+    // Verify link and tags exist
+    const initialRead = await readNote(userA, noteA1.id);
+    expect(initialRead?.tags).toContain("deleteme");
+    expect(initialRead?.links).toContain(noteA2.id);
+
+    // Delete Note A1
+    await deleteNote(userA, noteA1.id);
+
+    // Verify note is gone
+    const readDeleted = await readNote(userA, noteA1.id);
+    expect(readDeleted).toBeNull();
+
+    // Verify backlinks to noteA2 are updated (noteA1 is no longer linking to it)
+    const backlinksA2 = await backlinksOf(userA, noteA2.id);
+    expect(backlinksA2).not.toContain(noteA1.id);
+  });
+
+  it("should enforce multi-tenant isolation on note deletion", async () => {
+    const noteA = await writeNote(userA, { content: "User A Note" });
+
+    // User B attempts to delete User A's note
+    await expect(deleteNote(userB, noteA.id)).rejects.toThrow();
+
+    // Verify note still exists for User A
+    const read = await readNote(userA, noteA.id);
+    expect(read).not.toBeNull();
   });
 });

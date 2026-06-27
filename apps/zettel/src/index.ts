@@ -19,6 +19,8 @@ import {
   listCustomTools,
   writeCustomTool,
   deleteCustomTool,
+  updateNote,
+  deleteNote,
 } from "./notes/store.js";
 
 dotenv.config();
@@ -170,6 +172,42 @@ const routes = api
       return c.json({ note, backlinks });
     } catch {
       return c.json({ note: null, backlinks: [] });
+    }
+  })
+  .put("/note", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = await c.req.json();
+      const { id, title, content, tags, links } = body;
+      if (!id) {
+        return c.json({ error: "Missing note id" }, 400);
+      }
+      const note = await updateNote(user.id, id, {
+        title,
+        content,
+        tags,
+        links,
+      });
+      return c.json({ note });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const status = msg === "Note not found" ? 404 : 500;
+      return c.json({ error: msg }, status as any);
+    }
+  })
+  .delete("/note", async (c) => {
+    const user = c.get("user");
+    const id = c.req.query("id");
+    if (!id) {
+      return c.json({ error: "Missing note id" }, 400);
+    }
+    try {
+      await deleteNote(user.id, id);
+      return c.json({ ok: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const status = msg === "Note not found" ? 404 : 500;
+      return c.json({ error: msg }, status as any);
     }
   })
   .get("/graph", async (c) => {

@@ -531,3 +531,116 @@ export async function materializeToolFile(
   await fs.writeFile(filePath, code, "utf-8");
   return filePath;
 }
+
+export interface UpdateNoteInput {
+  content?: string;
+  title?: string;
+  tags?: string[];
+  links?: string[];
+}
+
+export async function updateNote(
+  userId: string,
+  id: string,
+  input: UpdateNoteInput,
+): Promise<Note> {
+  await ensureDb();
+
+  // 1. Get the existing note (this enforces tenant isolation via readNote)
+  const existing = await readNote(userId, id);
+  if (!existing) {
+    throw new Error("Note not found");
+  }
+
+  // 2. Determine new values
+  const newContent = input.content !== undefined ? input.content : existing.body;
+  const firstLine = newContent.split("\n").find((l) => l.trim().length > 0) ?? "";
+  const newTitle =
+    input.title !== undefined
+      ? (input.title?.trim() || firstLine.trim() || id).slice(0, 200)
+      : existing.title;
+  const newTags = input.tags !== undefined ? input.tags : existing.tags;
+  const newLinks = input.links !== undefined ? input.links : existing.links;
+
+  const batchQueries: any[] = [];
+
+  // Update notes table
+  batchQueries.push({
+    sql: "UPDATE notes SET title = ?, body = ? WHERE id = ? AND user_id = ?",
+    args: [newTitle, newContent, id, userId],
+  });
+
+  // Sync Tags if provided
+  if (input.tags !== undefined) {
+    batchQueries.push({
+      sql: "DELETE FROM note_tags WHERE note_id = ?",
+      args: [id],
+    });
+    for (const tag of newTags) {
+      batchQueries.push({
+        sql: "INSERT OR IGNORE INTO note_tags (note_id, tag) VALUES (?, ?)",
+        args: [id, tag],
+      });
+    }
+  }
+
+  // Sync Links if provided
+  if (input.links !== undefined) {
+    batchQueries.push({
+      sql: "DELETE FROM note_links WHERE from_id = ? OR to_id = ?",
+      args: [id, id],
+    });
+    for (const target of newLinks) {
+      batchQueries.push(
+        {
+          sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+          args: [id, target],
+        },
+        {
+          sql: "INSERT OR IGNORE INTO note_links (from_id, to_id) VALUES (?, ?)",
+          args: [target, id],
+        },
+      );
+    }
+  }
+
+  // Execute transaction
+  await client.batch(batchQueries);
+
+  // Return the updated note
+  const updated = await readNote(userId, id);
+  if (!updated) {
+    throw new Error("Note not found after update");
+  }
+  return updated;
+}
+
+export async function deleteNote(userId: string, id: string): Promise<void> {
+  await ensureDb();
+
+  // Check if note exists and belongs to user
+  const check = await client.execute({
+    sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?",
+    args: [id, userId],
+  });
+
+  if (check.rows.length === 0) {
+    throw new Error("Note not found");
+  }
+
+  // Clean up in transaction
+  await client.batch([
+    {
+      sql: "DELETE FROM note_tags WHERE note_id = ?",
+      args: [id],
+    },
+    {
+      sql: "DELETE FROM note_links WHERE from_id = ? OR to_id = ?",
+      args: [id, id],
+    },
+    {
+      sql: "DELETE FROM notes WHERE id = ? AND user_id = ?",
+      args: [id, userId],
+    },
+  ]);
+}
