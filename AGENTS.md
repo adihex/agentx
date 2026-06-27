@@ -53,6 +53,7 @@ Event-driven AI agent runtime SDK, modeled on the Node.js event loop and the Chr
 
 ### Testing Requirements
 
+- **Strict TDD Constraint**: EVERY new feature must be implemented following Test-Driven Development (TDD). Design and write the unit/integration tests first to establish the baseline/failure, implement the feature, and then verify that the test suite passes.
 - Run tests from the **repo root**: `mise exec -- pnpm test` (or `pnpm exec vitest run <path>`). The vitest include globs are root-relative, so `pnpm --filter <pkg> test` finds no files.
 - Coverage: `pnpm test:coverage`. UI: `pnpm test:ui`.
 
