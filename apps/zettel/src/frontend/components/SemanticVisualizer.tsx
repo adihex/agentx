@@ -1,5 +1,5 @@
-import React, { useMemo, memo } from "react";
-import ReactFlow, { Background, Handle, Position, type Node, type Edge } from "reactflow";
+import React, { useMemo, memo, useState } from "react";
+import ReactFlow, { Background, Handle, Position, ReactFlowProvider, useReactFlow, type Node, type Edge } from "reactflow";
 import "reactflow/dist/style.css";
 
 interface Note {
@@ -65,11 +65,14 @@ const nodeTypes = {
   circular: CircularNode,
 };
 
-export default function SemanticVisualizer({
+function SemanticVisualizerInner({
   selectedNote,
   notes,
   backlinks,
 }: SemanticVisualizerProps) {
+  const { zoomIn, zoomOut, fitView } = useReactFlow();
+  const [controlsOpen, setControlsOpen] = useState(false);
+
   const { nodes, edges } = useMemo(() => {
     if (!selectedNote) {
       return { nodes: [], edges: [] };
@@ -158,6 +161,105 @@ export default function SemanticVisualizer({
       >
         <Background color="var(--rule-strong)" gap={16} size={1} />
       </ReactFlow>
+
+      {/* Floating Toggleable Control Menu */}
+      <div
+        className="visualizer-controls"
+        style={{
+          position: "absolute",
+          bottom: "8px",
+          left: "8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          zIndex: 4,
+          background: "var(--paper-rail)",
+          border: "1px solid var(--rule)",
+          padding: "2px",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
+        <button
+          onClick={() => setControlsOpen(!controlsOpen)}
+          title="Map Controls"
+          className="material-symbols-outlined"
+          style={{
+            background: "none",
+            border: "none",
+            color: "var(--ink-2)",
+            fontSize: "16px",
+            width: "22px",
+            height: "22px",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            transition: "color var(--dur) var(--ease)",
+          }}
+        >
+          {controlsOpen ? "close" : "menu"}
+        </button>
+
+        {controlsOpen && (
+          <>
+            <div style={{ width: "1px", height: "14px", background: "var(--rule)" }} />
+            <button
+              onClick={() => void zoomIn()}
+              title="Zoom In"
+              className="material-symbols-outlined"
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--ink-2)",
+                fontSize: "16px",
+                width: "22px",
+                height: "22px",
+                display: "grid",
+                placeItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              zoom_in
+            </button>
+            <button
+              onClick={() => void zoomOut()}
+              title="Zoom Out"
+              className="material-symbols-outlined"
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--ink-2)",
+                fontSize: "16px",
+                width: "22px",
+                height: "22px",
+                display: "grid",
+                placeItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              zoom_out
+            </button>
+            <button
+              onClick={() => void fitView({ padding: 0.35, duration: 400 })}
+              title="Center View"
+              className="material-symbols-outlined"
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--ink-2)",
+                fontSize: "16px",
+                width: "22px",
+                height: "22px",
+                display: "grid",
+                placeItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              center_focus_strong
+            </button>
+          </>
+        )}
+      </div>
+
       <div
         className="visualizer-badge"
         style={{
@@ -178,5 +280,13 @@ export default function SemanticVisualizer({
         Active Mapping
       </div>
     </div>
+  );
+}
+
+export default function SemanticVisualizer(props: SemanticVisualizerProps) {
+  return (
+    <ReactFlowProvider>
+      <SemanticVisualizerInner {...props} />
+    </ReactFlowProvider>
   );
 }
