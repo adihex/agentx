@@ -5,7 +5,7 @@
 
 ## Purpose
 
-`@agentx/agx-web` is the browser-based "AGX Orchestrator Dashboard" — a Vite + React single-page app that visualizes a live agentx run. It renders a DAG pane of agent `NodeCard`s, an Agent Debugger Protocol (ADP) REPL, and a streaming execution-log tail. It connects to the agentx runtime over the ADP WebSocket (`ws://localhost:9222`), consuming the shared `AdpClient`, reducers, default state, and theme constants from `@agentx/agx-core`, so it is the web counterpart to the terminal-based `agx-cli`/`agx-herdr` frontends rather than a standalone mock UI.
+`agx-web` is the browser-based "AGX Orchestrator Dashboard" — a Vite + React single-page app that visualizes a live agentx run. It renders a DAG pane of agent `NodeCard`s, an Agent Debugger Protocol (ADP) REPL, and a streaming execution-log tail. It connects to the agentx runtime over the ADP WebSocket (`ws://localhost:9222`), consuming the shared `AdpClient`, reducers, default state, and theme constants from `@agentx/agx-core`, so it is the web counterpart to the terminal-based `agx-cli`/`agx-herdr` frontends rather than a standalone mock UI.
 
 ## Key Files
 

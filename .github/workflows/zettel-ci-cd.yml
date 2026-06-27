@@ -46,7 +46,7 @@ jobs:
         run: rm -rf apps/zettel/dist apps/zettel/dist-server
 
       - name: Build Zettel and dependencies
-        run: pnpm exec vp run @agentx/zettel#build
+        run: pnpm exec vp run zettel#build
 
       - name: Run Zettel Tests
         run: pnpm exec vitest run apps/zettel

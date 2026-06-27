@@ -11,7 +11,7 @@ export default defineConfig({
       "packages/*/src/**/*.test.{ts,tsx}",
       "apps/*/src/**/*.test.{ts,tsx}",
     ],
-    setupFiles: ["./apps/web/vitest-setup.ts"],
+    setupFiles: ["./apps/music-scanner-web/vitest-setup.ts"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/dist-server/**", "**/*.spec.ts", "**/e2e/**"],
     coverage: {
       provider: "v8",

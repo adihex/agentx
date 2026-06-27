@@ -1,5 +1,5 @@
 {
-  "name": "@agentx/music-scanner-service",
+  "name": "music-scanner-service",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "jiti": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   }

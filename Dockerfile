@@ -14,14 +14,13 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
 # Copy all package.json files so pnpm can resolve the workspace graph
-COPY apps/web/package.json ./apps/web/
-COPY apps/cli/package.json ./apps/cli/
+COPY apps/music-scanner-web/package.json ./apps/music-scanner-web/
+COPY apps/music-scanner-cli/package.json ./apps/music-scanner-cli/
 COPY apps/demo/package.json ./apps/demo/
 COPY apps/music-scanner-service/package.json ./apps/music-scanner-service/
 COPY apps/agx-web/package.json ./apps/agx-web/
 COPY apps/orchestrator-demo/package.json ./apps/orchestrator-demo/
-COPY apps/sysmon-cli/package.json ./apps/sysmon-cli/
-COPY apps/daily-planner/package.json ./apps/daily-planner/
+COPY apps/simon-cli/package.json ./apps/simon-cli/
 COPY apps/zettel/package.json ./apps/zettel/
 COPY apps/pi-extension/package.json ./apps/pi-extension/
 COPY packages/core/package.json ./packages/core/
@@ -30,7 +29,7 @@ COPY packages/orchestrator/package.json ./packages/orchestrator/
 COPY packages/agx-core/package.json ./packages/agx-core/
 COPY packages/agx-cli/package.json ./packages/agx-cli/
 COPY packages/agx-herdr/package.json ./packages/agx-herdr/
-COPY packages/agx-mcp/package.json ./packages/agx-mcp/
+COPY packages/mcp/package.json ./packages/mcp/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ─── Stage 2: Build all packages ────────────────────────────────────────────
@@ -45,7 +44,7 @@ RUN --mount=type=cache,id=vite-plus,target=/app/node_modules/.vite/task-cache \
       echo "Seeding Vite+ cache mount from GHA cache..." && \
       cp -r /tmp/vite-cache/* /app/node_modules/.vite/task-cache/; \
     fi && \
-    pnpm exec vp run @agentx/zettel#build
+    pnpm exec vp run zettel#build
 
 # ─── Web (TanStack Start) ───────────────────────────────────────────────────
 FROM base AS web
@@ -54,7 +53,7 @@ ENV NODE_ENV=production
 EXPOSE 3000
 ENV PORT=3000
 USER node
-CMD ["pnpm", "--filter", "@agentx/music-extractor-web", "start"]
+CMD ["pnpm", "--filter", "music-scanner-web", "start"]
 
 # ─── Music Scanner Service (Agent Host — ADP :9222) ─────────────────────────
 FROM base AS scanner
@@ -72,7 +71,7 @@ COPY --chown=node:node --from=builder /app ./
 ENV NODE_ENV=production
 EXPOSE 9222
 USER node
-CMD ["pnpm", "--filter", "@agentx/music-scanner-service", "start"]
+CMD ["pnpm", "--filter", "music-scanner-service", "start"]
 
 # ─── Demo Agent (ADP :9222) ─────────────────────────────────────────────────
 FROM base AS demo
@@ -80,7 +79,7 @@ COPY --chown=node:node --from=builder /app ./
 ENV NODE_ENV=production
 EXPOSE 9222
 USER node
-CMD ["pnpm", "--filter", "@agentx/demo", "start"]
+CMD ["pnpm", "--filter", "demo", "start"]
 
 # ─── AGX Web Dashboard (Vite — :5173) ───────────────────────────────────────
 FROM base AS agx-web
@@ -88,22 +87,14 @@ COPY --chown=node:node --from=builder /app ./
 ENV NODE_ENV=production
 EXPOSE 5173
 USER node
-CMD ["pnpm", "--filter", "@agentx/agx-web", "preview"]
+CMD ["pnpm", "--filter", "agx-web", "preview"]
 
 # ─── Orchestrator Demo ──────────────────────────────────────────────────────
 FROM base AS orchestrator-demo
 COPY --chown=node:node --from=builder /app ./
 ENV NODE_ENV=production
 USER node
-CMD ["pnpm", "--filter", "@agentx/orchestrator-demo", "start"]
-
-# ─── Daily Planner (Agent + Vite — ADP :9244, Web :5173) ────────────────────
-FROM base AS daily-planner
-COPY --chown=node:node --from=builder /app ./
-ENV NODE_ENV=production
-EXPOSE 5173 9224
-USER node
-CMD ["pnpm", "--filter", "@agentx/daily-planner", "start"]
+CMD ["pnpm", "--filter", "orchestrator-demo", "start"]
 
 # ─── Zettel (Agent + Vite) ──────────────────────────────────────────────────
 FROM base AS zettel
@@ -111,4 +102,4 @@ COPY --chown=node:node --from=builder /app ./
 ENV NODE_ENV=production
 EXPOSE 5174 9225
 USER node
-CMD ["pnpm", "--filter", "@agentx/zettel", "start"]
+CMD ["pnpm", "--filter", "zettel", "start"]

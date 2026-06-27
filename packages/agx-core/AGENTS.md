@@ -21,7 +21,7 @@
 
 - This is a **pure state/display library**. It defines data shapes and pure functions; it does not render UI and does no terminal or filesystem I/O. The only side-effecting surface is `AdpClient`, which wraps the platform-global `WebSocket` (it is dependency-injected/mockable — tests stub `global.WebSocket`).
 - **The reducer is pure and immutable.** `nodeReducer` maps over `state` and returns a fresh array; never mutate `state` in place. Note the documented behavior that `STATUS_UPDATE` _replaces_ the whole node record, so omitting `detail` clears any previous `detail` (covered by a dedicated test) — keep that contract if you touch it.
-- **Consumers:** the CLI front-ends import these primitives — `@agentx/agx-cli` and `apps/cli` (the Ink/TUI MusicScanner CLI) — for their node state, REPL command parsing, and color theming. Treat exported types, the `NodeAction` shape, the display-map keys, and the `parseReplCommand` output (`Debugger.<Capitalized>` method names) as a public API contract; changing them ripples into every consuming TUI.
+- **Consumers:** the CLI front-ends import these primitives — `@agentx/agx-cli` and `apps/music-scanner-cli` (the Ink/TUI MusicScanner CLI) — for their node state, REPL command parsing, and color theming. Treat exported types, the `NodeAction` shape, the display-map keys, and the `parseReplCommand` output (`Debugger.<Capitalized>` method names) as a public API contract; changing them ripples into every consuming TUI.
 - Keep additions platform-agnostic: no Node-only or browser-only APIs in the library surface beyond the already-global `WebSocket` used by `AdpClient`.
 - `STATUS_HEX` and `LOG_HEX` are keyed by the full `AgentStatus`/`LogLevel` unions — adding a new status or level requires updating every map (`STATUS_TERM_COLOR`, `STATUS_HEX`, `LOG_HEX`) or TypeScript's `Record<...>` typing will fail the build.
 
@@ -42,7 +42,7 @@
 
 ### Internal
 
-- None. `agx-core` is a leaf library and imports no other workspace packages. (It is itself consumed by `@agentx/agx-cli` and `apps/cli`.)
+- None. `agx-core` is a leaf library and imports no other workspace packages. (It is itself consumed by `@agentx/agx-cli` and `apps/music-scanner-cli`.)
 
 ### External
 

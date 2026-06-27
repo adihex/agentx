@@ -1,4 +1,4 @@
-# @agentx/pi-extension
+# pi-extension
 
 Pi TUI frontend for the agentx event-driven AI agent runtime.
 

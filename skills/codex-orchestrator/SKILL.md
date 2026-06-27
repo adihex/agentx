@@ -51,7 +51,7 @@ This skill teaches Codex how to use the AGX Orchestrator to execute complex, mul
 
 ## Implementation via MCP
 
-Codex should use the `execute_plan` tool provided by the `agx-orchestrator` MCP server.
+Codex should use the `execute_plan` tool provided by the `agentx-orchestrator` MCP server.
 
 ## Common Mistakes
 
