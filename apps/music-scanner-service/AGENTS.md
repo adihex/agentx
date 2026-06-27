@@ -44,7 +44,7 @@ A standalone runtime host that consumes `@agentx/core` as a library to power an 
 
 There are no unit tests (`pnpm test` is a placeholder echoing `'No tests'`). Verify changes end-to-end by starting the service (`pnpm start`) and exercising it over ADP:
 
-- Connect a client such as `apps/cli` and trigger an extraction, or
+- Connect a client such as `apps/music-scanner-cli` and trigger an extraction, or
 - Use the `agx-cli` ADP REPL (`adp-repl`) to send the `Music.StartExtraction` command (with `{ songName: "..." }`) to port 9222 and observe the `Music.Status` notifications and the returned `agentResponse`.
 
 ### Common Patterns
