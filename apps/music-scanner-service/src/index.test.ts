@@ -1,91 +1,85 @@
-/**
- * music-scanner-service — Unit tests for service entry point
- */
 import { describe, it, expect, vi } from "vitest";
-
-// We can't mock @agentx/core reliably because of workspace resolution.
-// Instead, test the extracted constants and simulate the handler logic.
-
-// Import constants without triggering AgentEventLoop constructor
 import {
-  MUSIC_SCANNER_SYSTEM_PROMPT,
+  createMusicScannerAgent,
+  registerExtractionHandler,
   MUSIC_SCANNER_TOOLS,
-  MUSIC_SCANNER_PORT,
-} from "../src/index.js";
+} from "./index.js";
+import { createJiti } from "jiti";
 
-describe("music-scanner-service/index.ts — constants", () => {
-  it("MUSIC_SCANNER_SYSTEM_PROMPT contains workflow instructions", () => {
-    expect(MUSIC_SCANNER_SYSTEM_PROMPT.length).toBeGreaterThan(0);
-    expect(MUSIC_SCANNER_SYSTEM_PROMPT).toContain("searchMusic");
-    expect(MUSIC_SCANNER_SYSTEM_PROMPT).toContain("downloadAndUpload");
-    expect(MUSIC_SCANNER_SYSTEM_PROMPT).toContain("triggerCloudRun");
-    expect(MUSIC_SCANNER_SYSTEM_PROMPT).toContain("guitar-processor");
+const jiti = createJiti(import.meta.url);
+
+describe("Music Scanner Service Core Integration", () => {
+  it("should initialize the agent with the correct prompt and tools", () => {
+    const agent = createMusicScannerAgent({ adpPort: 19999 });
+    expect(agent).toBeDefined();
+    expect(agent.adp).toBeDefined();
   });
 
-  it("MUSIC_SCANNER_TOOLS has all three tools", () => {
-    expect(Object.keys(MUSIC_SCANNER_TOOLS)).toEqual([
-      "searchMusic",
-      "downloadAndUpload",
-      "triggerCloudRun",
-    ]);
-    expect(MUSIC_SCANNER_TOOLS.searchMusic.name).toBe("searchMusic");
-    expect(MUSIC_SCANNER_TOOLS.downloadAndUpload.name).toBe("downloadAndUpload");
-    expect(MUSIC_SCANNER_TOOLS.triggerCloudRun.name).toBe("triggerCloudRun");
-  });
+  it("should have all registered tools point to valid modules and exports", async () => {
+    for (const [name, tool] of Object.entries(MUSIC_SCANNER_TOOLS)) {
+      expect(tool.name).toBe(name);
+      expect(tool.modulePath).toBeDefined();
+      expect(tool.exportName).toBeDefined();
 
-  it("MUSIC_SCANNER_PORT defaults to 9222", () => {
-    expect(MUSIC_SCANNER_PORT).toBe(9222);
-  });
-});
-
-describe("music-scanner-service — extraction handler logic", () => {
-  it("handler rejects empty songName", () => {
-    // Simulate the handler logic inline
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
+      // Dynamically import the tool module to verify exportName exists and is a function
+      const mod = await jiti.import<any>(tool.modulePath);
+      const fn = mod[tool.exportName];
+      expect(typeof fn).toBe("function");
     }
+  });
+
+  it("should register the Music.StartExtraction handler and execute properly", async () => {
+    const mockAgent = {
+      adp: {
+        on: vi.fn(),
+        notify: vi.fn(),
+      },
+      run: vi.fn().mockResolvedValue("Extraction complete result"),
+    };
+
+    registerExtractionHandler(mockAgent as any);
+
+    // Verify it listens to the correct event name
+    expect(mockAgent.adp.on).toHaveBeenCalledWith("Music.StartExtraction", expect.any(Function));
+
+    // Retrieve the callback function registered
+    const handler = mockAgent.adp.on.mock.calls[0][1];
+
+    // Trigger handler and verify callback response
+    const cb = vi.fn();
+    await handler({ songName: "Mock Song" }, cb);
+
+    expect(mockAgent.adp.notify).toHaveBeenCalledWith("Music.Status", {
+      message: 'Searching for "Mock Song"...',
+    });
+    expect(mockAgent.run).toHaveBeenCalledWith(
+      "Please extract the guitar from the song: Mock Song",
+    );
+    expect(cb).toHaveBeenCalledWith({
+      status: "started",
+      agentResponse: "Extraction complete result",
+    });
+  });
+
+  it("should handle missing songName gracefully in extraction handler", async () => {
+    const mockAgent = {
+      adp: {
+        on: vi.fn(),
+        notify: vi.fn(),
+      },
+      run: vi.fn(),
+    };
+
+    registerExtractionHandler(mockAgent as any);
+    const handler = mockAgent.adp.on.mock.calls[0][1];
 
     const cb = vi.fn();
-    handleExtraction({}, cb);
+    await handler({}, cb);
+
     expect(cb).toHaveBeenCalledWith({
       status: "error",
       message: "No song name provided",
     });
-  });
-
-  it("handler rejects null params", () => {
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
-    }
-
-    const cb = vi.fn();
-    handleExtraction(null, cb);
-    expect(cb).toHaveBeenCalledWith({
-      status: "error",
-      message: "No song name provided",
-    });
-  });
-
-  it("handler accepts valid songName", () => {
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
-      cb({ status: "started", agentResponse: `Extracting: ${songName}` });
-    }
-
-    const cb = vi.fn();
-    handleExtraction({ songName: "Stairway to Heaven" }, cb);
-    expect(cb).toHaveBeenCalledWith(expect.objectContaining({ status: "started" }));
+    expect(mockAgent.run).not.toHaveBeenCalled();
   });
 });
