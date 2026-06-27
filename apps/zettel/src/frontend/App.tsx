@@ -736,8 +736,7 @@ export default function App() {
                       }}
                       title="Edit note"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: "14px", verticalAlign: "middle" }}>edit</span>
-                      Edit
+                      <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle" }}>edit</span>
                     </button>
                     <button
                       className="index-action-btn index-action-delete"
@@ -747,8 +746,7 @@ export default function App() {
                       }}
                       title="Delete note"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: "14px", verticalAlign: "middle" }}>delete</span>
-                      Delete
+                      <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle" }}>delete</span>
                     </button>
                   </div>
                 )}
