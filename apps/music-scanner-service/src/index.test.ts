@@ -6,11 +6,13 @@ import { describe, it, expect, vi } from "vitest";
 // We can't mock @agentx/core reliably because of workspace resolution.
 // Instead, test the extracted constants and simulate the handler logic.
 
-// Import constants without triggering AgentEventLoop constructor
+// The entry module guards its server boot behind NODE_ENV !== "test", so
+// importing it here is side-effect free (no ADP port is bound).
 import {
   MUSIC_SCANNER_SYSTEM_PROMPT,
   MUSIC_SCANNER_TOOLS,
   MUSIC_SCANNER_PORT,
+  registerMusicCommands,
 } from "../src/index.js";
 
 describe("music-scanner-service/index.ts — constants", () => {
@@ -38,54 +40,56 @@ describe("music-scanner-service/index.ts — constants", () => {
   });
 });
 
-describe("music-scanner-service — extraction handler logic", () => {
-  it("handler rejects empty songName", () => {
-    // Simulate the handler logic inline
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
-    }
+describe("music-scanner-service — registerMusicCommands", () => {
+  interface FakeHost {
+    commands: Map<string, (params: any, ctx: any) => void>;
+    registerCommand: (method: string, handler: (params: any, ctx: any) => void) => void;
+  }
 
-    const cb = vi.fn();
-    handleExtraction({}, cb);
-    expect(cb).toHaveBeenCalledWith({
+  function fakeHost(): FakeHost {
+    const commands = new Map<string, (params: any, ctx: any) => void>();
+    return { commands, registerCommand: (m, h) => commands.set(m, h) };
+  }
+
+  function fakeCtx() {
+    return {
+      sessionId: "s1",
+      session: { enqueuePrompt: vi.fn() },
+      reply: vi.fn(),
+      notify: vi.fn(),
+    };
+  }
+
+  it("registers the Music.StartExtraction command", () => {
+    const host = fakeHost();
+    registerMusicCommands(host as any);
+    expect(host.commands.has("Music.StartExtraction")).toBe(true);
+  });
+
+  it("rejects an empty song name without touching the session", () => {
+    const host = fakeHost();
+    registerMusicCommands(host as any);
+    const ctx = fakeCtx();
+    host.commands.get("Music.StartExtraction")!({}, ctx);
+
+    expect(ctx.reply).toHaveBeenCalledWith({
       status: "error",
       message: "No song name provided",
     });
+    expect(ctx.session.enqueuePrompt).not.toHaveBeenCalled();
   });
 
-  it("handler rejects null params", () => {
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
-    }
+  it("seeds the caller's session conversation and acks on a valid song", () => {
+    const host = fakeHost();
+    registerMusicCommands(host as any);
+    const ctx = fakeCtx();
+    host.commands.get("Music.StartExtraction")!({ songName: "Hello" }, ctx);
 
-    const cb = vi.fn();
-    handleExtraction(null, cb);
-    expect(cb).toHaveBeenCalledWith({
-      status: "error",
-      message: "No song name provided",
-    });
-  });
-
-  it("handler accepts valid songName", () => {
-    function handleExtraction(params: any, cb: (result: any) => void) {
-      const songName = params?.songName;
-      if (!songName) {
-        cb({ status: "error", message: "No song name provided" });
-        return;
-      }
-      cb({ status: "started", agentResponse: `Extracting: ${songName}` });
-    }
-
-    const cb = vi.fn();
-    handleExtraction({ songName: "Stairway to Heaven" }, cb);
-    expect(cb).toHaveBeenCalledWith(expect.objectContaining({ status: "started" }));
+    expect(ctx.notify).toHaveBeenCalledWith(
+      "Music.Status",
+      expect.objectContaining({ message: expect.stringContaining("Hello") }),
+    );
+    expect(ctx.session.enqueuePrompt).toHaveBeenCalledWith(expect.stringContaining("Hello"));
+    expect(ctx.reply).toHaveBeenCalledWith({ status: "started" });
   });
 });

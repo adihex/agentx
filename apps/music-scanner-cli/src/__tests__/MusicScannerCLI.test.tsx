@@ -251,6 +251,46 @@ describe("MusicScannerCLI component", () => {
     expect(screen.getByText("Ok")).toBeInTheDocument();
   });
 
+  it("surfaces an agent question mid-scan and sends the user's reply", () => {
+    render(<MusicScannerCLI onExit={onExitMock} />);
+
+    act(() => {
+      if (socketOpenListener) socketOpenListener();
+    });
+
+    // Start a scan
+    act(() => registeredKeyboardHandler!({ name: "H" }));
+    act(() => registeredKeyboardHandler!({ name: "i" }));
+    act(() => registeredKeyboardHandler!({ name: "enter" }));
+    expect(screen.getByText("Processing:")).toBeInTheDocument();
+
+    // Agent asks the user to choose between matches
+    act(() => {
+      if (socketMessageListener) {
+        socketMessageListener(
+          JSON.stringify({
+            method: "Session.message",
+            params: { text: "Which one? 1) A 2) B 3) C" },
+          }),
+        );
+      }
+    });
+    expect(screen.getByText("> Agent: Which one? 1) A 2) B 3) C")).toBeInTheDocument();
+    // The reply affordance appears even though a scan is in progress
+    expect(screen.getByText("Reply:")).toBeInTheDocument();
+
+    // User types a reply and submits it
+    mockSend.mockClear();
+    act(() => registeredKeyboardHandler!({ name: "2" }));
+    act(() => registeredKeyboardHandler!({ name: "enter" }));
+
+    expect(mockSend).toHaveBeenCalledWith(expect.stringContaining('"method":"Session.prompt"'));
+    expect(mockSend).toHaveBeenCalledWith(expect.stringContaining('"prompt":"2"'));
+    expect(screen.getByText("> You: 2")).toBeInTheDocument();
+    // Reply affordance clears after sending
+    expect(screen.queryByText("Reply:")).not.toBeInTheDocument();
+  });
+
   it("calls onExit when Escape or Ctrl+C is pressed", () => {
     render(<MusicScannerCLI onExit={onExitMock} />);
 

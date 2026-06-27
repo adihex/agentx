@@ -3,6 +3,7 @@ import { ScannerInput } from "./components/ScannerInput";
 import { ProgressBar } from "./components/ProgressBar";
 import { StepIndicator, StepId } from "./components/StepIndicator";
 import { StatusLog } from "./components/StatusLog";
+import { ReplyPrompt } from "./components/ReplyPrompt";
 
 export default function App() {
   const [songName, setSongName] = useState("");
@@ -11,6 +12,8 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState<StepId | null>(null);
   const [currentSongLabel, setCurrentSongLabel] = useState("");
+  const [agentQuestion, setAgentQuestion] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -42,6 +45,14 @@ export default function App() {
   const handleAdpMessage = (data: any) => {
     if (data.method === "Music.Status") {
       addLog(data.params.message);
+    }
+
+    if (data.method === "Session.message") {
+      const text = data.params?.text ?? "";
+      if (text.trim()) {
+        addLog(`Agent: ${text}`);
+        setAgentQuestion(text);
+      }
     }
 
     if (data.method === "Toolchain.responseReceived") {
@@ -91,6 +102,25 @@ export default function App() {
       );
     }
     setSongName("");
+  };
+
+  const sendReply = () => {
+    const reply = replyText.trim();
+    if (!reply) return;
+    addLog(`You: ${reply}`);
+
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          id: Date.now(),
+          method: "Session.prompt",
+          params: { prompt: reply },
+        }),
+      );
+    }
+    setReplyText("");
+    setAgentQuestion(null);
   };
 
   return (
@@ -152,6 +182,15 @@ export default function App() {
           onScan={startExtraction}
           disabled={progress > 0 && progress < 100}
         />
+
+        {agentQuestion && (
+          <ReplyPrompt
+            question={agentQuestion}
+            value={replyText}
+            onChange={setReplyText}
+            onSend={sendReply}
+          />
+        )}
 
         {activeStep && <ProgressBar progress={progress} label={currentSongLabel} />}
 

@@ -16,10 +16,19 @@ import {
  * Extends EventEmitter to provide a high-level API for handling commands
  * and emitting events, similar to Playwright/CDP.
  */
+/** Notified when a client connects/disconnects, with that client's session id. */
+export type AdpConnectionListener = (sessionId: string) => void;
+
 export class AdpServer extends EventEmitter {
   private wss: WebSocketServer;
   private handlers = new Map<string, AdpCommandHandler<any, any>>();
   private clients = new Set<WebSocket>();
+  /** sessionId → socket, so events can be routed to a single client. */
+  private sockets = new Map<string, WebSocket>();
+  /** socket → sessionId, so an inbound request knows which session sent it. */
+  private sessionIds = new Map<WebSocket, string>();
+  private connectionListeners: AdpConnectionListener[] = [];
+  private disconnectionListeners: AdpConnectionListener[] = [];
 
   /**
    * Create a new ADP server.
@@ -47,8 +56,12 @@ export class AdpServer extends EventEmitter {
     });
 
     this.wss.on("connection", (ws: WebSocket) => {
-      console.log("[ADP] Client connected");
+      const sessionId = this.newSessionId();
+      console.log(`[ADP] Client connected (session ${sessionId})`);
       this.clients.add(ws);
+      this.sockets.set(sessionId, ws);
+      this.sessionIds.set(ws, sessionId);
+      for (const listener of this.connectionListeners) listener(sessionId);
 
       ws.on("error", (err) => {
         console.error("[ADP] Socket error:", err);
@@ -67,13 +80,20 @@ export class AdpServer extends EventEmitter {
 
           const req = parsed.data;
 
-          // Emit the event locally for high-level handlers
-          // The listener signature is (params, callback)
-          const hasListeners = this.emit(req.method, req.params, (resultData: unknown) => {
-            if (req.id !== undefined) {
-              this.sendResult(ws, req.id, resultData);
-            }
-          });
+          // Emit the event locally for high-level handlers. The listener
+          // signature is (params, callback, sessionId) — the third argument
+          // lets a multi-tenant host route the command to the right session.
+          // Single-session handlers simply ignore it.
+          const hasListeners = this.emit(
+            req.method,
+            req.params,
+            (resultData: unknown) => {
+              if (req.id !== undefined) {
+                this.sendResult(ws, req.id, resultData);
+              }
+            },
+            sessionId,
+          );
 
           // Fallback to legacy handlers map
           const legacyHandler = this.handlers.get(req.method);
@@ -98,8 +118,11 @@ export class AdpServer extends EventEmitter {
       });
 
       ws.on("close", () => {
-        console.log("[ADP] Client disconnected");
+        console.log(`[ADP] Client disconnected (session ${sessionId})`);
         this.clients.delete(ws);
+        this.sockets.delete(sessionId);
+        this.sessionIds.delete(ws);
+        for (const listener of this.disconnectionListeners) listener(sessionId);
       });
     });
 
@@ -154,6 +177,46 @@ export class AdpServer extends EventEmitter {
   }
 
   /**
+   * Push an event to a SINGLE client, identified by its session id.
+   * Used by multi-tenant hosts so one client's status/messages never leak to
+   * another. Silently no-ops if the session has gone away.
+   * @param sessionId - The target session (assigned on connect).
+   * @param method - The ADP event method name.
+   * @param params - Optional parameters for the event.
+   */
+  public notifyClient<T = Record<string, unknown>>(
+    sessionId: string,
+    method: string,
+    params?: T,
+  ): void {
+    const ws = this.sockets.get(sessionId);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ jsonrpc: "2.0", method, params }));
+    }
+  }
+
+  /**
+   * Register a listener fired when a client connects, with its session id.
+   * @param listener - Called with the new session id.
+   */
+  public onConnection(listener: AdpConnectionListener): void {
+    this.connectionListeners.push(listener);
+  }
+
+  /**
+   * Register a listener fired when a client disconnects, with its session id.
+   * @param listener - Called with the departed session id.
+   */
+  public onDisconnection(listener: AdpConnectionListener): void {
+    this.disconnectionListeners.push(listener);
+  }
+
+  /** Resolve the session id for a connected socket (or undefined). */
+  public sessionIdFor(ws: WebSocket): string | undefined {
+    return this.sessionIds.get(ws);
+  }
+
+  /**
    * Graceful shutdown.
    * @returns A promise that resolves when the server is closed.
    */
@@ -165,6 +228,10 @@ export class AdpServer extends EventEmitter {
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
+
+  private newSessionId(): string {
+    return `s_${Math.random().toString(36).slice(2, 10)}`;
+  }
 
   private sendResult(ws: WebSocket, id: string | number, result: unknown) {
     const response: JsonRpcResponse = { jsonrpc: "2.0", id, result };
