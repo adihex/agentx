@@ -684,13 +684,16 @@ export default function App() {
           <p className="tagline">To jot down your thoughts while enjoying your kattan.</p>
         </div>
 
-        <input
-          className="search"
-          type="text"
-          placeholder="Search notes…"
-          value={query}
-          onChange={(e) => runSearch(e.target.value)}
-        />
+        <div className="search-wrapper">
+          <span className="material-symbols-outlined search-icon">search</span>
+          <input
+            className="search"
+            type="text"
+            placeholder="Search notes…"
+            value={query}
+            onChange={(e) => runSearch(e.target.value)}
+          />
+        </div>
 
         <nav className="index" aria-label="Notes">
           {!loaded ? (
@@ -1142,15 +1145,6 @@ export default function App() {
           />
         </div>
 
-        <div className="inspector-foot">
-          <div className="inspector-footer-brand">
-            <div className="inspector-footer-logo">ZK</div>
-            <div>
-              <div className="inspector-footer-title">Academic Core</div>
-              <div className="inspector-footer-version">Version 2.4.0-rev</div>
-            </div>
-          </div>
-        </div>
       </aside>
       </div>
     </MessageScrollerProvider>
