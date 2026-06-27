@@ -6,15 +6,15 @@ How GCP is configured for the `zettel-service` Cloud Run deployment, including k
 
 ## Infrastructure at a Glance
 
-| Resource | Value |
-|----------|-------|
-| GCP Project | `agentx-zettel-adi-3291` |
-| Region | `asia-south1` |
-| Cloud Run service | `zettel-service` |
-| Artifact Registry | `asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo` |
-| Service account | `github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com` |
-| WIF pool | `github-pool` |
-| WIF provider | `github-provider` |
+| Resource          | Value                                                              |
+| ----------------- | ------------------------------------------------------------------ |
+| GCP Project       | `agentx-zettel-adi-3291`                                           |
+| Region            | `asia-south1`                                                      |
+| Cloud Run service | `zettel-service`                                                   |
+| Artifact Registry | `asia-south1-docker.pkg.dev/agentx-zettel-adi-3291/agentx-repo`    |
+| Service account   | `github-actions-sa@agentx-zettel-adi-3291.iam.gserviceaccount.com` |
+| WIF pool          | `github-pool`                                                      |
+| WIF provider      | `github-provider`                                                  |
 
 ---
 
@@ -38,6 +38,7 @@ Artifact Registry (push) + Cloud Run (deploy)
 ### Re-running setup from scratch
 
 A setup script lives at [`setup-wif.sh`](../setup-wif.sh) in the repo root. It:
+
 1. Enables `iamcredentials`, `sts`, `cloudresourcemanager` APIs
 2. Creates the WIF pool (`github-pool`) and OIDC provider (`github-provider`) bound to `repo:adihex/agentx:*`
 3. Creates `github-actions-sa` with `roles/run.developer` and `roles/artifactregistry.writer`
@@ -51,11 +52,11 @@ gcloud config set project agentx-zettel-adi-3291
 
 ### IAM roles on the service account
 
-| Role | Why |
-|------|-----|
-| `roles/artifactregistry.writer` | Push container images |
-| `roles/run.developer` | Deploy Cloud Run revisions |
-| `roles/iam.serviceAccountTokenCreator` | WIF token exchange |
+| Role                                   | Why                        |
+| -------------------------------------- | -------------------------- |
+| `roles/artifactregistry.writer`        | Push container images      |
+| `roles/run.developer`                  | Deploy Cloud Run revisions |
+| `roles/iam.serviceAccountTokenCreator` | WIF token exchange         |
 
 ---
 
@@ -80,18 +81,22 @@ The `deploy-backend` job uses two layers of caching:
 The `validate-and-test` job saves `node_modules/.vite/task-cache` to GHA cache keyed by `pnpm-lock.yaml` hash + commit SHA. `deploy-backend` restores it and copies it into `.vite-task-cache/` so the `Dockerfile` can use it, skipping the TypeScript/Vite build inside Docker entirely.
 
 **2. Docker BuildKit GHA cache (`type=gha`)**
+
 ```yaml
 cache-from: type=gha
 cache-to: type=gha,mode=max
 ```
+
 Stores Docker layer snapshots in GHA cache storage. On cache hit, layers like `pnpm install` (the slowest step) are replayed from cache — no network downloads.
 
 ### Dockerfile cache mount
+
 ```dockerfile
 # syntax=docker/dockerfile:1
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 ```
+
 The `# syntax=docker/dockerfile:1` directive at the top is required to enable BuildKit `--mount` features.
 
 ---
@@ -99,19 +104,24 @@ The `# syntax=docker/dockerfile:1` directive at the top is required to enable Bu
 ## Cloud Run Configuration
 
 ### Environment variables injected at deploy time
-| Var | Value | Purpose |
-|-----|-------|---------|
+
+| Var          | Value               | Purpose                    |
+| ------------ | ------------------- | -------------------------- |
 | `COMMIT_SHA` | `${{ github.sha }}` | Reported by `GET /_health` |
 
 ### Health check / liveness probe
+
 ```
 GET /_health → 200 { "status": "ok", "sha": "<sha>" }
 ```
+
 This endpoint is unauthenticated and used by:
+
 - CI smoke test (3 retries, 5 s apart) before frontend ships
 - Can be wired into Cloud Run's startup/liveness probe
 
 ### Rolling back a bad deploy
+
 ```sh
 # Instant traffic switch to previous revision
 gcloud run services update-traffic zettel-service \
