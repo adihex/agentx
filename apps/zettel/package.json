@@ -14,8 +14,8 @@
   "dependencies": {
     "@agentx/adp": "workspace:*",
     "@agentx/agx-core": "workspace:*",
-    "@agentx/chat-components": "workspace:*",
     "@agentx/core": "workspace:*",
+    "@agentx/shared-ui": "workspace:*",
     "@ai-sdk/groq": "catalog:",
     "@better-auth/infra": "^0.3.2",
     "@hono/node-server": "catalog:",
@@ -23,6 +23,7 @@
     "@libsql/kysely-libsql": "catalog:",
     "@monaco-editor/react": "^4.7.0",
     "ai": "catalog:",
+    "reactflow": "^11.11.4",
     "better-auth": "^1.6.20",
     "dotenv": "^17.4.2",
     "hono": "catalog:",

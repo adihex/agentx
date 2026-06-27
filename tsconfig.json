@@ -20,7 +20,7 @@
     { "path": "packages/agx-cli" },
     { "path": "packages/agx-core" },
     { "path": "packages/agx-herdr" },
-    { "path": "packages/chat-components" },
+    { "path": "packages/shared-ui" },
     { "path": "packages/mcp" },
     { "path": "packages/core" },
     { "path": "packages/orchestrator" },

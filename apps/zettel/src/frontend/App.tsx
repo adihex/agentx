@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { authClient } from "./auth-client";
 import { api } from "./api-client";
 import ToolsManager from "./ToolsManager";
+import SemanticVisualizer from "./components/SemanticVisualizer";
 import {
   MessageScrollerProvider,
   MessageScroller,
@@ -16,7 +17,7 @@ import {
   Bubble,
   Attachment,
   Marker,
-} from "@agentx/chat-components";
+} from "@agentx/shared-ui";
 import "./App.css";
 
 interface Note {
@@ -667,6 +668,8 @@ export default function App() {
     ? Array.from(new Set([...(selected.links ?? []), ...selectedBacklinks]))
     : [];
 
+  const titleFor = (id: string) => notes.find((n) => n.id === id)?.title || "Untitled Note";
+
   return (
     <MessageScrollerProvider>
       <div className="app">
@@ -1100,6 +1103,57 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* ---------- Context Inspector ---------- */}
+      <aside className="inspector">
+        <div className="inspector-section">
+          <h3 className="inspector-label">Linked Context</h3>
+          {selected ? (
+            <div className="inspector-links">
+              {linkIds.length > 0 ? (
+                linkIds.map((id) => (
+                  <div
+                    key={id}
+                    className="inspector-link-card"
+                    onClick={() => {
+                      void openNote(id);
+                    }}
+                  >
+                    <div className="inspector-card-ref">REF_ID: {id.slice(0, 6).toUpperCase()}</div>
+                    <div className="inspector-card-title">{titleFor(id)}</div>
+                    <div className="inspector-card-tags">
+                      {notes.find((n) => n.id === id)?.tags?.map(t => `#${t}`).join(", ") || "no tags"}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="inspector-empty">No links established yet.</div>
+              )}
+            </div>
+          ) : (
+            <div className="inspector-empty">Select a note to inspect context.</div>
+          )}
+        </div>
+
+        <div className="inspector-section">
+          <h3 className="inspector-label">Semantic Visualizer</h3>
+          <SemanticVisualizer
+            selectedNote={selected}
+            notes={notes}
+            backlinks={selectedBacklinks}
+          />
+        </div>
+
+        <div className="inspector-foot">
+          <div className="inspector-footer-brand">
+            <div className="inspector-footer-logo">ZK</div>
+            <div>
+              <div className="inspector-footer-title">Academic Core</div>
+              <div className="inspector-footer-version">Version 2.4.0-rev</div>
+            </div>
+          </div>
+        </div>
+      </aside>
       </div>
     </MessageScrollerProvider>
   );

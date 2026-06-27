@@ -1712,3 +1712,152 @@ body {
     background-position: -200% center;
   }
 }
+
+/* ============================ CONTEXT INSPECTOR ============================ */
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+  width: 280px;
+  background: var(--paper-rail);
+  border-left: 1px solid var(--rule);
+  padding: var(--s5);
+  overflow-y: auto;
+  z-index: var(--z-rail);
+}
+
+@media (max-width: 1200px) {
+  .inspector {
+    display: none;
+  }
+}
+
+.inspector-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.inspector-label {
+  margin: 0;
+  font-family: var(--label);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-3);
+}
+
+.inspector-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.inspector-link-card {
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: var(--s3);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+}
+
+.inspector-link-card:hover {
+  border-color: var(--clay);
+  box-shadow: var(--shadow-sm);
+}
+
+.inspector-card-ref {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--clay);
+  margin-bottom: var(--s1);
+}
+
+.inspector-card-title {
+  font-family: var(--serif);
+  font-size: var(--t-base);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.inspector-card-tags {
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--ink-2);
+  margin-top: var(--s2);
+}
+
+.inspector-empty {
+  font-family: var(--sans);
+  font-size: var(--t-sm);
+  font-style: italic;
+  color: var(--ink-3);
+  padding: var(--s2) 0;
+}
+
+.inspector-foot {
+  margin-top: auto;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
+}
+
+.inspector-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.inspector-footer-logo {
+  background: var(--clay);
+  color: var(--on-clay);
+  font-family: var(--serif);
+  font-size: var(--t-sm);
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+
+.inspector-footer-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.inspector-footer-version {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+}
+
+.visualizer-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  border: 1px solid var(--rule);
+  background: var(--paper-sunk);
+  font-family: var(--sans);
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+/* React Flow custom overrides to fit our theme */
+.react-flow__edge-path {
+  stroke-dasharray: 4;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 8;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

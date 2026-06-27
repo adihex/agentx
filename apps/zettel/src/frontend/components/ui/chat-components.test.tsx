@@ -10,7 +10,7 @@ import {
   Bubble,
   Attachment,
   Marker,
-} from "@agentx/chat-components";
+} from "@agentx/shared-ui";
 
 describe("Message Component", () => {
   it("renders headers and body correctly", () => {
