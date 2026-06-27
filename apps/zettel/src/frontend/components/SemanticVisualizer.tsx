@@ -168,7 +168,7 @@ function SemanticVisualizerInner({
         style={{
           position: "absolute",
           bottom: "8px",
-          left: "8px",
+          right: "8px",
           display: "flex",
           alignItems: "center",
           gap: "4px",
