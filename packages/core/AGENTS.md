@@ -62,3 +62,31 @@
 - Dev: `tsdown` (build → cjs/esm/dts), `typescript` 6.0.3, `vitest`, `@types/node`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+### Architecture update (2026-06-27): AgentSession / AgentSessionHost
+
+The engine was split so it can be served single- or multi-tenant:
+
+- **`src/AgentSession.ts`** — the conversation engine (context, micro/macrotask
+  queues, the 4-phase `tick()`, `run()`, `waitForPrompt()`, and the ADP-op methods
+  `halt`/`pause`/`resume`/`compact`/`queryNodes`/`getCallFrame`/`injectThought`/
+  `enqueuePrompt`/`listTools`/`interceptTool`/`requestShutdown`). It owns **no
+  server**: the LLM, thread pool, and tool set are injected, and ADP events go out
+  through an injected `notify(method, params)`. This lets many sessions share one
+  process.
+- **`src/AgentEventLoop.ts`** — now a thin **subclass of `AgentSession`** (single
+  tenant). It constructs its own `AdpServer` + `LLMOrchestrator` + `AgenticThreadPool`,
+  passes a broadcast `notify`, and `wireAdp()` maps ADP commands to the inherited
+  session methods. Public API and all poked internals (`context`, `promptQueue`,
+  `paused`, `inferenceAbort`, `llm`, `threadPool`, …) are unchanged, so existing
+  consumers (demo, zettel) and tests are unaffected.
+- **`src/AgentSessionHost.ts`** — multi-tenant host: one shared ADP server / LLM /
+  thread pool, a `Map<sessionId, AgentSession>` (one per connection via
+  `adp.onConnection`/`onDisconnection`), per-client event routing
+  (`adp.notifyClient`), a per-session prompt loop that emits each assistant turn as
+  a `Session.message`, and `registerCommand(method, handler)` for app-specific
+  commands scoped to the caller's session.
+
+`@agentx/adp`'s `AdpServer` gained per-connection session ids, `notifyClient(sessionId, …)`,
+`onConnection`/`onDisconnection`, and a third `sessionId` arg passed to command handlers
+(all additive — broadcast `notify`, `clients`, and `wss` are unchanged).
