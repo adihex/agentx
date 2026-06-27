@@ -30,14 +30,14 @@ Event-driven AI agent runtime SDK, modeled on the Node.js event loop and the Chr
 | `packages/agx-core/`          | CLI state model — reducer, types, display helpers for the TUI (see `packages/agx-core/AGENTS.md`)                        |
 | `packages/agx-cli/`           | OpenTUI React CLI + `agx` bin + ADP REPL (see `packages/agx-cli/AGENTS.md`)                                              |
 | `packages/agx-herdr/`         | CLI launching a persistent three-pane "herdr" TUI that orchestrates agents over ADP (see `packages/agx-herdr/AGENTS.md`) |
-| `packages/agx-mcp/`           | Model Context Protocol integration for the runtime (see `packages/agx-mcp/AGENTS.md`)                                    |
+| `packages/mcp/`               | Model Context Protocol integration for the runtime (see `packages/mcp/AGENTS.md`)                                        |
 | `apps/music-scanner-service/` | Runtime host — consumes `@agentx/core`, injects tools, listens ADP :9222 (see `apps/music-scanner-service/AGENTS.md`)    |
-| `apps/cli/`                   | OpenTUI music-scanner CLI client — connects ADP :9222 (see `apps/cli/AGENTS.md`)                                         |
+| `apps/music-scanner-cli/`     | OpenTUI music-scanner CLI client — connects ADP :9222 (see `apps/music-scanner-cli/AGENTS.md`)                           |
 | `apps/orchestrator-demo/`     | Demo driver for `@agentx/orchestrator` (see `apps/orchestrator-demo/AGENTS.md`)                                          |
 | `apps/demo/`                  | Prototype agent (non-blocking tools + ADP) (see `apps/demo/AGENTS.md`)                                                   |
 | `apps/pi-extension/`          | Pi TUI frontend controlling agentx (see `apps/pi-extension/AGENTS.md`)                                                   |
 | `apps/agx-web/`               | Web frontend (Vite + React) (see `apps/agx-web/AGENTS.md`)                                                               |
-| `apps/web/`                   | TanStack Start web app (see `apps/web/AGENTS.md`)                                                                        |
+| `apps/music-scanner-web/`     | TanStack Start web app (see `apps/music-scanner-web/AGENTS.md`)                                                          |
 | `docs/`                       | Project docs and plans                                                                                                   |
 | `rules/`, `rule-tests/`       | ast-grep lint rules and their fixtures                                                                                   |
 | `skills/`                     | Repo-local skills                                                                                                        |
@@ -49,7 +49,7 @@ Event-driven AI agent runtime SDK, modeled on the Node.js event loop and the Chr
 - Package manager is **pnpm via mise** — the bare `pnpm` shim may not be on PATH. Use `mise exec -- pnpm <cmd>`.
 - Shared dependency versions are pinned in `pnpm-workspace.yaml` under `catalog:`. Add a dep there and reference it as `"catalog:"` in the package — do not hardcode versions in package manifests.
 - Two runtime classes of package: **library packages** (`core`, `adp`, `orchestrator`, `agx-core`) consumed via `workspace:*`, and **app hosts/clients** (`apps/*`) that wire them together.
-- The runtime + CLI are two processes: start `apps/music-scanner-service` (opens ADP WebSocket on **port 9222**), then `apps/cli` connects to `ws://localhost:9222`.
+- The runtime + CLI are two processes: start `apps/music-scanner-service` (opens ADP WebSocket on **port 9222**), then `apps/music-scanner-cli` connects to `ws://localhost:9222`.
 
 ### Testing Requirements
 

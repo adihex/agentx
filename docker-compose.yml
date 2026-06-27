@@ -3,7 +3,6 @@
 #
 # Usage:
 #   docker compose up scanner web          # Music pipeline
-#   docker compose up daily-planner        # Daily planner (agent + web UI)
 #   docker compose up demo agx-web         # Demo agent + browser dashboard
 #   docker compose --profile extra up      # Include optional services
 # ─────────────────────────────────────────────────────────────────────────────
@@ -32,17 +31,6 @@ services:
       - NODE_ENV=production
     profiles:
       - extra
-
-  daily-planner:
-    build:
-      context: .
-      target: daily-planner
-    ports:
-      - "5173:5173"
-      - "9224:9224"
-    env_file: .env
-    environment:
-      - NODE_ENV=production
 
   zettel:
     build:

@@ -217,7 +217,22 @@ importers:
         specifier: ^8.0.0
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
 
-  apps/cli:
+  apps/demo:
+    dependencies:
+      '@agentx/adp':
+        specifier: workspace:*
+        version: link:../../packages/adp
+      '@agentx/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      tsx:
+        specifier: 'catalog:'
+        version: 4.22.4
+
+  apps/music-scanner-cli:
     dependencies:
       '@agentx/adp':
         specifier: workspace:*
@@ -241,79 +256,27 @@ importers:
         specifier: 'catalog:'
         version: 8.21.0
     devDependencies:
+      '@testing-library/jest-dom':
+        specifier: ^6.4.5
+        version: 6.9.1
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.17
       '@types/ws':
         specifier: 'catalog:'
         version: 8.18.1
+      jsdom:
+        specifier: ^29.1.1
+        version: 29.1.1(@noble/hashes@2.2.0)
       tsx:
         specifier: 'catalog:'
         version: 4.22.4
       typescript:
         specifier: 'catalog:'
         version: 7.0.1-rc
-
-  apps/daily-planner:
-    dependencies:
-      '@agentx/adp':
-        specifier: workspace:*
-        version: link:../../packages/adp
-      '@agentx/agx-core':
-        specifier: workspace:*
-        version: link:../../packages/agx-core
-      '@agentx/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
-      react:
-        specifier: 'catalog:'
-        version: 19.2.7
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.7(react@19.2.7)
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.2.3(@types/react@19.2.17)
-      '@vitejs/plugin-react':
-        specifier: 'catalog:'
-        version: 6.0.2(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
-      tsx:
-        specifier: 'catalog:'
-        version: 4.22.4
-      typescript:
-        specifier: 'catalog:'
-        version: 7.0.1-rc
-      vite:
-        specifier: ^8.0.0
-        version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
-
-  apps/demo:
-    dependencies:
-      '@agentx/adp':
-        specifier: workspace:*
-        version: link:../../packages/adp
-      '@agentx/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
-      tsx:
-        specifier: 'catalog:'
-        version: 4.22.4
 
   apps/music-scanner-service:
     dependencies:
@@ -333,75 +296,17 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.0.0
-      tsx:
-        specifier: 'catalog:'
-        version: 4.22.4
-      typescript:
-        specifier: 'catalog:'
-        version: 7.0.1-rc
-
-  apps/orchestrator-demo:
-    dependencies:
-      '@agentx/orchestrator':
-        specifier: workspace:*
-        version: link:../../packages/orchestrator
-      tsx:
-        specifier: 'catalog:'
-        version: 4.22.4
-
-  apps/pi-extension:
-    dependencies:
-      '@agentx/adp':
-        specifier: workspace:*
-        version: link:../../packages/adp
-      '@earendil-works/pi-coding-agent':
-        specifier: ^0.79.9
-        version: 0.79.10(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
-      '@earendil-works/pi-tui':
-        specifier: ^0.79.9
-        version: 0.79.10
-      typebox:
-        specifier: ^1.3.0
-        version: 1.3.0
-
-  apps/sysmon-cli:
-    dependencies:
-      '@agentx/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@opentui/core':
-        specifier: 'catalog:'
-        version: 0.4.1(typescript@7.0.1-rc)(web-tree-sitter@0.25.10)
-      '@opentui/react':
-        specifier: 'catalog:'
-        version: 0.4.1(react-devtools-core@7.0.1)(react@19.2.7)(typescript@7.0.1-rc)(web-tree-sitter@0.25.10)(ws@8.21.0)
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       jiti:
         specifier: 'catalog:'
         version: 2.7.0
-      react:
-        specifier: 'catalog:'
-        version: 19.2.7
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.17
       tsx:
         specifier: 'catalog:'
         version: 4.22.4
       typescript:
         specifier: 'catalog:'
         version: 7.0.1-rc
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
 
-  apps/web:
+  apps/music-scanner-web:
     dependencies:
       '@tanstack/react-router':
         specifier: 1.120.20
@@ -485,6 +390,67 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.25.12)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  apps/orchestrator-demo:
+    dependencies:
+      '@agentx/orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/orchestrator
+      tsx:
+        specifier: 'catalog:'
+        version: 4.22.4
+
+  apps/pi-extension:
+    dependencies:
+      '@agentx/adp':
+        specifier: workspace:*
+        version: link:../../packages/adp
+      '@earendil-works/pi-coding-agent':
+        specifier: ^0.79.9
+        version: 0.79.10(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
+      '@earendil-works/pi-tui':
+        specifier: ^0.79.9
+        version: 0.79.10
+      typebox:
+        specifier: ^1.3.0
+        version: 1.3.0
+
+  apps/simon-cli:
+    dependencies:
+      '@agentx/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@opentui/core':
+        specifier: 'catalog:'
+        version: 0.4.1(typescript@7.0.1-rc)(web-tree-sitter@0.25.10)
+      '@opentui/react':
+        specifier: 'catalog:'
+        version: 0.4.1(react-devtools-core@7.0.1)(react@19.2.7)(typescript@7.0.1-rc)(web-tree-sitter@0.25.10)(ws@8.21.0)
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      jiti:
+        specifier: 'catalog:'
+        version: 2.7.0
+      react:
+        specifier: 'catalog:'
+        version: 19.2.7
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
+      tsx:
+        specifier: 'catalog:'
+        version: 4.22.4
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.1-rc
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
 
   apps/zettel:
     dependencies:
@@ -658,19 +624,6 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
-  packages/agx-mcp:
-    dependencies:
-      '@agentx/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@4.4.3)
-    devDependencies:
-      typescript:
-        specifier: 'catalog:'
-        version: 7.0.1-rc
-
   packages/core:
     dependencies:
       '@agentx/adp':
@@ -707,6 +660,19 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/mcp:
+    dependencies:
+      '@agentx/orchestrator':
+        specifier: workspace:*
+        version: link:../orchestrator
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.1-rc
 
   packages/orchestrator:
     dependencies:
@@ -11125,7 +11091,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.7
       get-port-please: 3.2.0
-      h3: 1.15.3
+      h3: 1.15.11
       http-shutdown: 1.2.2
       jiti: 1.21.7
       mlly: 1.8.2

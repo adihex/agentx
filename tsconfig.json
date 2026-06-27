@@ -20,18 +20,17 @@
     { "path": "packages/agx-cli" },
     { "path": "packages/agx-core" },
     { "path": "packages/agx-herdr" },
-    { "path": "packages/agx-mcp" },
+    { "path": "packages/mcp" },
     { "path": "packages/core" },
     { "path": "packages/orchestrator" },
     { "path": "apps/agx-web" },
-    { "path": "apps/cli" },
+    { "path": "apps/music-scanner-cli" },
     { "path": "apps/demo" },
     { "path": "apps/music-scanner-service" },
     { "path": "apps/orchestrator-demo" },
     { "path": "apps/pi-extension" },
-    { "path": "apps/sysmon-cli" },
-    { "path": "apps/daily-planner" },
+    { "path": "apps/simon-cli" },
     { "path": "apps/zettel" },
-    { "path": "apps/web" }
+    { "path": "apps/music-scanner-web" }
   ]
 }
