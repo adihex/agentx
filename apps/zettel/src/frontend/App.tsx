@@ -668,8 +668,6 @@ export default function App() {
     ? Array.from(new Set([...(selected.links ?? []), ...selectedBacklinks]))
     : [];
 
-  const titleFor = (id: string) => notes.find((n) => n.id === id)?.title || "Untitled Note";
-
   return (
     <MessageScrollerProvider>
       <div className="app">
