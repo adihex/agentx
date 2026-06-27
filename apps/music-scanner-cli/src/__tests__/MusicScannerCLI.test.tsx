@@ -251,6 +251,78 @@ describe("MusicScannerCLI component", () => {
     expect(screen.getByText("Ok")).toBeInTheDocument();
   });
 
+  it("allows user to reply to agent clarification questions during scanning", () => {
+    render(<MusicScannerCLI onExit={onExitMock} />);
+
+    // Connect
+    act(() => {
+      if (socketOpenListener) socketOpenListener();
+    });
+
+    // Start extraction
+    act(() => {
+      registeredKeyboardHandler!({ name: "H" });
+    });
+    act(() => {
+      registeredKeyboardHandler!({ name: "e" });
+    });
+    act(() => {
+      registeredKeyboardHandler!({ name: "l" });
+    });
+    act(() => {
+      registeredKeyboardHandler!({ name: "l" });
+    });
+    act(() => {
+      registeredKeyboardHandler!({ name: "o" });
+    });
+    act(() => {
+      registeredKeyboardHandler!({ name: "enter" });
+    });
+
+    expect(screen.getByText("Processing:")).toBeInTheDocument();
+
+    // Send AgentResponse event
+    act(() => {
+      if (socketMessageListener) {
+        socketMessageListener(
+          JSON.stringify({
+            method: "Music.AgentResponse",
+            params: {
+              response: "I found multiple matches. Please choose: 1) Adele, 2) Lionel Richie",
+            },
+          }),
+        );
+      }
+    });
+
+    // Check agent response log is visible, and prompt changes to "Reply:"
+    expect(
+      screen.getByText(
+        "> Agent: I found multiple matches. Please choose: 1) Adele, 2) Lionel Richie",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Reply:")).toBeInTheDocument();
+
+    // Type reply
+    act(() => {
+      registeredKeyboardHandler!({ name: "1" });
+    });
+    expect(screen.getByText("1")).toBeInTheDocument();
+
+    // Send reply
+    act(() => {
+      registeredKeyboardHandler!({ name: "enter" });
+    });
+
+    // Verify correct ADP message was sent over WebSocket
+    expect(mockSend).toHaveBeenCalledWith(expect.stringContaining('"method":"Session.prompt"'));
+    expect(mockSend).toHaveBeenCalledWith(expect.stringContaining('"prompt":"1"'));
+
+    // Verify UI returns to "Processing:" mode
+    expect(screen.getByText("Processing:")).toBeInTheDocument();
+    expect(screen.queryByText("Reply:")).not.toBeInTheDocument();
+  });
+
   it("calls onExit when Escape or Ctrl+C is pressed", () => {
     render(<MusicScannerCLI onExit={onExitMock} />);
 

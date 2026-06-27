@@ -47,6 +47,7 @@ export function createMusicScannerAgent(opts?: { adpPort?: number }) {
 
 /**
  * Register the Music.StartExtraction ADP handler on the given agent.
+ * Also runs the prompt loop for follow-up responses and notifies the client of responses.
  */
 export function registerExtractionHandler(agent: AgentEventLoop) {
   agent.adp.on("Music.StartExtraction", async (params: any, cb: (result: any) => void) => {
@@ -57,23 +58,98 @@ export function registerExtractionHandler(agent: AgentEventLoop) {
     }
     console.log(`[Service] Starting extraction for: ${songName}`);
     agent.adp.notify("Music.Status", { message: `Searching for "${songName}"...` });
-    const response = await agent.run(`Please extract the guitar from the song: ${songName}`);
-    cb({ status: "started", agentResponse: response });
+    cb({ status: "started" });
+
+    try {
+      const response = await agent.run(`Please extract the guitar from the song: ${songName}`);
+      agent.adp.notify("Music.AgentResponse", { response });
+    } catch (err) {
+      console.error("[Service] agent.run error:", err);
+      agent.adp.notify("Music.Status", {
+        message: `Error: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    }
   });
+
+  // Start background prompt loop to handle user replies / follow-up prompts
+  void (async () => {
+    for (;;) {
+      const prompt = await agent.waitForPrompt();
+      if (prompt === null) break; // shutdown
+      try {
+        console.log(`[Service] Received user prompt/reply: ${prompt}`);
+        agent.adp.notify("Music.Status", { message: `User reply: "${prompt}"` });
+        const response = await agent.run(prompt);
+        agent.adp.notify("Music.AgentResponse", { response });
+      } catch (err) {
+        console.error("[Service] Error running user prompt:", err);
+        agent.adp.notify("Music.Status", {
+          message: `Error: ${err instanceof Error ? err.message : String(err)}`,
+        });
+      }
+    }
+  })();
 }
 
 // ── Entry point ────────────────────────────────────────────────────────────
 
+import { WebSocketServer } from "ws";
+
+const activeAgents = new Set<AgentEventLoop>();
+const mockHttpServer = {
+  on: (event: string, callback: any) => {
+    // Do nothing
+  },
+};
+
 async function main() {
   console.log("--- Music Scanner Service Starting ---");
-  const agent = createMusicScannerAgent();
-  registerExtractionHandler(agent);
-  console.log("[Service] Agent initialized with injected tools.");
-  console.log("[Service] Listening for ADP commands on port 9222.");
-  process.on("SIGINT", async () => {
-    await agent.shutdown();
-    process.exit(0);
+
+  const wss = new WebSocketServer({ port: MUSIC_SCANNER_PORT });
+  console.log(
+    `[Service] Multi-tenant ADP control plane listening on ws://localhost:${MUSIC_SCANNER_PORT}`,
+  );
+
+  wss.on("connection", (ws, request) => {
+    console.log("[Service] Client connected. Spawning user-specific agent...");
+    const agent = new AgentEventLoop({
+      systemPrompt: MUSIC_SCANNER_SYSTEM_PROMPT,
+      tools: MUSIC_SCANNER_TOOLS,
+      autoTick: true,
+      adpServer: mockHttpServer,
+      quiet: true,
+    });
+
+    activeAgents.add(agent);
+    registerExtractionHandler(agent);
+
+    // Direct connection mapping: emit connection event on the agent's private wss
+    (agent.adp as any).wss.emit("connection", ws, request);
+
+    ws.on("close", async () => {
+      console.log("[Service] Client disconnected. Shutting down user-specific agent...");
+      activeAgents.delete(agent);
+      await agent.shutdown().catch(console.error);
+    });
+
+    ws.on("error", (err) => {
+      console.error("[Service] Socket error:", err);
+    });
   });
+
+  const shutdown = async () => {
+    console.log("\n[Service] Shutting down all active agents...");
+    for (const agent of activeAgents) {
+      await agent.shutdown().catch(console.error);
+    }
+    wss.close();
+    process.exit(0);
+  };
+
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
 
-main().catch(console.error);
+if (process.env.NODE_ENV !== "test") {
+  main().catch(console.error);
+}

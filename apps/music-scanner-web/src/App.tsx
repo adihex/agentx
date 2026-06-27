@@ -11,6 +11,7 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState<StepId | null>(null);
   const [currentSongLabel, setCurrentSongLabel] = useState("");
+  const [isWaitingForReply, setIsWaitingForReply] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -44,12 +45,21 @@ export default function App() {
       addLog(data.params.message);
     }
 
+    if (data.method === "Music.AgentResponse") {
+      const response = data.params.response;
+      addLog(`Agent: ${response}`);
+      if (!response.toLowerCase().includes("extraction complete")) {
+        setIsWaitingForReply(true);
+      }
+    }
+
     if (data.method === "Toolchain.responseReceived") {
       const { toolName, result } = data.params;
       if (!result.success) {
         addLog(`Error in ${toolName}: ${result.error}`);
         setProgress(0);
         setActiveStep(null);
+        setIsWaitingForReply(false);
         return;
       }
 
@@ -65,6 +75,7 @@ export default function App() {
         setActiveStep("done");
         setProgress(100);
         addLog("Extraction complete! Your file is ready in the output bucket.");
+        setIsWaitingForReply(false);
       }
     }
   };
@@ -78,6 +89,7 @@ export default function App() {
     setCurrentSongLabel(songName);
     setActiveStep("search");
     setProgress(5);
+    setIsWaitingForReply(false);
     addLog(`Initializing extraction workflow for "${songName}"...`);
 
     if (ws.current?.readyState === WebSocket.OPEN) {
@@ -91,6 +103,32 @@ export default function App() {
       );
     }
     setSongName("");
+  };
+
+  const sendReply = () => {
+    if (!songName.trim() || !isWaitingForReply) return;
+    const reply = songName.trim();
+    setIsWaitingForReply(false);
+
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          id: Date.now(),
+          method: "Session.prompt",
+          params: { prompt: reply },
+        }),
+      );
+    }
+    setSongName("");
+  };
+
+  const handleAction = () => {
+    if (isWaitingForReply) {
+      sendReply();
+    } else {
+      startExtraction();
+    }
   };
 
   return (
@@ -149,8 +187,12 @@ export default function App() {
         <ScannerInput
           value={songName}
           onChange={setSongName}
-          onScan={startExtraction}
-          disabled={progress > 0 && progress < 100}
+          onScan={handleAction}
+          disabled={isWaitingForReply ? false : progress > 0 && progress < 100}
+          placeholder={
+            isWaitingForReply ? "Type reply..." : "Enter song name (e.g. 'Stairway to Heaven')"
+          }
+          buttonText={isWaitingForReply ? "Reply" : "Scan"}
         />
 
         {activeStep && <ProgressBar progress={progress} label={currentSongLabel} />}

@@ -5,6 +5,8 @@ interface ScannerInputProps {
   onChange: (value: string) => void;
   onScan: () => void;
   disabled?: boolean;
+  placeholder?: string;
+  buttonText?: string;
 }
 
 export const ScannerInput: React.FC<ScannerInputProps> = ({
@@ -12,6 +14,8 @@ export const ScannerInput: React.FC<ScannerInputProps> = ({
   onChange,
   onScan,
   disabled,
+  placeholder = "Enter song name (e.g. 'Stairway to Heaven')",
+  buttonText = "Scan",
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -26,7 +30,7 @@ export const ScannerInput: React.FC<ScannerInputProps> = ({
         onKeyPress={(e) => e.key === "Enter" && onScan()}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder="Enter song name (e.g. 'Stairway to Heaven')"
+        placeholder={placeholder}
         disabled={disabled}
         style={{
           flex: 1,
@@ -63,7 +67,7 @@ export const ScannerInput: React.FC<ScannerInputProps> = ({
           boxShadow: disabled || !value.trim() ? "none" : "0 2px 4px rgba(0, 229, 255, 0.1)",
         }}
       >
-        Scan
+        {buttonText}
       </button>
     </div>
   );

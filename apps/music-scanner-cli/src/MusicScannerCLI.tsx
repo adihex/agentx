@@ -13,6 +13,7 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
   const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [isWaitingForReply, setIsWaitingForReply] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -47,11 +48,19 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
     if (data.method === "Music.Status") {
       addLog(data.params.message);
     }
+    if (data.method === "Music.AgentResponse") {
+      const response = data.params.response;
+      addLog(`Agent: ${response}`);
+      if (!response.toLowerCase().includes("extraction complete")) {
+        setIsWaitingForReply(true);
+      }
+    }
     if (data.method === "Toolchain.responseReceived") {
       const { toolName, result } = data.params;
       if (!result.success) {
         addLog(`Error in ${toolName}: ${result.error}`);
         setIsScanning(false);
+        setIsWaitingForReply(false);
         setProgress(0);
         setActiveStep(null);
         return;
@@ -69,6 +78,7 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
         setProgress(100);
         addLog("Extraction complete!");
         setIsScanning(false);
+        setIsWaitingForReply(false);
       }
     }
   };
@@ -82,6 +92,7 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
     const name = songName.trim();
     setCurrentSongLabel(name);
     setIsScanning(true);
+    setIsWaitingForReply(false);
     setActiveStep("search");
     setProgress(5);
     addLog(`Initializing extraction for "${name}"...`);
@@ -99,16 +110,38 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
     setSongName("");
   };
 
+  const sendReply = () => {
+    if (!songName.trim() || !isWaitingForReply) return;
+    const reply = songName.trim();
+    setIsWaitingForReply(false);
+
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          id: Date.now(),
+          method: "Session.prompt",
+          params: { prompt: reply },
+        }),
+      );
+    }
+    setSongName("");
+  };
+
   useKeyboard((event) => {
     if (event.name === "escape" || (event.ctrl && event.name === "c")) {
       onExit();
       return;
     }
 
-    if (isScanning) return;
+    if (isScanning && !isWaitingForReply) return;
 
     if (event.name === "return" || event.name === "enter") {
-      startExtraction();
+      if (isWaitingForReply) {
+        sendReply();
+      } else {
+        startExtraction();
+      }
     } else if (event.name === "backspace") {
       setSongName((prev) => prev.slice(0, -1));
     } else if (event.name === "space") {
@@ -150,7 +183,7 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
         </Box>
       )}
 
-      {isScanning ? (
+      {isScanning && !isWaitingForReply ? (
         <Box>
           <Text bold color="yellow">
             Processing:{" "}
@@ -159,9 +192,15 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
         </Box>
       ) : (
         <Box>
-          <Text bold>Song: </Text>
+          <Text bold color={isScanning ? "yellow" : "white"}>
+            {isScanning ? "Reply: " : "Song: "}
+          </Text>
           <Text color="white">{songName}</Text>
-          {songName.length === 0 && <Text color="gray"> (type song name and press Enter)</Text>}
+          {songName.length === 0 && (
+            <Text color="gray">
+              {isScanning ? " (type reply and press Enter)" : " (type song name and press Enter)"}
+            </Text>
+          )}
           <Text color="cyan">█</Text>
         </Box>
       )}
