@@ -1,5 +1,5 @@
 /**
- * E2E Test: agx-mcp MCP Server tool handling
+ * E2E Test: agentx-mcp MCP Server tool handling
  *
  * Tests the MCP server request handler logic end-to-end:
  *   1. Tool listing
@@ -12,8 +12,8 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-describe("E2E: agx-mcp Request Handlers", () => {
-  it("E2E: can import the agx-mcp module", async () => {
+describe("E2E: agentx-mcp Request Handlers", () => {
+  it("E2E: can import the agentx-mcp module", async () => {
     const mod = await import("../src/index");
     expect(mod).toBeDefined();
   });

@@ -1,7 +1,7 @@
 <!-- Parent: ../../AGENTS.md -->
 <!-- Generated: 2026-06-23 | Updated: 2026-06-23 -->
 
-# agx-mcp
+# mcp
 
 ## Purpose
 
@@ -9,19 +9,19 @@
 
 ## Key Files
 
-| File            | Description                                                                                                                                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/index.ts`  | The entire implementation. Defines `class AgxMcpServer`, registers the `ListTools` + `CallTool` handlers, wires the `OrchestratedSession`, and boots the server on stdio at module load.                                                     |
-| `package.json`  | Package manifest. `private`, ESM (`type: module`), `bin.agx-mcp` → `./dist/index.js`. Deps: `@agentx/orchestrator` (workspace), `@modelcontextprotocol/sdk` ^1.29.0. Scripts: `build` (tsc), `start` (node dist/index.js), `docs` (typedoc). |
-| `tsconfig.json` | Extends root config; `outDir ./dist`, `rootDir ./src`, `types: ["node"]`.                                                                                                                                                                    |
-| `typedoc.json`  | TypeDoc config; entry point `src/index.ts`, output `docs`.                                                                                                                                                                                   |
+| File            | Description                                                                                                                                                                                                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/index.ts`  | The entire implementation. Defines `class AgxMcpServer`, registers the `ListTools` + `CallTool` handlers, wires the `OrchestratedSession`, and boots the server on stdio at module load.                                                        |
+| `package.json`  | Package manifest. `private`, ESM (`type: module`), `bin.agentx-mcp` → `./dist/index.js`. Deps: `@agentx/orchestrator` (workspace), `@modelcontextprotocol/sdk` ^1.29.0. Scripts: `build` (tsc), `start` (node dist/index.js), `docs` (typedoc). |
+| `tsconfig.json` | Extends root config; `outDir ./dist`, `rootDir ./src`, `types: ["node"]`.                                                                                                                                                                       |
+| `typedoc.json`  | TypeDoc config; entry point `src/index.ts`, output `docs`.                                                                                                                                                                                      |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- **Server, not client.** This builds an MCP server (`Server` from `@modelcontextprotocol/sdk/server/index.js`) that other agents connect to. It is launched as a subprocess via the `agx-mcp` bin and speaks over **stdio** (`StdioServerTransport`). There is no HTTP/SSE transport.
-- **Capabilities:** declares `capabilities: { tools: {} }` only — no resources, no prompts. Server identity is `name: "agx-orchestrator", version: "1.0.0"`.
+- **Server, not client.** This builds an MCP server (`Server` from `@modelcontextprotocol/sdk/server/index.js`) that other agents connect to. It is launched as a subprocess via the `agentx-mcp` bin and speaks over **stdio** (`StdioServerTransport`). There is no HTTP/SSE transport.
+- **Capabilities:** declares `capabilities: { tools: {} }` only — no resources, no prompts. Server identity is `name: "agentx-orchestrator", version: "1.0.0"`.
 - **Single tool — `execute_plan`:** input schema is `{ plan: object }` (required). In the handler the `plan` argument is parsed with `ExecutionPlanSchema.parse(...)` (Zod) from `@agentx/orchestrator`; an unparseable/missing plan throws `McpError(InvalidParams)` or is returned as `isError: true`. Any tool name other than `execute_plan` throws `McpError(MethodNotFound)`.
 - **Execution path:** valid plans create a `new OrchestratedSession()`, subscribe to the orchestration bus via `bus.onAny(...)` to collect `OrchestrationEvent`s into an array, then `await session.start(plan)`. The result text is `JSON.stringify({ status: "completed", planId, summary, eventCount })`. Note: `session.start` dispatches `plan.created` and returns once the synchronous dispatch chain settles — it is fire-and-forward over an in-process event bus, so "completed" reflects that dispatch finished, not durable async work.
 - **Logging:** all diagnostics go to `console.error` (stderr) to keep stdout clean for the MCP JSON-RPC stream. Do not add `console.log` to stdout here.

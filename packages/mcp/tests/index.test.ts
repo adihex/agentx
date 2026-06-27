@@ -1,5 +1,5 @@
 /**
- * agx-mcp — Unit tests for MCP server
+ * agentx-mcp — Unit tests for MCP server
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 

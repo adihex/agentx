@@ -24,7 +24,7 @@ class AgxMcpServer {
   constructor() {
     this.server = new Server(
       {
-        name: "agx-orchestrator",
+        name: "agentx-orchestrator",
         version: "1.0.0",
       },
       {

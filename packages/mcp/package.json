@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "bin": {
-    "agx-mcp": "./dist/index.js"
+    "agentx-mcp": "./dist/index.js"
   },
   "type": "module",
   "scripts": {
