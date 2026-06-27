@@ -1,4 +1,4 @@
-import { AgentEventLoop } from "@agentx/core";
+import { AgentSessionHost } from "@agentx/core";
 import { searchMusicTool } from "./tools/search.js";
 import { downloadAndUploadTool } from "./tools/download.js";
 import { triggerCloudRunTool } from "./tools/cloudrun.js";
@@ -12,8 +12,10 @@ export const MUSIC_SCANNER_SYSTEM_PROMPT = `
 
     Workflow:
     1. Search for the song using 'searchMusic'.
-    2. Confirm the best match with the user or proceed if highly confident.
-    3. Download the song and upload to GCS using 'downloadAndUpload'.
+    2. If the search returns several plausible matches, list them and ASK the user to
+       choose one — then wait for their reply before continuing. Only skip the question
+       when there is a single, unambiguous best match.
+    3. Download the chosen song and upload to GCS using 'downloadAndUpload'.
        - Bucket: 'guitar-extractor-input'
     4. Trigger the extraction job using 'triggerCloudRun'.
        - Job: 'guitar-processor'
@@ -21,6 +23,7 @@ export const MUSIC_SCANNER_SYSTEM_PROMPT = `
 
     Always use the provided tools to fulfill the user's request.
     When a tool completes, reason about the result and move to the next step.
+    When you ask the user a question, stop and wait — their next message is the answer.
   `;
 
 /** Default tool registry for the music scanner service. */
@@ -34,31 +37,40 @@ export const MUSIC_SCANNER_TOOLS = {
 export const MUSIC_SCANNER_PORT = 9222;
 
 /**
- * Create the music scanner AgentEventLoop.
+ * Register the music-scanner ADP commands on a host.
+ *
+ * `Music.StartExtraction` is scoped to the calling client's session: it seeds
+ * that session's conversation with the extraction prompt. Everything after —
+ * status, tool results, the agent's questions, and the user's replies — flows
+ * through that one session, so concurrent clients never collide.
  */
-export function createMusicScannerAgent(opts?: { adpPort?: number }) {
-  return new AgentEventLoop({
-    adpPort: opts?.adpPort ?? MUSIC_SCANNER_PORT,
-    systemPrompt: MUSIC_SCANNER_SYSTEM_PROMPT,
-    autoTick: true,
-    tools: MUSIC_SCANNER_TOOLS,
+export function registerMusicCommands(host: AgentSessionHost): void {
+  host.registerCommand("Music.StartExtraction", (params, ctx) => {
+    const songName = (params?.songName as string) ?? "";
+    if (!songName) {
+      ctx.reply({ status: "error", message: "No song name provided" });
+      return;
+    }
+    if (!ctx.session) {
+      ctx.reply({ status: "error", message: "No active session" });
+      return;
+    }
+    console.log(`[Service] Starting extraction for: ${songName} (session ${ctx.sessionId})`);
+    ctx.notify("Music.Status", { message: `Searching for "${songName}"...` });
+    ctx.session.enqueuePrompt(`Please extract the guitar from the song: ${songName}`);
+    ctx.reply({ status: "started" });
   });
 }
 
 /**
- * Register the Music.StartExtraction ADP handler on the given agent.
+ * Create the multi-tenant music scanner host.
  */
-export function registerExtractionHandler(agent: AgentEventLoop) {
-  agent.adp.on("Music.StartExtraction", async (params: any, cb: (result: any) => void) => {
-    const songName = params?.songName;
-    if (!songName) {
-      cb({ status: "error", message: "No song name provided" });
-      return;
-    }
-    console.log(`[Service] Starting extraction for: ${songName}`);
-    agent.adp.notify("Music.Status", { message: `Searching for "${songName}"...` });
-    const response = await agent.run(`Please extract the guitar from the song: ${songName}`);
-    cb({ status: "started", agentResponse: response });
+export function createMusicScannerHost(opts?: { adpPort?: number }): AgentSessionHost {
+  return new AgentSessionHost({
+    adpPort: opts?.adpPort ?? MUSIC_SCANNER_PORT,
+    systemPrompt: MUSIC_SCANNER_SYSTEM_PROMPT,
+    tools: MUSIC_SCANNER_TOOLS,
+    autoTick: true,
   });
 }
 
@@ -66,14 +78,20 @@ export function registerExtractionHandler(agent: AgentEventLoop) {
 
 async function main() {
   console.log("--- Music Scanner Service Starting ---");
-  const agent = createMusicScannerAgent();
-  registerExtractionHandler(agent);
-  console.log("[Service] Agent initialized with injected tools.");
-  console.log("[Service] Listening for ADP commands on port 9222.");
-  process.on("SIGINT", async () => {
-    await agent.shutdown();
+  const host = createMusicScannerHost();
+  registerMusicCommands(host);
+  console.log("[Service] Multi-tenant agent host initialized with injected tools.");
+  console.log(`[Service] Listening for ADP commands on port ${MUSIC_SCANNER_PORT}.`);
+
+  const shutdown = async () => {
+    await host.shutdown();
     process.exit(0);
-  });
+  };
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
 
-main().catch(console.error);
+// Don't boot the server (or bind the ADP port) when imported by tests.
+if (process.env.NODE_ENV !== "test") {
+  main().catch(console.error);
+}

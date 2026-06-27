@@ -69,3 +69,25 @@ There are no unit tests (`pnpm test` is a placeholder echoing `'No tests'`). Ver
 - Runtime host binaries (not npm deps): `yt-dlp` and the `gcloud` CLI, invoked by the injected tools.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+### Architecture update (2026-06-27): multi-tenant + interactive replies
+
+The service no longer constructs a single `AgentEventLoop`. It now builds an
+**`AgentSessionHost`** from `@agentx/core` — one shared ADP server / LLM /
+thread pool, with **one isolated `AgentSession` per WebSocket connection**, so
+concurrent clients never collide. `src/index.ts` exports `createMusicScannerHost()`
+and `registerMusicCommands(host)`.
+
+- **`Music.StartExtraction`** is now registered via `host.registerCommand(...)` and
+  is scoped to the calling client. Instead of a one-shot `agent.run(...)`, it
+  seeds that session's conversation with `ctx.session.enqueuePrompt(...)`. The
+  handler still replies `{ status: "started" }` (or `{ status: "error", message }`
+  when no `songName` is given) and pushes `Music.Status` via `ctx.notify(...)`.
+- **Interactive replies:** each session runs a turn loop; every assistant turn is
+  pushed to its client as a `Session.message` event, and the user replies with the
+  built-in `Session.prompt` command — advancing the **same** conversation. This is
+  how a client answers "which of these matches?" mid-extraction. All events
+  (`Music.Status`, `Toolchain.responseReceived`, `Session.message`) are routed to
+  the originating client only.
+- **Entry guard:** `main()` only boots when `NODE_ENV !== "test"`, so importing
+  the module in tests binds no port.

@@ -5,6 +5,18 @@ import remarkGfm from "remark-gfm";
 import { authClient } from "./auth-client";
 import { api } from "./api-client";
 import ToolsManager from "./ToolsManager";
+import {
+  MessageScrollerProvider,
+  MessageScroller,
+  MessageScrollerViewport,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerButton,
+  Message,
+  Bubble,
+  Attachment,
+  Marker,
+} from "@agentx/chat-components";
 import "./App.css";
 
 interface Note {
@@ -656,7 +668,8 @@ export default function App() {
     : [];
 
   return (
-    <div className="app">
+    <MessageScrollerProvider>
+      <div className="app">
       {/* ---------- Index rail ---------- */}
       <aside className="rail">
         <div className="rail-head">
@@ -942,24 +955,53 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="thread">
-                {thread.map((msg) =>
-                  msg.role === "assistant" ? (
-                    <div key={msg.id} className="turn turn-assistant md">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
-                    </div>
-                  ) : msg.role === "user" ? (
-                    <div key={msg.id} className="turn turn-user">
-                      {msg.text}
-                    </div>
-                  ) : (
-                    <div key={msg.id} className="turn turn-meta">
-                      {msg.text}
-                    </div>
-                  ),
-                )}
-                <div ref={threadEndRef} />
-              </div>
+              <MessageScroller>
+                <MessageScrollerViewport>
+                  <MessageScrollerContent className="thread">
+                    {thread.map((msg, idx) => {
+                      const isConsecutive = idx > 0 && thread[idx - 1].role === msg.role;
+                      
+                      return (
+                        <MessageScrollerItem
+                          key={msg.id}
+                          messageId={msg.id}
+                          scrollAnchor={msg.role === "user"}
+                        >
+                          {msg.role === "assistant" ? (
+                            <Message
+                              role="assistant"
+                              isConsecutive={isConsecutive}
+                              header={<span>study partner</span>}
+                            >
+                              <Bubble variant="default" align="left">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                              </Bubble>
+                            </Message>
+                          ) : msg.role === "user" ? (
+                            <Message
+                              role="user"
+                              isConsecutive={isConsecutive}
+                              header={<span>You</span>}
+                            >
+                              <Bubble variant="accent" align="left">
+                                {msg.text}
+                              </Bubble>
+                            </Message>
+                          ) : (
+                            <Message role="system" isConsecutive={isConsecutive}>
+                              <Marker type={msg.role === "tool" ? "tool" : "system"}>
+                                {msg.text}
+                              </Marker>
+                            </Message>
+                          )}
+                        </MessageScrollerItem>
+                      );
+                    })}
+                    <div ref={threadEndRef} />
+                  </MessageScrollerContent>
+                </MessageScrollerViewport>
+                <MessageScrollerButton />
+              </MessageScroller>
             </div>
           )}
         </div>
@@ -968,7 +1010,11 @@ export default function App() {
         <div className="capture">
           <div className="capture-inner">
             <div className="capture-activity">
-              {activity && <span className="live">{activity}</span>}
+              {activity && (
+                <Marker type="status" shimmer={activity.includes("thinking") || activity.includes("transcribing")}>
+                  {activity}
+                </Marker>
+              )}
             </div>
             <div className="capture-row">
               <input
@@ -1054,6 +1100,7 @@ export default function App() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </MessageScrollerProvider>
   );
 }

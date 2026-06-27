@@ -13,6 +13,7 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
   const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [isAwaitingReply, setIsAwaitingReply] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -46,6 +47,13 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
   const handleAdpMessage = (data: any) => {
     if (data.method === "Music.Status") {
       addLog(data.params.message);
+    }
+    if (data.method === "Session.message") {
+      const text = data.params?.text ?? "";
+      if (text.trim()) {
+        addLog(`Agent: ${text}`);
+        setIsAwaitingReply(true);
+      }
     }
     if (data.method === "Toolchain.responseReceived") {
       const { toolName, result } = data.params;
@@ -99,16 +107,40 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
     setSongName("");
   };
 
+  const submitReply = () => {
+    const reply = songName.trim();
+    if (!reply) return;
+    addLog(`You: ${reply}`);
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          id: Date.now(),
+          method: "Session.prompt",
+          params: { prompt: reply },
+        }),
+      );
+    }
+    setSongName("");
+    setIsAwaitingReply(false);
+  };
+
   useKeyboard((event) => {
     if (event.name === "escape" || (event.ctrl && event.name === "c")) {
       onExit();
       return;
     }
 
-    if (isScanning) return;
+    // While the agent is working we ignore keys — UNLESS it has asked a question
+    // and is waiting for the user's reply.
+    if (isScanning && !isAwaitingReply) return;
 
     if (event.name === "return" || event.name === "enter") {
-      startExtraction();
+      if (isAwaitingReply) {
+        submitReply();
+      } else {
+        startExtraction();
+      }
     } else if (event.name === "backspace") {
       setSongName((prev) => prev.slice(0, -1));
     } else if (event.name === "space") {
@@ -150,7 +182,16 @@ export const MusicScannerCLI = ({ onExit }: { onExit: () => void }) => {
         </Box>
       )}
 
-      {isScanning ? (
+      {isAwaitingReply ? (
+        <Box>
+          <Text bold color="magenta">
+            Reply:{" "}
+          </Text>
+          <Text color="white">{songName}</Text>
+          {songName.length === 0 && <Text color="gray"> (type your answer and press Enter)</Text>}
+          <Text color="magenta">█</Text>
+        </Box>
+      ) : isScanning ? (
         <Box>
           <Text bold color="yellow">
             Processing:{" "}
