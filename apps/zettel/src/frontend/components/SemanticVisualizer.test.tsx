@@ -86,6 +86,7 @@ describe("SemanticVisualizer Component", () => {
         selectedNote={mockNotes[0]}
         notes={mockNotes}
         backlinks={["note-3"]}
+        interactive={true}
       />
     );
 
@@ -97,13 +98,14 @@ describe("SemanticVisualizer Component", () => {
     expect(screen.getByTestId("node-note-3")).toHaveTextContent("Backlinking Thought");
   });
 
-  it("triggers onNodeClick with correct noteId when a node is clicked", () => {
+  it("triggers onNodeClick with correct noteId when interactive={true} and a node is clicked", () => {
     const handleNodeClick = vi.fn();
     render(
       <SemanticVisualizer
         selectedNote={mockNotes[0]}
         notes={mockNotes}
         backlinks={["note-3"]}
+        interactive={true}
         onNodeClick={handleNodeClick}
       />
     );
@@ -113,5 +115,66 @@ describe("SemanticVisualizer Component", () => {
 
     expect(handleNodeClick).toHaveBeenCalledTimes(1);
     expect(handleNodeClick).toHaveBeenCalledWith("note-2");
+  });
+
+  it("renders as preview by default (interactive=false) and does not show controls, but triggers onPreviewClick", () => {
+    const handlePreviewClick = vi.fn();
+    render(
+      <SemanticVisualizer
+        selectedNote={mockNotes[0]}
+        notes={mockNotes}
+        backlinks={["note-3"]}
+        onPreviewClick={handlePreviewClick}
+      />
+    );
+
+    // Controls button (hamburger 'menu' icon) should NOT be rendered in preview mode
+    expect(screen.queryByTitle("Map Controls")).not.toBeInTheDocument();
+
+    // Clicking the container triggers onPreviewClick
+    const container = screen.getByTestId("visualizer-container");
+    fireEvent.click(container);
+    expect(handlePreviewClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("toggles modal state and renders controls inside custom parent container", () => {
+    const ParentComponent = () => {
+      const [open, setOpen] = React.useState(false);
+      return (
+        <div>
+          <SemanticVisualizer
+            selectedNote={mockNotes[0]}
+            notes={mockNotes}
+            backlinks={[]}
+            interactive={false}
+            onPreviewClick={() => setOpen(true)}
+          />
+          {open && (
+            <div data-testid="enlarged-modal">
+              <SemanticVisualizer
+                selectedNote={mockNotes[0]}
+                notes={mockNotes}
+                backlinks={[]}
+                interactive={true}
+              />
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    render(<ParentComponent />);
+
+    // In preview mode: controls button should not be present
+    expect(screen.queryByTitle("Map Controls")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("enlarged-modal")).not.toBeInTheDocument();
+
+    // Click preview container
+    fireEvent.click(screen.getByTestId("visualizer-container"));
+
+    // Modal is opened
+    expect(screen.getByTestId("enlarged-modal")).toBeInTheDocument();
+    // In interactive mode: controls button should be present
+    expect(screen.getByTitle("Map Controls")).toBeInTheDocument();
   });
 });

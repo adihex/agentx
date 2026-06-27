@@ -1904,3 +1904,78 @@ body {
 .index-action-btn:hover {
   color: var(--clay);
 }
+
+/* ============================ MODAL STYLING ============================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: var(--paper);
+  border: 1px solid var(--clay-rule);
+  width: 90%;
+  max-width: 800px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s4) var(--s6);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-rail);
+}
+
+.modal-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 20px;
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.modal-close-btn:hover {
+  color: var(--clay);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: var(--s6);
+  background: var(--paper);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+

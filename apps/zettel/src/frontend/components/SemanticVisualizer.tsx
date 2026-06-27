@@ -16,6 +16,8 @@ interface SemanticVisualizerProps {
   notes: Note[];
   backlinks: string[];
   onNodeClick?: (noteId: string) => void;
+  interactive?: boolean;
+  onPreviewClick?: () => void;
 }
 
 // Custom Circular Node with Label Above
@@ -71,6 +73,8 @@ function SemanticVisualizerInner({
   notes,
   backlinks,
   onNodeClick,
+  interactive = false,
+  onPreviewClick,
 }: SemanticVisualizerProps) {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   const [controlsOpen, setControlsOpen] = useState(false);
@@ -151,19 +155,29 @@ function SemanticVisualizerInner({
   }
 
   return (
-    <div style={{ width: "100%", height: "240px", border: "1px solid var(--rule)", position: "relative" }}>
+    <div
+      data-testid="visualizer-container"
+      onClick={!interactive ? onPreviewClick : undefined}
+      style={{
+        width: "100%",
+        height: interactive ? "400px" : "240px",
+        border: "1px solid var(--rule)",
+        position: "relative",
+        cursor: !interactive && onPreviewClick ? "pointer" : "default",
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
-        onNodeClick={handleNodeClick}
+        onNodeClick={interactive ? handleNodeClick : undefined}
         nodesConnectable={false}
-        nodesDraggable={true}
-        zoomOnScroll={true}
-        zoomOnDoubleClick={true}
-        zoomOnPinch={true}
-        panOnScroll={true}
-        panOnDrag={true}
+        nodesDraggable={interactive}
+        zoomOnScroll={interactive}
+        zoomOnDoubleClick={interactive}
+        zoomOnPinch={interactive}
+        panOnScroll={interactive}
+        panOnDrag={interactive}
         fitView
         fitViewOptions={{ padding: 0.35 }}
         proOptions={{ hideAttribution: true }}
@@ -172,102 +186,104 @@ function SemanticVisualizerInner({
       </ReactFlow>
 
       {/* Floating Toggleable Control Menu */}
-      <div
-        className="visualizer-controls"
-        style={{
-          position: "absolute",
-          bottom: "8px",
-          right: "8px",
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-          zIndex: 4,
-          background: "var(--paper-rail)",
-          border: "1px solid var(--rule)",
-          padding: "2px",
-          boxShadow: "var(--shadow-sm)",
-        }}
-      >
-        <button
-          onClick={() => setControlsOpen(!controlsOpen)}
-          title="Map Controls"
-          className="material-symbols-outlined"
+      {interactive && (
+        <div
+          className="visualizer-controls"
           style={{
-            background: "none",
-            border: "none",
-            color: "var(--ink-2)",
-            fontSize: "16px",
-            width: "22px",
-            height: "22px",
-            display: "grid",
-            placeItems: "center",
-            cursor: "pointer",
-            transition: "color var(--dur) var(--ease)",
+            position: "absolute",
+            bottom: "8px",
+            right: "8px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            zIndex: 4,
+            background: "var(--paper-rail)",
+            border: "1px solid var(--rule)",
+            padding: "2px",
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          {controlsOpen ? "close" : "menu"}
-        </button>
+          <button
+            onClick={() => setControlsOpen(!controlsOpen)}
+            title="Map Controls"
+            className="material-symbols-outlined"
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--ink-2)",
+              fontSize: "16px",
+              width: "22px",
+              height: "22px",
+              display: "grid",
+              placeItems: "center",
+              cursor: "pointer",
+              transition: "color var(--dur) var(--ease)",
+            }}
+          >
+            {controlsOpen ? "close" : "menu"}
+          </button>
 
-        {controlsOpen && (
-          <>
-            <div style={{ width: "1px", height: "14px", background: "var(--rule)" }} />
-            <button
-              onClick={() => void zoomIn()}
-              title="Zoom In"
-              className="material-symbols-outlined"
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--ink-2)",
-                fontSize: "16px",
-                width: "22px",
-                height: "22px",
-                display: "grid",
-                placeItems: "center",
-                cursor: "pointer",
-              }}
-            >
-              zoom_in
-            </button>
-            <button
-              onClick={() => void zoomOut()}
-              title="Zoom Out"
-              className="material-symbols-outlined"
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--ink-2)",
-                fontSize: "16px",
-                width: "22px",
-                height: "22px",
-                display: "grid",
-                placeItems: "center",
-                cursor: "pointer",
-              }}
-            >
-              zoom_out
-            </button>
-            <button
-              onClick={() => void fitView({ padding: 0.35, duration: 400 })}
-              title="Center View"
-              className="material-symbols-outlined"
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--ink-2)",
-                fontSize: "16px",
-                width: "22px",
-                height: "22px",
-                display: "grid",
-                placeItems: "center",
-                cursor: "pointer",
-              }}
-            >
-              center_focus_strong
-            </button>
-          </>
-        )}
-      </div>
+          {controlsOpen && (
+            <>
+              <div style={{ width: "1px", height: "14px", background: "var(--rule)" }} />
+              <button
+                onClick={() => void zoomIn()}
+                title="Zoom In"
+                className="material-symbols-outlined"
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ink-2)",
+                  fontSize: "16px",
+                  width: "22px",
+                  height: "22px",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                zoom_in
+              </button>
+              <button
+                onClick={() => void zoomOut()}
+                title="Zoom Out"
+                className="material-symbols-outlined"
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ink-2)",
+                  fontSize: "16px",
+                  width: "22px",
+                  height: "22px",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                zoom_out
+              </button>
+              <button
+                onClick={() => void fitView({ padding: 0.35, duration: 400 })}
+                title="Center View"
+                className="material-symbols-outlined"
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ink-2)",
+                  fontSize: "16px",
+                  width: "22px",
+                  height: "22px",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                center_focus_strong
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <div
         className="visualizer-badge"

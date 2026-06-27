@@ -87,6 +87,7 @@ export default function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selected, setSelected] = useState<Note | null>(null);
   const [selectedBacklinks, setSelectedBacklinks] = useState<string[]>([]);
+  const [isVisualizerModalOpen, setIsVisualizerModalOpen] = useState(false);
   const [graph, setGraph] = useState<{
     nodes: { id: string; title: string }[];
     edges: { source: string; target: string }[];
@@ -1160,13 +1161,42 @@ export default function App() {
             selectedNote={selected}
             notes={notes}
             backlinks={selectedBacklinks}
-            onNodeClick={(id) => {
-              void openNote(id);
-            }}
+            interactive={false}
+            onPreviewClick={() => setIsVisualizerModalOpen(true)}
           />
         </div>
 
       </aside>
+
+      {/* ---------- Semantic Visualizer Enlarged Modal ---------- */}
+      {isVisualizerModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsVisualizerModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Semantic Visualizer</h3>
+              <button
+                className="modal-close-btn material-symbols-outlined"
+                onClick={() => setIsVisualizerModalOpen(false)}
+                title="Close"
+              >
+                close
+              </button>
+            </div>
+            <div className="modal-body">
+              <SemanticVisualizer
+                selectedNote={selected}
+                notes={notes}
+                backlinks={selectedBacklinks}
+                interactive={true}
+                onNodeClick={(id) => {
+                  void openNote(id);
+                  setIsVisualizerModalOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </MessageScrollerProvider>
   );
