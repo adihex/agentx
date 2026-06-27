@@ -114,6 +114,12 @@ body {
   min-height: 0;
 }
 
+@media (min-width: 1201px) {
+  .app {
+    grid-template-columns: var(--rail-w) 1fr 280px;
+  }
+}
+
 /* ============================ RAIL ============================ */
 .rail {
   display: flex;
@@ -724,8 +730,7 @@ body {
   background: var(--clay-strong);
 }
 .btn-primary:disabled {
-  background: var(--rule-strong);
-  color: var(--ink-3);
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
