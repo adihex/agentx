@@ -8,7 +8,7 @@ interface Note {
   tags?: string[];
   links?: string[];
   body: string;
-  createdAt: number;
+  created: string;
 }
 
 interface SemanticVisualizerProps {

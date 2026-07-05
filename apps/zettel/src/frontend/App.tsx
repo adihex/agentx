@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { AdpClient } from "@agentx/agx-core";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -110,6 +110,32 @@ export default function App() {
   const [editBody, setEditBody] = useState("");
   const [editTags, setEditTags] = useState("");
   const [editLinks, setEditLinks] = useState<string[]>([]);
+  const [editMessages, setEditMessages] = useState<ChatMessage[]>([]);
+  const [showAiProposal, setShowAiProposal] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem("zettel-theme");
+    if (saved !== null) return saved === "dark";
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  });
+
+  const isEditingRef = useRef(false);
+  const selectedRef = useRef<Note | null>(null);
+  const editOriginalRef = useRef<{ title: string; body: string; tags: string; links: string[] } | null>(null);
+  const editThreadEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Keep refs in sync with state for use in event handlers
+  useEffect(() => { isEditingRef.current = isEditing; }, [isEditing]);
+  useEffect(() => { selectedRef.current = selected; }, [selected]);
+
+  // Apply theme and persist to localStorage (useLayoutEffect prevents flash on load)
+  useLayoutEffect(() => {
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    try {
+      localStorage.setItem("zettel-theme", isDark ? "dark" : "light");
+    } catch {
+      // localStorage may be unavailable (private mode, quota exceeded)
+    }
+  }, [isDark]);
 
   // Store session token for cross-origin API auth (bypasses 3rd-party cookie blocking)
   useEffect(() => {
@@ -147,6 +173,9 @@ export default function App() {
       setEditBody("");
       setEditTags("");
       setEditLinks([]);
+      setEditMessages([]);
+      setShowAiProposal(false);
+      editOriginalRef.current = null;
     }
   }, [session]);
 
@@ -195,12 +224,20 @@ export default function App() {
     });
 
     const offEvent = client.onEvent((ev) => {
+      const updateThread = (updater: (prev: ChatMessage[]) => ChatMessage[]) => {
+        if (isEditingRef.current) {
+          setEditMessages(updater);
+        } else {
+          setMessages(updater);
+        }
+      };
+
       if (ev.method === "Agent.InferenceStart") {
-        setMessages((p) => [...p, { id: "streaming-msg", role: "assistant", text: "" }]);
+        updateThread((p) => [...p, { id: "streaming-msg", role: "assistant", text: "" }]);
       }
       if (ev.method === "Agent.InferenceChunk") {
         const payload = ev.params as { chunk: string };
-        setMessages((p) => {
+        updateThread((p) => {
           const updated = [...p];
           const last = updated[updated.length - 1];
           if (last && last.id === "streaming-msg") {
@@ -211,7 +248,7 @@ export default function App() {
       }
       if (ev.method === "Agent.InferenceEnd") {
         const payload = ev.params as { text: string };
-        setMessages((p) => {
+        updateThread((p) => {
           const updated = [...p];
           const last = updated[updated.length - 1];
           if (last && last.id === "streaming-msg") {
@@ -227,13 +264,33 @@ export default function App() {
       }
       if (ev.method === "Agent.ToolStart") {
         const payload = ev.params as { toolName: string };
-        setMessages((p) => [
+        updateThread((p) => [
           ...p,
           { id: Math.random().toString(), role: "tool", text: `${payload.toolName}` },
         ]);
       }
       if (ev.method === "Agent.ToolComplete") {
         void fetchNotes();
+        const payload = ev.params as { toolName?: string };
+        if (isEditingRef.current && selectedRef.current && payload.toolName === "editNote") {
+          void (async () => {
+            try {
+              const res = await api.note.$get({ query: { id: selectedRef.current!.id } });
+              if (res.ok) {
+                const data = await res.json();
+                const note = data.note as Note;
+                setSelected(note);
+                setEditTitle(note.title || "");
+                setEditBody(note.body || "");
+                setEditTags(note.tags ? note.tags.join(", ") : "");
+                setEditLinks(note.links || []);
+                setShowAiProposal(true);
+              }
+            } catch (e) {
+              console.error("Failed to refresh note after AI edit", e);
+            }
+          })();
+        }
       }
     });
 
@@ -250,6 +307,11 @@ export default function App() {
     if (!session) return;
     threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, session]);
+
+  useEffect(() => {
+    if (!session) return;
+    editThreadEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [editMessages, session]);
 
   // Stop the mic + timer if the component unmounts mid-recording.
   useEffect(() => {
@@ -442,9 +504,13 @@ export default function App() {
   const handleSend = () => {
     if (!input.trim() || !clientRef.current || !connected) return;
     const userMsg = input.trim();
-    setMessages((p) => [...p, { id: Math.random().toString(), role: "user", text: userMsg }]);
+    if (isEditingRef.current) {
+      setEditMessages((p) => [...p, { id: Math.random().toString(), role: "user", text: userMsg }]);
+    } else {
+      setMessages((p) => [...p, { id: Math.random().toString(), role: "user", text: userMsg }]);
+      setSelected(null); // return to the thread so the response is visible
+    }
     setInput("");
-    setSelected(null); // return to the thread so the response is visible
     sendPrompt(userMsg);
   };
 
@@ -474,6 +540,9 @@ export default function App() {
         setSelected(data.note as any);
         setSelectedBacklinks(data.backlinks || []);
         setIsEditing(false);
+        setEditMessages([]);
+        setShowAiProposal(false);
+        editOriginalRef.current = null;
       }
     } catch (e) {
       console.error(e);
@@ -486,6 +555,14 @@ export default function App() {
     setEditBody(selected.body || "");
     setEditTags(selected.tags ? selected.tags.join(", ") : "");
     setEditLinks(selected.links || []);
+    editOriginalRef.current = {
+      title: selected.title || "",
+      body: selected.body || "",
+      tags: selected.tags ? selected.tags.join(", ") : "",
+      links: selected.links || [],
+    };
+    setEditMessages([]);
+    setShowAiProposal(false);
     setIsEditing(true);
   };
 
@@ -511,6 +588,8 @@ export default function App() {
         const data = await res.json();
         setSelected(data.note);
         setIsEditing(false);
+        setShowAiProposal(false);
+        editOriginalRef.current = null;
         void fetchNotes();
       } else {
         const errData = await res.json();
@@ -520,6 +599,27 @@ export default function App() {
       console.error("Failed to save note edits", e);
       alert("Failed to save changes due to a network error.");
     }
+  };
+
+  const acceptAiEdit = () => {
+    setShowAiProposal(false);
+    editOriginalRef.current = {
+      title: editTitle,
+      body: editBody,
+      tags: editTags,
+      links: editLinks,
+    };
+  };
+
+  const rejectAiEdit = () => {
+    if (editOriginalRef.current) {
+      setEditTitle(editOriginalRef.current.title);
+      setEditBody(editOriginalRef.current.body);
+      setEditTags(editOriginalRef.current.tags);
+      setEditLinks(editOriginalRef.current.links);
+    }
+    setShowAiProposal(false);
+    editOriginalRef.current = null;
   };
 
   const deleteCurrentNote = async () => {
@@ -543,10 +643,14 @@ export default function App() {
 
   const handleAudio = async (file: File) => {
     setTranscribing(true);
-    setMessages((p) => [
-      ...p,
-      { id: Math.random().toString(), role: "system", text: `transcribing ${file.name}` },
-    ]);
+    const pushMsg = (msg: ChatMessage) => {
+      if (isEditingRef.current) {
+        setEditMessages((p) => [...p, msg]);
+      } else {
+        setMessages((p) => [...p, msg]);
+      }
+    };
+    pushMsg({ id: Math.random().toString(), role: "system", text: `transcribing ${file.name}` });
     try {
       const res = await api.transcribe.$post({
         form: {
@@ -556,24 +660,20 @@ export default function App() {
       const data = (await res.json()) as any;
       if (data.transcript?.text) {
         const text = data.transcript.text;
-        setMessages((p) => [...p, { id: Math.random().toString(), role: "user", text }]);
-        setSelected(null); // return to thread so responses are visible
+        pushMsg({ id: Math.random().toString(), role: "user", text });
+        if (!isEditingRef.current) {
+          setSelected(null); // return to thread so responses are visible
+        }
         sendPrompt(text);
       } else {
-        setMessages((p) => [
-          ...p,
-          {
-            id: Math.random().toString(),
-            role: "system",
-            text: `transcription unavailable: ${data.transcript?.error ?? "unknown error"}`,
-          },
-        ]);
+        pushMsg({
+          id: Math.random().toString(),
+          role: "system",
+          text: `transcription unavailable: ${data.transcript?.error ?? "unknown error"}`,
+        });
       }
     } catch (e) {
-      setMessages((p) => [
-        ...p,
-        { id: Math.random().toString(), role: "system", text: `upload failed: ${String(e)}` },
-      ]);
+      pushMsg({ id: Math.random().toString(), role: "system", text: `upload failed: ${String(e)}` });
     } finally {
       setTranscribing(false);
     }
@@ -620,14 +720,16 @@ export default function App() {
     } catch (err) {
       recordStreamRef.current?.getTracks().forEach((t) => t.stop());
       recordStreamRef.current = null;
-      setMessages((p) => [
-        ...p,
-        {
-          id: Math.random().toString(),
-          role: "system",
-          text: `microphone unavailable: ${err instanceof Error ? err.message : String(err)}`,
-        },
-      ]);
+      const msg: ChatMessage = {
+        id: Math.random().toString(),
+        role: "system",
+        text: `microphone unavailable: ${err instanceof Error ? err.message : String(err)}`,
+      };
+      if (isEditingRef.current) {
+        setEditMessages((p) => [...p, msg]);
+      } else {
+        setMessages((p) => [...p, msg]);
+      }
     }
   };
 
@@ -646,7 +748,7 @@ export default function App() {
   const titleFor = (id: string): string =>
     graph.nodes.find((n) => n.id === id)?.title ?? notes.find((n) => n.id === id)?.title ?? id;
 
-  const streaming = messages.some((m) => m.id === "streaming-msg");
+  const streaming = messages.some((m) => m.id === "streaming-msg") || editMessages.some((m) => m.id === "streaming-msg");
   const fmtSecs = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const activity = recording
     ? `recording ${fmtSecs(recordSecs)}`
@@ -656,6 +758,7 @@ export default function App() {
         ? "thinking"
         : "";
   const thread = messages.filter((m) => m.id !== GREETING_ID);
+  const editThread = editMessages.filter((m) => m.id !== GREETING_ID);
 
   const listForRail: SearchResult[] = query.trim()
     ? results
@@ -784,6 +887,17 @@ export default function App() {
           <span>{connected ? "Connected" : "Connecting…"}</span>
           <button
             type="button"
+            className="rail-button"
+            role="switch"
+            aria-checked={isDark}
+            onClick={() => setIsDark(!isDark)}
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <span className="material-symbols-outlined">{isDark ? "light_mode" : "dark_mode"}</span>
+          </button>
+          <button
+            type="button"
             className="signout-btn"
             onClick={() => void authClient.signOut()}
             title="Sign out of your Zettelkasten"
@@ -796,6 +910,18 @@ export default function App() {
       {/* ---------- Manuscript canvas ---------- */}
       <main className="canvas">
         <div className="canvas-scroll">
+          {/* Sync status bar */}
+          <div className="sync-bar">
+            <div className="sync-bar-left">
+              <span className="sync-dot" />
+              <span className="sync-label">Synchronized</span>
+            </div>
+            <div className="sync-bar-right">
+              <span className="material-symbols-outlined sync-icon">settings</span>
+              <span className="material-symbols-outlined sync-icon">sync</span>
+              <span className="material-symbols-outlined sync-icon">account_circle</span>
+            </div>
+          </div>
           {showTools ? (
             <ToolsManager onClose={() => setShowTools(false)} />
           ) : selected ? (
@@ -813,109 +939,176 @@ export default function App() {
               </div>
 
               {isEditing ? (
-                <div className="note-edit-wrap">
-                  <form className="note-edit-form" onSubmit={(e) => e.preventDefault()}>
-                    <div className="edit-field">
-                      <label className="edit-label" htmlFor="edit-title">
-                        Title
-                      </label>
-                      <input
-                        id="edit-title"
-                        type="text"
-                        className="edit-input-title"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        placeholder="Note title"
-                        required
-                      />
-                    </div>
-                    <div className="edit-field">
-                      <label className="edit-label" htmlFor="edit-body">
-                        Content
-                      </label>
-                      <textarea
-                        id="edit-body"
-                        className="edit-input-body"
-                        value={editBody}
-                        onChange={(e) => setEditBody(e.target.value)}
-                        placeholder="Type your markdown content here..."
-                        required
-                      />
-                    </div>
-                    <div className="edit-field">
-                      <label className="edit-label" htmlFor="edit-tags">
-                        Tags (comma-separated)
-                      </label>
-                      <input
-                        id="edit-tags"
-                        type="text"
-                        className="edit-input-tags"
-                        value={editTags}
-                        onChange={(e) => setEditTags(e.target.value)}
-                        placeholder="e.g. thoughts, math, ideas"
-                      />
-                    </div>
-                    <div className="edit-field">
-                      <label className="edit-label" htmlFor="add-link-select">
-                        Links
-                      </label>
-                      <div className="edit-links-list">
-                        {editLinks.length === 0 ? (
-                          <div className="edit-links-empty">No links yet.</div>
-                        ) : (
-                          editLinks.map((linkId) => (
-                            <div key={linkId} className="edit-link-item">
-                              <span className="edit-link-title">{titleFor(linkId)}</span>
-                              <button
-                                type="button"
-                                className="tool-action-btn tool-action-delete btn-sm"
-                                onClick={() =>
-                                  setEditLinks((prev) => prev.filter((id) => id !== linkId))
-                                }
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          ))
-                        )}
+                <div className="edit-split">
+                  <div className="edit-split-editor">
+                    {showAiProposal && (
+                      <div className="edit-proposal-banner">
+                        <span className="edit-proposal-text">AI proposed changes — Review below</span>
+                        <div className="edit-proposal-actions">
+                          <button type="button" className="btn-primary" onClick={acceptAiEdit}>
+                            Accept
+                          </button>
+                          <button type="button" className="tool-action-btn" onClick={rejectAiEdit}>
+                            Reject
+                          </button>
+                        </div>
                       </div>
-                      <div className="add-link-section">
-                        <select
-                          id="add-link-select"
-                          value=""
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (val && !editLinks.includes(val)) {
-                              setEditLinks((prev) => [...prev, val]);
-                            }
+                    )}
+                    <form className="note-edit-form" onSubmit={(e) => e.preventDefault()}>
+                      <div className="edit-field">
+                        <label className="edit-label" htmlFor="edit-title">
+                          Title
+                        </label>
+                        <input
+                          id="edit-title"
+                          type="text"
+                          className="edit-input-title"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          placeholder="Note title"
+                          required
+                        />
+                      </div>
+                      <div className="edit-field">
+                        <label className="edit-label" htmlFor="edit-body">
+                          Content
+                        </label>
+                        <textarea
+                          id="edit-body"
+                          className="edit-input-body"
+                          value={editBody}
+                          onChange={(e) => setEditBody(e.target.value)}
+                          placeholder="Type your markdown content here..."
+                          required
+                        />
+                      </div>
+                      <div className="edit-field">
+                        <label className="edit-label" htmlFor="edit-tags">
+                          Tags (comma-separated)
+                        </label>
+                        <input
+                          id="edit-tags"
+                          type="text"
+                          className="edit-input-tags"
+                          value={editTags}
+                          onChange={(e) => setEditTags(e.target.value)}
+                          placeholder="e.g. thoughts, math, ideas"
+                        />
+                      </div>
+                      <div className="edit-field">
+                        <label className="edit-label" htmlFor="add-link-select">
+                          Links
+                        </label>
+                        <div className="edit-links-list">
+                          {editLinks.length === 0 ? (
+                            <div className="edit-links-empty">No links yet.</div>
+                          ) : (
+                            editLinks.map((linkId) => (
+                              <div key={linkId} className="edit-link-item">
+                                <span className="edit-link-title">{titleFor(linkId)}</span>
+                                <button
+                                  type="button"
+                                  className="tool-action-btn tool-action-delete btn-sm"
+                                  onClick={() =>
+                                    setEditLinks((prev) => prev.filter((id) => id !== linkId))
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                        <div className="add-link-section">
+                          <select
+                            id="add-link-select"
+                            value=""
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val && !editLinks.includes(val)) {
+                                setEditLinks((prev) => [...prev, val]);
+                              }
+                            }}
+                            className="edit-select-link"
+                          >
+                            <option value="">-- Add Link to Another Note --</option>
+                            {notes
+                              .filter((n) => n.id !== selected.id && !editLinks.includes(n.id))
+                              .map((n) => (
+                                <option key={n.id} value={n.id}>
+                                  {n.title || n.id}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="edit-actions">
+                        <button type="button" className="btn-primary" onClick={saveEdit}>
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="tool-action-btn"
+                          onClick={() => {
+                            setIsEditing(false);
+                            setShowAiProposal(false);
+                            editOriginalRef.current = null;
                           }}
-                          className="edit-select-link"
+                          style={{ height: "2.5rem", padding: "0 1.5rem" }}
                         >
-                          <option value="">-- Add Link to Another Note --</option>
-                          {notes
-                            .filter((n) => n.id !== selected.id && !editLinks.includes(n.id))
-                            .map((n) => (
-                              <option key={n.id} value={n.id}>
-                                {n.title || n.id}
-                              </option>
-                            ))}
-                        </select>
+                          Cancel
+                        </button>
                       </div>
-                    </div>
-                    <div className="edit-actions">
-                      <button type="button" className="btn-primary" onClick={saveEdit}>
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        className="tool-action-btn"
-                        onClick={() => setIsEditing(false)}
-                        style={{ height: "2.5rem", padding: "0 1.5rem" }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
+                  <div className="edit-split-chat">
+                    <MessageScroller>
+                      <MessageScrollerViewport>
+                        <MessageScrollerContent className="thread">
+                          {editThread.map((msg, idx) => {
+                            const isConsecutive = idx > 0 && editThread[idx - 1].role === msg.role;
+                            return (
+                              <MessageScrollerItem
+                                key={msg.id}
+                                messageId={msg.id}
+                                scrollAnchor={msg.role === "user"}
+                              >
+                                {msg.role === "assistant" ? (
+                                  <Message
+                                    role="assistant"
+                                    isConsecutive={isConsecutive}
+                                    header={<span className="chat-label-assistant">Assistant</span>}
+                                  >
+                                    <Bubble variant="default" align="left">
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                                    </Bubble>
+                                  </Message>
+                                ) : msg.role === "user" ? (
+                                  <Message
+                                    role="user"
+                                    isConsecutive={isConsecutive}
+                                    header={<span className="chat-label-user">You</span>}
+                                  >
+                                    <Bubble variant="accent" align="left">
+                                      {msg.text}
+                                    </Bubble>
+                                  </Message>
+                                ) : (
+                                  <Message role="system" isConsecutive={isConsecutive}>
+                                    <Marker type={msg.role === "tool" ? "tool" : "system"}>
+                                      {msg.text}
+                                    </Marker>
+                                  </Message>
+                                )}
+                              </MessageScrollerItem>
+                            );
+                          })}
+                          <div ref={editThreadEndRef} />
+                        </MessageScrollerContent>
+                      </MessageScrollerViewport>
+                      <MessageScrollerButton />
+                    </MessageScroller>
+                  </div>
                 </div>
               ) : (
                 <div className="note-wrap" key={selected.id}>
@@ -994,7 +1187,7 @@ export default function App() {
                             <Message
                               role="assistant"
                               isConsecutive={isConsecutive}
-                              header={<span>study partner</span>}
+                              header={<span className="chat-label-assistant">Assistant</span>}
                             >
                               <Bubble variant="default" align="left">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
@@ -1004,7 +1197,7 @@ export default function App() {
                             <Message
                               role="user"
                               isConsecutive={isConsecutive}
-                              header={<span>You</span>}
+                              header={<span className="chat-label-user">You</span>}
                             >
                               <Bubble variant="accent" align="left">
                                 {msg.text}

@@ -41,7 +41,7 @@ interface Note {
   tags?: string[];
   links?: string[];
   body: string;
-  createdAt: number;
+  created: string;
 }
 
 const mockNotes: Note[] = [
@@ -50,21 +50,21 @@ const mockNotes: Note[] = [
     title: "Central Thought",
     links: ["note-2"],
     body: "First atomic note",
-    createdAt: 1000,
+    created: "1970-01-01T00:00:01.000Z",
   },
   {
     id: "note-2",
     title: "Connected Point",
     links: [],
     body: "Second atomic note",
-    createdAt: 2000,
+    created: "1970-01-01T00:00:02.000Z",
   },
   {
     id: "note-3",
     title: "Backlinking Thought",
     links: ["note-1"],
     body: "Third atomic note",
-    createdAt: 3000,
+    created: "1970-01-01T00:00:03.000Z",
   },
 ];
 
