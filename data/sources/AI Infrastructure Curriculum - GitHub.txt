@@ -1,0 +1,1777 @@
+AI Infrastructure Curriculum · GitHub
+
+Skip to content
+
+https://github.com/ai-infra-curriculum#start-of-content
+
+Navigation Menu
+
+Toggle navigation 
+
+https://github.com/
+
+Sign in
+
+https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fai-infra-curriculum
+
+Appearance settings
+
+ai-infra-curriculum
+
+https://github.com/ai-infra-curriculum
+
+Platform
+
+AI CODE CREATION
+
+GitHub Copilot Write better code with AI
+
+https://github.com/features/copilot
+
+GitHub Copilot app Direct agents from issue to merge
+
+https://github.com/features/ai/github-app
+
+MCP Registry New Integrate external tools
+
+https://github.com/mcp
+
+DEVELOPER WORKFLOWS
+
+Actions Automate any workflow
+
+https://github.com/features/actions
+
+Codespaces Instant dev environments
+
+https://github.com/features/codespaces
+
+Issues Plan and track work
+
+https://github.com/features/issues
+
+Code Review Manage code changes
+
+https://github.com/features/code-review
+
+APPLICATION SECURITY
+
+GitHub Advanced Security Find and fix vulnerabilities
+
+https://github.com/security/advanced-security
+
+Code security Secure your code as you build
+
+https://github.com/security/advanced-security/code-security
+
+Secret protection Stop leaks before they start
+
+https://github.com/security/advanced-security/secret-protection
+
+EXPLORE
+
+Why GitHub
+
+https://github.com/why-github
+
+Documentation
+
+https://docs.github.com/
+
+Blog
+
+https://github.blog/
+
+Changelog
+
+https://github.blog/changelog
+
+Marketplace
+
+https://github.com/marketplace
+
+ 
+
+View all features
+
+https://github.com/features
+
+Solutions
+
+BY COMPANY SIZE
+
+Enterprises
+
+https://github.com/enterprise
+
+Small and medium teams
+
+https://github.com/team
+
+Startups
+
+https://github.com/enterprise/startups
+
+Nonprofits
+
+https://github.com/solutions/industry/nonprofits
+
+BY USE CASE
+
+App Modernization
+
+https://github.com/solutions/use-case/app-modernization
+
+DevSecOps
+
+https://github.com/solutions/use-case/devsecops
+
+DevOps
+
+https://github.com/solutions/use-case/devops
+
+CI/CD
+
+https://github.com/solutions/use-case/ci-cd
+
+View all use cases
+
+https://github.com/solutions/use-case
+
+BY INDUSTRY
+
+Healthcare
+
+https://github.com/solutions/industry/healthcare
+
+Financial services
+
+https://github.com/solutions/industry/financial-services
+
+Manufacturing
+
+https://github.com/solutions/industry/manufacturing
+
+Government
+
+https://github.com/solutions/industry/government
+
+View all industries
+
+https://github.com/solutions/industry
+
+ 
+
+View all solutions
+
+https://github.com/solutions
+
+Resources
+
+EXPLORE BY TOPIC
+
+AI
+
+https://github.com/resources/articles?topic=ai
+
+Software Development
+
+https://github.com/resources/articles?topic=software-development
+
+DevOps
+
+https://github.com/resources/articles?topic=devops
+
+Security
+
+https://github.com/resources/articles?topic=security
+
+View all topics
+
+https://github.com/resources/articles
+
+EXPLORE BY TYPE
+
+Customer stories
+
+https://github.com/customer-stories
+
+Events & webinars
+
+https://github.com/resources/events
+
+Ebooks & reports
+
+https://github.com/resources/whitepapers
+
+Business insights
+
+https://github.com/solutions/executive-insights
+
+GitHub Skills
+
+https://skills.github.com/
+
+SUPPORT & SERVICES
+
+Documentation
+
+https://docs.github.com/
+
+Customer support
+
+https://support.github.com/
+
+Community forum
+
+https://github.com/orgs/community/discussions
+
+Trust center
+
+https://github.com/trust-center
+
+Partners
+
+https://github.com/partners
+
+ 
+
+View all resources
+
+https://github.com/resources
+
+Open Source
+
+COMMUNITY
+
+GitHub Sponsors Fund open source developers
+
+https://github.com/sponsors
+
+PROGRAMS
+
+Security Lab
+
+https://securitylab.github.com/
+
+Maintainer Community
+
+https://maintainers.github.com/
+
+Accelerator
+
+https://github.com/accelerator
+
+GitHub Stars
+
+https://stars.github.com/
+
+Archive Program
+
+https://archiveprogram.github.com/
+
+REPOSITORIES
+
+Topics
+
+https://github.com/topics
+
+Trending
+
+https://github.com/trending
+
+Collections
+
+https://github.com/collections
+
+Enterprise
+
+ENTERPRISE SOLUTIONS
+
+Enterprise platform AI-powered developer platform
+
+https://github.com/enterprise
+
+AVAILABLE ADD-ONS
+
+GitHub Advanced Security Enterprise-grade security features
+
+https://github.com/security/advanced-security
+
+Copilot for Business Enterprise-grade AI features
+
+https://github.com/features/copilot/copilot-business
+
+Premium Support Enterprise-grade 24/7 support
+
+https://github.com/premium-support
+
+Pricing
+
+https://github.com/pricing
+
+Search or jump to...
+
+Search code, repositories, users, issues, pull requests...
+
+Search
+
+Clear
+
+Search syntax tips
+
+https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax
+
+Provide feedback
+
+We read every piece of feedback, and take your input very seriously.
+
+ 
+
+[-]
+
+Include my email address so I can be contacted
+
+Cancel Submit feedback
+
+Saved searches
+
+Use saved searches to filter your results more quickly
+
+Name
+
+Query
+
+To see all available qualifiers, see our 
+
+documentation
+
+https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax
+
+.
+
+Cancel Create saved search
+
+Sign in
+
+https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fai-infra-curriculum
+
+Sign up
+
+https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Corg-login%3E&source=header
+
+Appearance settings
+
+Resetting focus
+
+You signed in with another tab or window. 
+
+Reload
+
+https://github.com/ai-infra-curriculum
+
+ to refresh your session. You signed out in another tab or window. 
+
+Reload
+
+https://github.com/ai-infra-curriculum
+
+ to refresh your session. You switched accounts on another tab or window. 
+
+Reload
+
+https://github.com/ai-infra-curriculum
+
+ to refresh your session. Dismiss alert
+
+Uh oh!
+
+There was an error while loading. 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+.
+
+Uh oh!
+
+There was an error while loading. 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+.
+
+ 
+
+AI Infrastructure Curriculum
+
+Hands-on AI infrastructure curriculum from junior engineer to principal architect, with multiple learning and solutions tracks.
+
+172 followers
+
+https://github.com/orgs/ai-infra-curriculum/followers
+
+United States of America
+
+Sponsor
+
+https://github.com/sponsors/ai-infra-curriculum
+
+Overview
+
+https://github.com/ai-infra-curriculum
+
+Repositories 26
+
+https://github.com/orgs/ai-infra-curriculum/repositories
+
+Discussions
+
+https://github.com/orgs/ai-infra-curriculum/discussions
+
+Projects
+
+https://github.com/orgs/ai-infra-curriculum/projects
+
+Packages
+
+https://github.com/orgs/ai-infra-curriculum/packages
+
+People 1
+
+https://github.com/orgs/ai-infra-curriculum/people
+
+More
+
+Overview
+
+https://github.com/ai-infra-curriculum
+
+Repositories
+
+https://github.com/orgs/ai-infra-curriculum/repositories
+
+Discussions
+
+https://github.com/orgs/ai-infra-curriculum/discussions
+
+Projects
+
+https://github.com/orgs/ai-infra-curriculum/projects
+
+Packages
+
+https://github.com/orgs/ai-infra-curriculum/packages
+
+People
+
+https://github.com/orgs/ai-infra-curriculum/people
+
+README.md
+
+https://github.com/ai-infra-curriculum/.github/tree/main/profile/README.md
+
+AI Infrastructure Engineering Curriculum
+
+🎓 Live cohorts & team programs → 
+
+ai-infra-curriculum.github.io
+
+https://ai-infra-curriculum.github.io/
+
+The curriculum in these repositories is 
+
+free and open-source
+
+. For live, instructor-led cohorts and corporate team programs, visit the site: 
+
+Join the first cohort
+
+· 
+
+For teams
+
+.
+
+⚠ AI-Generated Content Disclaimer
+
+The content in these repositories is generated with AI assistance and undergoes ongoing human review. It may contain errors or outdated information. Treat it as a learning resource: cross-reference official docs, test code in a safe environment, and report issues via GitHub Issues or Discussions.
+
+A comprehensive, hands-on learning path for AI Infrastructure Engineers — from entry-level to executive roles, plus a dedicated Agentic AI specialization vertical.
+
+ 
+
+ 
+
+🎯 Overview
+
+This curriculum provides production-focused training for AI Infrastructure Engineers, covering everything from foundational Python and Kubernetes to distributed training, LLM infrastructure, MLOps, platform engineering, security, enterprise architecture, and agentic AI systems.
+
+This org spans 
+
+11 role tracks
+
+ — the AI infrastructure ladder from Entry to Principal. Every track has a paired 
+
+learning
+
+ repository (modules, lecture chapters, exercises, quizzes) and a 
+
+solutions
+
+ repository with reference walkthroughs. Agentic-engineering and governance roles live in the 
+
+sibling orgs
+
+https://github.com/ai-infra-curriculum#-curriculum-family
+
+.
+
+At a glance:
+
+🏢 
+
+22 curriculum repositories
+
+ (11 learning + 11 solutions) plus support repos
+
+📚 
+
+11 learning tracks
+
+ with 
+
+11 paired solutions repositories
+
+🎓 Hundreds of hands-on exercises and dozens of real-world projects
+
+🤖 
+
+Agentic AI track complete
+
+ — all four rungs have full learning content and reference solutions
+
+🔗 Curriculum Family
+
+This org covers 
+
+AI infrastructure
+
+ — 
+
+running
+
+ the platforms (Kubernetes, GPUs, training infra, serving, MLOps, IaC, SRE). Three sibling orgs cover the rest of the AI landscape, organized by what you 
+
+do
+
+ relative to a model:
+
+ML Engineering Curriculum
+
+ — 
+
+building & training
+
+ the models: data, fine-tuning, pretraining, RLHF, evals.
+
+AI Engineering Curriculum
+
+ — 
+
+building with
+
+ AI: agentic AI developer → engineer → senior → systems architect.
+
+AI Governance Curriculum
+
+ — 
+
+governing, securing & assuring
+
+ AI: security, chief AI officer, evaluation & agentic safety.
+
+📚 Learning Tracks
+
+🟢 Entry Level (0-2 years)
+
+Role
+
+Focus
+
+Repositories
+
+Junior Engineer
+
+Python & ML basics, Linux & Docker, Kubernetes intro, cloud platforms, monitoring
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-solutions
+
+Engineer
+
+Production ML, distributed training, GPU computing, advanced Kubernetes, MLOps, LLM infra, IaC
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-engineer-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-engineer-solutions
+
+🔵 Intermediate Level (2-4 years)
+
+Role
+
+Focus
+
+Repositories
+
+MLOps Engineer
+
+CI/CD for ML, model registry, feature stores, experiment tracking, drift detection, A/B testing
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-mlops-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-mlops-solutions
+
+ML Platform Engineer
+
+Platform architecture, multi-tenancy, serving at scale, platform APIs/SDKs, developer experience
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-ml-platform-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-ml-platform-solutions
+
+Performance Engineer
+
+GPU utilization, inference latency, training efficiency, cost optimization, profiling
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-performance-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-performance-solutions
+
+🟣 Advanced Level (4-6 years)
+
+Role
+
+Focus
+
+Repositories
+
+Senior Engineer
+
+Advanced Kubernetes (operators/CRDs), distributed training at scale, CUDA, multi-cloud, SRE
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-engineer-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-engineer-solutions
+
+Architect
+
+Enterprise ML architecture, multi-cloud/hybrid, security & compliance, FinOps, HA/DR, LLM/RAG platforms
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions
+
+🔴 Leadership Level (6-10 years)
+
+Role
+
+Focus
+
+Repositories
+
+Team Lead
+
+Technical strategy & roadmaps, team building, ADRs, incident & performance management
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions
+
+Senior Architect
+
+Cross-org architecture alignment, enterprise standards, multi-year roadmaps, executive communication
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions
+
+⭐ Principal Level (8-15+ years)
+
+Role
+
+Focus
+
+Repositories
+
+Principal Engineer
+
+Deep technical expertise, extreme-scale distributed systems, novel infra solutions, mentorship
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions
+
+Principal Architect
+
+Company-wide strategy, multi-year roadmaps, technology selection, architecture governance
+
+📘 Learning
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning
+
+ · 
+
+✅ Solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions
+
+All 11 infrastructure tracks are actively maintained. Work focuses on depth, runtime validation, and human review. The agentic-engineering and governance roles now live in their sibling orgs (see 
+
+Curriculum Family
+
+https://github.com/ai-infra-curriculum#-curriculum-family
+
+ above). See the 
+
+Career Progression Guide
+
+https://github.com/ai-infra-curriculum/.github/blob/main/CAREER_PROGRESSION.md
+
+ for role and skill mapping.
+
+🚀 Quick Start
+
+Choose a track
+
+ based on your experience level and career direction.
+
+Clone the learning repository:
+
+git clone https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-learning.git
+cd ai-infra-junior-engineer-learning
+
+
+Start with Module 001
+
+ and read its 
+
+README.md
+
+ .
+
+Work through the exercises
+
+ in each module.
+
+Check the companion solutions repository
+
+ for reference walkthroughs.
+
+🛠 Technologies Covered
+
+Languages:
+
+ Python, Bash, HCL (Terraform), YAML
+
+ML frameworks:
+
+ PyTorch, TensorFlow, scikit-learn
+
+Orchestration:
+
+ Kubernetes, Helm, ArgoCD, FluxCD
+
+Cloud & containers:
+
+ AWS, GCP, Azure, Docker, containerd
+
+MLOps:
+
+ MLflow, Kubeflow, DVC, Feast
+
+Observability:
+
+ Prometheus, Grafana, Loki, Jaeger
+
+IaC & CI/CD:
+
+ Terraform, Pulumi, GitHub Actions, GitLab CI
+
+LLMs & GPU:
+
+ vLLM, Llama, Mistral, RAG, CUDA, NCCL, TensorRT
+
+🤝 Contributing
+
+Contributions are welcome across the organization:
+
+Fix broken links, stale references, or inaccurate explanations
+
+Add depth to modules, projects, or strategic artifacts
+
+Improve validation for runnable exercises and projects
+
+Report issues or ideas via 
+
+GitHub Discussions
+
+https://github.com/orgs/ai-infra-curriculum/discussions
+
+Follow the 
+
+CONTRIBUTING.md
+
+ in the specific repository you want to improve
+
+📜 License
+
+Most curriculum repositories are MIT-licensed. See the target repository's 
+
+LICENSE
+
+ file for authoritative terms.
+
+📞 Support
+
+Issues:
+
+ use the relevant repository's GitHub Issues
+
+Discussions:
+
+ 
+
+organization discussions
+
+https://github.com/orgs/ai-infra-curriculum/discussions
+
+Docs:
+
+ 
+
+Career Progression
+
+https://github.com/ai-infra-curriculum/.github/blob/main/CAREER_PROGRESSION.md
+
+ · 
+
+Curriculum Cross-Reference
+
+https://github.com/ai-infra-curriculum/.github/blob/main/CURRICULUM_CROSS_REFERENCE.md
+
+Maintained by 
+
+VeriSwarm.ai
+
+https://veriswarm.ai/
+
+Pinned Loading
+
+ai-infra-junior-engineer-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-learning
+
+ ai-infra-junior-engineer-learning Public AI Infrastructure Junior Engineer Learning Track - Comprehensive curriculum for entry-level ML infrastructure engineers (0-2 years experience) Python 
+
+176
+
+https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-learning/stargazers
+
+ 
+
+36
+
+https://github.com/ai-infra-curriculum/ai-infra-junior-engineer-learning/forks
+
+ai-infra-engineer-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-engineer-learning
+
+ ai-infra-engineer-learning Public AI Infrastructure Engineer Learning Track - Production ML infrastructure curriculum (2-4 years experience) Python 
+
+1.4k
+
+https://github.com/ai-infra-curriculum/ai-infra-engineer-learning/stargazers
+
+ 
+
+228
+
+https://github.com/ai-infra-curriculum/ai-infra-engineer-learning/forks
+
+Repositories
+
+Loading
+
+Type
+
+Select type
+
+ 
+
+[x] all
+
+All
+
+ 
+
+[-] public
+
+ 
+
+Public
+
+ 
+
+[-] source
+
+ 
+
+Sources
+
+ 
+
+[-] fork
+
+ 
+
+Forks
+
+ 
+
+[-] archived
+
+ 
+
+Archived
+
+ 
+
+[-] mirror
+
+ 
+
+Mirrors
+
+ 
+
+[-] template
+
+ 
+
+Templates
+
+Language
+
+Select language
+
+ 
+
+[x]
+
+All
+
+ 
+
+[-] html
+
+ 
+
+HTML
+
+ 
+
+[-] python
+
+ 
+
+Python
+
+ 
+
+[-] shell
+
+ 
+
+Shell
+
+Sort
+
+Select order
+
+ 
+
+[x]
+
+Last updated
+
+ 
+
+[-] name
+
+ 
+
+Name
+
+ 
+
+[-] stargazers
+
+ 
+
+Stars
+
+Showing 10 of 26 repositories
+
+ai-infra-content-generator
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator
+
+ Public A system-agnostic framework for generating comprehensive technical curriculum content using AI assistance 
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-content-generator's past year of commit activity Python 0 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-content-generator/pulls
+
+ Updated 13 hours ago
+
+ai-infra-architect-solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions
+
+ Public Solutions for AI Infrastructure Architect Track 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-architect-solutions's past year of commit activity Python 
+
+4
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/stargazers
+
+ MIT 
+
+1
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/forks
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/issues
+
+ 
+
+1
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-solutions/pulls
+
+ Updated 5 days ago
+
+ai-infra-principal-architect-solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions
+
+ Public Solutions for AI Infrastructure Principal Architect Track 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-principal-architect-solutions's past year of commit activity 0 MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-solutions/pulls
+
+ Updated last week
+
+ai-infra-principal-architect-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning
+
+ Public AI Infrastructure Principal Architect Learning Track - Enterprise architecture and strategic planning 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-principal-architect-learning's past year of commit activity 0 MIT 
+
+1
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/forks
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-architect-learning/pulls
+
+ Updated last week
+
+ai-infra-senior-architect-solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions
+
+ Public Solutions for AI Infrastructure Senior Architect Track 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-senior-architect-solutions's past year of commit activity 
+
+2
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/stargazers
+
+ MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-solutions/pulls
+
+ Updated last week
+
+ai-infra-senior-architect-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning
+
+ Public AI Infrastructure Senior Architect Learning Track - Advanced architecture and cross-org alignment 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-senior-architect-learning's past year of commit activity 
+
+1
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/stargazers
+
+ MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-senior-architect-learning/pulls
+
+ Updated last week
+
+ai-infra-principal-engineer-solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions
+
+ Public Solutions for AI Infrastructure Principal Engineer Track 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-principal-engineer-solutions's past year of commit activity 0 MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-solutions/pulls
+
+ Updated last week
+
+ai-infra-principal-engineer-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning
+
+ Public AI Infrastructure Principal Engineer Learning Track - Technical excellence and deep infrastructure expertise 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-principal-engineer-learning's past year of commit activity 
+
+1
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/stargazers
+
+ MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-principal-engineer-learning/pulls
+
+ Updated last week
+
+ai-infra-architect-learning
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning
+
+ Public AI Infrastructure Architect Learning Track - System design and architecture patterns for ML 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-architect-learning's past year of commit activity 
+
+10
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/stargazers
+
+ MIT 
+
+2
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/forks
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-architect-learning/pulls
+
+ Updated last week
+
+ai-infra-team-lead-solutions
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions
+
+ Public Solutions for AI Infrastructure Team Lead Track 
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ 
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ [
+
+Uh oh!
+
+](https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity) 
+
+There was an error while loading.
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/graphs/commit-activity
+
+ 
+
+Please reload this page
+
+https://github.com/ai-infra-curriculum
+
+. ai-infra-curriculum/ai-infra-team-lead-solutions's past year of commit activity 0 MIT 0 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/issues
+
+ 
+
+0
+
+https://github.com/ai-infra-curriculum/ai-infra-team-lead-solutions/pulls
+
+ Updated last week
+
+View all repositories
+
+https://github.com/orgs/ai-infra-curriculum/repositories?type=all
+
+[
+
+People
+
+](https://github.com/orgs/ai-infra-curriculum/people)
+
+Sponsors
+
+Top languages
+
+Python
+
+https://github.com/orgs/ai-infra-curriculum/repositories?language=python&type=all
+
+ 
+
+Shell
+
+https://github.com/orgs/ai-infra-curriculum/repositories?language=shell&type=all
+
+ 
+
+HTML
+
+https://github.com/orgs/ai-infra-curriculum/repositories?language=html&type=all
+
+Most used topics
+
+ai-infrastructure
+
+https://github.com/search?q=topic%3Aai-infrastructure+org%3Aai-infra-curriculum+fork%3Atrue&type=repositories
+
+ 
+
+curriculum
+
+https://github.com/search?q=topic%3Acurriculum+org%3Aai-infra-curriculum+fork%3Atrue&type=repositories
+
+ 
+
+mlops
+
+https://github.com/search?q=topic%3Amlops+org%3Aai-infra-curriculum+fork%3Atrue&type=repositories
+
+ 
+
+education
+
+https://github.com/search?q=topic%3Aeducation+org%3Aai-infra-curriculum+fork%3Atrue&type=repositories
+
+ 
+
+kubernetes
+
+https://github.com/search?q=topic%3Akubernetes+org%3Aai-infra-curriculum+fork%3Atrue&type=repositories
+
+Footer
+
+© 2026 GitHub, Inc.
+
+Footer navigation
+
+Terms
+
+https://docs.github.com/site-policy/github-terms/github-terms-of-service
+
+Privacy
+
+https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+
+Security
+
+https://github.com/security
+
+Status
+
+https://www.githubstatus.com/
+
+Community
+
+https://github.community/
+
+Docs
+
+https://docs.github.com/
+
+Contact
+
+https://support.github.com?tags=dotcom-footer
+
+Manage cookies
+
+Do not share my personal information
+
+You can't perform that action at this time.

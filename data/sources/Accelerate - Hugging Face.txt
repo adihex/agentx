@@ -1,0 +1,814 @@
+Accelerate · Hugging Face
+
+Hugging Face's logo Hugging Face
+
+https://huggingface.co/
+
+Models
+
+https://huggingface.co/models
+
+Datasets
+
+https://huggingface.co/datasets
+
+Spaces
+
+https://huggingface.co/spaces
+
+Buckets new
+
+https://huggingface.co/storage
+
+Docs
+
+https://huggingface.co/docs
+
+Enterprise
+
+https://huggingface.co/enterprise
+
+Pricing
+
+https://huggingface.co/pricing
+
+Website
+
+Tasks
+
+https://huggingface.co/tasks
+
+HuggingChat
+
+https://huggingface.co/chat
+
+Collections
+
+https://huggingface.co/collections
+
+Languages
+
+https://huggingface.co/languages
+
+Organizations
+
+https://huggingface.co/organizations
+
+Community
+
+Blog
+
+https://huggingface.co/blog
+
+Posts
+
+https://huggingface.co/posts
+
+Daily Papers
+
+https://huggingface.co/papers
+
+Learn
+
+https://huggingface.co/learn
+
+Discord
+
+https://huggingface.co/join/discord
+
+Forum
+
+https://discuss.huggingface.co/
+
+GitHub
+
+https://github.com/huggingface
+
+Solutions
+
+Team & Enterprise
+
+https://huggingface.co/enterprise
+
+Hugging Face PRO
+
+https://huggingface.co/pro
+
+Enterprise Support
+
+https://huggingface.co/support
+
+Inference Providers
+
+https://huggingface.co/inference/models
+
+Inference Endpoints
+
+https://huggingface.co/inference-endpoints
+
+Storage Buckets
+
+https://huggingface.co/storage
+
+Log In
+
+https://huggingface.co/login
+
+Sign Up
+
+https://huggingface.co/join
+
+Transformers documentation
+
+Accelerate
+
+Transformers
+
+🏡 View all docs
+
+AWS Trainium & Inferentia
+
+Accelerate
+
+Argilla
+
+AutoTrain
+
+Bitsandbytes
+
+CLI
+
+Chat UI
+
+Dataset viewer
+
+Datasets
+
+Deploying on AWS
+
+Diffusers
+
+Distilabel
+
+Evaluate
+
+Google Cloud
+
+Google TPUs
+
+Gradio
+
+Hub
+
+Hub Python Library
+
+Huggingface.js
+
+Inference Endpoints (dedicated)
+
+Inference Providers
+
+Kernels
+
+LeRobot
+
+Leaderboards
+
+Lighteval
+
+Microsoft Azure
+
+OpenEnv
+
+Optimum
+
+PEFT
+
+Reachy Mini
+
+Safetensors
+
+Sentence Transformers
+
+TRL
+
+Tasks
+
+Text Embeddings Inference
+
+Text Generation Inference
+
+Tokenizers
+
+Trackio
+
+Transformers
+
+Transformers.js
+
+Xet
+
+smolagents
+
+timm
+
+Search documentation 
+
+Ctrl+K
+
+main
+
+v5.13.0
+
+v5.12.0
+
+v5.11.0
+
+v5.10.4
+
+v5.9.0
+
+v5.8.1
+
+v5.7.0
+
+v5.6.2
+
+v5.5.4
+
+v5.4.0
+
+v5.3.0
+
+v5.2.0
+
+v5.1.0
+
+v5.0.0
+
+v4.57.6
+
+v4.56.2
+
+v4.55.4
+
+v4.53.3
+
+v4.52.3
+
+v4.51.3
+
+v4.50.0
+
+v4.49.0
+
+v4.48.2
+
+v4.47.1
+
+v4.46.3
+
+v4.45.2
+
+v4.44.2
+
+v4.43.4
+
+v4.42.4
+
+v4.41.2
+
+v4.40.2
+
+v4.39.3
+
+v4.38.2
+
+v4.37.2
+
+v4.36.1
+
+v4.35.2
+
+v4.34.1
+
+v4.33.3
+
+v4.32.1
+
+v4.31.0
+
+v4.30.0
+
+v4.29.1
+
+v4.28.1
+
+v4.27.2
+
+v4.26.1
+
+v4.25.1
+
+v4.24.0
+
+v4.23.1
+
+v4.22.2
+
+v4.21.3
+
+v4.20.1
+
+v4.19.4
+
+v4.18.0
+
+v4.17.0
+
+v4.16.2
+
+v4.15.0
+
+v4.14.1
+
+v4.13.0
+
+v4.12.5
+
+v4.11.3
+
+v4.10.1
+
+v4.9.2
+
+v4.8.2
+
+v4.7.0
+
+v4.6.0
+
+v4.5.1
+
+v4.4.2
+
+v4.3.3
+
+v4.2.2
+
+v4.1.1
+
+v4.0.1
+
+v3.5.1
+
+v3.4.0
+
+v3.3.1
+
+v3.2.0
+
+v3.1.0
+
+v3.0.2
+
+v2.11.0
+
+v2.10.0
+
+v2.9.1
+
+v2.8.0
+
+v2.7.0
+
+v2.6.0
+
+v2.5.1
+
+v2.4.1
+
+v2.3.0
+
+v2.2.2
+
+v2.1.1
+
+v2.0.0
+
+v1.2.0
+
+v1.1.0
+
+v1.0.0
+
+doc-builder-html
+
+AR
+
+DE
+
+EN
+
+ES
+
+FR
+
+HI
+
+IT
+
+JA
+
+KO
+
+PT
+
+RO
+
+TR
+
+ZH
+
+162,255
+
+https://github.com/huggingface/transformers
+
+Get started
+
+Transformers
+
+https://huggingface.co/docs/transformers/index
+
+ 
+
+Installation
+
+https://huggingface.co/docs/transformers/installation
+
+ 
+
+Quickstart
+
+https://huggingface.co/docs/transformers/quicktour
+
+Base classes
+
+Models
+
+Preprocessors
+
+Inference
+
+Pipeline API
+
+Generate API
+
+Optimization
+
+Chat with models
+
+Serving
+
+Training
+
+Get started
+
+Customization
+
+Parameter-efficient fine-tuning
+
+https://huggingface.co/docs/transformers/peft
+
+Performance
+
+Distributed training
+
+Accelerator selection
+
+https://huggingface.co/docs/transformers/accelerator_selection
+
+ 
+
+Accelerate
+
+https://huggingface.co/docs/transformers/accelerate
+
+ 
+
+DDP
+
+https://huggingface.co/docs/transformers/ddp
+
+ 
+
+FSDP2
+
+https://huggingface.co/docs/transformers/fsdp
+
+ 
+
+DeepSpeed ZeRO
+
+https://huggingface.co/docs/transformers/deepspeed
+
+ 
+
+Ulysses sequence parallelism
+
+https://huggingface.co/docs/transformers/deepspeed_alst
+
+ 
+
+Tensor parallelism
+
+https://huggingface.co/docs/transformers/tensor_parallelism
+
+ 
+
+Debugging
+
+https://huggingface.co/docs/transformers/debugging
+
+ 
+
+Parallelism methods
+
+https://huggingface.co/docs/transformers/perf_train_gpu_many
+
+Hardware
+
+Quantization
+
+Ecosystem integrations
+
+Resources
+
+API
+
+ 
+
+Join the Hugging Face community
+
+and get access to the augmented documentation experience
+
+Collaborate on models, datasets and Spaces
+
+Faster examples with accelerated inference
+
+Switch between documentation themes
+
+Sign Up
+
+https://huggingface.co/join
+
+to get started
+
+Copy page
+
+Accelerate
+
+Accelerate
+
+https://hf.co/docs/accelerate/index
+
+ provides a unified interface for distributed training backends like 
+
+FSDP
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html
+
+ or 
+
+DeepSpeed
+
+https://www.deepspeed.ai/
+
+. It detects your environment (number of GPUs, distributed backend, mixed precision, etc.) and automatically configures training, whether you're on 1 GPU with DDP or 8 GPUs with FSDP.
+
+Accelerate wraps the model in the appropriate distributed wrapper, moves it to the correct device, and creates a compatible optimizer. During training, Accelerate uses its own 
+
+backward
+
+https://huggingface.co/docs/accelerate/v1.14.0/en/package_reference/accelerator#accelerate.Accelerator.backward
+
+ method to handle gradient scaling for mixed precision. 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.Trainer
+
+ calls the appropriate Accelerate APIs and delegates all distributed mechanics to Accelerate.
+
+Configure Accelerate for 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.Trainer
+
+ with either an Accelerate config file or 
+
+TrainingArguments
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.TrainingArguments
+
+.
+
+Accelerate config file
+
+Run the 
+
+accelerate config
+
+https://huggingface.co/docs/accelerate/en/package_reference/cli#accelerate-config
+
+ command and answer questions about your hardware and training setup. This creates a 
+
+default_config.yaml
+
+ file in your cache. The example below is for FSDP.
+
+Copied
+
+compute_environment: LOCAL_MACHINE
+distributed_type: FSDP
+fsdp_config:
+  fsdp_version: 2
+  fsdp_reshard_after_forward: true
+  fsdp_cpu_offload: false
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  fsdp_cpu_ram_efficient_loading: true
+  fsdp_activation_checkpointing: false
+  fsdp_state_dict_type: SHARDED_STATE_DICT
+  fsdp_transformer_layer_cls_to_wrap: LlamaDecoderLayer
+mixed_precision: bf16
+num_machines: 1
+num_processes: 4
+
+
+Run 
+
+accelerate launch
+
+https://huggingface.co/docs/accelerate/en/package_reference/cli#accelerate-launch
+
+ with a 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.Trainer
+
+-based script, and Accelerate reads the config file to set up training. The 
+
+fsdp_config
+
+https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments.fsdp_config
+
+ and 
+
+deepspeed
+
+https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments.deepspeed
+
+ args are unnecessary because the Accelerate config file covers the same settings.
+
+Copied
+
+accelerate launch train.py
+
+
+The 
+
+accelerator_config
+
+https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments.accelerator_config
+
+ accepts settings that don't have dedicated top-level arguments. For example, set 
+
+non_blocking=True
+
+ together with 
+
+dataloader_pin_memory()
+
+ to overlap data transfer with compute for higher GPU throughput.
+
+Copied
+
+from transformers import TrainingArguments
+
+TrainingArguments(
+    ...,
+    dataloader_pin_memory=True,
+    accelerator_config={
+        "non_blocking": True,
+    },
+)
+
+
+TrainingArguments
+
+Pass a backend-specific config to 
+
+TrainingArguments
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.TrainingArguments
+
+. The 
+
+create_accelerator_and_postprocess()
+
+https://huggingface.co/docs/transformers/v5.13.0/en/main_classes/trainer#transformers.Trainer.create_accelerator_and_postprocess
+
+ method reads the settings and configures training.
+
+FSDP
+
+DeepSpeed
+
+DDP
+
+Pass a JSON config file or dict to 
+
+~TrainingArguments.fsdp_config
+
+ . See 
+
+FSDP
+
+https://huggingface.co/docs/transformers/fsdp
+
+ for a full guide and config reference.
+
+Copied
+
+from transformers import TrainingArguments
+
+TrainingArguments(
+    ...,
+    fsdp=True,
+    fsdp_config="path/to/fsdp.json",
+)
+
+
+Next steps
+
+See 
+
+DDP
+
+https://huggingface.co/docs/transformers/ddp
+
+ for data-parallel training when your model fits on one GPU.
+
+See 
+
+FSDP
+
+https://huggingface.co/docs/transformers/fsdp
+
+ for sharding parameters, gradients, and optimizer states across GPUs.
+
+See 
+
+DeepSpeed
+
+https://huggingface.co/docs/transformers/deepspeed
+
+ for ZeRO optimization and offloading.
+
+Update on GitHub
+
+https://github.com/huggingface/transformers/blob/main/docs/source/en/accelerate.md
+
+← Accelerator selection
+
+https://huggingface.co/docs/transformers/accelerator_selection
+
+ 
+
+DDP →
+
+https://huggingface.co/docs/transformers/ddp
+
+Accelerate
+
+https://huggingface.co/docs/transformers/accelerate#accelerate
+
+ 
+
+Accelerate config file
+
+https://huggingface.co/docs/transformers/accelerate#accelerate-config-file
+
+ 
+
+TrainingArguments
+
+https://huggingface.co/docs/transformers/accelerate#trainingarguments
+
+ 
+
+Next steps
+
+https://huggingface.co/docs/transformers/accelerate#next-steps

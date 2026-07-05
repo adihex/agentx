@@ -1,0 +1,8309 @@
+ Skip to content 
+
+You are viewing the latest developer preview docs. 
+
+Click here
+
+https://docs.vllm.ai/en/stable/
+
+ to view docs for the latest stable release.
+
+ vLLM   Quickstart 
+
+https://docs.vllm.ai/en/stable/
+
+ Initializing search 
+
+ GitHub 
+
+https://docs.vllm.ai/en/stable/
+
+ vLLM 
+
+ GitHub 
+
+https://github.com/vllm-project/vllm
+
+ Home 
+
+https://github.com/vllm-project/vllm
+
+ User Guide 
+
+https://github.com/vllm-project/vllm
+
+ Quickstart 
+
+https://github.com/vllm-project/vllm
+
+ Prerequisites 
+
+https://github.com/vllm-project/vllm
+
+ Installation 
+
+https://github.com/vllm-project/vllm
+
+ Offline Batched Inference 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI-Compatible Server 
+
+https://github.com/vllm-project/vllm
+
+ On Attention Backends 
+
+https://github.com/vllm-project/vllm
+
+ Installation 
+
+https://github.com/vllm-project/vllm
+
+ GPU 
+
+https://github.com/vllm-project/vllm
+
+ CPU 
+
+https://github.com/vllm-project/vllm
+
+ TPU 
+
+https://github.com/vllm-project/vllm
+
+ Examples 
+
+https://github.com/vllm-project/vllm
+
+ Offline Inference 
+
+https://github.com/vllm-project/vllm
+
+ Online Serving 
+
+https://github.com/vllm-project/vllm
+
+ Batched Chat Completions Online 
+
+https://github.com/vllm-project/vllm
+
+ Multimodal 
+
+https://github.com/vllm-project/vllm
+
+ Qwen 1M Offline 
+
+https://github.com/vllm-project/vllm
+
+ Token Generation Client 
+
+https://github.com/vllm-project/vllm
+
+ Monitoring Dashboards 
+
+https://github.com/vllm-project/vllm
+
+ Metrics 
+
+https://github.com/vllm-project/vllm
+
+ Setup OpenTelemetry POC 
+
+https://github.com/vllm-project/vllm
+
+ Prometheus and Grafana 
+
+https://github.com/vllm-project/vllm
+
+ Async LLM Streaming 
+
+https://github.com/vllm-project/vllm
+
+ Automatic Prefix Caching 
+
+https://github.com/vllm-project/vllm
+
+ Batch LLM Inference 
+
+https://github.com/vllm-project/vllm
+
+ Context Extension 
+
+https://github.com/vllm-project/vllm
+
+ Data Parallel 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Prefill V1 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Prefill 
+
+https://github.com/vllm-project/vllm
+
+ Extract Hidden States 
+
+https://github.com/vllm-project/vllm
+
+ KV Load Failure Recovery Test 
+
+https://github.com/vllm-project/vllm
+
+ LLM Engine Example 
+
+https://github.com/vllm-project/vllm
+
+ LLM Engine Reset Kv 
+
+https://github.com/vllm-project/vllm
+
+ Load Sharded State 
+
+https://github.com/vllm-project/vllm
+
+ Custom Logits Processors 
+
+https://github.com/vllm-project/vllm
+
+ LoRA With Quantization Inference 
+
+https://github.com/vllm-project/vllm
+
+ MLPSpeculator 
+
+https://github.com/vllm-project/vllm
+
+ MultiLoRA Inference 
+
+https://github.com/vllm-project/vllm
+
+ Offline Inference with the OpenAI Batch file format 
+
+https://github.com/vllm-project/vllm
+
+ Pause Resume 
+
+https://github.com/vllm-project/vllm
+
+ Prefix Caching 
+
+https://github.com/vllm-project/vllm
+
+ Prefix Caching Flexkv 
+
+https://github.com/vllm-project/vllm
+
+ Prompt Embed Inference 
+
+https://github.com/vllm-project/vllm
+
+ Reproducibility 
+
+https://github.com/vllm-project/vllm
+
+ Routed Experts E2E 
+
+https://github.com/vllm-project/vllm
+
+ Run One Batch 
+
+https://github.com/vllm-project/vllm
+
+ Save Sharded State 
+
+https://github.com/vllm-project/vllm
+
+ Simple Profiling 
+
+https://github.com/vllm-project/vllm
+
+ Skip Loading Weights In Engine Init 
+
+https://github.com/vllm-project/vllm
+
+ Spec Decode 
+
+https://github.com/vllm-project/vllm
+
+ Structured Outputs 
+
+https://github.com/vllm-project/vllm
+
+ Torchrun Dp Example 
+
+https://github.com/vllm-project/vllm
+
+ Torchrun Example 
+
+https://github.com/vllm-project/vllm
+
+ API Client 
+
+https://github.com/vllm-project/vllm
+
+ Helm Charts 
+
+https://github.com/vllm-project/vllm
+
+ Data Parallel Pause Resume 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Encoder 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Prefill 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Serving 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Serving P2P NCCL Xpyd 
+
+https://github.com/vllm-project/vllm
+
+ Ec Both Encoder 
+
+https://github.com/vllm-project/vllm
+
+ Elastic Ep 
+
+https://github.com/vllm-project/vllm
+
+ Gradio OpenAI Chatbot Webserver 
+
+https://github.com/vllm-project/vllm
+
+ Gradio Webserver 
+
+https://github.com/vllm-project/vllm
+
+ Kv Events Subscriber 
+
+https://github.com/vllm-project/vllm
+
+ Multi-Node-Serving 
+
+https://github.com/vllm-project/vllm
+
+ Multi Instance Data Parallel 
+
+https://github.com/vllm-project/vllm
+
+ Prompt Embed Inference With OpenAI Client 
+
+https://github.com/vllm-project/vllm
+
+ Ray Serve Deepseek 
+
+https://github.com/vllm-project/vllm
+
+ Retrieval Augmented Generation With Langchain 
+
+https://github.com/vllm-project/vllm
+
+ Retrieval Augmented Generation With Llamaindex 
+
+https://github.com/vllm-project/vllm
+
+ Run Cluster 
+
+https://github.com/vllm-project/vllm
+
+ Sagemaker-Entrypoint 
+
+https://github.com/vllm-project/vllm
+
+ Streamlit OpenAI Chatbot Webserver 
+
+https://github.com/vllm-project/vllm
+
+ Structured Outputs 
+
+https://github.com/vllm-project/vllm
+
+ Utils 
+
+https://github.com/vllm-project/vllm
+
+ LMCache Examples 
+
+https://github.com/vllm-project/vllm
+
+ Logging Configuration 
+
+https://github.com/vllm-project/vllm
+
+ Tensorize vLLM Model 
+
+https://github.com/vllm-project/vllm
+
+ Classify 
+
+https://github.com/vllm-project/vllm
+
+ Embed 
+
+https://github.com/vllm-project/vllm
+
+ Plugin 
+
+https://github.com/vllm-project/vllm
+
+ Reward 
+
+https://github.com/vllm-project/vllm
+
+ Score 
+
+https://github.com/vllm-project/vllm
+
+ Token Classify 
+
+https://github.com/vllm-project/vllm
+
+ Token Embed 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion Tool Calls With Reasoning 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion With Reasoning 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion With Reasoning Streaming 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Responses Client 
+
+https://github.com/vllm-project/vllm
+
+ RLHF Async New APIs 
+
+https://github.com/vllm-project/vllm
+
+ RLHF Http IPC 
+
+https://github.com/vllm-project/vllm
+
+ RLHF Http NCCL 
+
+https://github.com/vllm-project/vllm
+
+ RLHF IPC 
+
+https://github.com/vllm-project/vllm
+
+ RLHF NCCL 
+
+https://github.com/vllm-project/vllm
+
+ RLHF NCCL Fsdp Ep 
+
+https://github.com/vllm-project/vllm
+
+ Lid 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI 
+
+https://github.com/vllm-project/vllm
+
+ Realtime 
+
+https://github.com/vllm-project/vllm
+
+ Chat With Tools Offline 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion Client With Tools 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion Client With Tools Required 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion Client With Tools Xlam 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Chat Completion Client With Tools Xlam Streaming 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Responses Client With Mcp Tools 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI Responses Client With Tools 
+
+https://github.com/vllm-project/vllm
+
+ vLLM V1 
+
+https://github.com/vllm-project/vllm
+
+ Frequently Asked Questions 
+
+https://github.com/vllm-project/vllm
+
+ Production Metrics 
+
+https://github.com/vllm-project/vllm
+
+ Reproducibility 
+
+https://github.com/vllm-project/vllm
+
+ Security 
+
+https://github.com/vllm-project/vllm
+
+ Troubleshooting 
+
+https://github.com/vllm-project/vllm
+
+ Usage Stats Collection 
+
+https://github.com/vllm-project/vllm
+
+ Offline Inference 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI-Compatible Server 
+
+https://github.com/vllm-project/vllm
+
+ Context Parallel Deployment 
+
+https://github.com/vllm-project/vllm
+
+ Data Parallel Deployment 
+
+https://github.com/vllm-project/vllm
+
+ Troubleshooting distributed deployments 
+
+https://github.com/vllm-project/vllm
+
+ Expert Parallel Deployment 
+
+https://github.com/vllm-project/vllm
+
+ Parallelism and Scaling 
+
+https://github.com/vllm-project/vllm
+
+ Claude Code 
+
+https://github.com/vllm-project/vllm
+
+ LangChain 
+
+https://github.com/vllm-project/vllm
+
+ LlamaIndex 
+
+https://github.com/vllm-project/vllm
+
+ Using Docker 
+
+https://github.com/vllm-project/vllm
+
+ Using Kubernetes 
+
+https://github.com/vllm-project/vllm
+
+ Using Nginx 
+
+https://github.com/vllm-project/vllm
+
+ Anyscale 
+
+https://github.com/vllm-project/vllm
+
+ AnythingLLM 
+
+https://github.com/vllm-project/vllm
+
+ AutoGen 
+
+https://github.com/vllm-project/vllm
+
+ BentoML 
+
+https://github.com/vllm-project/vllm
+
+ Cerebrium 
+
+https://github.com/vllm-project/vllm
+
+ Chatbox 
+
+https://github.com/vllm-project/vllm
+
+ Dify 
+
+https://github.com/vllm-project/vllm
+
+ dstack 
+
+https://github.com/vllm-project/vllm
+
+ Haystack 
+
+https://github.com/vllm-project/vllm
+
+ Helm 
+
+https://github.com/vllm-project/vllm
+
+ Hugging Face Inference Endpoints 
+
+https://github.com/vllm-project/vllm
+
+ LiteLLM 
+
+https://github.com/vllm-project/vllm
+
+ Lobe Chat 
+
+https://github.com/vllm-project/vllm
+
+ LWS 
+
+https://github.com/vllm-project/vllm
+
+ Modal 
+
+https://github.com/vllm-project/vllm
+
+ Open WebUI 
+
+https://github.com/vllm-project/vllm
+
+ Retrieval-Augmented Generation 
+
+https://github.com/vllm-project/vllm
+
+ RunPod 
+
+https://github.com/vllm-project/vllm
+
+ SkyPilot 
+
+https://github.com/vllm-project/vllm
+
+ Streamlit 
+
+https://github.com/vllm-project/vllm
+
+ NVIDIA Triton 
+
+https://github.com/vllm-project/vllm
+
+ AIBrix 
+
+https://github.com/vllm-project/vllm
+
+ NVIDIA Dynamo 
+
+https://github.com/vllm-project/vllm
+
+ KAITO 
+
+https://github.com/vllm-project/vllm
+
+ KServe 
+
+https://github.com/vllm-project/vllm
+
+ Kthena 
+
+https://github.com/vllm-project/vllm
+
+ KubeAI 
+
+https://github.com/vllm-project/vllm
+
+ KubeRay 
+
+https://github.com/vllm-project/vllm
+
+ Llama Stack 
+
+https://github.com/vllm-project/vllm
+
+ llm-d 
+
+https://github.com/vllm-project/vllm
+
+ llmaz 
+
+https://github.com/vllm-project/vllm
+
+ Production stack 
+
+https://github.com/vllm-project/vllm
+
+ Async Reinforcement Learning 
+
+https://github.com/vllm-project/vllm
+
+ Reinforcement Learning from Human Feedback 
+
+https://github.com/vllm-project/vllm
+
+ Transformers Reinforcement Learning 
+
+https://github.com/vllm-project/vllm
+
+ Weight Transfer 
+
+https://github.com/vllm-project/vllm
+
+ Base Class and Custom Engines 
+
+https://github.com/vllm-project/vllm
+
+ IPC Engine 
+
+https://github.com/vllm-project/vllm
+
+ NCCL Engine 
+
+https://github.com/vllm-project/vllm
+
+ Configuration 
+
+https://github.com/vllm-project/vllm
+
+ Conserving Memory 
+
+https://github.com/vllm-project/vllm
+
+ Engine Arguments 
+
+https://github.com/vllm-project/vllm
+
+ Environment Variables 
+
+https://github.com/vllm-project/vllm
+
+ Model Resolution 
+
+https://github.com/vllm-project/vllm
+
+ Optimization and Tuning 
+
+https://github.com/vllm-project/vllm
+
+ Server Arguments 
+
+https://github.com/vllm-project/vllm
+
+ TPU 
+
+https://github.com/vllm-project/vllm
+
+ Supported Models 
+
+https://github.com/vllm-project/vllm
+
+ Generative Models 
+
+https://github.com/vllm-project/vllm
+
+ Pooling Models 
+
+https://github.com/vllm-project/vllm
+
+ Classification Usages 
+
+https://github.com/vllm-project/vllm
+
+ Embedding Usages 
+
+https://github.com/vllm-project/vllm
+
+ Reward Usages 
+
+https://github.com/vllm-project/vllm
+
+ Scoring Usages 
+
+https://github.com/vllm-project/vllm
+
+ Specific Model Examples 
+
+https://github.com/vllm-project/vllm
+
+ Token Classification Usages 
+
+https://github.com/vllm-project/vllm
+
+ Token Embedding Usages 
+
+https://github.com/vllm-project/vllm
+
+ Loading model weights with fastsafetensors 
+
+https://github.com/vllm-project/vllm
+
+ Loading Model Weights with InstantTensor 
+
+https://github.com/vllm-project/vllm
+
+ Loading models with Run:ai Model Streamer 
+
+https://github.com/vllm-project/vllm
+
+ Loading models with CoreWeave's Tensorizer 
+
+https://github.com/vllm-project/vllm
+
+ CPU - Intel® Xeon® 
+
+https://github.com/vllm-project/vllm
+
+ XPU - Intel® GPUs 
+
+https://github.com/vllm-project/vllm
+
+ TPU 
+
+https://github.com/vllm-project/vllm
+
+ Features 
+
+https://github.com/vllm-project/vllm
+
+ Automatic Prefix Caching 
+
+https://github.com/vllm-project/vllm
+
+ Batch Invariance 
+
+https://github.com/vllm-project/vllm
+
+ Context Extension 
+
+https://github.com/vllm-project/vllm
+
+ Custom Arguments 
+
+https://github.com/vllm-project/vllm
+
+ Custom Logits Processors 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Encoder 
+
+https://github.com/vllm-project/vllm
+
+ Disaggregated Prefilling (experimental) 
+
+https://github.com/vllm-project/vllm
+
+ Interleaved Thinking 
+
+https://github.com/vllm-project/vllm
+
+ LoRA Adapters 
+
+https://github.com/vllm-project/vllm
+
+ MooncakeConnector Usage Guide 
+
+https://github.com/vllm-project/vllm
+
+ Multimodal Inputs 
+
+https://github.com/vllm-project/vllm
+
+ NixlConnector Compatibility Matrix 
+
+https://github.com/vllm-project/vllm
+
+ NixlConnector Usage Guide 
+
+https://github.com/vllm-project/vllm
+
+ Prompt Embedding Inputs 
+
+https://github.com/vllm-project/vllm
+
+ Reasoning Outputs 
+
+https://github.com/vllm-project/vllm
+
+ Sleep Mode 
+
+https://github.com/vllm-project/vllm
+
+ Structured Outputs 
+
+https://github.com/vllm-project/vllm
+
+ Tool Calling 
+
+https://github.com/vllm-project/vllm
+
+ Quantization 
+
+https://github.com/vllm-project/vllm
+
+ AutoAWQ 
+
+https://github.com/vllm-project/vllm
+
+ BitsAndBytes 
+
+https://github.com/vllm-project/vllm
+
+ FP8 W8A8 
+
+https://github.com/vllm-project/vllm
+
+ FP8 ViT Encoder Attention 
+
+https://github.com/vllm-project/vllm
+
+ GGUF 
+
+https://github.com/vllm-project/vllm
+
+ GPTQModel 
+
+https://github.com/vllm-project/vllm
+
+ Intel Quantization Support 
+
+https://github.com/vllm-project/vllm
+
+ INT4 W4A16 
+
+https://github.com/vllm-project/vllm
+
+ INT8 W8A8 
+
+https://github.com/vllm-project/vllm
+
+ LLM Compressor 
+
+https://github.com/vllm-project/vllm
+
+ NVIDIA Model Optimizer 
+
+https://github.com/vllm-project/vllm
+
+ Online Quantization 
+
+https://github.com/vllm-project/vllm
+
+ Quantized KV Cache 
+
+https://github.com/vllm-project/vllm
+
+ AMD Quark 
+
+https://github.com/vllm-project/vllm
+
+ TorchAO 
+
+https://github.com/vllm-project/vllm
+
+ Speculative Decoding 
+
+https://github.com/vllm-project/vllm
+
+ Draft Models 
+
+https://github.com/vllm-project/vllm
+
+ EAGLE Draft Models 
+
+https://github.com/vllm-project/vllm
+
+ MLP Draft Models 
+
+https://github.com/vllm-project/vllm
+
+ MTP (Multi-Token Prediction) 
+
+https://github.com/vllm-project/vllm
+
+ N-Gram Speculation 
+
+https://github.com/vllm-project/vllm
+
+ Parallel Draft Models 
+
+https://github.com/vllm-project/vllm
+
+ vLLM-Project/Speculators 
+
+https://github.com/vllm-project/vllm
+
+ Suffix Decoding 
+
+https://github.com/vllm-project/vllm
+
+ Developer Guide 
+
+https://github.com/vllm-project/vllm
+
+ Deprecation Policy 
+
+https://github.com/vllm-project/vllm
+
+ Dockerfile 
+
+https://github.com/vllm-project/vllm
+
+ Editing Agent Instructions 
+
+https://github.com/vllm-project/vllm
+
+ Incremental Compilation Workflow 
+
+https://github.com/vllm-project/vllm
+
+ Profiling vLLM 
+
+https://github.com/vllm-project/vllm
+
+ Vulnerability Management 
+
+https://github.com/vllm-project/vllm
+
+ Model Implementation 
+
+https://github.com/vllm-project/vllm
+
+ Basic Model 
+
+https://github.com/vllm-project/vllm
+
+ Registering a Model 
+
+https://github.com/vllm-project/vllm
+
+ Unit Testing 
+
+https://github.com/vllm-project/vllm
+
+ Multi-Modal Support 
+
+https://github.com/vllm-project/vllm
+
+ Speech-to-Text (Transcription/Translation) Support 
+
+https://github.com/vllm-project/vllm
+
+ CI Failures 
+
+https://github.com/vllm-project/vllm
+
+ Nightly Builds of vLLM Wheels 
+
+https://github.com/vllm-project/vllm
+
+ Update PyTorch version on vLLM OSS CI/CD 
+
+https://github.com/vllm-project/vllm
+
+ IO Processor Plugins 
+
+https://github.com/vllm-project/vllm
+
+ LoRA Resolver Plugins 
+
+https://github.com/vllm-project/vllm
+
+ Plugin System 
+
+https://github.com/vllm-project/vllm
+
+ Architecture Overview 
+
+https://github.com/vllm-project/vllm
+
+ Attention Backend Feature Support 
+
+https://github.com/vllm-project/vllm
+
+ CUDA Graphs 
+
+https://github.com/vllm-project/vllm
+
+ Vision Encoder (ViT) CUDA Graphs 
+
+https://github.com/vllm-project/vllm
+
+ CustomOp 
+
+https://github.com/vllm-project/vllm
+
+ Dual Batch Overlap 
+
+https://github.com/vllm-project/vllm
+
+ How to debug the vLLM-torch.compile integration 
+
+https://github.com/vllm-project/vllm
+
+ Fused MoE Modular Kernel 
+
+https://github.com/vllm-project/vllm
+
+ Fusion torch.compile passes 
+
+https://github.com/vllm-project/vllm
+
+ Integration with Hugging Face 
+
+https://github.com/vllm-project/vllm
+
+ Hybrid KV Cache Manager 
+
+https://github.com/vllm-project/vllm
+
+ Logits Processors 
+
+https://github.com/vllm-project/vllm
+
+ Metrics 
+
+https://github.com/vllm-project/vllm
+
+ Multi-Modal Data Processing 
+
+https://github.com/vllm-project/vllm
+
+ Model Runner V2 Design Document 
+
+https://github.com/vllm-project/vllm
+
+ Fused MoE Kernel Features 
+
+https://github.com/vllm-project/vllm
+
+ Python Multiprocessing 
+
+https://github.com/vllm-project/vllm
+
+ Optimization Levels 
+
+https://github.com/vllm-project/vllm
+
+ P2P NCCL Connector 
+
+https://github.com/vllm-project/vllm
+
+ Paged Attention 
+
+https://github.com/vllm-project/vllm
+
+ Automatic Prefix Caching 
+
+https://github.com/vllm-project/vllm
+
+ torch.compile integration 
+
+https://github.com/vllm-project/vllm
+
+ torch.compile with Multimodal Encoders 
+
+https://github.com/vllm-project/vllm
+
+ Benchmarking 
+
+https://github.com/vllm-project/vllm
+
+ Benchmark CLI 
+
+https://github.com/vllm-project/vllm
+
+ Parameter Sweeps 
+
+https://github.com/vllm-project/vllm
+
+ Performance Dashboard 
+
+https://github.com/vllm-project/vllm
+
+ API Reference 
+
+https://github.com/vllm-project/vllm
+
+ vllm 
+
+https://github.com/vllm-project/vllm
+
+ beam_search 
+
+https://github.com/vllm-project/vllm
+
+ collect_env 
+
+https://github.com/vllm-project/vllm
+
+ connections 
+
+https://github.com/vllm-project/vllm
+
+ env_override 
+
+https://github.com/vllm-project/vllm
+
+ envs 
+
+https://github.com/vllm-project/vllm
+
+ exceptions 
+
+https://github.com/vllm-project/vllm
+
+ forward_context 
+
+https://github.com/vllm-project/vllm
+
+ logger 
+
+https://github.com/vllm-project/vllm
+
+ logits_process 
+
+https://github.com/vllm-project/vllm
+
+ logprobs 
+
+https://github.com/vllm-project/vllm
+
+ model_inspection 
+
+https://github.com/vllm-project/vllm
+
+ outputs 
+
+https://github.com/vllm-project/vllm
+
+ pooling_params 
+
+https://github.com/vllm-project/vllm
+
+ sampling_params 
+
+https://github.com/vllm-project/vllm
+
+ scalar_type 
+
+https://github.com/vllm-project/vllm
+
+ scripts 
+
+https://github.com/vllm-project/vllm
+
+ sequence 
+
+https://github.com/vllm-project/vllm
+
+ tasks 
+
+https://github.com/vllm-project/vllm
+
+ version 
+
+https://github.com/vllm-project/vllm
+
+ assets 
+
+https://github.com/vllm-project/vllm
+
+ audio 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ image 
+
+https://github.com/vllm-project/vllm
+
+ video 
+
+https://github.com/vllm-project/vllm
+
+ benchmarks 
+
+https://github.com/vllm-project/vllm
+
+ latency 
+
+https://github.com/vllm-project/vllm
+
+ mm_processor 
+
+https://github.com/vllm-project/vllm
+
+ plot 
+
+https://github.com/vllm-project/vllm
+
+ serve 
+
+https://github.com/vllm-project/vllm
+
+ startup 
+
+https://github.com/vllm-project/vllm
+
+ throughput 
+
+https://github.com/vllm-project/vllm
+
+ datasets 
+
+https://github.com/vllm-project/vllm
+
+ create_txt_slices_dataset 
+
+https://github.com/vllm-project/vllm
+
+ datasets 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ lib 
+
+https://github.com/vllm-project/vllm
+
+ endpoint_request_func 
+
+https://github.com/vllm-project/vllm
+
+ ready_checker 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ sweep 
+
+https://github.com/vllm-project/vllm
+
+ cli 
+
+https://github.com/vllm-project/vllm
+
+ param_sweep 
+
+https://github.com/vllm-project/vllm
+
+ plot 
+
+https://github.com/vllm-project/vllm
+
+ plot_pareto 
+
+https://github.com/vllm-project/vllm
+
+ serve 
+
+https://github.com/vllm-project/vllm
+
+ serve_workload 
+
+https://github.com/vllm-project/vllm
+
+ server 
+
+https://github.com/vllm-project/vllm
+
+ startup 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ compilation 
+
+https://github.com/vllm-project/vllm
+
+ backends 
+
+https://github.com/vllm-project/vllm
+
+ base_static_graph 
+
+https://github.com/vllm-project/vllm
+
+ caching 
+
+https://github.com/vllm-project/vllm
+
+ codegen 
+
+https://github.com/vllm-project/vllm
+
+ compiler_interface 
+
+https://github.com/vllm-project/vllm
+
+ counter 
+
+https://github.com/vllm-project/vllm
+
+ cuda_graph 
+
+https://github.com/vllm-project/vllm
+
+ decorators 
+
+https://github.com/vllm-project/vllm
+
+ monitor 
+
+https://github.com/vllm-project/vllm
+
+ partition_rules 
+
+https://github.com/vllm-project/vllm
+
+ piecewise_backend 
+
+https://github.com/vllm-project/vllm
+
+ wrapper 
+
+https://github.com/vllm-project/vllm
+
+ passes 
+
+https://github.com/vllm-project/vllm
+
+ fx_utils 
+
+https://github.com/vllm-project/vllm
+
+ inductor_pass 
+
+https://github.com/vllm-project/vllm
+
+ pass_manager 
+
+https://github.com/vllm-project/vllm
+
+ vllm_inductor_pass 
+
+https://github.com/vllm-project/vllm
+
+ fusion 
+
+https://github.com/vllm-project/vllm
+
+ act_quant_fusion 
+
+https://github.com/vllm-project/vllm
+
+ allreduce_rms_fusion 
+
+https://github.com/vllm-project/vllm
+
+ attn_quant_fusion 
+
+https://github.com/vllm-project/vllm
+
+ collective_fusion 
+
+https://github.com/vllm-project/vllm
+
+ matcher_utils 
+
+https://github.com/vllm-project/vllm
+
+ minimax_qk_norm_fusion 
+
+https://github.com/vllm-project/vllm
+
+ mla_attn_quant_fusion 
+
+https://github.com/vllm-project/vllm
+
+ qk_norm_rope_fusion 
+
+https://github.com/vllm-project/vllm
+
+ rms_quant_fusion 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_fusion 
+
+https://github.com/vllm-project/vllm
+
+ rope_kvcache_fusion 
+
+https://github.com/vllm-project/vllm
+
+ sequence_parallelism 
+
+https://github.com/vllm-project/vllm
+
+ ir 
+
+https://github.com/vllm-project/vllm
+
+ lowering_pass 
+
+https://github.com/vllm-project/vllm
+
+ utility 
+
+https://github.com/vllm-project/vllm
+
+ fix_functionalization 
+
+https://github.com/vllm-project/vllm
+
+ noop_elimination 
+
+https://github.com/vllm-project/vllm
+
+ post_cleanup 
+
+https://github.com/vllm-project/vllm
+
+ scatter_split_replace 
+
+https://github.com/vllm-project/vllm
+
+ split_coalescing 
+
+https://github.com/vllm-project/vllm
+
+ config 
+
+https://github.com/vllm-project/vllm
+
+ attention 
+
+https://github.com/vllm-project/vllm
+
+ cache 
+
+https://github.com/vllm-project/vllm
+
+ compilation 
+
+https://github.com/vllm-project/vllm
+
+ device 
+
+https://github.com/vllm-project/vllm
+
+ ec_transfer 
+
+https://github.com/vllm-project/vllm
+
+ kernel 
+
+https://github.com/vllm-project/vllm
+
+ kv_events 
+
+https://github.com/vllm-project/vllm
+
+ kv_transfer 
+
+https://github.com/vllm-project/vllm
+
+ load 
+
+https://github.com/vllm-project/vllm
+
+ lora 
+
+https://github.com/vllm-project/vllm
+
+ mamba 
+
+https://github.com/vllm-project/vllm
+
+ model 
+
+https://github.com/vllm-project/vllm
+
+ model_arch 
+
+https://github.com/vllm-project/vllm
+
+ multimodal 
+
+https://github.com/vllm-project/vllm
+
+ observability 
+
+https://github.com/vllm-project/vllm
+
+ offload 
+
+https://github.com/vllm-project/vllm
+
+ parallel 
+
+https://github.com/vllm-project/vllm
+
+ pooler 
+
+https://github.com/vllm-project/vllm
+
+ profiler 
+
+https://github.com/vllm-project/vllm
+
+ quantization 
+
+https://github.com/vllm-project/vllm
+
+ reasoning 
+
+https://github.com/vllm-project/vllm
+
+ scheduler 
+
+https://github.com/vllm-project/vllm
+
+ speculative 
+
+https://github.com/vllm-project/vllm
+
+ speech_to_text 
+
+https://github.com/vllm-project/vllm
+
+ structured_outputs 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ vllm 
+
+https://github.com/vllm-project/vllm
+
+ weight_transfer 
+
+https://github.com/vllm-project/vllm
+
+ device_allocator 
+
+https://github.com/vllm-project/vllm
+
+ cumem 
+
+https://github.com/vllm-project/vllm
+
+ distributed 
+
+https://github.com/vllm-project/vllm
+
+ communication_op 
+
+https://github.com/vllm-project/vllm
+
+ kv_events 
+
+https://github.com/vllm-project/vllm
+
+ nixl_utils 
+
+https://github.com/vllm-project/vllm
+
+ parallel_state 
+
+https://github.com/vllm-project/vllm
+
+ stateless_coordinator 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ device_communicators 
+
+https://github.com/vllm-project/vllm
+
+ all2all 
+
+https://github.com/vllm-project/vllm
+
+ all_reduce_utils 
+
+https://github.com/vllm-project/vllm
+
+ base_device_communicator 
+
+https://github.com/vllm-project/vllm
+
+ cpu_communicator 
+
+https://github.com/vllm-project/vllm
+
+ cuda_communicator 
+
+https://github.com/vllm-project/vllm
+
+ cuda_wrapper 
+
+https://github.com/vllm-project/vllm
+
+ custom_all_reduce 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_all_reduce 
+
+https://github.com/vllm-project/vllm
+
+ mnnvl_compat 
+
+https://github.com/vllm-project/vllm
+
+ pynccl 
+
+https://github.com/vllm-project/vllm
+
+ pynccl_allocator 
+
+https://github.com/vllm-project/vllm
+
+ pynccl_wrapper 
+
+https://github.com/vllm-project/vllm
+
+ quick_all_reduce 
+
+https://github.com/vllm-project/vllm
+
+ ray_communicator 
+
+https://github.com/vllm-project/vllm
+
+ shm_broadcast 
+
+https://github.com/vllm-project/vllm
+
+ shm_object_storage 
+
+https://github.com/vllm-project/vllm
+
+ symm_mem 
+
+https://github.com/vllm-project/vllm
+
+ xpu_communicator 
+
+https://github.com/vllm-project/vllm
+
+ ec_transfer 
+
+https://github.com/vllm-project/vllm
+
+ ec_transfer_state 
+
+https://github.com/vllm-project/vllm
+
+ ec_connector 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ example_connector 
+
+https://github.com/vllm-project/vllm
+
+ factory 
+
+https://github.com/vllm-project/vllm
+
+ elastic_ep 
+
+https://github.com/vllm-project/vllm
+
+ elastic_execute 
+
+https://github.com/vllm-project/vllm
+
+ elastic_state 
+
+https://github.com/vllm-project/vllm
+
+ standby_state 
+
+https://github.com/vllm-project/vllm
+
+ eplb 
+
+https://github.com/vllm-project/vllm
+
+ async_worker 
+
+https://github.com/vllm-project/vllm
+
+ eplb_communicator 
+
+https://github.com/vllm-project/vllm
+
+ eplb_state 
+
+https://github.com/vllm-project/vllm
+
+ eplb_utils 
+
+https://github.com/vllm-project/vllm
+
+ rebalance_execute 
+
+https://github.com/vllm-project/vllm
+
+ policy 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ default 
+
+https://github.com/vllm-project/vllm
+
+ kv_transfer 
+
+https://github.com/vllm-project/vllm
+
+ kv_transfer_state 
+
+https://github.com/vllm-project/vllm
+
+ kv_connector 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ factory 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ v1 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ decode_bench_connector 
+
+https://github.com/vllm-project/vllm
+
+ example_connector 
+
+https://github.com/vllm-project/vllm
+
+ example_hidden_states_connector 
+
+https://github.com/vllm-project/vllm
+
+ flexkv_connector 
+
+https://github.com/vllm-project/vllm
+
+ lmcache_connector 
+
+https://github.com/vllm-project/vllm
+
+ lmcache_mp_connector 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ multi_connector 
+
+https://github.com/vllm-project/vllm
+
+ offloading_connector 
+
+https://github.com/vllm-project/vllm
+
+ simple_cpu_offload_connector 
+
+https://github.com/vllm-project/vllm
+
+ ssm_conv_transfer_utils 
+
+https://github.com/vllm-project/vllm
+
+ hf3fs 
+
+https://github.com/vllm-project/vllm
+
+ hf3fs_client 
+
+https://github.com/vllm-project/vllm
+
+ hf3fs_connector 
+
+https://github.com/vllm-project/vllm
+
+ hf3fs_metadata_server 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ common 
+
+https://github.com/vllm-project/vllm
+
+ gather_scatter_helper 
+
+https://github.com/vllm-project/vllm
+
+ hf3fs_mock_client 
+
+https://github.com/vllm-project/vllm
+
+ lmcache_integration 
+
+https://github.com/vllm-project/vllm
+
+ multi_process_adapter 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ vllm_v1_adapter 
+
+https://github.com/vllm-project/vllm
+
+ mooncake 
+
+https://github.com/vllm-project/vllm
+
+ mooncake_connector 
+
+https://github.com/vllm-project/vllm
+
+ mooncake_utils 
+
+https://github.com/vllm-project/vllm
+
+ moriio 
+
+https://github.com/vllm-project/vllm
+
+ moriio_common 
+
+https://github.com/vllm-project/vllm
+
+ moriio_connector 
+
+https://github.com/vllm-project/vllm
+
+ moriio_engine 
+
+https://github.com/vllm-project/vllm
+
+ nixl 
+
+https://github.com/vllm-project/vllm
+
+ connector 
+
+https://github.com/vllm-project/vllm
+
+ metadata 
+
+https://github.com/vllm-project/vllm
+
+ scheduler 
+
+https://github.com/vllm-project/vllm
+
+ stats 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ offloading 
+
+https://github.com/vllm-project/vllm
+
+ common 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ scheduler 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ p2p 
+
+https://github.com/vllm-project/vllm
+
+ p2p_nccl_connector 
+
+https://github.com/vllm-project/vllm
+
+ p2p_nccl_engine 
+
+https://github.com/vllm-project/vllm
+
+ tensor_memory_pool 
+
+https://github.com/vllm-project/vllm
+
+ weight_transfer 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ factory 
+
+https://github.com/vllm-project/vllm
+
+ ipc_engine 
+
+https://github.com/vllm-project/vllm
+
+ nccl_engine 
+
+https://github.com/vllm-project/vllm
+
+ packed_tensor 
+
+https://github.com/vllm-project/vllm
+
+ engine 
+
+https://github.com/vllm-project/vllm
+
+ arg_utils 
+
+https://github.com/vllm-project/vllm
+
+ async_llm_engine 
+
+https://github.com/vllm-project/vllm
+
+ llm_engine 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ entrypoints 
+
+https://github.com/vllm-project/vllm
+
+ api_server 
+
+https://github.com/vllm-project/vllm
+
+ chat_utils 
+
+https://github.com/vllm-project/vllm
+
+ constants 
+
+https://github.com/vllm-project/vllm
+
+ grpc_server 
+
+https://github.com/vllm-project/vllm
+
+ launcher 
+
+https://github.com/vllm-project/vllm
+
+ llm 
+
+https://github.com/vllm-project/vllm
+
+ logger 
+
+https://github.com/vllm-project/vllm
+
+ ssl 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ anthropic 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ cli 
+
+https://github.com/vllm-project/vllm
+
+ collect_env 
+
+https://github.com/vllm-project/vllm
+
+ launch 
+
+https://github.com/vllm-project/vllm
+
+ main 
+
+https://github.com/vllm-project/vllm
+
+ openai 
+
+https://github.com/vllm-project/vllm
+
+ run_batch 
+
+https://github.com/vllm-project/vllm
+
+ serve 
+
+https://github.com/vllm-project/vllm
+
+ types 
+
+https://github.com/vllm-project/vllm
+
+ benchmark 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ latency 
+
+https://github.com/vllm-project/vllm
+
+ main 
+
+https://github.com/vllm-project/vllm
+
+ mm_processor 
+
+https://github.com/vllm-project/vllm
+
+ serve 
+
+https://github.com/vllm-project/vllm
+
+ startup 
+
+https://github.com/vllm-project/vllm
+
+ sweep 
+
+https://github.com/vllm-project/vllm
+
+ throughput 
+
+https://github.com/vllm-project/vllm
+
+ mcp 
+
+https://github.com/vllm-project/vllm
+
+ tool 
+
+https://github.com/vllm-project/vllm
+
+ tool_server 
+
+https://github.com/vllm-project/vllm
+
+ openai 
+
+https://github.com/vllm-project/vllm
+
+ api_server 
+
+https://github.com/vllm-project/vllm
+
+ cli_args 
+
+https://github.com/vllm-project/vllm
+
+ fingerprint 
+
+https://github.com/vllm-project/vllm
+
+ orca_metrics 
+
+https://github.com/vllm-project/vllm
+
+ run_batch 
+
+https://github.com/vllm-project/vllm
+
+ server_utils 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ chat_completion 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ batch_serving 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ stream_harmony 
+
+https://github.com/vllm-project/vllm
+
+ completion 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ engine 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ generate 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ factories 
+
+https://github.com/vllm-project/vllm
+
+ generative_scoring 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ models 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ parser 
+
+https://github.com/vllm-project/vllm
+
+ harmony_utils 
+
+https://github.com/vllm-project/vllm
+
+ responses_parser 
+
+https://github.com/vllm-project/vllm
+
+ realtime 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ connection 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ responses 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ context 
+
+https://github.com/vllm-project/vllm
+
+ harmony 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ streaming_events 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ speech_to_text 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ speech_to_text 
+
+https://github.com/vllm-project/vllm
+
+ pooling 
+
+https://github.com/vllm-project/vllm
+
+ factories 
+
+https://github.com/vllm-project/vllm
+
+ typing 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ io_processor 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ classify 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ io_processor 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ embed 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ io_processor 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ pooling 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ io_processor 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ scoring 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ io_processor 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ typing 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ sagemaker 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ serve 
+
+https://github.com/vllm-project/vllm
+
+ cache 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ disagg 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ mm_serde 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ elastic_ep 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ middleware 
+
+https://github.com/vllm-project/vllm
+
+ instrumentator 
+
+https://github.com/vllm-project/vllm
+
+ basic 
+
+https://github.com/vllm-project/vllm
+
+ health 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ offline_docs 
+
+https://github.com/vllm-project/vllm
+
+ server_info 
+
+https://github.com/vllm-project/vllm
+
+ lora 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ profile 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ render 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ rlhf 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ rpc 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ sleep 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ tokenize 
+
+https://github.com/vllm-project/vllm
+
+ api_router 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ serving 
+
+https://github.com/vllm-project/vllm
+
+ inputs 
+
+https://github.com/vllm-project/vllm
+
+ engine 
+
+https://github.com/vllm-project/vllm
+
+ llm 
+
+https://github.com/vllm-project/vllm
+
+ preprocess 
+
+https://github.com/vllm-project/vllm
+
+ ir 
+
+https://github.com/vllm-project/vllm
+
+ op 
+
+https://github.com/vllm-project/vllm
+
+ tolerances 
+
+https://github.com/vllm-project/vllm
+
+ util 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ layernorm 
+
+https://github.com/vllm-project/vllm
+
+ kernels 
+
+https://github.com/vllm-project/vllm
+
+ aiter_ops 
+
+https://github.com/vllm-project/vllm
+
+ oink_ops 
+
+https://github.com/vllm-project/vllm
+
+ vllm_c 
+
+https://github.com/vllm-project/vllm
+
+ xpu_ops 
+
+https://github.com/vllm-project/vllm
+
+ helion 
+
+https://github.com/vllm-project/vllm
+
+ config_manager 
+
+https://github.com/vllm-project/vllm
+
+ register 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ silu_mul_fp8 
+
+https://github.com/vllm-project/vllm
+
+ triton 
+
+https://github.com/vllm-project/vllm
+
+ qkv_padded_fp8_quant 
+
+https://github.com/vllm-project/vllm
+
+ logging_utils 
+
+https://github.com/vllm-project/vllm
+
+ access_log_filter 
+
+https://github.com/vllm-project/vllm
+
+ dump_input 
+
+https://github.com/vllm-project/vllm
+
+ formatter 
+
+https://github.com/vllm-project/vllm
+
+ lazy 
+
+https://github.com/vllm-project/vllm
+
+ log_time 
+
+https://github.com/vllm-project/vllm
+
+ torch_tensor 
+
+https://github.com/vllm-project/vllm
+
+ lora 
+
+https://github.com/vllm-project/vllm
+
+ lora_model 
+
+https://github.com/vllm-project/vllm
+
+ lora_weights 
+
+https://github.com/vllm-project/vllm
+
+ model_manager 
+
+https://github.com/vllm-project/vllm
+
+ peft_helper 
+
+https://github.com/vllm-project/vllm
+
+ request 
+
+https://github.com/vllm-project/vllm
+
+ resolver 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ worker_manager 
+
+https://github.com/vllm-project/vllm
+
+ layers 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ base_linear 
+
+https://github.com/vllm-project/vllm
+
+ column_parallel_linear 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe 
+
+https://github.com/vllm-project/vllm
+
+ logits_processor 
+
+https://github.com/vllm-project/vllm
+
+ replicated_linear 
+
+https://github.com/vllm-project/vllm
+
+ row_parallel_linear 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ vocal_parallel_embedding 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ torch_ops 
+
+https://github.com/vllm-project/vllm
+
+ lora_ops 
+
+https://github.com/vllm-project/vllm
+
+ triton_ops 
+
+https://github.com/vllm-project/vllm
+
+ fp8_kernel_utils 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe_lora_fp8_op 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe_lora_op 
+
+https://github.com/vllm-project/vllm
+
+ kernel_utils 
+
+https://github.com/vllm-project/vllm
+
+ lora_expand_fp8_op 
+
+https://github.com/vllm-project/vllm
+
+ lora_expand_op 
+
+https://github.com/vllm-project/vllm
+
+ lora_kernel_metadata 
+
+https://github.com/vllm-project/vllm
+
+ lora_shrink_fp8_op 
+
+https://github.com/vllm-project/vllm
+
+ lora_shrink_op 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ xpu_ops 
+
+https://github.com/vllm-project/vllm
+
+ lora_ops 
+
+https://github.com/vllm-project/vllm
+
+ punica_wrapper 
+
+https://github.com/vllm-project/vllm
+
+ punica_base 
+
+https://github.com/vllm-project/vllm
+
+ punica_cpu 
+
+https://github.com/vllm-project/vllm
+
+ punica_gpu 
+
+https://github.com/vllm-project/vllm
+
+ punica_selector 
+
+https://github.com/vllm-project/vllm
+
+ punica_xpu 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ model_executor 
+
+https://github.com/vllm-project/vllm
+
+ custom_op 
+
+https://github.com/vllm-project/vllm
+
+ parameter 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ kernels 
+
+https://github.com/vllm-project/vllm
+
+ linear 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ mixed_precision 
+
+https://github.com/vllm-project/vllm
+
+ allspark 
+
+https://github.com/vllm-project/vllm
+
+ conch 
+
+https://github.com/vllm-project/vllm
+
+ cpu 
+
+https://github.com/vllm-project/vllm
+
+ cutlass 
+
+https://github.com/vllm-project/vllm
+
+ dynamic_4bit 
+
+https://github.com/vllm-project/vllm
+
+ exllama 
+
+https://github.com/vllm-project/vllm
+
+ MPLinearKernel 
+
+https://github.com/vllm-project/vllm
+
+ machete 
+
+https://github.com/vllm-project/vllm
+
+ marlin 
+
+https://github.com/vllm-project/vllm
+
+ triton_w4a16 
+
+https://github.com/vllm-project/vllm
+
+ xpu 
+
+https://github.com/vllm-project/vllm
+
+ mxfp8 
+
+https://github.com/vllm-project/vllm
+
+ emulation 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer 
+
+https://github.com/vllm-project/vllm
+
+ Mxfp8LinearKernel 
+
+https://github.com/vllm-project/vllm
+
+ marlin 
+
+https://github.com/vllm-project/vllm
+
+ xpu 
+
+https://github.com/vllm-project/vllm
+
+ nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ cutlass 
+
+https://github.com/vllm-project/vllm
+
+ emulation 
+
+https://github.com/vllm-project/vllm
+
+ fbgemm 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer 
+
+https://github.com/vllm-project/vllm
+
+ marlin 
+
+https://github.com/vllm-project/vllm
+
+ scaled_mm 
+
+https://github.com/vllm-project/vllm
+
+ aiter 
+
+https://github.com/vllm-project/vllm
+
+ BlockScaledMMLinearKernel 
+
+https://github.com/vllm-project/vllm
+
+ cpu 
+
+https://github.com/vllm-project/vllm
+
+ cutlass 
+
+https://github.com/vllm-project/vllm
+
+ deep_gemm 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer 
+
+https://github.com/vllm-project/vllm
+
+ marlin 
+
+https://github.com/vllm-project/vllm
+
+ pytorch 
+
+https://github.com/vllm-project/vllm
+
+ rocm 
+
+https://github.com/vllm-project/vllm
+
+ ScaledMMLinearKernel 
+
+https://github.com/vllm-project/vllm
+
+ triton 
+
+https://github.com/vllm-project/vllm
+
+ xpu 
+
+https://github.com/vllm-project/vllm
+
+ layers 
+
+https://github.com/vllm-project/vllm
+
+ activation 
+
+https://github.com/vllm-project/vllm
+
+ attention_layer_base 
+
+https://github.com/vllm-project/vllm
+
+ batch_invariant 
+
+https://github.com/vllm-project/vllm
+
+ conv 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_compressor 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4_attention 
+
+https://github.com/vllm-project/vllm
+
+ kda 
+
+https://github.com/vllm-project/vllm
+
+ layernorm 
+
+https://github.com/vllm-project/vllm
+
+ lightning_attn 
+
+https://github.com/vllm-project/vllm
+
+ linear 
+
+https://github.com/vllm-project/vllm
+
+ logits_processor 
+
+https://github.com/vllm-project/vllm
+
+ mhc 
+
+https://github.com/vllm-project/vllm
+
+ mla 
+
+https://github.com/vllm-project/vllm
+
+ resampler 
+
+https://github.com/vllm-project/vllm
+
+ sparse_attn_indexer 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ vocab_parallel_embedding 
+
+https://github.com/vllm-project/vllm
+
+ attention 
+
+https://github.com/vllm-project/vllm
+
+ attention 
+
+https://github.com/vllm-project/vllm
+
+ chunked_local_attention 
+
+https://github.com/vllm-project/vllm
+
+ cross_attention 
+
+https://github.com/vllm-project/vllm
+
+ encoder_only_attention 
+
+https://github.com/vllm-project/vllm
+
+ kv_transfer_utils 
+
+https://github.com/vllm-project/vllm
+
+ mla_attention 
+
+https://github.com/vllm-project/vllm
+
+ mm_encoder_attention 
+
+https://github.com/vllm-project/vllm
+
+ static_sink_attention 
+
+https://github.com/vllm-project/vllm
+
+ fla 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ chunk 
+
+https://github.com/vllm-project/vllm
+
+ chunk_delta_h 
+
+https://github.com/vllm-project/vllm
+
+ chunk_o 
+
+https://github.com/vllm-project/vllm
+
+ chunk_scaled_dot_kkt 
+
+https://github.com/vllm-project/vllm
+
+ cumsum 
+
+https://github.com/vllm-project/vllm
+
+ fused_gdn_prefill_post_conv 
+
+https://github.com/vllm-project/vllm
+
+ fused_recurrent 
+
+https://github.com/vllm-project/vllm
+
+ fused_sigmoid_gating 
+
+https://github.com/vllm-project/vllm
+
+ index 
+
+https://github.com/vllm-project/vllm
+
+ kda 
+
+https://github.com/vllm-project/vllm
+
+ l2norm 
+
+https://github.com/vllm-project/vllm
+
+ layernorm_guard 
+
+https://github.com/vllm-project/vllm
+
+ op 
+
+https://github.com/vllm-project/vllm
+
+ solve_tril 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ wy_fast 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe 
+
+https://github.com/vllm-project/vllm
+
+ activation 
+
+https://github.com/vllm-project/vllm
+
+ all2all_utils 
+
+https://github.com/vllm-project/vllm
+
+ config 
+
+https://github.com/vllm-project/vllm
+
+ cpu_fused_moe 
+
+https://github.com/vllm-project/vllm
+
+ deep_gemm_utils 
+
+https://github.com/vllm-project/vllm
+
+ fallback 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_cutlass_moe 
+
+https://github.com/vllm-project/vllm
+
+ fused_batched_moe 
+
+https://github.com/vllm-project/vllm
+
+ fused_humming_moe 
+
+https://github.com/vllm-project/vllm
+
+ fused_marlin_moe 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe_method_base 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe_modular_method 
+
+https://github.com/vllm-project/vllm
+
+ layer 
+
+https://github.com/vllm-project/vllm
+
+ lora_context 
+
+https://github.com/vllm-project/vllm
+
+ lora_experts_mixin 
+
+https://github.com/vllm-project/vllm
+
+ modular_kernel 
+
+https://github.com/vllm-project/vllm
+
+ moe_align_block_size 
+
+https://github.com/vllm-project/vllm
+
+ moe_fused_mul_sum 
+
+https://github.com/vllm-project/vllm
+
+ moe_permute_unpermute 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_fused_moe 
+
+https://github.com/vllm-project/vllm
+
+ routed_experts_capturer 
+
+https://github.com/vllm-project/vllm
+
+ topk_weight_and_reduce 
+
+https://github.com/vllm-project/vllm
+
+ triton_cutlass_moe 
+
+https://github.com/vllm-project/vllm
+
+ triton_deep_gemm_moe 
+
+https://github.com/vllm-project/vllm
+
+ unquantized_fused_moe_method 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ experts 
+
+https://github.com/vllm-project/vllm
+
+ batched_deep_gemm_moe 
+
+https://github.com/vllm-project/vllm
+
+ cutlass_moe 
+
+https://github.com/vllm-project/vllm
+
+ deep_gemm_moe 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_cutedsl_batched_moe 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_cutedsl_moe 
+
+https://github.com/vllm-project/vllm
+
+ gpt_oss_triton_kernels_moe 
+
+https://github.com/vllm-project/vllm
+
+ nvfp4_emulation_moe 
+
+https://github.com/vllm-project/vllm
+
+ ocp_mx_emulation_moe 
+
+https://github.com/vllm-project/vllm
+
+ trtllm_bf16_moe 
+
+https://github.com/vllm-project/vllm
+
+ trtllm_fp8_moe 
+
+https://github.com/vllm-project/vllm
+
+ trtllm_mxfp4_moe 
+
+https://github.com/vllm-project/vllm
+
+ trtllm_nvfp4_moe 
+
+https://github.com/vllm-project/vllm
+
+ xpu_moe 
+
+https://github.com/vllm-project/vllm
+
+ oracle 
+
+https://github.com/vllm-project/vllm
+
+ fp8 
+
+https://github.com/vllm-project/vllm
+
+ int8 
+
+https://github.com/vllm-project/vllm
+
+ int_wna16 
+
+https://github.com/vllm-project/vllm
+
+ mxfp4 
+
+https://github.com/vllm-project/vllm
+
+ mxfp8 
+
+https://github.com/vllm-project/vllm
+
+ nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ unquantized 
+
+https://github.com/vllm-project/vllm
+
+ prepare_finalize 
+
+https://github.com/vllm-project/vllm
+
+ batched 
+
+https://github.com/vllm-project/vllm
+
+ deepep_ht 
+
+https://github.com/vllm-project/vllm
+
+ deepep_ll 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_nvlink_one_sided 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_nvlink_two_sided 
+
+https://github.com/vllm-project/vllm
+
+ mori 
+
+https://github.com/vllm-project/vllm
+
+ naive_dp_ep 
+
+https://github.com/vllm-project/vllm
+
+ nixl_ep 
+
+https://github.com/vllm-project/vllm
+
+ no_dp_ep 
+
+https://github.com/vllm-project/vllm
+
+ router 
+
+https://github.com/vllm-project/vllm
+
+ base_router 
+
+https://github.com/vllm-project/vllm
+
+ custom_routing_router 
+
+https://github.com/vllm-project/vllm
+
+ fused_moe_router 
+
+https://github.com/vllm-project/vllm
+
+ fused_topk_bias_router 
+
+https://github.com/vllm-project/vllm
+
+ fused_topk_router 
+
+https://github.com/vllm-project/vllm
+
+ gate_linear 
+
+https://github.com/vllm-project/vllm
+
+ grouped_topk_router 
+
+https://github.com/vllm-project/vllm
+
+ router_factory 
+
+https://github.com/vllm-project/vllm
+
+ routing_simulator_router 
+
+https://github.com/vllm-project/vllm
+
+ zero_expert_router 
+
+https://github.com/vllm-project/vllm
+
+ runner 
+
+https://github.com/vllm-project/vllm
+
+ moe_runner 
+
+https://github.com/vllm-project/vllm
+
+ moe_runner_interface 
+
+https://github.com/vllm-project/vllm
+
+ shared_experts 
+
+https://github.com/vllm-project/vllm
+
+ mamba 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ gdn_linear_attn 
+
+https://github.com/vllm-project/vllm
+
+ lamport_workspace 
+
+https://github.com/vllm-project/vllm
+
+ linear_attn 
+
+https://github.com/vllm-project/vllm
+
+ mamba_mixer 
+
+https://github.com/vllm-project/vllm
+
+ mamba_mixer2 
+
+https://github.com/vllm-project/vllm
+
+ mamba_utils 
+
+https://github.com/vllm-project/vllm
+
+ short_conv 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ causal_conv1d 
+
+https://github.com/vllm-project/vllm
+
+ layernorm_gated 
+
+https://github.com/vllm-project/vllm
+
+ mamba_ssm 
+
+https://github.com/vllm-project/vllm
+
+ ssd_bmm 
+
+https://github.com/vllm-project/vllm
+
+ ssd_chunk_scan 
+
+https://github.com/vllm-project/vllm
+
+ ssd_chunk_state 
+
+https://github.com/vllm-project/vllm
+
+ ssd_combined 
+
+https://github.com/vllm-project/vllm
+
+ ssd_state_passing 
+
+https://github.com/vllm-project/vllm
+
+ ssu_dispatch 
+
+https://github.com/vllm-project/vllm
+
+ triton_helpers 
+
+https://github.com/vllm-project/vllm
+
+ pooler 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ activations 
+
+https://github.com/vllm-project/vllm
+
+ common 
+
+https://github.com/vllm-project/vllm
+
+ special 
+
+https://github.com/vllm-project/vllm
+
+ seqwise 
+
+https://github.com/vllm-project/vllm
+
+ heads 
+
+https://github.com/vllm-project/vllm
+
+ methods 
+
+https://github.com/vllm-project/vllm
+
+ poolers 
+
+https://github.com/vllm-project/vllm
+
+ tokwise 
+
+https://github.com/vllm-project/vllm
+
+ heads 
+
+https://github.com/vllm-project/vllm
+
+ methods 
+
+https://github.com/vllm-project/vllm
+
+ poolers 
+
+https://github.com/vllm-project/vllm
+
+ quantization 
+
+https://github.com/vllm-project/vllm
+
+ awq 
+
+https://github.com/vllm-project/vllm
+
+ awq_marlin 
+
+https://github.com/vllm-project/vllm
+
+ awq_triton 
+
+https://github.com/vllm-project/vllm
+
+ base_config 
+
+https://github.com/vllm-project/vllm
+
+ bitsandbytes 
+
+https://github.com/vllm-project/vllm
+
+ cpu_wna16 
+
+https://github.com/vllm-project/vllm
+
+ experts_int8 
+
+https://github.com/vllm-project/vllm
+
+ fbgemm_fp8 
+
+https://github.com/vllm-project/vllm
+
+ fp8 
+
+https://github.com/vllm-project/vllm
+
+ fp_quant 
+
+https://github.com/vllm-project/vllm
+
+ gguf 
+
+https://github.com/vllm-project/vllm
+
+ gptq 
+
+https://github.com/vllm-project/vllm
+
+ gptq_marlin 
+
+https://github.com/vllm-project/vllm
+
+ humming 
+
+https://github.com/vllm-project/vllm
+
+ inc 
+
+https://github.com/vllm-project/vllm
+
+ input_quant_fp8 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache 
+
+https://github.com/vllm-project/vllm
+
+ modelopt 
+
+https://github.com/vllm-project/vllm
+
+ moe_wna16 
+
+https://github.com/vllm-project/vllm
+
+ mxfp4 
+
+https://github.com/vllm-project/vllm
+
+ qutlass_utils 
+
+https://github.com/vllm-project/vllm
+
+ schema 
+
+https://github.com/vllm-project/vllm
+
+ torchao 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors 
+
+https://github.com/vllm-project/vllm
+
+ triton_scaled_mm 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w4a4_mxfp4 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w4a4_nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w4a8_fp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w4a8_int8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w8a8_fp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w8a8_int8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_w8a8_mxfp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_wna16 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_moe_wna16_marlin 
+
+https://github.com/vllm-project/vllm
+
+ schemes 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_24 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_scheme 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w4a4_nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w4a8_fp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w4a8_int 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w4a16_mxfp4 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w4a16_nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w8a8_fp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w8a8_int8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w8a8_mxfp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_w8a16_fp8 
+
+https://github.com/vllm-project/vllm
+
+ compressed_tensors_wNa16 
+
+https://github.com/vllm-project/vllm
+
+ transform 
+
+https://github.com/vllm-project/vllm
+
+ linear 
+
+https://github.com/vllm-project/vllm
+
+ module 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ schemes 
+
+https://github.com/vllm-project/vllm
+
+ linear_qutlass_nvfp4 
+
+https://github.com/vllm-project/vllm
+
+ online 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ fp8 
+
+https://github.com/vllm-project/vllm
+
+ int8 
+
+https://github.com/vllm-project/vllm
+
+ moe_base 
+
+https://github.com/vllm-project/vllm
+
+ mxfp8 
+
+https://github.com/vllm-project/vllm
+
+ quark 
+
+https://github.com/vllm-project/vllm
+
+ quark 
+
+https://github.com/vllm-project/vllm
+
+ quark_moe 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ schemes 
+
+https://github.com/vllm-project/vllm
+
+ quark_ocp_mx 
+
+https://github.com/vllm-project/vllm
+
+ quark_scheme 
+
+https://github.com/vllm-project/vllm
+
+ quark_w4a8_mxfp4_fp8 
+
+https://github.com/vllm-project/vllm
+
+ quark_w8a8_fp8 
+
+https://github.com/vllm-project/vllm
+
+ quark_w8a8_int8 
+
+https://github.com/vllm-project/vllm
+
+ turboquant 
+
+https://github.com/vllm-project/vllm
+
+ centroids 
+
+https://github.com/vllm-project/vllm
+
+ config 
+
+https://github.com/vllm-project/vllm
+
+ quantizer 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ allspark_utils 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_fp4_moe 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_mxint4_moe 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_utils 
+
+https://github.com/vllm-project/vllm
+
+ fp8_utils 
+
+https://github.com/vllm-project/vllm
+
+ gptq_utils 
+
+https://github.com/vllm-project/vllm
+
+ humming_moe_utils 
+
+https://github.com/vllm-project/vllm
+
+ int8_utils 
+
+https://github.com/vllm-project/vllm
+
+ layer_utils 
+
+https://github.com/vllm-project/vllm
+
+ machete_utils 
+
+https://github.com/vllm-project/vllm
+
+ marlin_utils 
+
+https://github.com/vllm-project/vllm
+
+ marlin_utils_fp4 
+
+https://github.com/vllm-project/vllm
+
+ marlin_utils_fp8 
+
+https://github.com/vllm-project/vllm
+
+ marlin_utils_test 
+
+https://github.com/vllm-project/vllm
+
+ mxfp4_utils 
+
+https://github.com/vllm-project/vllm
+
+ mxfp6_utils 
+
+https://github.com/vllm-project/vllm
+
+ mxfp8_utils 
+
+https://github.com/vllm-project/vllm
+
+ nvfp4_emulation_utils 
+
+https://github.com/vllm-project/vllm
+
+ nvfp4_utils 
+
+https://github.com/vllm-project/vllm
+
+ ocp_mx_utils 
+
+https://github.com/vllm-project/vllm
+
+ quant_utils 
+
+https://github.com/vllm-project/vllm
+
+ w8a8_utils 
+
+https://github.com/vllm-project/vllm
+
+ rotary_embedding 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ common 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ dual_chunk_rope 
+
+https://github.com/vllm-project/vllm
+
+ dynamic_ntk_alpha_rope 
+
+https://github.com/vllm-project/vllm
+
+ dynamic_ntk_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_vl_rope 
+
+https://github.com/vllm-project/vllm
+
+ fope 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_rope 
+
+https://github.com/vllm-project/vllm
+
+ linear_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ llama3_rope 
+
+https://github.com/vllm-project/vllm
+
+ llama4_vision_rope 
+
+https://github.com/vllm-project/vllm
+
+ mrope 
+
+https://github.com/vllm-project/vllm
+
+ mrope_interleaved 
+
+https://github.com/vllm-project/vllm
+
+ ntk_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ phi3_long_rope_scaled_rope 
+
+https://github.com/vllm-project/vllm
+
+ telechat3_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ xdrope 
+
+https://github.com/vllm-project/vllm
+
+ yarn_scaling_rope 
+
+https://github.com/vllm-project/vllm
+
+ model_loader 
+
+https://github.com/vllm-project/vllm
+
+ base_loader 
+
+https://github.com/vllm-project/vllm
+
+ bitsandbytes_loader 
+
+https://github.com/vllm-project/vllm
+
+ default_loader 
+
+https://github.com/vllm-project/vllm
+
+ dummy_loader 
+
+https://github.com/vllm-project/vllm
+
+ ep_weight_filter 
+
+https://github.com/vllm-project/vllm
+
+ gguf_loader 
+
+https://github.com/vllm-project/vllm
+
+ runai_streamer_loader 
+
+https://github.com/vllm-project/vllm
+
+ sharded_state_loader 
+
+https://github.com/vllm-project/vllm
+
+ tensorizer 
+
+https://github.com/vllm-project/vllm
+
+ tensorizer_loader 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ weight_utils 
+
+https://github.com/vllm-project/vllm
+
+ reload 
+
+https://github.com/vllm-project/vllm
+
+ layerwise 
+
+https://github.com/vllm-project/vllm
+
+ meta 
+
+https://github.com/vllm-project/vllm
+
+ sanitize 
+
+https://github.com/vllm-project/vllm
+
+ torchao_decorator 
+
+https://github.com/vllm-project/vllm
+
+ types 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ models 
+
+https://github.com/vllm-project/vllm
+
+ AXK1 
+
+https://github.com/vllm-project/vllm
+
+ adapters 
+
+https://github.com/vllm-project/vllm
+
+ afmoe 
+
+https://github.com/vllm-project/vllm
+
+ aimv2 
+
+https://github.com/vllm-project/vllm
+
+ apertus 
+
+https://github.com/vllm-project/vllm
+
+ arcee 
+
+https://github.com/vllm-project/vllm
+
+ arctic 
+
+https://github.com/vllm-project/vllm
+
+ aria 
+
+https://github.com/vllm-project/vllm
+
+ audioflamingo3 
+
+https://github.com/vllm-project/vllm
+
+ aya_vision 
+
+https://github.com/vllm-project/vllm
+
+ bagel 
+
+https://github.com/vllm-project/vllm
+
+ baichuan 
+
+https://github.com/vllm-project/vllm
+
+ bailing_moe 
+
+https://github.com/vllm-project/vllm
+
+ bailing_moe_linear 
+
+https://github.com/vllm-project/vllm
+
+ bamba 
+
+https://github.com/vllm-project/vllm
+
+ bee 
+
+https://github.com/vllm-project/vllm
+
+ bert 
+
+https://github.com/vllm-project/vllm
+
+ bert_with_rope 
+
+https://github.com/vllm-project/vllm
+
+ blip 
+
+https://github.com/vllm-project/vllm
+
+ blip2 
+
+https://github.com/vllm-project/vllm
+
+ bloom 
+
+https://github.com/vllm-project/vllm
+
+ chameleon 
+
+https://github.com/vllm-project/vllm
+
+ chatglm 
+
+https://github.com/vllm-project/vllm
+
+ cheers 
+
+https://github.com/vllm-project/vllm
+
+ clip 
+
+https://github.com/vllm-project/vllm
+
+ cohere2_vision 
+
+https://github.com/vllm-project/vllm
+
+ cohere_asr 
+
+https://github.com/vllm-project/vllm
+
+ colbert 
+
+https://github.com/vllm-project/vllm
+
+ colmodernvbert 
+
+https://github.com/vllm-project/vllm
+
+ colpali 
+
+https://github.com/vllm-project/vllm
+
+ colqwen3 
+
+https://github.com/vllm-project/vllm
+
+ colqwen3_5 
+
+https://github.com/vllm-project/vllm
+
+ commandr 
+
+https://github.com/vllm-project/vllm
+
+ config 
+
+https://github.com/vllm-project/vllm
+
+ conformer_encoder 
+
+https://github.com/vllm-project/vllm
+
+ dbrx 
+
+https://github.com/vllm-project/vllm
+
+ deepencoder 
+
+https://github.com/vllm-project/vllm
+
+ deepencoder2 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_eagle 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_eagle3 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_mtp 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_ocr 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_ocr2 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v2 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4_mtp 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_vl2 
+
+https://github.com/vllm-project/vllm
+
+ dots1 
+
+https://github.com/vllm-project/vllm
+
+ dots_ocr 
+
+https://github.com/vllm-project/vllm
+
+ eagle2_5_vl 
+
+https://github.com/vllm-project/vllm
+
+ ernie 
+
+https://github.com/vllm-project/vllm
+
+ ernie45 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_moe 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_vl 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_vl_moe 
+
+https://github.com/vllm-project/vllm
+
+ ernie_mtp 
+
+https://github.com/vllm-project/vllm
+
+ exaone 
+
+https://github.com/vllm-project/vllm
+
+ exaone4 
+
+https://github.com/vllm-project/vllm
+
+ exaone4_5 
+
+https://github.com/vllm-project/vllm
+
+ exaone4_5_mtp 
+
+https://github.com/vllm-project/vllm
+
+ exaone_moe 
+
+https://github.com/vllm-project/vllm
+
+ exaone_moe_mtp 
+
+https://github.com/vllm-project/vllm
+
+ extract_hidden_states 
+
+https://github.com/vllm-project/vllm
+
+ fairseq2_llama 
+
+https://github.com/vllm-project/vllm
+
+ falcon 
+
+https://github.com/vllm-project/vllm
+
+ falcon_h1 
+
+https://github.com/vllm-project/vllm
+
+ fireredasr2 
+
+https://github.com/vllm-project/vllm
+
+ fireredlid 
+
+https://github.com/vllm-project/vllm
+
+ flex_olmo 
+
+https://github.com/vllm-project/vllm
+
+ funasr 
+
+https://github.com/vllm-project/vllm
+
+ funaudiochat 
+
+https://github.com/vllm-project/vllm
+
+ fuyu 
+
+https://github.com/vllm-project/vllm
+
+ gemma 
+
+https://github.com/vllm-project/vllm
+
+ gemma2 
+
+https://github.com/vllm-project/vllm
+
+ gemma3 
+
+https://github.com/vllm-project/vllm
+
+ gemma3_mm 
+
+https://github.com/vllm-project/vllm
+
+ gemma3n 
+
+https://github.com/vllm-project/vllm
+
+ gemma3n_audio_utils 
+
+https://github.com/vllm-project/vllm
+
+ gemma3n_mm 
+
+https://github.com/vllm-project/vllm
+
+ gemma4 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_mm 
+
+https://github.com/vllm-project/vllm
+
+ glm 
+
+https://github.com/vllm-project/vllm
+
+ glm4 
+
+https://github.com/vllm-project/vllm
+
+ glm4_1v 
+
+https://github.com/vllm-project/vllm
+
+ glm4_moe 
+
+https://github.com/vllm-project/vllm
+
+ glm4_moe_lite 
+
+https://github.com/vllm-project/vllm
+
+ glm4_moe_lite_mtp 
+
+https://github.com/vllm-project/vllm
+
+ glm4_moe_mtp 
+
+https://github.com/vllm-project/vllm
+
+ glm4v 
+
+https://github.com/vllm-project/vllm
+
+ glm_ocr 
+
+https://github.com/vllm-project/vllm
+
+ glm_ocr_mtp 
+
+https://github.com/vllm-project/vllm
+
+ glmasr 
+
+https://github.com/vllm-project/vllm
+
+ glmasr_utils 
+
+https://github.com/vllm-project/vllm
+
+ gpt2 
+
+https://github.com/vllm-project/vllm
+
+ gpt_bigcode 
+
+https://github.com/vllm-project/vllm
+
+ gpt_j 
+
+https://github.com/vllm-project/vllm
+
+ gpt_neox 
+
+https://github.com/vllm-project/vllm
+
+ gpt_oss 
+
+https://github.com/vllm-project/vllm
+
+ granite 
+
+https://github.com/vllm-project/vllm
+
+ granite4_vision 
+
+https://github.com/vllm-project/vllm
+
+ granite_speech 
+
+https://github.com/vllm-project/vllm
+
+ granitemoe 
+
+https://github.com/vllm-project/vllm
+
+ granitemoehybrid 
+
+https://github.com/vllm-project/vllm
+
+ granitemoeshared 
+
+https://github.com/vllm-project/vllm
+
+ gritlm 
+
+https://github.com/vllm-project/vllm
+
+ grok1 
+
+https://github.com/vllm-project/vllm
+
+ h2ovl 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_v1 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_vision 
+
+https://github.com/vllm-project/vllm
+
+ hy_v3 
+
+https://github.com/vllm-project/vllm
+
+ hy_v3_mtp 
+
+https://github.com/vllm-project/vllm
+
+ hyperclovax 
+
+https://github.com/vllm-project/vllm
+
+ hyperclovax_vision 
+
+https://github.com/vllm-project/vllm
+
+ hyperclovax_vision_v2 
+
+https://github.com/vllm-project/vllm
+
+ idefics2_vision_model 
+
+https://github.com/vllm-project/vllm
+
+ idefics3 
+
+https://github.com/vllm-project/vllm
+
+ interfaces 
+
+https://github.com/vllm-project/vllm
+
+ interfaces_base 
+
+https://github.com/vllm-project/vllm
+
+ intern_vit 
+
+https://github.com/vllm-project/vllm
+
+ internlm2 
+
+https://github.com/vllm-project/vllm
+
+ internlm2_ve 
+
+https://github.com/vllm-project/vllm
+
+ interns1 
+
+https://github.com/vllm-project/vllm
+
+ interns1_pro 
+
+https://github.com/vllm-project/vllm
+
+ interns1_vit 
+
+https://github.com/vllm-project/vllm
+
+ internvl 
+
+https://github.com/vllm-project/vllm
+
+ iquest_loopcoder 
+
+https://github.com/vllm-project/vllm
+
+ isaac 
+
+https://github.com/vllm-project/vllm
+
+ jais 
+
+https://github.com/vllm-project/vllm
+
+ jais2 
+
+https://github.com/vllm-project/vllm
+
+ jamba 
+
+https://github.com/vllm-project/vllm
+
+ jina 
+
+https://github.com/vllm-project/vllm
+
+ jina_vl 
+
+https://github.com/vllm-project/vllm
+
+ kanana_v 
+
+https://github.com/vllm-project/vllm
+
+ keye 
+
+https://github.com/vllm-project/vllm
+
+ keye_vl1_5 
+
+https://github.com/vllm-project/vllm
+
+ kimi_audio 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k25 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k25_vit 
+
+https://github.com/vllm-project/vllm
+
+ kimi_linear 
+
+https://github.com/vllm-project/vllm
+
+ kimi_vl 
+
+https://github.com/vllm-project/vllm
+
+ lfm2 
+
+https://github.com/vllm-project/vllm
+
+ lfm2_moe 
+
+https://github.com/vllm-project/vllm
+
+ lfm2_siglip2 
+
+https://github.com/vllm-project/vllm
+
+ lfm2_vl 
+
+https://github.com/vllm-project/vllm
+
+ lightonocr 
+
+https://github.com/vllm-project/vllm
+
+ llama 
+
+https://github.com/vllm-project/vllm
+
+ llama4 
+
+https://github.com/vllm-project/vllm
+
+ llama4_eagle 
+
+https://github.com/vllm-project/vllm
+
+ llama_eagle 
+
+https://github.com/vllm-project/vllm
+
+ llama_eagle3 
+
+https://github.com/vllm-project/vllm
+
+ llava 
+
+https://github.com/vllm-project/vllm
+
+ llava_next 
+
+https://github.com/vllm-project/vllm
+
+ llava_next_video 
+
+https://github.com/vllm-project/vllm
+
+ llava_onevision 
+
+https://github.com/vllm-project/vllm
+
+ longcat_flash 
+
+https://github.com/vllm-project/vllm
+
+ longcat_flash_mtp 
+
+https://github.com/vllm-project/vllm
+
+ mamba 
+
+https://github.com/vllm-project/vllm
+
+ mamba2 
+
+https://github.com/vllm-project/vllm
+
+ medusa 
+
+https://github.com/vllm-project/vllm
+
+ midashenglm 
+
+https://github.com/vllm-project/vllm
+
+ mimo 
+
+https://github.com/vllm-project/vllm
+
+ mimo_mtp 
+
+https://github.com/vllm-project/vllm
+
+ mimo_v2_flash 
+
+https://github.com/vllm-project/vllm
+
+ minicpm 
+
+https://github.com/vllm-project/vllm
+
+ minicpm3 
+
+https://github.com/vllm-project/vllm
+
+ minicpm_eagle 
+
+https://github.com/vllm-project/vllm
+
+ minicpmo 
+
+https://github.com/vllm-project/vllm
+
+ minicpmv 
+
+https://github.com/vllm-project/vllm
+
+ minimax_m2 
+
+https://github.com/vllm-project/vllm
+
+ minimax_text_01 
+
+https://github.com/vllm-project/vllm
+
+ minimax_vl_01 
+
+https://github.com/vllm-project/vllm
+
+ mistral 
+
+https://github.com/vllm-project/vllm
+
+ mistral3 
+
+https://github.com/vllm-project/vllm
+
+ mistral_large_3 
+
+https://github.com/vllm-project/vllm
+
+ mistral_large_3_eagle 
+
+https://github.com/vllm-project/vllm
+
+ mixtral 
+
+https://github.com/vllm-project/vllm
+
+ mllama4 
+
+https://github.com/vllm-project/vllm
+
+ mlp_speculator 
+
+https://github.com/vllm-project/vllm
+
+ modernbert 
+
+https://github.com/vllm-project/vllm
+
+ module_mapping 
+
+https://github.com/vllm-project/vllm
+
+ molmo 
+
+https://github.com/vllm-project/vllm
+
+ molmo2 
+
+https://github.com/vllm-project/vllm
+
+ moonvit 
+
+https://github.com/vllm-project/vllm
+
+ mpt 
+
+https://github.com/vllm-project/vllm
+
+ musicflamingo 
+
+https://github.com/vllm-project/vllm
+
+ nano_nemotron_vl 
+
+https://github.com/vllm-project/vllm
+
+ nemotron 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_h 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_h_mtp 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_nas 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_parse 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_vl 
+
+https://github.com/vllm-project/vllm
+
+ nvlm_d 
+
+https://github.com/vllm-project/vllm
+
+ olmo 
+
+https://github.com/vllm-project/vllm
+
+ olmo2 
+
+https://github.com/vllm-project/vllm
+
+ olmo_hybrid 
+
+https://github.com/vllm-project/vllm
+
+ olmoe 
+
+https://github.com/vllm-project/vllm
+
+ opencua 
+
+https://github.com/vllm-project/vllm
+
+ openpangu 
+
+https://github.com/vllm-project/vllm
+
+ openpangu_mtp 
+
+https://github.com/vllm-project/vllm
+
+ openpangu_vl 
+
+https://github.com/vllm-project/vllm
+
+ opt 
+
+https://github.com/vllm-project/vllm
+
+ orion 
+
+https://github.com/vllm-project/vllm
+
+ ouro 
+
+https://github.com/vllm-project/vllm
+
+ ovis 
+
+https://github.com/vllm-project/vllm
+
+ ovis2_5 
+
+https://github.com/vllm-project/vllm
+
+ paddleocr_vl 
+
+https://github.com/vllm-project/vllm
+
+ paligemma 
+
+https://github.com/vllm-project/vllm
+
+ parakeet 
+
+https://github.com/vllm-project/vllm
+
+ param2moe 
+
+https://github.com/vllm-project/vllm
+
+ persimmon 
+
+https://github.com/vllm-project/vllm
+
+ phi 
+
+https://github.com/vllm-project/vllm
+
+ phi3 
+
+https://github.com/vllm-project/vllm
+
+ phi3v 
+
+https://github.com/vllm-project/vllm
+
+ phi4mm 
+
+https://github.com/vllm-project/vllm
+
+ phi4mm_audio 
+
+https://github.com/vllm-project/vllm
+
+ phi4mm_utils 
+
+https://github.com/vllm-project/vllm
+
+ phi4siglip 
+
+https://github.com/vllm-project/vllm
+
+ phimoe 
+
+https://github.com/vllm-project/vllm
+
+ pixtral 
+
+https://github.com/vllm-project/vllm
+
+ plamo2 
+
+https://github.com/vllm-project/vllm
+
+ plamo3 
+
+https://github.com/vllm-project/vllm
+
+ qwen 
+
+https://github.com/vllm-project/vllm
+
+ qwen2 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_5_omni_thinker 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_5_vl 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_audio 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_moe 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_rm 
+
+https://github.com/vllm-project/vllm
+
+ qwen2_vl 
+
+https://github.com/vllm-project/vllm
+
+ qwen3 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_5 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_5_mtp 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_asr 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_asr_forced_aligner 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_asr_realtime 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_dflash 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_moe 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_next 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_next_mtp 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_omni_moe_thinker 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_vl 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_vl_moe 
+
+https://github.com/vllm-project/vllm
+
+ qwen_vl 
+
+https://github.com/vllm-project/vllm
+
+ radio 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ rnj1 
+
+https://github.com/vllm-project/vllm
+
+ roberta 
+
+https://github.com/vllm-project/vllm
+
+ rvl 
+
+https://github.com/vllm-project/vllm
+
+ sarvam 
+
+https://github.com/vllm-project/vllm
+
+ seed_oss 
+
+https://github.com/vllm-project/vllm
+
+ siglip 
+
+https://github.com/vllm-project/vllm
+
+ siglip2navit 
+
+https://github.com/vllm-project/vllm
+
+ skyworkr1v 
+
+https://github.com/vllm-project/vllm
+
+ smolvlm 
+
+https://github.com/vllm-project/vllm
+
+ solar 
+
+https://github.com/vllm-project/vllm
+
+ stablelm 
+
+https://github.com/vllm-project/vllm
+
+ starcoder2 
+
+https://github.com/vllm-project/vllm
+
+ step1 
+
+https://github.com/vllm-project/vllm
+
+ step3_text 
+
+https://github.com/vllm-project/vllm
+
+ step3_vl 
+
+https://github.com/vllm-project/vllm
+
+ step3p5 
+
+https://github.com/vllm-project/vllm
+
+ step3p5_mtp 
+
+https://github.com/vllm-project/vllm
+
+ step_vl 
+
+https://github.com/vllm-project/vllm
+
+ tarsier 
+
+https://github.com/vllm-project/vllm
+
+ telechat2 
+
+https://github.com/vllm-project/vllm
+
+ teleflm 
+
+https://github.com/vllm-project/vllm
+
+ terratorch 
+
+https://github.com/vllm-project/vllm
+
+ ultravox 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ vision 
+
+https://github.com/vllm-project/vllm
+
+ voxtral 
+
+https://github.com/vllm-project/vllm
+
+ voxtral_realtime 
+
+https://github.com/vllm-project/vllm
+
+ voyage 
+
+https://github.com/vllm-project/vllm
+
+ whisper 
+
+https://github.com/vllm-project/vllm
+
+ whisper_causal 
+
+https://github.com/vllm-project/vllm
+
+ whisper_utils 
+
+https://github.com/vllm-project/vllm
+
+ zamba2 
+
+https://github.com/vllm-project/vllm
+
+ transformers 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ causal 
+
+https://github.com/vllm-project/vllm
+
+ legacy 
+
+https://github.com/vllm-project/vllm
+
+ moe 
+
+https://github.com/vllm-project/vllm
+
+ multimodal 
+
+https://github.com/vllm-project/vllm
+
+ pooling 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ offloader 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ prefetch 
+
+https://github.com/vllm-project/vllm
+
+ prefetch_ops 
+
+https://github.com/vllm-project/vllm
+
+ uva 
+
+https://github.com/vllm-project/vllm
+
+ warmup 
+
+https://github.com/vllm-project/vllm
+
+ deep_gemm_warmup 
+
+https://github.com/vllm-project/vllm
+
+ kernel_warmup 
+
+https://github.com/vllm-project/vllm
+
+ multimodal 
+
+https://github.com/vllm-project/vllm
+
+ audio 
+
+https://github.com/vllm-project/vllm
+
+ cache 
+
+https://github.com/vllm-project/vllm
+
+ encoder_budget 
+
+https://github.com/vllm-project/vllm
+
+ evs 
+
+https://github.com/vllm-project/vllm
+
+ hasher 
+
+https://github.com/vllm-project/vllm
+
+ image 
+
+https://github.com/vllm-project/vllm
+
+ inputs 
+
+https://github.com/vllm-project/vllm
+
+ parse 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ video 
+
+https://github.com/vllm-project/vllm
+
+ media 
+
+https://github.com/vllm-project/vllm
+
+ audio 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ connector 
+
+https://github.com/vllm-project/vllm
+
+ image 
+
+https://github.com/vllm-project/vllm
+
+ video 
+
+https://github.com/vllm-project/vllm
+
+ processing 
+
+https://github.com/vllm-project/vllm
+
+ context 
+
+https://github.com/vllm-project/vllm
+
+ dummy_inputs 
+
+https://github.com/vllm-project/vllm
+
+ inputs 
+
+https://github.com/vllm-project/vllm
+
+ processor 
+
+https://github.com/vllm-project/vllm
+
+ parser 
+
+https://github.com/vllm-project/vllm
+
+ abstract_parser 
+
+https://github.com/vllm-project/vllm
+
+ minimax_m2_parser 
+
+https://github.com/vllm-project/vllm
+
+ parser_manager 
+
+https://github.com/vllm-project/vllm
+
+ platforms 
+
+https://github.com/vllm-project/vllm
+
+ cpu 
+
+https://github.com/vllm-project/vllm
+
+ cuda 
+
+https://github.com/vllm-project/vllm
+
+ interface 
+
+https://github.com/vllm-project/vllm
+
+ rocm 
+
+https://github.com/vllm-project/vllm
+
+ tpu 
+
+https://github.com/vllm-project/vllm
+
+ xpu 
+
+https://github.com/vllm-project/vllm
+
+ zen_cpu 
+
+https://github.com/vllm-project/vllm
+
+ plugins 
+
+https://github.com/vllm-project/vllm
+
+ io_processors 
+
+https://github.com/vllm-project/vllm
+
+ interface 
+
+https://github.com/vllm-project/vllm
+
+ lora_resolvers 
+
+https://github.com/vllm-project/vllm
+
+ filesystem_resolver 
+
+https://github.com/vllm-project/vllm
+
+ hf_hub_resolver 
+
+https://github.com/vllm-project/vllm
+
+ profiler 
+
+https://github.com/vllm-project/vllm
+
+ layerwise_profile 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ wrapper 
+
+https://github.com/vllm-project/vllm
+
+ ray 
+
+https://github.com/vllm-project/vllm
+
+ lazy_utils 
+
+https://github.com/vllm-project/vllm
+
+ ray_env 
+
+https://github.com/vllm-project/vllm
+
+ reasoning 
+
+https://github.com/vllm-project/vllm
+
+ abs_reasoning_parsers 
+
+https://github.com/vllm-project/vllm
+
+ basic_parsers 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_r1_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_utils 
+
+https://github.com/vllm-project/vllm
+
+ gptoss_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ granite_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_a13b_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ hy_v3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ identity_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k2_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ minimax_m2_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ mistral_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_v3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ olmo3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ seedoss_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ step3_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ step3p5_reasoning_parser 
+
+https://github.com/vllm-project/vllm
+
+ renderers 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v32 
+
+https://github.com/vllm-project/vllm
+
+ embed_utils 
+
+https://github.com/vllm-project/vllm
+
+ grok2 
+
+https://github.com/vllm-project/vllm
+
+ hf 
+
+https://github.com/vllm-project/vllm
+
+ mistral 
+
+https://github.com/vllm-project/vllm
+
+ params 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ terratorch 
+
+https://github.com/vllm-project/vllm
+
+ inputs 
+
+https://github.com/vllm-project/vllm
+
+ preprocess 
+
+https://github.com/vllm-project/vllm
+
+ tokenize 
+
+https://github.com/vllm-project/vllm
+
+ tokenizers 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4_encoding 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v32 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v32_encoding 
+
+https://github.com/vllm-project/vllm
+
+ detokenizer_utils 
+
+https://github.com/vllm-project/vllm
+
+ grok2 
+
+https://github.com/vllm-project/vllm
+
+ hf 
+
+https://github.com/vllm-project/vllm
+
+ kimi_audio 
+
+https://github.com/vllm-project/vllm
+
+ mistral 
+
+https://github.com/vllm-project/vllm
+
+ protocol 
+
+https://github.com/vllm-project/vllm
+
+ qwen_vl 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ tool_parsers 
+
+https://github.com/vllm-project/vllm
+
+ abstract_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ deepseekv3_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ deepseekv4_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ deepseekv31_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ deepseekv32_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ ernie45_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ functiongemma_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ gemma4_utils 
+
+https://github.com/vllm-project/vllm
+
+ gigachat3_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ glm4_moe_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ glm47_moe_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ granite4_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ granite_20b_fc_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ granite_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ hermes_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_a13b_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ hy_v3_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ internlm2_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ jamba_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k2_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ llama4_pythonic_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ llama_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ longcat_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ minimax_m2_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ minimax_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ mistral_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ olmo3_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ openai_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ phi4mini_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ pythonic_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ qwen3coder_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ qwen3xml_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ seed_oss_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ step3_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ step3p5_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ xlam_tool_parser 
+
+https://github.com/vllm-project/vllm
+
+ tracing 
+
+https://github.com/vllm-project/vllm
+
+ otel 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ transformers_utils 
+
+https://github.com/vllm-project/vllm
+
+ config 
+
+https://github.com/vllm-project/vllm
+
+ config_parser_base 
+
+https://github.com/vllm-project/vllm
+
+ dynamic_module 
+
+https://github.com/vllm-project/vllm
+
+ gguf_utils 
+
+https://github.com/vllm-project/vllm
+
+ model_arch_config_convertor 
+
+https://github.com/vllm-project/vllm
+
+ processor 
+
+https://github.com/vllm-project/vllm
+
+ repo_utils 
+
+https://github.com/vllm-project/vllm
+
+ runai_utils 
+
+https://github.com/vllm-project/vllm
+
+ s3_utils 
+
+https://github.com/vllm-project/vllm
+
+ tokenizer 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ chat_templates 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ configs 
+
+https://github.com/vllm-project/vllm
+
+ AXK1 
+
+https://github.com/vllm-project/vllm
+
+ afmoe 
+
+https://github.com/vllm-project/vllm
+
+ arctic 
+
+https://github.com/vllm-project/vllm
+
+ bagel 
+
+https://github.com/vllm-project/vllm
+
+ chatglm 
+
+https://github.com/vllm-project/vllm
+
+ cheers 
+
+https://github.com/vllm-project/vllm
+
+ colmodernvbert 
+
+https://github.com/vllm-project/vllm
+
+ colpali 
+
+https://github.com/vllm-project/vllm
+
+ colqwen3 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_vl2 
+
+https://github.com/vllm-project/vllm
+
+ dotsocr 
+
+https://github.com/vllm-project/vllm
+
+ eagle 
+
+https://github.com/vllm-project/vllm
+
+ extract_hidden_states 
+
+https://github.com/vllm-project/vllm
+
+ falcon 
+
+https://github.com/vllm-project/vllm
+
+ fireredlid 
+
+https://github.com/vllm-project/vllm
+
+ flex_olmo 
+
+https://github.com/vllm-project/vllm
+
+ funaudiochat 
+
+https://github.com/vllm-project/vllm
+
+ granite4_vision 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_vl 
+
+https://github.com/vllm-project/vllm
+
+ hy_v3 
+
+https://github.com/vllm-project/vllm
+
+ hyperclovax 
+
+https://github.com/vllm-project/vllm
+
+ isaac 
+
+https://github.com/vllm-project/vllm
+
+ jais 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k25 
+
+https://github.com/vllm-project/vllm
+
+ kimi_linear 
+
+https://github.com/vllm-project/vllm
+
+ kimi_vl 
+
+https://github.com/vllm-project/vllm
+
+ lfm2_moe 
+
+https://github.com/vllm-project/vllm
+
+ medusa 
+
+https://github.com/vllm-project/vllm
+
+ midashenglm 
+
+https://github.com/vllm-project/vllm
+
+ mistral 
+
+https://github.com/vllm-project/vllm
+
+ mlp_speculator 
+
+https://github.com/vllm-project/vllm
+
+ moonvit 
+
+https://github.com/vllm-project/vllm
+
+ nemotron 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_h 
+
+https://github.com/vllm-project/vllm
+
+ olmo_hybrid 
+
+https://github.com/vllm-project/vllm
+
+ ovis 
+
+https://github.com/vllm-project/vllm
+
+ parakeet 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_5 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_5_moe 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_asr 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_next 
+
+https://github.com/vllm-project/vllm
+
+ radio 
+
+https://github.com/vllm-project/vllm
+
+ step3_vl 
+
+https://github.com/vllm-project/vllm
+
+ step3p5 
+
+https://github.com/vllm-project/vllm
+
+ tarsier2 
+
+https://github.com/vllm-project/vllm
+
+ ultravox 
+
+https://github.com/vllm-project/vllm
+
+ speculators 
+
+https://github.com/vllm-project/vllm
+
+ algos 
+
+https://github.com/vllm-project/vllm
+
+ base 
+
+https://github.com/vllm-project/vllm
+
+ processors 
+
+https://github.com/vllm-project/vllm
+
+ bagel 
+
+https://github.com/vllm-project/vllm
+
+ cheers 
+
+https://github.com/vllm-project/vllm
+
+ cohere_asr 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_ocr 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_vl2 
+
+https://github.com/vllm-project/vllm
+
+ fireredasr2 
+
+https://github.com/vllm-project/vllm
+
+ fireredlid 
+
+https://github.com/vllm-project/vllm
+
+ funasr 
+
+https://github.com/vllm-project/vllm
+
+ glm4v 
+
+https://github.com/vllm-project/vllm
+
+ granite4_vision 
+
+https://github.com/vllm-project/vllm
+
+ h2ovl 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_vl 
+
+https://github.com/vllm-project/vllm
+
+ hunyuan_vl_image 
+
+https://github.com/vllm-project/vllm
+
+ internvl 
+
+https://github.com/vllm-project/vllm
+
+ isaac 
+
+https://github.com/vllm-project/vllm
+
+ kimi_audio 
+
+https://github.com/vllm-project/vllm
+
+ kimi_k25 
+
+https://github.com/vllm-project/vllm
+
+ nano_nemotron_vl 
+
+https://github.com/vllm-project/vllm
+
+ nemotron_vl 
+
+https://github.com/vllm-project/vllm
+
+ nvlm_d 
+
+https://github.com/vllm-project/vllm
+
+ ovis 
+
+https://github.com/vllm-project/vllm
+
+ ovis2_5 
+
+https://github.com/vllm-project/vllm
+
+ pixtral 
+
+https://github.com/vllm-project/vllm
+
+ qwen3_asr 
+
+https://github.com/vllm-project/vllm
+
+ qwen_vl 
+
+https://github.com/vllm-project/vllm
+
+ step3_vl 
+
+https://github.com/vllm-project/vllm
+
+ voxtral 
+
+https://github.com/vllm-project/vllm
+
+ triton_utils 
+
+https://github.com/vllm-project/vllm
+
+ allocation 
+
+https://github.com/vllm-project/vllm
+
+ importing 
+
+https://github.com/vllm-project/vllm
+
+ usage 
+
+https://github.com/vllm-project/vllm
+
+ usage_lib 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ argparse_utils 
+
+https://github.com/vllm-project/vllm
+
+ async_utils 
+
+https://github.com/vllm-project/vllm
+
+ cache 
+
+https://github.com/vllm-project/vllm
+
+ collection_utils 
+
+https://github.com/vllm-project/vllm
+
+ counter 
+
+https://github.com/vllm-project/vllm
+
+ cpu_resource_utils 
+
+https://github.com/vllm-project/vllm
+
+ cpu_triton_utils 
+
+https://github.com/vllm-project/vllm
+
+ deep_gemm 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer 
+
+https://github.com/vllm-project/vllm
+
+ func_utils 
+
+https://github.com/vllm-project/vllm
+
+ gc_utils 
+
+https://github.com/vllm-project/vllm
+
+ hashing 
+
+https://github.com/vllm-project/vllm
+
+ import_utils 
+
+https://github.com/vllm-project/vllm
+
+ jsontree 
+
+https://github.com/vllm-project/vllm
+
+ math_utils 
+
+https://github.com/vllm-project/vllm
+
+ mem_constants 
+
+https://github.com/vllm-project/vllm
+
+ mem_utils 
+
+https://github.com/vllm-project/vllm
+
+ mistral 
+
+https://github.com/vllm-project/vllm
+
+ multi_stream_utils 
+
+https://github.com/vllm-project/vllm
+
+ nccl 
+
+https://github.com/vllm-project/vllm
+
+ network_utils 
+
+https://github.com/vllm-project/vllm
+
+ numa_utils 
+
+https://github.com/vllm-project/vllm
+
+ nvtx_pytorch_hooks 
+
+https://github.com/vllm-project/vllm
+
+ ompmultiprocessing 
+
+https://github.com/vllm-project/vllm
+
+ platform_utils 
+
+https://github.com/vllm-project/vllm
+
+ print_utils 
+
+https://github.com/vllm-project/vllm
+
+ profiling 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ serial_utils 
+
+https://github.com/vllm-project/vllm
+
+ system_utils 
+
+https://github.com/vllm-project/vllm
+
+ tensor_schema 
+
+https://github.com/vllm-project/vllm
+
+ torch_utils 
+
+https://github.com/vllm-project/vllm
+
+ tqdm_utils 
+
+https://github.com/vllm-project/vllm
+
+ v1 
+
+https://github.com/vllm-project/vllm
+
+ cudagraph_dispatcher 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache_interface 
+
+https://github.com/vllm-project/vllm
+
+ outputs 
+
+https://github.com/vllm-project/vllm
+
+ request 
+
+https://github.com/vllm-project/vllm
+
+ serial_utils 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ attention 
+
+https://github.com/vllm-project/vllm
+
+ backend 
+
+https://github.com/vllm-project/vllm
+
+ selector 
+
+https://github.com/vllm-project/vllm
+
+ backends 
+
+https://github.com/vllm-project/vllm
+
+ cpu_attn 
+
+https://github.com/vllm-project/vllm
+
+ fa_utils 
+
+https://github.com/vllm-project/vllm
+
+ flash_attn 
+
+https://github.com/vllm-project/vllm
+
+ flash_attn_diffkv 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer 
+
+https://github.com/vllm-project/vllm
+
+ flex_attention 
+
+https://github.com/vllm-project/vllm
+
+ gdn_attn 
+
+https://github.com/vllm-project/vllm
+
+ linear_attn 
+
+https://github.com/vllm-project/vllm
+
+ mamba1_attn 
+
+https://github.com/vllm-project/vllm
+
+ mamba2_attn 
+
+https://github.com/vllm-project/vllm
+
+ mamba_attn 
+
+https://github.com/vllm-project/vllm
+
+ registry 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_fa 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_unified_attn 
+
+https://github.com/vllm-project/vllm
+
+ rocm_attn 
+
+https://github.com/vllm-project/vllm
+
+ short_conv_attn 
+
+https://github.com/vllm-project/vllm
+
+ tree_attn 
+
+https://github.com/vllm-project/vllm
+
+ triton_attn 
+
+https://github.com/vllm-project/vllm
+
+ turboquant_attn 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ mla 
+
+https://github.com/vllm-project/vllm
+
+ aiter_triton_mla 
+
+https://github.com/vllm-project/vllm
+
+ compressor_utils 
+
+https://github.com/vllm-project/vllm
+
+ cutlass_mla 
+
+https://github.com/vllm-project/vllm
+
+ flashattn_mla 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_mla 
+
+https://github.com/vllm-project/vllm
+
+ flashinfer_mla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ flashmla 
+
+https://github.com/vllm-project/vllm
+
+ flashmla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ indexer 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_mla 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_mla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ sparse_swa 
+
+https://github.com/vllm-project/vllm
+
+ sparse_utils 
+
+https://github.com/vllm-project/vllm
+
+ triton_mla 
+
+https://github.com/vllm-project/vllm
+
+ xpu_mla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ chunked_prefill_paged_decode 
+
+https://github.com/vllm-project/vllm
+
+ common 
+
+https://github.com/vllm-project/vllm
+
+ dcp_alltoall 
+
+https://github.com/vllm-project/vllm
+
+ flashmla 
+
+https://github.com/vllm-project/vllm
+
+ merge_attn_states 
+
+https://github.com/vllm-project/vllm
+
+ paged_attn 
+
+https://github.com/vllm-project/vllm
+
+ prefix_prefill 
+
+https://github.com/vllm-project/vllm
+
+ rocm_aiter_mla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ triton_attention_helpers 
+
+https://github.com/vllm-project/vllm
+
+ triton_decode_attention 
+
+https://github.com/vllm-project/vllm
+
+ triton_merge_attn_states 
+
+https://github.com/vllm-project/vllm
+
+ triton_prefill_attention 
+
+https://github.com/vllm-project/vllm
+
+ triton_reshape_and_cache_flash 
+
+https://github.com/vllm-project/vllm
+
+ triton_turboquant_decode 
+
+https://github.com/vllm-project/vllm
+
+ triton_turboquant_store 
+
+https://github.com/vllm-project/vllm
+
+ triton_unified_attention 
+
+https://github.com/vllm-project/vllm
+
+ vit_attn_wrappers 
+
+https://github.com/vllm-project/vllm
+
+ xpu_mla_sparse 
+
+https://github.com/vllm-project/vllm
+
+ deepseek_v4_ops 
+
+https://github.com/vllm-project/vllm
+
+ cache_utils 
+
+https://github.com/vllm-project/vllm
+
+ fused_compress_quant_cache 
+
+https://github.com/vllm-project/vllm
+
+ fused_indexer_q 
+
+https://github.com/vllm-project/vllm
+
+ fused_inv_rope_fp8_quant 
+
+https://github.com/vllm-project/vllm
+
+ fused_qk_rmsnorm 
+
+https://github.com/vllm-project/vllm
+
+ core 
+
+https://github.com/vllm-project/vllm
+
+ block_pool 
+
+https://github.com/vllm-project/vllm
+
+ encoder_cache_manager 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache_coordinator 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache_manager 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache_metrics 
+
+https://github.com/vllm-project/vllm
+
+ kv_cache_utils 
+
+https://github.com/vllm-project/vllm
+
+ single_type_kv_cache_manager 
+
+https://github.com/vllm-project/vllm
+
+ sched 
+
+https://github.com/vllm-project/vllm
+
+ async_scheduler 
+
+https://github.com/vllm-project/vllm
+
+ interface 
+
+https://github.com/vllm-project/vllm
+
+ output 
+
+https://github.com/vllm-project/vllm
+
+ request_queue 
+
+https://github.com/vllm-project/vllm
+
+ scheduler 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ engine 
+
+https://github.com/vllm-project/vllm
+
+ async_llm 
+
+https://github.com/vllm-project/vllm
+
+ coordinator 
+
+https://github.com/vllm-project/vllm
+
+ core 
+
+https://github.com/vllm-project/vllm
+
+ core_client 
+
+https://github.com/vllm-project/vllm
+
+ detokenizer 
+
+https://github.com/vllm-project/vllm
+
+ exceptions 
+
+https://github.com/vllm-project/vllm
+
+ input_processor 
+
+https://github.com/vllm-project/vllm
+
+ llm_engine 
+
+https://github.com/vllm-project/vllm
+
+ logprobs 
+
+https://github.com/vllm-project/vllm
+
+ output_processor 
+
+https://github.com/vllm-project/vllm
+
+ parallel_sampling 
+
+https://github.com/vllm-project/vllm
+
+ tensor_ipc 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ executor 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ multiproc_executor 
+
+https://github.com/vllm-project/vllm
+
+ ray_env_utils 
+
+https://github.com/vllm-project/vllm
+
+ ray_executor 
+
+https://github.com/vllm-project/vllm
+
+ ray_executor_v2 
+
+https://github.com/vllm-project/vllm
+
+ ray_utils 
+
+https://github.com/vllm-project/vllm
+
+ uniproc_executor 
+
+https://github.com/vllm-project/vllm
+
+ kv_offload 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ factory 
+
+https://github.com/vllm-project/vllm
+
+ mediums 
+
+https://github.com/vllm-project/vllm
+
+ reuse_manager 
+
+https://github.com/vllm-project/vllm
+
+ spec 
+
+https://github.com/vllm-project/vllm
+
+ cpu 
+
+https://github.com/vllm-project/vllm
+
+ manager 
+
+https://github.com/vllm-project/vllm
+
+ shared_offload_region 
+
+https://github.com/vllm-project/vllm
+
+ spec 
+
+https://github.com/vllm-project/vllm
+
+ policies 
+
+https://github.com/vllm-project/vllm
+
+ abstract 
+
+https://github.com/vllm-project/vllm
+
+ arc 
+
+https://github.com/vllm-project/vllm
+
+ lru 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ cpu_gpu 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ loggers 
+
+https://github.com/vllm-project/vllm
+
+ perf 
+
+https://github.com/vllm-project/vllm
+
+ prometheus 
+
+https://github.com/vllm-project/vllm
+
+ ray_wrappers 
+
+https://github.com/vllm-project/vllm
+
+ reader 
+
+https://github.com/vllm-project/vllm
+
+ stats 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ pool 
+
+https://github.com/vllm-project/vllm
+
+ late_interaction 
+
+https://github.com/vllm-project/vllm
+
+ metadata 
+
+https://github.com/vllm-project/vllm
+
+ sample 
+
+https://github.com/vllm-project/vllm
+
+ metadata 
+
+https://github.com/vllm-project/vllm
+
+ rejection_sampler 
+
+https://github.com/vllm-project/vllm
+
+ sampler 
+
+https://github.com/vllm-project/vllm
+
+ logits_processor 
+
+https://github.com/vllm-project/vllm
+
+ builtin 
+
+https://github.com/vllm-project/vllm
+
+ interface 
+
+https://github.com/vllm-project/vllm
+
+ state 
+
+https://github.com/vllm-project/vllm
+
+ ops 
+
+https://github.com/vllm-project/vllm
+
+ bad_words 
+
+https://github.com/vllm-project/vllm
+
+ logprobs 
+
+https://github.com/vllm-project/vllm
+
+ penalties 
+
+https://github.com/vllm-project/vllm
+
+ topk_topp_sampler 
+
+https://github.com/vllm-project/vllm
+
+ topk_topp_triton 
+
+https://github.com/vllm-project/vllm
+
+ simple_kv_offload 
+
+https://github.com/vllm-project/vllm
+
+ copy_backend 
+
+https://github.com/vllm-project/vllm
+
+ cuda_mem_ops 
+
+https://github.com/vllm-project/vllm
+
+ manager 
+
+https://github.com/vllm-project/vllm
+
+ metadata 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ spec_decode 
+
+https://github.com/vllm-project/vllm
+
+ dflash 
+
+https://github.com/vllm-project/vllm
+
+ draft_model 
+
+https://github.com/vllm-project/vllm
+
+ eagle 
+
+https://github.com/vllm-project/vllm
+
+ extract_hidden_states 
+
+https://github.com/vllm-project/vllm
+
+ llm_base_proposer 
+
+https://github.com/vllm-project/vllm
+
+ medusa 
+
+https://github.com/vllm-project/vllm
+
+ metadata 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ ngram_proposer 
+
+https://github.com/vllm-project/vllm
+
+ ngram_proposer_gpu 
+
+https://github.com/vllm-project/vllm
+
+ suffix_decoding 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ structured_output 
+
+https://github.com/vllm-project/vllm
+
+ backend_guidance 
+
+https://github.com/vllm-project/vllm
+
+ backend_lm_format_enforcer 
+
+https://github.com/vllm-project/vllm
+
+ backend_outlines 
+
+https://github.com/vllm-project/vllm
+
+ backend_types 
+
+https://github.com/vllm-project/vllm
+
+ backend_xgrammar 
+
+https://github.com/vllm-project/vllm
+
+ request 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ worker 
+
+https://github.com/vllm-project/vllm
+
+ block_table 
+
+https://github.com/vllm-project/vllm
+
+ cp_utils 
+
+https://github.com/vllm-project/vllm
+
+ cpu_model_runner 
+
+https://github.com/vllm-project/vllm
+
+ cpu_worker 
+
+https://github.com/vllm-project/vllm
+
+ dp_utils 
+
+https://github.com/vllm-project/vllm
+
+ ec_connector_model_runner_mixin 
+
+https://github.com/vllm-project/vllm
+
+ encoder_cudagraph 
+
+https://github.com/vllm-project/vllm
+
+ encoder_cudagraph_defs 
+
+https://github.com/vllm-project/vllm
+
+ gpu_input_batch 
+
+https://github.com/vllm-project/vllm
+
+ gpu_model_runner 
+
+https://github.com/vllm-project/vllm
+
+ gpu_ubatch_wrapper 
+
+https://github.com/vllm-project/vllm
+
+ gpu_worker 
+
+https://github.com/vllm-project/vllm
+
+ kv_connector_model_runner_mixin 
+
+https://github.com/vllm-project/vllm
+
+ lora_model_runner_mixin 
+
+https://github.com/vllm-project/vllm
+
+ mamba_utils 
+
+https://github.com/vllm-project/vllm
+
+ tpu_input_batch 
+
+https://github.com/vllm-project/vllm
+
+ ubatch_utils 
+
+https://github.com/vllm-project/vllm
+
+ ubatching 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ worker_base 
+
+https://github.com/vllm-project/vllm
+
+ workspace 
+
+https://github.com/vllm-project/vllm
+
+ xpu_model_runner 
+
+https://github.com/vllm-project/vllm
+
+ xpu_worker 
+
+https://github.com/vllm-project/vllm
+
+ gpu 
+
+https://github.com/vllm-project/vllm
+
+ async_utils 
+
+https://github.com/vllm-project/vllm
+
+ attn_utils 
+
+https://github.com/vllm-project/vllm
+
+ block_table 
+
+https://github.com/vllm-project/vllm
+
+ buffer_utils 
+
+https://github.com/vllm-project/vllm
+
+ cp_utils 
+
+https://github.com/vllm-project/vllm
+
+ cudagraph_utils 
+
+https://github.com/vllm-project/vllm
+
+ dp_utils 
+
+https://github.com/vllm-project/vllm
+
+ eplb_utils 
+
+https://github.com/vllm-project/vllm
+
+ input_batch 
+
+https://github.com/vllm-project/vllm
+
+ kv_connector 
+
+https://github.com/vllm-project/vllm
+
+ lora_utils 
+
+https://github.com/vllm-project/vllm
+
+ model_runner 
+
+https://github.com/vllm-project/vllm
+
+ pp_utils 
+
+https://github.com/vllm-project/vllm
+
+ states 
+
+https://github.com/vllm-project/vllm
+
+ structured_outputs 
+
+https://github.com/vllm-project/vllm
+
+ warmup 
+
+https://github.com/vllm-project/vllm
+
+ metrics 
+
+https://github.com/vllm-project/vllm
+
+ logits 
+
+https://github.com/vllm-project/vllm
+
+ mm 
+
+https://github.com/vllm-project/vllm
+
+ encoder_cache 
+
+https://github.com/vllm-project/vllm
+
+ encoder_runner 
+
+https://github.com/vllm-project/vllm
+
+ rope 
+
+https://github.com/vllm-project/vllm
+
+ model_states 
+
+https://github.com/vllm-project/vllm
+
+ default 
+
+https://github.com/vllm-project/vllm
+
+ interface 
+
+https://github.com/vllm-project/vllm
+
+ whisper 
+
+https://github.com/vllm-project/vllm
+
+ pool 
+
+https://github.com/vllm-project/vllm
+
+ late_interaction_runner 
+
+https://github.com/vllm-project/vllm
+
+ pooling_runner 
+
+https://github.com/vllm-project/vllm
+
+ sample 
+
+https://github.com/vllm-project/vllm
+
+ bad_words 
+
+https://github.com/vllm-project/vllm
+
+ gumbel 
+
+https://github.com/vllm-project/vllm
+
+ logit_bias 
+
+https://github.com/vllm-project/vllm
+
+ logprob 
+
+https://github.com/vllm-project/vllm
+
+ min_p 
+
+https://github.com/vllm-project/vllm
+
+ output 
+
+https://github.com/vllm-project/vllm
+
+ penalties 
+
+https://github.com/vllm-project/vllm
+
+ prompt_logprob 
+
+https://github.com/vllm-project/vllm
+
+ sampler 
+
+https://github.com/vllm-project/vllm
+
+ states 
+
+https://github.com/vllm-project/vllm
+
+ spec_decode 
+
+https://github.com/vllm-project/vllm
+
+ probabilistic_rejection_sampler_utils 
+
+https://github.com/vllm-project/vllm
+
+ rejection_sampler 
+
+https://github.com/vllm-project/vllm
+
+ synthetic_rejection_sampler_utils 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ eagle 
+
+https://github.com/vllm-project/vllm
+
+ cudagraph 
+
+https://github.com/vllm-project/vllm
+
+ eagle3_utils 
+
+https://github.com/vllm-project/vllm
+
+ speculator 
+
+https://github.com/vllm-project/vllm
+
+ utils 
+
+https://github.com/vllm-project/vllm
+
+ CLI Reference 
+
+https://github.com/vllm-project/vllm
+
+ vllm serve 
+
+https://github.com/vllm-project/vllm
+
+ vllm chat 
+
+https://github.com/vllm-project/vllm
+
+ vllm complete 
+
+https://github.com/vllm-project/vllm
+
+ vllm run-batch 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench latency 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench mm-processor 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench serve 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench sweep plot 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench sweep plot_pareto 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench sweep serve 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench sweep serve_workload 
+
+https://github.com/vllm-project/vllm
+
+ vllm bench throughput 
+
+https://github.com/vllm-project/vllm
+
+ Contact Us 
+
+https://github.com/vllm-project/vllm
+
+ Meetups 
+
+https://github.com/vllm-project/vllm
+
+ Sponsors 
+
+https://github.com/vllm-project/vllm
+
+ Collaboration Policy 
+
+https://github.com/vllm-project/vllm
+
+ Committers 
+
+https://github.com/vllm-project/vllm
+
+ Governance Process 
+
+https://github.com/vllm-project/vllm
+
+ Blog 
+
+https://github.com/vllm-project/vllm
+
+ Forum 
+
+https://github.com/vllm-project/vllm
+
+ Slack 
+
+https://github.com/vllm-project/vllm
+
+ Prerequisites 
+
+https://github.com/vllm-project/vllm
+
+ Installation 
+
+https://github.com/vllm-project/vllm
+
+ Offline Batched Inference 
+
+https://github.com/vllm-project/vllm
+
+ OpenAI-Compatible Server 
+
+https://github.com/vllm-project/vllm
+
+ On Attention Backends 
+
+https://github.com/vllm-project/vllm
+
+Quickstart
+
+¶
+
+https://docs.vllm.ai#quickstart
+
+This guide will help you quickly get started with vLLM to perform:
+
+Offline batched inference
+
+https://docs.vllm.ai#quickstart
+
+Online serving using OpenAI-compatible server
+
+https://docs.vllm.ai#quickstart
+
+Prerequisites
+
+¶
+
+https://docs.vllm.ai#prerequisites
+
+OS: Linux
+
+Python: 3.10 -- 3.13
+
+Installation
+
+¶
+
+https://docs.vllm.ai#installation
+
+If you are using NVIDIA GPUs, you can install vLLM using 
+
+pip
+
+https://pypi.org/project/vllm/
+
+ directly.
+
+It's recommended to use 
+
+uv
+
+https://docs.astral.sh/uv/
+
+, a very fast Python environment manager, to create and manage Python environments. Please follow the 
+
+documentation
+
+https://docs.astral.sh/uv/#getting-started
+
+ to install  uv . After installing  uv , you can create a new Python environment and install vLLM using the following commands:
+
+uv   venv   --python   3 .12   --seed 
+
+source   .venv/bin/activate 
+
+uv   pip   install   vllm   --torch-backend = auto 
+
+uv  can 
+
+automatically select the appropriate PyTorch index at runtime
+
+https://docs.astral.sh/uv/guides/integration/pytorch/#automatic-backend-selection
+
+ by inspecting the installed CUDA driver version via  --torch-backend=auto  (or  UV_TORCH_BACKEND=auto ). To select a specific backend (e.g.,  cu126 ), set  --torch-backend=cu126  (or  UV_TORCH_BACKEND=cu126 ).
+
+Another delightful way is to use  uv run  with  --with [dependency]  option, which allows you to run commands such as  vllm serve  without creating any permanent environment:
+
+uv   run   --with   vllm   vllm   --help 
+
+You can also use 
+
+conda
+
+https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html
+
+ to create and manage Python environments. You can install  uv  to the conda environment through  pip  if you want to manage it within the environment.
+
+conda   create   -n   myenv   python = 3 .12   -y 
+
+conda   activate   myenv 
+
+pip   install   --upgrade   uv 
+
+uv   pip   install   vllm   --torch-backend = auto 
+
+If you are using AMD GPUs, you can install vLLM using  uv .
+
+It's recommended to use 
+
+uv
+
+https://docs.astral.sh/uv/
+
+, as it gives the extra index 
+
+higher priority than the default index
+
+https://docs.astral.sh/uv/pip/compatibility/#packages-that-exist-on-multiple-indexes
+
+.  uv  is also a very fast Python environment manager, to create and manage Python environments. Please follow the 
+
+documentation
+
+https://docs.astral.sh/uv/#getting-started
+
+ to install  uv . After installing  uv , you can create a new Python environment and install vLLM using the following commands:
+
+uv   venv   --python   3 .12   --seed 
+
+source   .venv/bin/activate 
+
+uv   pip   install   vllm   --extra-index-url   https://wheels.vllm.ai/rocm/ 
+
+Note
+
+It currently supports Python 3.12, ROCm 7.0 and  glibc >= 2.35 .
+
+Note
+
+Note that, previously, docker images were published using AMD's docker release pipeline and were located  rocm/vllm-dev . This is being deprecated by using vLLM's docker release pipeline.
+
+Tip
+
+A nightly Docker image is also available as 
+
+vllm/vllm-openai-rocm:nightly
+
+https://hub.docker.com/r/vllm/vllm-openai-rocm/tags
+
+ for testing the latest development builds.
+
+To run vLLM on Google TPUs, you need to install the  vllm-tpu  package.
+
+uv   pip   install   vllm-tpu 
+
+Note
+
+For more detailed instructions, including Docker, installing from source, and troubleshooting, please refer to the 
+
+vLLM on TPU documentation
+
+https://docs.vllm.ai/projects/tpu/en/latest/
+
+.
+
+Note
+
+For more detail and non-CUDA platforms, please refer to the 
+
+installation guide
+
+https://docs.vllm.ai/installation/
+
+ for specific instructions on how to install vLLM.
+
+Offline Batched Inference
+
+¶
+
+https://docs.vllm.ai#offline-batched-inference
+
+With vLLM installed, you can start generating texts for list of input prompts (i.e. offline batch inferencing). See the example script: 
+
+ examples/basic/offline_inference/basic.py
+
+https://github.com/vllm-project/vllm/blob/main/examples/basic/offline_inference/basic.py
+
+The first line of this example imports the classes 
+
+LLM
+
+https://docs.vllm.ai/api/vllm/#vllm.LLM
+
+ and 
+
+SamplingParams
+
+https://docs.vllm.ai/api/vllm/#vllm.SamplingParams
+
+:
+
+LLM
+
+https://docs.vllm.ai/api/vllm/#vllm.SamplingParams
+
+ is the main class for running offline inference with vLLM engine.
+
+SamplingParams
+
+https://docs.vllm.ai/api/vllm/#vllm.SamplingParams
+
+ specifies the parameters for the sampling process.
+
+from   vllm   import   LLM ,   SamplingParams  
+
+The next section defines a list of input prompts and sampling parameters for text generation. The 
+
+sampling temperature
+
+https://arxiv.org/html/2402.05201v1
+
+ is set to  0.8  and the 
+
+nucleus sampling probability
+
+https://en.wikipedia.org/wiki/Top-p_sampling
+
+ is set to  0.95 . You can find more information about the sampling parameters 
+
+here
+
+https://docs.vllm.ai/api/#inference-parameters
+
+.
+
+Important
+
+By default, vLLM will use sampling parameters recommended by model creator by applying the  generation_config.json  from the Hugging Face model repository if it exists. In most cases, this will provide you with the best results by default if 
+
+SamplingParams
+
+https://docs.vllm.ai/api/vllm/#vllm.SamplingParams
+
+ is not specified.
+
+However, if vLLM's default sampling parameters are preferred, please set  generation_config="vllm"  when creating the 
+
+LLM
+
+https://docs.vllm.ai/api/vllm/#vllm.LLM
+
+ instance.
+
+prompts   =   [  
+
+"Hello, my name is" ,  
+
+"The president of the United States is" ,  
+
+"The capital of France is" ,  
+
+"The future of AI is" ,  
+
+]  
+
+sampling_params   =   SamplingParams ( temperature = 0.8 ,   top_p = 0.95 )  
+
+The 
+
+LLM
+
+https://docs.vllm.ai/api/vllm/#vllm.LLM
+
+ class initializes vLLM's engine and the 
+
+OPT-125M model
+
+https://arxiv.org/abs/2205.01068
+
+ for offline inference. The list of supported models can be found 
+
+here
+
+https://docs.vllm.ai/models/supported_models/
+
+.
+
+llm   =   LLM ( model = "facebook/opt-125m" )  
+
+Note
+
+By default, vLLM downloads models from 
+
+Hugging Face
+
+https://huggingface.co/
+
+. If you would like to use models from 
+
+ModelScope
+
+https://www.modelscope.cn
+
+, set the environment variable  VLLM_USE_MODELSCOPE  before initializing the engine.
+
+export   VLLM_USE_MODELSCOPE = True 
+
+Now, the fun part! The outputs are generated using  llm.generate . It adds the input prompts to the vLLM engine's waiting queue and executes the vLLM engine to generate the outputs with high throughput. The outputs are returned as a list of 
+
+RequestOutput
+
+https://docs.vllm.ai/api/vllm/outputs/#vllm.outputs.RequestOutput
+
+ objects, which include all of the output tokens.
+
+outputs   =   llm . generate ( prompts ,   sampling_params )  
+
+for   output   in   outputs :  
+
+prompt   =   output . prompt  
+
+generated_text   =   output . outputs [ 0 ] . text  
+
+print ( f "Prompt:  { prompt !r} , Generated text:  { generated_text !r} " )  
+
+Note
+
+The  llm.generate  method does not automatically apply the model's chat template to the input prompt. Therefore, if you are using an Instruct model or Chat model, you should manually apply the corresponding chat template to ensure the expected behavior. Alternatively, you can use the  llm.chat  method and pass a list of messages which have the same format as those passed to OpenAI's  client.chat.completions :
+
+Code  
+
+# Using tokenizer to apply chat template  
+
+from   transformers   import   AutoTokenizer  
+
+tokenizer   =   AutoTokenizer . from_pretrained ( "/path/to/chat_model" )  
+
+messages_list   =   [  
+
+[{ "role" :   "user" ,   "content" :   prompt }]  
+
+for   prompt   in   prompts  
+
+]  
+
+texts   =   tokenizer . apply_chat_template (  
+
+messages_list ,  
+
+tokenize = False ,  
+
+add_generation_prompt = True ,  
+
+)  
+
+# Generate outputs  
+
+outputs   =   llm . generate ( texts ,   sampling_params )  
+
+# Print the outputs.  
+
+for   output   in   outputs :  
+
+prompt   =   output . prompt  
+
+generated_text   =   output . outputs [ 0 ] . text  
+
+print ( f "Prompt:  { prompt !r} , Generated text:  { generated_text !r} " )  
+
+# Using chat interface.  
+
+outputs   =   llm . chat ( messages_list ,   sampling_params )  
+
+for   idx ,   output   in   enumerate ( outputs ):  
+
+prompt   =   prompts [ idx ]  
+
+generated_text   =   output . outputs [ 0 ] . text  
+
+print ( f "Prompt:  { prompt !r} , Generated text:  { generated_text !r} " )  
+
+OpenAI-Compatible Server
+
+¶
+
+https://docs.vllm.ai#openai-compatible-server
+
+vLLM can be deployed as a server that implements the OpenAI API protocol. This allows vLLM to be used as a drop-in replacement for applications using OpenAI API. By default, it starts the server at  http://localhost:8000 . You can specify the address with  --host  and  --port  arguments. The server currently hosts one model at a time and implements endpoints such as 
+
+list models
+
+https://platform.openai.com/docs/api-reference/models/list
+
+, 
+
+create chat completion
+
+https://platform.openai.com/docs/api-reference/chat/completions/create
+
+, and 
+
+create completion
+
+https://platform.openai.com/docs/api-reference/completions/create
+
+ endpoints.
+
+Run the following command to start the vLLM server with the 
+
+Qwen2.5-1.5B-Instruct
+
+https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
+
+ model:
+
+vllm   serve   Qwen/Qwen2.5-1.5B-Instruct 
+
+Note
+
+By default, the server uses a predefined chat template stored in the tokenizer. You can learn about overriding it 
+
+here
+
+https://docs.vllm.ai/serving/openai_compatible_server/#chat-template
+
+.
+
+Important
+
+By default, the server applies  generation_config.json  from the huggingface model repository if it exists. This means the default values of certain sampling parameters can be overridden by those recommended by the model creator.
+
+To disable this behavior, please pass  --generation-config vllm  when launching the server.
+
+This server can be queried in the same format as OpenAI API. For example, to list the models:
+
+curl   http://localhost:8000/v1/models 
+
+You can pass in the argument  --api-key  or environment variable  VLLM_API_KEY  to enable the server to check for API key in the header. You can pass multiple keys after  --api-key , and the server will accept any of the keys passed, this can be useful for key rotation.
+
+OpenAI Completions API with vLLM
+
+¶
+
+https://docs.vllm.ai#openai-completions-api-with-vllm
+
+Once your server is started, you can query the model with input prompts:
+
+curl   http://localhost:8000/v1/completions   \  
+
+-H   "Content-Type: application/json"   \  
+
+-d   '{  
+
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",  
+
+ "prompt": "San Francisco is a",  
+
+ "max_tokens": 7,  
+
+ "temperature": 0  
+
+ }'  
+
+Since this server is compatible with OpenAI API, you can use it as a drop-in replacement for any applications using OpenAI API. For example, another way to query the server is via the  openai  Python package:
+
+Code  
+
+from   openai   import   OpenAI  
+
+# Modify OpenAI's API key and API base to use vLLM's API server.  
+
+openai_api_key   =   "EMPTY"  
+
+openai_api_base   =   "http://localhost:8000/v1"  
+
+client   =   OpenAI (  
+
+api_key = openai_api_key ,  
+
+base_url = openai_api_base ,  
+
+)  
+
+completion   =   client . completions . create (  
+
+model = "Qwen/Qwen2.5-1.5B-Instruct" ,  
+
+prompt = "San Francisco is a" ,  
+
+)  
+
+print ( "Completion result:" ,   completion )  
+
+A more detailed client example can be found here: 
+
+ examples/basic/offline_inference/basic.py
+
+https://github.com/vllm-project/vllm/blob/main/examples/basic/offline_inference/basic.py
+
+OpenAI Chat Completions API with vLLM
+
+¶
+
+https://docs.vllm.ai#openai-chat-completions-api-with-vllm
+
+vLLM is designed to also support the OpenAI Chat Completions API. The chat interface is a more dynamic, interactive way to communicate with the model, allowing back-and-forth exchanges that can be stored in the chat history. This is useful for tasks that require context or more detailed explanations.
+
+You can use the 
+
+create chat completion
+
+https://platform.openai.com/docs/api-reference/chat/completions/create
+
+ endpoint to interact with the model:
+
+curl   http://localhost:8000/v1/chat/completions   \  
+
+-H   "Content-Type: application/json"   \  
+
+-d   '{  
+
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",  
+
+ "messages": [  
+
+ {"role": "system", "content": "You are a helpful assistant."},  
+
+ {"role": "user", "content": "Who won the world series in 2020?"}  
+
+ ]  
+
+ }'  
+
+Alternatively, you can use the  openai  Python package:
+
+Code  
+
+from   openai   import   OpenAI  
+
+# Set OpenAI's API key and API base to use vLLM's API server.  
+
+openai_api_key   =   "EMPTY"  
+
+openai_api_base   =   "http://localhost:8000/v1"  
+
+client   =   OpenAI (  
+
+api_key = openai_api_key ,  
+
+base_url = openai_api_base ,  
+
+)  
+
+chat_response   =   client . chat . completions . create (  
+
+model = "Qwen/Qwen2.5-1.5B-Instruct" ,  
+
+messages = [  
+
+{ "role" :   "system" ,   "content" :   "You are a helpful assistant." },  
+
+{ "role" :   "user" ,   "content" :   "Tell me a joke." },  
+
+],  
+
+)  
+
+print ( "Chat response:" ,   chat_response )  
+
+On Attention Backends
+
+¶
+
+https://docs.vllm.ai#on-attention-backends
+
+Currently, vLLM supports multiple backends for efficient Attention computation across different platforms and accelerator architectures. It automatically selects the most performant backend compatible with your system and model specifications.
+
+If desired, you can also manually set the backend of your choice using the  --attention-backend  CLI argument:
+
+# For online serving  
+
+vllm   serve   Qwen/Qwen2.5-1.5B-Instruct   --attention-backend   FLASH_ATTN 
+
+# For offline inference  
+
+python   script.py   --attention-backend   FLASHINFER 
+
+Some of the available backend options include:
+
+On NVIDIA CUDA:  FLASH_ATTN  or  FLASHINFER .
+
+On AMD ROCm:  TRITON_ATTN ,  ROCM_ATTN ,  ROCM_AITER_FA ,  ROCM_AITER_UNIFIED_ATTN ,  TRITON_MLA ,  ROCM_AITER_MLA  or  ROCM_AITER_TRITON_MLA .
+
+Warning
+
+There are no pre-built vllm wheels containing Flash Infer, so you must install it in your environment first. Refer to the 
+
+Flash Infer official docs
+
+https://docs.flashinfer.ai/
+
+ or see 
+
+ docker/Dockerfile
+
+https://github.com/vllm-project/vllm/blob/main/docker/Dockerfile
+
+ for instructions on how to install it.
