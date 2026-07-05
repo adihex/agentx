@@ -9,7 +9,9 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { WebSocketServer } from "ws";
 import { auth } from "./notes/auth.js";
-import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool } from "./tools/notes.js";
+import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool, editNoteTool } from "./tools/notes.js";
+import { generateText } from "ai";
+import { groq } from "@ai-sdk/groq";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
 import {
   listNotes,
@@ -21,6 +23,7 @@ import {
   deleteCustomTool,
   updateNote,
   deleteNote,
+  searchNotes,
 } from "./notes/store.js";
 
 dotenv.config();
@@ -232,6 +235,28 @@ const routes = api
       return c.json({ nodes: [], edges: [] });
     }
   })
+  .get("/wiki/:entity", async (c) => {
+    const user = c.get("user");
+    const entity = c.req.param("entity");
+    try {
+      const results = await searchNotes(user.id, entity, 50);
+      
+      let markdown = `# ${entity}\n\n`;
+      markdown += `## Related Notes\n\n`;
+      
+      if (results.length === 0) {
+        markdown += `No notes found mentioning this entity.\n`;
+      } else {
+        for (const res of results) {
+          markdown += `### [[${res.title}]]\n\n`;
+          markdown += `> ${res.snippet}\n\n`;
+        }
+      }
+      return c.json({ markdown });
+    } catch (err: unknown) {
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
+    }
+  })
   .post("/transcribe", async (c) => {
     const user = c.get("user");
     try {
@@ -261,6 +286,19 @@ const routes = api
         if (!transcript.text) {
           return c.json({ note: null, transcript });
         }
+
+        if (process.env.NODE_ENV !== "test" && process.env.MOCK_LLM !== "true") {
+          try {
+            const result = await generateText({
+              model: groq("llama-3.3-70b-versatile"),
+              prompt: `Summarize this rambling audio note into a concise context statement (1-2 sentences). Do not include any introductory text, just the summary:\n\n${transcript.text}`,
+            });
+            transcript.text = `[Context: ${result.text}]\n\n${transcript.text}`;
+          } catch (e) {
+            console.error("[zettel] Contextual augmentation failed:", e);
+          }
+        }
+
         return c.json({ transcript });
       } finally {
         if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
@@ -344,6 +382,8 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
       systemPrompt: [
         "You are a Zettelkasten thinking partner.",
         "Capture each thought as an atomic note via createNote.",
+        "When the user asks to modify, update, or change an existing note's",
+        "title, content, tags, or links, use editNote to update it in place.",
         "After creating a note, ALWAYS searchNotes for related existing notes and",
         "propose/draw links with linkNotes for genuine conceptual connections.",
         "Be concise.",
@@ -353,6 +393,7 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         linkNotes: linkNotesTool,
         searchNotes: searchNotesTool,
         getNote: getNoteTool,
+        editNote: editNoteTool,
         transcribeAudio: transcribeAudioTool,
       },
       autoTick: true,
