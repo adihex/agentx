@@ -179,6 +179,23 @@ async function initDb(): Promise<void> {
       FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE CASCADE
     )
   `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS entities (
+      name TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      description TEXT
+    )
+  `);
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS entity_relations (
+      source TEXT NOT NULL,
+      target TEXT NOT NULL,
+      relationship TEXT NOT NULL,
+      note_id TEXT NOT NULL,
+      FOREIGN KEY(note_id) REFERENCES notes(id) ON DELETE CASCADE
+    )
+  `);
 }
 
 // ── Markdown Parser for Migration ──────────────────────────────────────────────
