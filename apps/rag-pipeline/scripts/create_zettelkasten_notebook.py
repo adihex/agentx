@@ -1,0 +1,272 @@
+#!/usr/bin/env python3
+import json
+
+def make_cell(cell_type, source):
+    return {
+        "cell_type": cell_type,
+        "metadata": {},
+        "source": source if isinstance(source, list) else [source]
+    }
+
+def main():
+    notebook = {
+        "cells": [],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "name": "python"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 2
+    }
+
+    # 1. Title
+    notebook["cells"].append(make_cell("markdown", [
+        "# Advanced RAG: Zettelkasten & GraphRAG\n",
+        "\n",
+        "Welcome to Part 2! In this notebook, we will upgrade our RAG pipeline from a basic vector search to a **state-aware Agentic Memory system**, inspired by the Zettelkasten \"slip-box\" method.\n",
+        "\n",
+        "### Learning Objectives:\n",
+        "1. **Contextual Retrieval**: Use Gemini to augment chunks with overarching document context.\n",
+        "2. **GraphRAG Entity Extraction**: Use Gemini Structured Outputs to extract Entities and Relationships, forming a Knowledge Graph.\n",
+        "3. **Topological Traversal**: Traverse the graph during retrieval to find logically connected concepts that vector search misses.\n",
+        "4. **Stateful Compilation**: Compile the raw chunks and extracted connections into physical Markdown files (an LLM Wiki)."
+    ]))
+
+    # 2. Imports
+    notebook["cells"].append(make_cell("markdown", [
+        "## Setup and Dependencies\n",
+        "We'll need `pydantic` for structured outputs and `networkx` for our local Knowledge Graph."
+    ]))
+    
+    notebook["cells"].append(make_cell("code", [
+        "import os\n",
+        "import json\n",
+        "from pathlib import Path\n",
+        "from dotenv import load_dotenv\n",
+        "from google import genai\n",
+        "from google.genai import types\n",
+        "from pydantic import BaseModel, Field\n",
+        "import networkx as nx\n",
+        "\n",
+        "load_dotenv()\n",
+        "client = genai.Client()\n",
+        "print(\"Gemini API Key successfully loaded and Client initialized.\")"
+    ]))
+
+    # 3. Contextual Chunking
+    notebook["cells"].append(make_cell("markdown", [
+        "## Step 1: Contextual Chunking\n",
+        "A key flaw of recursive chunking is that it isolates text from its broader narrative (e.g., a chunk saying \\\"It cost $2M\\\" is useless if the previous chunk named the project).\n",
+        "We solve this via **Contextual Retrieval**: an LLM reads the full document and generates a brief contextual summary for the specific chunk before indexing it."
+    ]))
+
+    notebook["cells"].append(make_cell("code", [
+        "def split_text_basic(text, chunk_size=1200, chunk_overlap=300):\n",
+        "    \"\"\"Basic chunker (re-used from Part 1)\"\"\"\n",
+        "    chunks = []\n",
+        "    start = 0\n",
+        "    while start < len(text):\n",
+        "        end = min(start + chunk_size, len(text))\n",
+        "        chunks.append(text[start:end].strip())\n",
+        "        start = end - chunk_overlap\n",
+        "        if start >= len(text) or end == len(text):\n",
+        "            break\n",
+        "    return chunks\n",
+        "\n",
+        "def augment_chunk_with_context(client, document_text, chunk_text):\n",
+        "    \"\"\"Uses Gemini to prepend context to a chunk.\"\"\"\n",
+        "    prompt = (\n",
+        "        f\"You are an expert document archivist.\\n\"\n",
+        "        f\"Below is a full document, followed by a small chunk extracted from it.\\n\"\n",
+        "        f\"Your task is to write a succinct (1-2 sentences) context statement that explains how the chunk fits into the broader document.\\n\"\n",
+        "        f\"---\\nFull Document:\\n{document_text[:4000]}... (truncated)\\n\"\n",
+        "        f\"---\\nChunk:\\n{chunk_text}\\n\"\n",
+        "        f\"---\\nContext Statement:\"\n",
+        "    )\n",
+        "    response = client.models.generate_content(\n",
+        "        model=\"gemini-2.5-flash\",\n",
+        "        contents=prompt\n",
+        "    )\n",
+        "    return f\"[Context: {response.text.strip()}]\\n{chunk_text}\"\n",
+        "\n",
+        "# Note: Running this on thousands of chunks is expensive! For this tutorial, we will only process a single document.\n",
+        "print(\"Contextual Chunking functions defined.\")"
+    ]))
+
+    # 4. Entity Extraction
+    notebook["cells"].append(make_cell("markdown", [
+        "## Step 2: GraphRAG Entity Extraction (Building the Zettelkasten)\n",
+        "Instead of just throwing chunks into a vector database, we want to extract the explicit *concepts* (Nodes) and how they relate (Edges). We use Gemini's **Structured Outputs**."
+    ]))
+
+    notebook["cells"].append(make_cell("code", [
+        "class Node(BaseModel):\n",
+        "    name: str = Field(description=\"The name of the entity, concept, or tool (e.g., 'vLLM', 'RAG', 'Andrej Karpathy')\")\n",
+        "    type: str = Field(description=\"Type of entity: Tool, Concept, Person, Organization, etc.\")\n",
+        "    description: str = Field(description=\"Brief definition or context of this entity in the text.\")\n",
+        "\n",
+        "class Edge(BaseModel):\n",
+        "    source: str = Field(description=\"Name of the source node\")\n",
+        "    target: str = Field(description=\"Name of the target node\")\n",
+        "    relationship: str = Field(description=\"How they relate (e.g., 'DEPENDS_ON', 'CREATED_BY', 'CONTRADICTS')\")\n",
+        "\n",
+        "class KnowledgeGraph(BaseModel):\n",
+        "    nodes: list[Node]\n",
+        "    edges: list[Edge]\n",
+        "\n",
+        "def extract_graph(client, chunk_text):\n",
+        "    \"\"\"Extracts nodes and edges from a text chunk using Gemini.\"\"\"\n",
+        "    prompt = (\n",
+        "        f\"Extract a knowledge graph from the following text.\\n\"\n",
+        "        f\"Identify key technical concepts, tools, and organizations as nodes.\\n\"\n",
+        "        f\"Identify the logical relationships between them as edges.\\n\"\n",
+        "        f\"Text:\\n{chunk_text}\"\n",
+        "    )\n",
+        "    response = client.models.generate_content(\n",
+        "        model=\"gemini-2.5-flash\",\n",
+        "        contents=prompt,\n",
+        "        config=types.GenerateContentConfig(\n",
+        "            response_mime_type=\"application/json\",\n",
+        "            response_schema=KnowledgeGraph,\n",
+        "            temperature=0.0\n",
+        "        )\n",
+        "    )\n",
+        "    return KnowledgeGraph.model_validate_json(response.text)\n",
+        "\n",
+        "print(\"Graph extraction schema and function defined.\")"
+    ]))
+
+    # 5. Process a sample document
+    notebook["cells"].append(make_cell("markdown", [
+        "## Step 3: Process a Document and Build the Local Graph\n",
+        "Let's load a single source file, contextually augment its chunks, extract the graph elements, and build a `networkx` graph."
+    ]))
+
+    notebook["cells"].append(make_cell("code", [
+        "# Load a single document for testing\n",
+        "source_file = list(Path(\"data/sources\").glob(\"*.txt\"))[0]\n",
+        "with open(source_file, \"r\") as f:\n",
+        "    full_text = f.read()\n",
+        "\n",
+        "print(f\"Processing: {source_file.name}\")\n",
+        "\n",
+        "# Take just the first 2 chunks to keep API costs/time low for the tutorial\n",
+        "raw_chunks = split_text_basic(full_text)[:2]\n",
+        "augmented_chunks = []\n",
+        "extracted_graphs = []\n",
+        "\n",
+        "for i, chunk in enumerate(raw_chunks):\n",
+        "    print(f\"\\n--- Processing Chunk {i+1} ---\")\n",
+        "    # 1. Contextual Augmentation\n",
+        "    aug_chunk = augment_chunk_with_context(client, full_text, chunk)\n",
+        "    augmented_chunks.append(aug_chunk)\n",
+        "    print(\"Augmented Chunk:\\n\", aug_chunk[:150], \"...\")\n",
+        "    \n",
+        "    # 2. Graph Extraction\n",
+        "    graph_data = extract_graph(client, aug_chunk)\n",
+        "    extracted_graphs.append(graph_data)\n",
+        "    print(f\"Extracted {len(graph_data.nodes)} nodes and {len(graph_data.edges)} edges.\")\n",
+        "\n",
+        "# Build the NetworkX Graph\n",
+        "G = nx.Graph()\n",
+        "for g in extracted_graphs:\n",
+        "    for node in g.nodes:\n",
+        "        # Lowercase for simple deduplication\n",
+        "        G.add_node(node.name.lower(), type=node.type, description=node.description)\n",
+        "    for edge in g.edges:\n",
+        "        G.add_edge(edge.source.lower(), edge.target.lower(), relationship=edge.relationship)\n",
+        "\n",
+        "print(f\"\\nLocal Knowledge Graph built with {G.number_of_nodes()} total unique nodes and {G.number_of_edges()} edges.\")"
+    ]))
+
+    # 6. Topological Traversal
+    notebook["cells"].append(make_cell("markdown", [
+        "## Step 4: Topological Traversal (Graph Hop)\n",
+        "Now, imagine a user asks about a specific concept. Traditional RAG finds chunks that *mention* the concept.\n",
+        "GraphRAG finds the concept in the graph, and traverses the *edges* to pull in logically related concepts, even if they aren't mentioned in the same paragraph."
+    ]))
+
+    notebook["cells"].append(make_cell("code", [
+        "def traverse_graph(graph, start_node_name, depth=1):\n",
+        "    \"\"\"Finds a node and returns its neighbors up to N hops away.\"\"\"\n",
+        "    start_node = start_node_name.lower()\n",
+        "    if start_node not in graph.nodes:\n",
+        "        # In a real system, you'd use vector search to find the closest node (Anchor Search)\n",
+        "        return f\"Node '{start_node}' not found in the graph.\"\n",
+        "    \n",
+        "    # Get subgraph of neighbors within 'depth'\n",
+        "    neighbors = nx.single_source_shortest_path_length(graph, start_node, cutoff=depth)\n",
+        "    subgraph = graph.subgraph(neighbors.keys())\n",
+        "    \n",
+        "    result = f\"Topological context for '{start_node}':\\n\"\n",
+        "    for u, v, data in subgraph.edges(data=True):\n",
+        "        result += f\" - {u} [{data.get('relationship', 'RELATES_TO')}] {v}\\n\"\n",
+        "    return result\n",
+        "\n",
+        "# Let's view the nodes we have to pick one\n",
+        "print(\"Available nodes in our mini-graph:\")\n",
+        "print(list(G.nodes)[:10])\n",
+        "\n",
+        "# Example traversal (Pick a node name that printed above!)\n",
+        "if G.number_of_nodes() > 0:\n",
+        "    example_node = list(G.nodes)[0]\n",
+        "    traversal_result = traverse_graph(G, example_node)\n",
+        "    print(\"\\n=== Graph Traversal Results ===\")\n",
+        "    print(traversal_result)"
+    ]))
+
+    # 7. Stateful LLM Wiki
+    notebook["cells"].append(make_cell("markdown", [
+        "## Step 5: Stateful LLM Wiki Compilation\n",
+        "A true Zettelkasten is persistent. Instead of just returning a chat message, we write these entities out as Markdown files with `[[wikilinks]]` so they compound over time."
+    ]))
+
+    notebook["cells"].append(make_cell("code", [
+        "wiki_dir = Path(\"data/wiki\")\n",
+        "wiki_dir.mkdir(parents=True, exist_ok=True)\n",
+        "\n",
+        "print(\"Compiling Graph into LLM Wiki...\")\n",
+        "for node_id in G.nodes:\n",
+        "    node_data = G.nodes[node_id]\n",
+        "    # Find all edges connected to this node to create wikilinks\n",
+        "    edges = list(G.edges(node_id, data=True))\n",
+        "    \n",
+        "    markdown_content = f\"# {node_id.title()}\\n\\n\"\n",
+        "    markdown_content += f\"**Type**: {node_data.get('type', 'Unknown')}\\n\\n\"\n",
+        "    markdown_content += f\"## Description\\n{node_data.get('description', '')}\\n\\n\"\n",
+        "    markdown_content += f\"## Logical Connections\\n\"\n",
+        "    \n",
+        "    for u, v, data in edges:\n",
+        "        # If the edge is connected to us, link the other node\n",
+        "        other_node = v if u == node_id else u\n",
+        "        rel = data.get('relationship', 'RELATES_TO')\n",
+        "        markdown_content += f\"- {rel}: [[{other_node.title()}]]\\n\"\n",
+        "    \n",
+        "    # Sanitize filename\n",
+        "    safe_filename = \"\".join([c for c in node_id if c.isalpha() or c.isdigit() or c==' ']).rstrip().replace(' ', '_')\n",
+        "    if not safe_filename:\n",
+        "        continue\n",
+        "        \n",
+        "    file_path = wiki_dir / f\"{safe_filename}.md\"\n",
+        "    with open(file_path, \"w\") as f:\n",
+        "        f.write(markdown_content)\n",
+        "\n",
+        "print(f\"Wiki compilation complete! Check the '{wiki_dir}' folder.\")\n",
+        "for f in list(wiki_dir.glob(\"*.md\"))[:5]:\n",
+        "    print(f\" - {f.name}\")"
+    ]))
+
+    # Write notebook file
+    filepath = "rag_zettelkasten_tutorial.ipynb"
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(notebook, f, indent=2)
+    print(f"Jupyter Notebook successfully written to: {filepath}")
+
+if __name__ == "__main__":
+    main()

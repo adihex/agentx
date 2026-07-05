@@ -1,0 +1,13 @@
+[tools]
+"npm:markdownlint-cli2" = "latest"
+hk = "latest"
+
+[tasks]
+setup-hooks = { run = "hk install --mise", description = "Install git hooks using hk" }
+lint = { run = "markdownlint-cli2 '**/*.md'", description = "Lint all markdown files in the project" }
+pre-commit = { run = """
+files=$(git diff --cached --name-only --diff-filter=ACM | grep '\\.md$' || true)
+if [ -n "$files" ]; then
+  markdownlint-cli2 $files
+fi
+""", description = "Git pre-commit hook runner for markdownlint" }

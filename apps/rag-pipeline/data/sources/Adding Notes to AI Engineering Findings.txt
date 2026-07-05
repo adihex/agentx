@@ -1,0 +1,197 @@
+User
+
+:
+
+ 
+
+How do I add notes about my findings
+
+Gemini
+
+:
+
+ 
+
+To give you the best answer, could you please clarify 
+
+where
+
+ you are trying to add notes about your findings?
+
+Based on the files you uploaded regarding AI Engineering, there are a few different possibilities you might be referring to:
+
+In a Jupyter Notebook
+
+ (like the 
+
+TensorRT-LLM BLOOM Tutorial
+
+ you shared): You can add notes by creating a 
+
+Markdown cell
+
+. Just change the cell type from "Code" to "Markdown" and type your notes, explanations, or findings there.
+
+In an Experiment Tracking Tool
+
+ (like 
+
+MLflow
+
+ or 
+
+Weights & Biases
+
+, often used in the 
+
+LLMOps/Model tracking
+
+ files you shared): You can log notes and findings programmatically (e.g., using 
+
+mlflow.set_tag()
+
+ or 
+
+mlflow.log_text()
+
+) or type them directly into the UI's run description.
+
+On GitHub
+
+ (like the 
+
+AI Infrastructure Curriculum
+
+): You can add notes by updating the 
+
+README.md
+
+ file, creating a Wiki page, or opening a new Issue/Discussion in your repository.
+
+In Python Code / Scripts
+
+ (like 
+
+PyTorch FSDP
+
+ or 
+
+vLLM
+
+ scripts): You can use inline comments (
+
+#
+
+) or multi-line docstrings (
+
+""" """
+
+) to document your findings directly in your code.
+
+If you are referring to a specific tool, platform, or document, please let me know and I can give you the exact steps!
+
+User
+
+:
+
+ 
+
+In notebooklm only
+
+Gemini
+
+:
+
+ 
+
+Ah, got it! If you are using 
+
+Google NotebookLM
+
+, adding notes about your findings is built right into the interface. Here are the different ways you can do it:
+
+1. Create a New, Blank Note:
+
+Look for the 
+
+Notes panel
+
+ (usually on the right side of the screen or accessible via a "Notes" tab).
+
+Click the 
+
+"+" (Add Note)
+
+ button or "New Note".
+
+Type out your personal findings, thoughts, or summaries directly into the text box.
+
+2. Save Excerpts Directly from Your Files:
+
+Open one of the documents you uploaded (for example, the 
+
+KV Caching Explained
+
+ or 
+
+vLLM Guide
+
+).
+
+Highlight the specific text you want to remember.
+
+A small pop-up menu will appear—click 
+
+"Save to note"
+
+ (or the note icon). NotebookLM will automatically create a note containing that exact quote, linked right back to the source document.
+
+3. Save the AI's Responses as Notes:
+
+If you ask NotebookLM to summarize a finding (e.g., 
+
+"Summarize the performance improvements of TensorRT-LLM based on my files"
+
+), it will generate an answer.
+
+At the bottom or top of the AI's response, there is usually a 
+
+"Pin"
+
+ or 
+
+"Save to note"
+
+ icon. Clicking this will save the AI's generated insights as a permanent note on your board.
+
+Once you have multiple notes, you can select them to ask the AI questions specifically about those notes, or select them all and ask NotebookLM to synthesize them into a single study guide or outline!
+
+User
+
+:
+
+ 
+
+Can you add the note? I am accessing notebooklm from gemini
+
+Gemini
+
+:
+
+ 
+
+I don't have the ability to directly create or save notes into your NotebookLM interface for you. As an AI, I can't click the buttons or modify your NotebookLM workspace.
+
+However, I can 
+
+draft the note for you
+
+ right here! If you tell me what findings or information you want to capture from your uploaded files (for example, about vLLM, TensorRT-LLM, or KV Caching), I can write out a perfectly formatted summary.
+
+Once I generate it, you can simply 
+
+copy the text
+
+ and paste it into a new note in NotebookLM, or you can use the "Pin" / "Save to note" icon that NotebookLM provides next to my response.
+
+What would you like the note to be about?

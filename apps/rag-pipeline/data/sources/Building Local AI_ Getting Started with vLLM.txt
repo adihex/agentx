@@ -1,0 +1,557 @@
+Hey everybody.
+
+Welcome to another Probably Private.
+
+I'm Katharine Jarmul, and today
+we're gonna dive into, hopefully
+
+you have a little bit of data.
+
+Hopefully you have some ideas of
+how you're gonna evaluate the data.
+
+And some ideas of your
+computer and your setup.
+
+Maybe you're just getting your
+computer and your setup going.
+
+Check out my video on
+setting up your computer.
+
+But this video today, we're gonna
+talk about VLLM, which is an amazing
+
+open source tool that you're gonna be
+able to use to serve LLMS locally from
+
+something like an AI lab or any type
+of GPU enabled machine or accelerated
+
+hardware chip machine and we're
+gonna cover, why would you do that?
+
+And kind of how to get started.
+
+So first, what is VLLM?
+
+Well, it's a library that is gonna
+automatically, it sounds like
+
+magic, but it's gonna automatically
+optimize and accelerate serving LLMs.
+
+So kind of if you've been following this
+channel for a while if not subscribe,
+
+but if you've been following this
+channel for a while, we've used a
+
+lot of ollama, sometimes llama files.
+
+So those are kind of small instances
+of what's essentially vLLM is a more
+
+robust, larger version of figuring out
+how to serve these models for yourself.
+
+Now, why should you use
+vLLM for local AI setups?
+
+Well, A, it already thought through
+a bunch of compatibility, so it
+
+already has a lot of interconnected
+compatibility based on your hardware.
+
+Based on the models that are available.
+
+So it integrates directly with hugging
+face, so you can load lots of models.
+
+And they're literally kind of probably
+I would say, one of the leading groups
+
+that implements research, does their
+own research, but then also implements
+
+the research on how do we actually
+optimize these to run on smaller
+
+compute or even to run at scale.
+
+All of us want efficiency in how
+we're using our GPUs like regardless
+
+of how big or small your setup is, we
+all want to efficiently use our GPUs.
+
+And VLLM has done a bunch of research
+and optimization on that, and I'll
+
+link to some of the examples, but
+you might have heard of things like
+
+speculative decoding page detention.
+
+To, in different ways of chunking,
+workflows, all of this stuff that goes
+
+directly from research into VLLM, which
+is why it's such a popular project.
+
+Okay?
+
+And you get, kind of get
+all of that for free.
+
+So particularly if you're dealing with
+a smaller GPU, which you probably are.
+
+And in general, you're probably
+dealing with a pretty low
+
+latency situation, right?
+
+You're sending it over your
+router or something like this.
+
+You probably also don't have
+a lot of traffic, so you don't
+
+have to worry about those things.
+
+But either way, VLLM is a way that
+you can serve multiple models at
+
+the same time from the same server.
+
+You could have multiple people
+or you could be using five
+
+different requests at once.
+
+And it's gonna automatically kind
+of load balance that for you.
+
+And yeah, you don't have to worry about
+the pain of integrating libraries into
+
+your hardware setup, which let me tell
+you, is not a fun problem to solve.
+
+So if you don't have to solve
+it, then don't solve it.
+
+Now, obviously in the name, this
+is gonna mainly work with language
+
+models, but it's also set up to
+work with language vision models.
+
+So some of the multimodal models.
+
+And I expect them to, you know, kind
+of forward look and do compatibility.
+
+Okay?
+
+So you can use it with Python directly.
+
+So let's say you're running VLLM
+on your bigger machine and you are
+
+using your laptop or your phone or
+whatever, you could just literally
+
+call and load VLLM on the big machine.
+
+And by doing so, you could
+either SSH into the big machine.
+
+Or you could just be using the big machine
+directly with a monitor, that's fine.
+
+But what I'm gonna show you today is I'm
+gonna show you how to use it from one
+
+machine SS hing, into another machine.
+
+Okay?
+
+So let's get started.
+
+Okay, so I am gonna SSH into my little
+gaming machine laptop, the Pink Rainbow
+
+one , that I showed you a video on.
+
+And here I am, I'm as staged in,
+and what I'm gonna do is I'm gonna.
+
+First and I have all these instructions
+in the notebook you're gonna see later.
+
+But first I need to make sure
+that I have everything installed.
+
+So I already have all this
+set up again from the feminist
+
+AI LAN party using Python 3.
+
+12 is what I'm using on this machine.
+
+But, you know, set up your
+environment however you like.
+
+I know some people like uv.
+
+I'm older, so I use Conda and pip.
+
+It doesn't really matter
+at the end of the day.
+
+I think it's silly for us to
+argument about environment
+
+wars when there's so many other
+things that we could argue about.
+
+But yeah, get your environment set up.
+
+You're gonna want torch installed.
+
+You obviously want VLLM installed.
+
+You might want some extra things
+for your environment installed.
+
+Doesn't matter.
+
+Get your Python environment set up.
+
+I'll put links for that down below.
+
+And then we're gonna
+use hugging face, CLI.
+
+So eventually you're gonna wanna set up a
+hugging face account is really easy to do.
+
+You're gonna eventually probably want some
+gated models, so some of the guardrail
+
+models and stuff like that are gated.
+
+So you're gonna wanna, create a login,
+request access to some of those models,
+
+and then if you go to your tokens, you're
+gonna be able to log in via your CLI.
+
+So I've already logged into this machine,
+but this is something that you might
+
+want to do, but there's also models
+you can use that don't require login.
+
+You're gonna make sure you have
+hugging face installed torch, installed
+
+VLLM installed in your environment.
+
+And you can double check that by
+rugging running a hugging face
+
+CLI to check your hugging face
+installation log in if you want to.
+
+And then to do VLLM I'm just gonna,
+literally, there's lots of things you
+
+can add here to the serve command, but
+I'm literally just gonna show you running
+
+vllm serve and then the model name.
+
+And the model name is structured
+like the hugging face repo name.
+
+So here is the meta llama and
+it's meta llama 3-8 B instruct.
+
+And when I run it, vLLM is gonna
+automatically check via hugging
+
+face, do I have everything?
+
+If not, it's gonna
+download a bunch of things.
+
+You can see here, this is a bunch of
+environment settings that we can set up.
+
+So you can play with a lot of these types
+of things, and especially as you advance
+
+your local AI usage, you're probably
+gonna want to advance some of this.
+
+We can see chunk prefilled, that's one
+of the things that they have running.
+
+They have a bunch of kvs, so
+here it's loading the tensors
+
+automatically for me so that the
+model is now running on the GPU.
+
+And there it is.
+
+It's running on 15 gigabytes.
+
+So you may or may not be able to actually
+run this model, depending on the size
+
+of your GPU, but it's all loaded.
+
+So now eventually it's gonna
+tell me it's ready to go.
+
+It's got default chat
+sampling, and there we go.
+
+Now it's ready to go.
+
+The chat is available for me.
+
+So I'm gonna go to my
+Jupyter Notebook now.
+
+Okay, now here's my Jupiter notebook.
+
+I've written out the steps for you,
+and I'll put a link to this notebook.
+
+This is in the private and
+personalized AI repo that I have
+
+where I'm going to share with you a
+bunch of examples as I work on them.
+
+If you wanna just fork it and
+keep updated, that's fine.
+
+Or you can just, download
+this Jupyter Notebook.
+
+So here I have a little
+bit of those instructions.
+
+Again, obviously getting your machine
+set up and getting it connected.
+
+So mine's connected literally via my
+local router and then when I sshd in,
+
+so I already set up the SSH key so I
+can automatically SSH in as my own user.
+
+And yeah, getting all that set up is a
+good idea first, and making sure before
+
+you get into serving mode, serving
+via VLLM that you have all that set up
+
+python installation, yada, yada, yada.
+
+So then what we can literally
+do, is VLLM works automatically
+
+with the open AI set up.
+
+So I'm just gonna ask what day is today.
+
+It's probably not gonna answer correctly
+because that's not something that
+
+LLMs are good at, but I'm putting
+it in my messages list with the
+
+different dictionary elements and so
+
+I can check that my
+messages is formatted well.
+
+Looks good to me.
+
+And then we don't actually, we're
+not using OpenAI, we're using VLLM
+
+with our own models, so that's fine.
+
+And then I literally have here you're
+gonna have to change this for your setup.
+
+This is the local IP that my machine
+is available to me and the default
+
+port that it's serving on is 8000.
+
+And I think there's eventually
+gonna be a different version
+
+of the API, but this will work.
+
+So you can use this as long as you
+update it for whatever's the IP of
+
+the computer that you're using across
+hopefully your local internet, right?
+
+So plugging into your little wireless
+router should be a fine way to do this,
+
+and then probably your wireless router
+has a login and can tell you what ips.
+
+Or you just hook up a monitor
+to your machine, you figure
+
+out what IP it's assigned and
+you make sure you can reach it.
+
+Okay, so now that's there.
+
+And now I'm just gonna call it
+like I would a normal OpenAI client
+
+with my empty key and my base URL.
+
+And then I can literally
+just call completion.
+
+And what I'm gonna wanna make sure here
+is that my model name here matches up
+
+with the model name that I'm serving.
+
+I can send over the messages
+and wait for my completion.
+
+It completes pretty quickly and
+I just check and here we go.
+
+It's, it's being very nice to me.
+
+It says.
+
+Look outside.
+
+Look outside to see what day it is.
+
+I love that.
+
+That's that's great.
+
+Maybe you don't need
+to know what day it is.
+
+Maybe you can just look outside.
+
+I don't have a smart speaker either,
+but these are all great tips on how
+
+to figure out what day it is that
+you know, if I didn't know how to
+
+figure it out myself might be useful.
+
+So let me know, getting
+started with VLLM, how'd it go?
+
+I hope that maybe this notebook is
+useful for you or let me know what
+
+other questions you have about VLLM.
+
+I definitely probably do a later
+video on like serving multiple models
+
+at the same time from one machine.
+
+So we'll cover that at some point in
+time and we'll probably cover that when
+
+we start working on routing which is
+a fun concept to start playing with.
+
+Now, one thing I do wanna say about
+VLLM is it has a lot of optimizations
+
+that are memory based optimizations
+and what we often know from privacy
+
+and that this leaks information so
+
+what I'm showing you is presuming
+you're gonna use VLLM on your
+
+own machine with other people
+you trust on your home network.
+
+Right.
+
+But I'm not trying to say that
+it's gonna fix privacy problems
+
+in other types of setups.
+
+Right?
+
+Where you might be serving many different
+strangers on shared compute and you know.
+
+Dealing with things like potential memory
+leakage, information leakage via memory.
+
+That's not what I'm trying to set up for.
+
+So this is, I just wanna say that, you
+know, privacy of running your own VLM.
+
+On your own hardware, with your own
+prompts and your own data and maybe your
+
+friends and family that are at your house.
+
+So like people you trust.
+
+So let me know how it goes.
+
+Did you get it running?
+
+Are you testing out different models?
+
+So give a try.
+
+If you're doing a smaller GPU,
+there's many 1 billion models.
+
+I would start there.
+
+Start with some 1 billion models.
+
+In fact, I think it might just
+be called 1 billion Instruct.
+
+But have a look and let me know
+how your first experiments go.
+
+And what else do you wanna learn
+about serving models from one machine
+
+and then using them from another.
+
+Alright, I'll see you in the next video.

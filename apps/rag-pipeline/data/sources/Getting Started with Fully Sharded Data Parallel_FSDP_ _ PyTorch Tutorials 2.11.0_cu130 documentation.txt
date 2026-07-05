@@ -1,0 +1,2288 @@
+Getting Started with Fully Sharded Data Parallel(FSDP) — PyTorch Tutorials 2.13.0+cu130 documentation
+
+ 
+
+Opens in a new window Opens an external website Opens an external website in a new window
+
+This website utilizes technologies such as cookies to enable essential site functionality, as well as for analytics, personalization, and targeted advertising. To learn more, view the following link: 
+
+Privacy Policy
+
+https://lfprojects.org/policies/privacy-policy/
+
+Manage Preferences
+
+Skip to main content
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#main-content
+
+Back to top
+
+ 
+
+[-]
+
+ 
+
+[-]
+
+ 
+
+Ctrl
+
+ + 
+
+K
+
+PyTorch Tutorials - HomePyTorch Tutorials - Home
+
+https://docs.pytorch.org/tutorials/index.html
+
+PyTorch Tutorials - HomePyTorch Tutorials - Home
+
+https://docs.pytorch.org/tutorials/index.html
+
+v2.13.0+cu130
+
+https://docs.pytorch.org/tutorials/index.html
+
+Intro
+
+https://docs.pytorch.org/tutorials/intro.html
+
+Learn the Basics
+
+https://docs.pytorch.org/tutorials/beginner/basics/intro.html
+
+Introduction to PyTorch - YouTube Series
+
+https://docs.pytorch.org/tutorials/beginner/introyt/introyt_index.html
+
+Deep Learning with PyTorch: A 60 Minute Blitz
+
+https://docs.pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html
+
+Learning PyTorch with Examples
+
+https://docs.pytorch.org/tutorials/beginner/pytorch_with_examples.html
+
+What is torch.nn really?
+
+https://docs.pytorch.org/tutorials/beginner/nn_tutorial.html
+
+Understanding requires_grad, retain_grad, Leaf, and Non-leaf Tensors
+
+https://docs.pytorch.org/tutorials/beginner/understanding_leaf_vs_nonleaf_tutorial.html
+
+NLP from Scratch
+
+https://docs.pytorch.org/tutorials/intermediate/nlp_from_scratch_index.html
+
+Visualizing Models, Data, and Training with TensorBoard
+
+https://docs.pytorch.org/tutorials/intermediate/tensorboard_tutorial.html
+
+A guide on good usage of non_blocking and pin_memory() in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/pinmem_nonblock.html
+
+Data Loading Optimization in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/intermediate_data_loading_tutorial.html
+
+Visualizing Gradients
+
+https://docs.pytorch.org/tutorials/intermediate/visualizing_gradients_tutorial.html
+
+Compilers
+
+https://docs.pytorch.org/tutorials/compilers_index.html
+
+Introduction to torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_tutorial.html
+
+torch.compile End-to-End Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_full_example.html
+
+Compiled Autograd: Capturing a larger backward graph for torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/compiled_autograd_tutorial.html
+
+Inductor CPU backend debugging and profiling
+
+https://docs.pytorch.org/tutorials/intermediate/inductor_debug_cpu.html
+
+Dynamic Compilation Control with torch.compiler.set_stance
+
+https://docs.pytorch.org/tutorials/recipes/torch_compiler_set_stance_tutorial.html
+
+Demonstration of torch.export flow, common challenges and the solutions to address them
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_challenges_solutions.html
+
+(beta) Compiling the optimizer with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer.html
+
+(beta) Running the compiled optimizer with an LR Scheduler
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer_lr_scheduler.html
+
+Using Variable Length Attention in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/variable_length_attention_tutorial.html
+
+Using User-Defined Triton Kernels with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html
+
+Compile Time Caching in torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_caching_tutorial.html
+
+Reducing torch.compile cold start compilation time with regional compilation
+
+https://docs.pytorch.org/tutorials/recipes/regional_compilation.html
+
+torch.export Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torch_export_tutorial.html
+
+torch.export AOTInductor Tutorial for Python runtime (Beta)
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_aoti_python.html
+
+Demonstration of torch.export flow, common challenges and the solutions to address them
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_challenges_solutions.html
+
+Introduction to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/intro_onnx.html
+
+Export a PyTorch model to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/export_simple_model_to_onnx_tutorial.html
+
+Extending the ONNX Exporter Operator Support
+
+https://docs.pytorch.org/tutorials/beginner/onnx/onnx_registry_tutorial.html
+
+Export a model with control flow to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+
+Building a Convolution/Batch Norm fuser with torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_conv_bn_fuser.html
+
+(beta) Building a Simple CPU Performance Profiler with FX
+
+https://docs.pytorch.org/tutorials/intermediate/fx_profiling_tutorial.html
+
+Domains
+
+https://docs.pytorch.org/tutorials/domains.html
+
+TorchVision Object Detection Finetuning Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html
+
+Transfer Learning for Computer Vision Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
+
+Adversarial Example Generation
+
+https://docs.pytorch.org/tutorials/beginner/fgsm_tutorial.html
+
+DCGAN Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+
+Spatial Transformer Networks Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/spatial_transformer_tutorial.html
+
+Reinforcement Learning (DQN) Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
+
+Reinforcement Learning (PPO) with TorchRL Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/reinforcement_ppo.html
+
+Train a Mario-playing RL Agent
+
+https://docs.pytorch.org/tutorials/intermediate/mario_rl_tutorial.html
+
+Pendulum: Writing your environment and transforms with TorchRL
+
+https://docs.pytorch.org/tutorials/advanced/pendulum.html
+
+Introduction to TorchRec
+
+https://docs.pytorch.org/tutorials/intermediate/torchrec_intro_tutorial.html
+
+Exploring TorchRec sharding
+
+https://docs.pytorch.org/tutorials/advanced/sharding.html
+
+Distributed
+
+https://docs.pytorch.org/tutorials/distributed.html
+
+PyTorch Distributed Overview
+
+https://docs.pytorch.org/tutorials/beginner/dist_overview.html
+
+Distributed Data Parallel in PyTorch - Video Tutorials
+
+https://docs.pytorch.org/tutorials/beginner/ddp_series_intro.html
+
+Getting Started with Distributed Data Parallel
+
+https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html
+
+Writing Distributed Applications with PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/dist_tuto.html
+
+Getting Started with Fully Sharded Data Parallel (FSDP2)
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html
+
+Introduction to Libuv TCPStore Backend
+
+https://docs.pytorch.org/tutorials/intermediate/TCPStore_libuv_backend.html
+
+Large Scale Transformer model training with Tensor Parallel (TP)
+
+https://docs.pytorch.org/tutorials/intermediate/TP_tutorial.html
+
+Introduction to Distributed Pipeline Parallelism
+
+https://docs.pytorch.org/tutorials/intermediate/pipelining_tutorial.html
+
+Customize Process Group Backends Using Cpp Extensions
+
+https://docs.pytorch.org/tutorials/intermediate/process_group_cpp_extension_tutorial.html
+
+Getting Started with Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_tutorial.html
+
+Implementing a Parameter Server Using Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_param_server_tutorial.html
+
+Implementing Batch RPC Processing Using Asynchronous Executions
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_async_execution.html
+
+Interactive Distributed Applications with Monarch
+
+https://docs.pytorch.org/tutorials/intermediate/monarch_distributed_tutorial.html
+
+Debugging Hangs with Flight Recorder Using TorchComms and Debug Server
+
+https://docs.pytorch.org/tutorials/intermediate/debug_hangs_with_flight_recorder.html
+
+Combining Distributed DataParallel with Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/advanced/rpc_ddp_tutorial.html
+
+Distributed Training with Uneven Inputs Using the Join Context Manager
+
+https://docs.pytorch.org/tutorials/advanced/generic_join.html
+
+Distributed training at scale with PyTorch and Ray Train
+
+https://docs.pytorch.org/tutorials/beginner/distributed_training_with_ray_tutorial.html
+
+Deep Dive
+
+https://docs.pytorch.org/tutorials/deep-dive.html
+
+Profiling your PyTorch Module
+
+https://docs.pytorch.org/tutorials/beginner/profiler.html
+
+CUDA Graph Kernel Annotations and Profiling
+
+https://docs.pytorch.org/tutorials/advanced/cuda_graph_annotations_tutorial.html
+
+Parametrizations Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/parametrizations.html
+
+Pruning Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/pruning_tutorial.html
+
+Inductor CPU backend debugging and profiling
+
+https://docs.pytorch.org/tutorials/intermediate/inductor_debug_cpu.html
+
+(Beta) Implementing High-Performance Transformers with Scaled Dot Product Attention (SDPA)
+
+https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html
+
+Knowledge Distillation Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/knowledge_distillation_tutorial.html
+
+Channels Last Memory Format in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/memory_format_tutorial.html
+
+Forward-mode Automatic Differentiation (Beta)
+
+https://docs.pytorch.org/tutorials/intermediate/forward_ad_usage.html
+
+Jacobians, Hessians, hvp, vhp, and more: composing function transforms
+
+https://docs.pytorch.org/tutorials/intermediate/jacobians_hessians.html
+
+Model ensembling
+
+https://docs.pytorch.org/tutorials/intermediate/ensembling.html
+
+Per-sample-gradients
+
+https://docs.pytorch.org/tutorials/intermediate/per_sample_grads.html
+
+Using the PyTorch C++ Frontend
+
+https://docs.pytorch.org/tutorials/advanced/cpp_frontend.html
+
+Autograd in C++ Frontend
+
+https://docs.pytorch.org/tutorials/advanced/cpp_autograd.html
+
+Extension
+
+https://docs.pytorch.org/tutorials/extension.html
+
+PyTorch Custom Operators
+
+https://docs.pytorch.org/tutorials/advanced/custom_ops_landing_page.html
+
+Double Backward with Custom Functions
+
+https://docs.pytorch.org/tutorials/intermediate/custom_function_double_backward_tutorial.html
+
+Fusing Convolution and Batch Norm using Custom Function
+
+https://docs.pytorch.org/tutorials/intermediate/custom_function_conv_bn_tutorial.html
+
+Registering a Dispatched Operator in C++
+
+https://docs.pytorch.org/tutorials/advanced/dispatcher.html
+
+Extending dispatcher for a new backend in C++
+
+https://docs.pytorch.org/tutorials/advanced/extend_dispatcher.html
+
+Facilitating New Backend Integration by PrivateUse1
+
+https://docs.pytorch.org/tutorials/advanced/privateuseone.html
+
+Ecosystem
+
+https://docs.pytorch.org/tutorials/ecosystem.html
+
+Hyperparameter tuning using Ray Tune
+
+https://docs.pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html
+
+Serve PyTorch models at scale with Ray Serve
+
+https://docs.pytorch.org/tutorials/beginner/serving_tutorial.html
+
+Multi-Objective NAS with Ax
+
+https://docs.pytorch.org/tutorials/intermediate/ax_multiobjective_nas_tutorial.html
+
+Real Time Inference on Raspberry Pi 4 and 5 (40 fps!)
+
+https://docs.pytorch.org/tutorials/intermediate/realtime_rpi.html
+
+Mosaic: Memory Profiling for PyTorch
+
+https://docs.pytorch.org/tutorials/beginner/mosaic_memory_profiling_tutorial.html
+
+Distributed training at scale with PyTorch and Ray Train
+
+https://docs.pytorch.org/tutorials/beginner/distributed_training_with_ray_tutorial.html
+
+More
+
+Recipes
+
+https://docs.pytorch.org/tutorials/recipes_index.html
+
+Unstable
+
+https://docs.pytorch.org/tutorials/unstable_index.html
+
+Go to pytorch.org
+
+https://pytorch.org/
+
+ 
+
+Ctrl
+
+ + 
+
+K
+
+×
+
+javascript:void(0)
+
+Custom Search
+
+Sort by
+
+Relevance
+
+Date
+
+ 
+
+[-]
+
+X
+
+https://x.com/PyTorch
+
+GitHub
+
+https://github.com/pytorch/tutorials
+
+Discourse
+
+https://dev-discuss.pytorch.org/
+
+PyPi
+
+https://pypi.org/project/torch/
+
+v2.13.0+cu130
+
+https://docs.pytorch.org/tutorials/index.html
+
+Intro
+
+https://docs.pytorch.org/tutorials/intro.html
+
+Learn the Basics
+
+https://docs.pytorch.org/tutorials/beginner/basics/intro.html
+
+Introduction to PyTorch - YouTube Series
+
+https://docs.pytorch.org/tutorials/beginner/introyt/introyt_index.html
+
+Deep Learning with PyTorch: A 60 Minute Blitz
+
+https://docs.pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html
+
+Learning PyTorch with Examples
+
+https://docs.pytorch.org/tutorials/beginner/pytorch_with_examples.html
+
+What is torch.nn really?
+
+https://docs.pytorch.org/tutorials/beginner/nn_tutorial.html
+
+Understanding requires_grad, retain_grad, Leaf, and Non-leaf Tensors
+
+https://docs.pytorch.org/tutorials/beginner/understanding_leaf_vs_nonleaf_tutorial.html
+
+NLP from Scratch
+
+https://docs.pytorch.org/tutorials/intermediate/nlp_from_scratch_index.html
+
+Visualizing Models, Data, and Training with TensorBoard
+
+https://docs.pytorch.org/tutorials/intermediate/tensorboard_tutorial.html
+
+A guide on good usage of non_blocking and pin_memory() in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/pinmem_nonblock.html
+
+Data Loading Optimization in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/intermediate_data_loading_tutorial.html
+
+Visualizing Gradients
+
+https://docs.pytorch.org/tutorials/intermediate/visualizing_gradients_tutorial.html
+
+Compilers
+
+https://docs.pytorch.org/tutorials/compilers_index.html
+
+Introduction to torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_tutorial.html
+
+torch.compile End-to-End Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_full_example.html
+
+Compiled Autograd: Capturing a larger backward graph for torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/compiled_autograd_tutorial.html
+
+Inductor CPU backend debugging and profiling
+
+https://docs.pytorch.org/tutorials/intermediate/inductor_debug_cpu.html
+
+Dynamic Compilation Control with torch.compiler.set_stance
+
+https://docs.pytorch.org/tutorials/recipes/torch_compiler_set_stance_tutorial.html
+
+Demonstration of torch.export flow, common challenges and the solutions to address them
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_challenges_solutions.html
+
+(beta) Compiling the optimizer with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer.html
+
+(beta) Running the compiled optimizer with an LR Scheduler
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer_lr_scheduler.html
+
+Using Variable Length Attention in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/variable_length_attention_tutorial.html
+
+Using User-Defined Triton Kernels with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html
+
+Compile Time Caching in torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_caching_tutorial.html
+
+Reducing torch.compile cold start compilation time with regional compilation
+
+https://docs.pytorch.org/tutorials/recipes/regional_compilation.html
+
+torch.export Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torch_export_tutorial.html
+
+torch.export AOTInductor Tutorial for Python runtime (Beta)
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_aoti_python.html
+
+Demonstration of torch.export flow, common challenges and the solutions to address them
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_challenges_solutions.html
+
+Introduction to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/intro_onnx.html
+
+Export a PyTorch model to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/export_simple_model_to_onnx_tutorial.html
+
+Extending the ONNX Exporter Operator Support
+
+https://docs.pytorch.org/tutorials/beginner/onnx/onnx_registry_tutorial.html
+
+Export a model with control flow to ONNX
+
+https://docs.pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+
+Building a Convolution/Batch Norm fuser with torch.compile
+
+https://docs.pytorch.org/tutorials/intermediate/torch_compile_conv_bn_fuser.html
+
+(beta) Building a Simple CPU Performance Profiler with FX
+
+https://docs.pytorch.org/tutorials/intermediate/fx_profiling_tutorial.html
+
+Domains
+
+https://docs.pytorch.org/tutorials/domains.html
+
+TorchVision Object Detection Finetuning Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html
+
+Transfer Learning for Computer Vision Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
+
+Adversarial Example Generation
+
+https://docs.pytorch.org/tutorials/beginner/fgsm_tutorial.html
+
+DCGAN Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+
+Spatial Transformer Networks Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/spatial_transformer_tutorial.html
+
+Reinforcement Learning (DQN) Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
+
+Reinforcement Learning (PPO) with TorchRL Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/reinforcement_ppo.html
+
+Train a Mario-playing RL Agent
+
+https://docs.pytorch.org/tutorials/intermediate/mario_rl_tutorial.html
+
+Pendulum: Writing your environment and transforms with TorchRL
+
+https://docs.pytorch.org/tutorials/advanced/pendulum.html
+
+Introduction to TorchRec
+
+https://docs.pytorch.org/tutorials/intermediate/torchrec_intro_tutorial.html
+
+Exploring TorchRec sharding
+
+https://docs.pytorch.org/tutorials/advanced/sharding.html
+
+Distributed
+
+https://docs.pytorch.org/tutorials/distributed.html
+
+PyTorch Distributed Overview
+
+https://docs.pytorch.org/tutorials/beginner/dist_overview.html
+
+Distributed Data Parallel in PyTorch - Video Tutorials
+
+https://docs.pytorch.org/tutorials/beginner/ddp_series_intro.html
+
+Getting Started with Distributed Data Parallel
+
+https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html
+
+Writing Distributed Applications with PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/dist_tuto.html
+
+Getting Started with Fully Sharded Data Parallel (FSDP2)
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html
+
+Introduction to Libuv TCPStore Backend
+
+https://docs.pytorch.org/tutorials/intermediate/TCPStore_libuv_backend.html
+
+Large Scale Transformer model training with Tensor Parallel (TP)
+
+https://docs.pytorch.org/tutorials/intermediate/TP_tutorial.html
+
+Introduction to Distributed Pipeline Parallelism
+
+https://docs.pytorch.org/tutorials/intermediate/pipelining_tutorial.html
+
+Customize Process Group Backends Using Cpp Extensions
+
+https://docs.pytorch.org/tutorials/intermediate/process_group_cpp_extension_tutorial.html
+
+Getting Started with Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_tutorial.html
+
+Implementing a Parameter Server Using Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_param_server_tutorial.html
+
+Implementing Batch RPC Processing Using Asynchronous Executions
+
+https://docs.pytorch.org/tutorials/intermediate/rpc_async_execution.html
+
+Interactive Distributed Applications with Monarch
+
+https://docs.pytorch.org/tutorials/intermediate/monarch_distributed_tutorial.html
+
+Debugging Hangs with Flight Recorder Using TorchComms and Debug Server
+
+https://docs.pytorch.org/tutorials/intermediate/debug_hangs_with_flight_recorder.html
+
+Combining Distributed DataParallel with Distributed RPC Framework
+
+https://docs.pytorch.org/tutorials/advanced/rpc_ddp_tutorial.html
+
+Distributed Training with Uneven Inputs Using the Join Context Manager
+
+https://docs.pytorch.org/tutorials/advanced/generic_join.html
+
+Distributed training at scale with PyTorch and Ray Train
+
+https://docs.pytorch.org/tutorials/beginner/distributed_training_with_ray_tutorial.html
+
+Deep Dive
+
+https://docs.pytorch.org/tutorials/deep-dive.html
+
+Profiling your PyTorch Module
+
+https://docs.pytorch.org/tutorials/beginner/profiler.html
+
+CUDA Graph Kernel Annotations and Profiling
+
+https://docs.pytorch.org/tutorials/advanced/cuda_graph_annotations_tutorial.html
+
+Parametrizations Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/parametrizations.html
+
+Pruning Tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/pruning_tutorial.html
+
+Inductor CPU backend debugging and profiling
+
+https://docs.pytorch.org/tutorials/intermediate/inductor_debug_cpu.html
+
+(Beta) Implementing High-Performance Transformers with Scaled Dot Product Attention (SDPA)
+
+https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html
+
+Knowledge Distillation Tutorial
+
+https://docs.pytorch.org/tutorials/beginner/knowledge_distillation_tutorial.html
+
+Channels Last Memory Format in PyTorch
+
+https://docs.pytorch.org/tutorials/intermediate/memory_format_tutorial.html
+
+Forward-mode Automatic Differentiation (Beta)
+
+https://docs.pytorch.org/tutorials/intermediate/forward_ad_usage.html
+
+Jacobians, Hessians, hvp, vhp, and more: composing function transforms
+
+https://docs.pytorch.org/tutorials/intermediate/jacobians_hessians.html
+
+Model ensembling
+
+https://docs.pytorch.org/tutorials/intermediate/ensembling.html
+
+Per-sample-gradients
+
+https://docs.pytorch.org/tutorials/intermediate/per_sample_grads.html
+
+Using the PyTorch C++ Frontend
+
+https://docs.pytorch.org/tutorials/advanced/cpp_frontend.html
+
+Autograd in C++ Frontend
+
+https://docs.pytorch.org/tutorials/advanced/cpp_autograd.html
+
+Extension
+
+https://docs.pytorch.org/tutorials/extension.html
+
+PyTorch Custom Operators
+
+https://docs.pytorch.org/tutorials/advanced/custom_ops_landing_page.html
+
+Double Backward with Custom Functions
+
+https://docs.pytorch.org/tutorials/intermediate/custom_function_double_backward_tutorial.html
+
+Fusing Convolution and Batch Norm using Custom Function
+
+https://docs.pytorch.org/tutorials/intermediate/custom_function_conv_bn_tutorial.html
+
+Registering a Dispatched Operator in C++
+
+https://docs.pytorch.org/tutorials/advanced/dispatcher.html
+
+Extending dispatcher for a new backend in C++
+
+https://docs.pytorch.org/tutorials/advanced/extend_dispatcher.html
+
+Facilitating New Backend Integration by PrivateUse1
+
+https://docs.pytorch.org/tutorials/advanced/privateuseone.html
+
+Ecosystem
+
+https://docs.pytorch.org/tutorials/ecosystem.html
+
+Hyperparameter tuning using Ray Tune
+
+https://docs.pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html
+
+Serve PyTorch models at scale with Ray Serve
+
+https://docs.pytorch.org/tutorials/beginner/serving_tutorial.html
+
+Multi-Objective NAS with Ax
+
+https://docs.pytorch.org/tutorials/intermediate/ax_multiobjective_nas_tutorial.html
+
+Real Time Inference on Raspberry Pi 4 and 5 (40 fps!)
+
+https://docs.pytorch.org/tutorials/intermediate/realtime_rpi.html
+
+Mosaic: Memory Profiling for PyTorch
+
+https://docs.pytorch.org/tutorials/beginner/mosaic_memory_profiling_tutorial.html
+
+Distributed training at scale with PyTorch and Ray Train
+
+https://docs.pytorch.org/tutorials/beginner/distributed_training_with_ray_tutorial.html
+
+Recipes
+
+https://docs.pytorch.org/tutorials/recipes_index.html
+
+Defining a Neural Network in PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/defining_a_neural_network.html
+
+(beta) Using TORCH_LOGS python API with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_logs.html
+
+What is a state_dict in PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/what_is_state_dict.html
+
+Warmstarting model using parameters from a different model in PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/warmstarting_model_using_parameters_from_a_different_model.html
+
+Zeroing out gradients in PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/zeroing_out_gradients.html
+
+PyTorch Profiler
+
+https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html
+
+Model Interpretability using Captum
+
+https://docs.pytorch.org/tutorials/recipes/recipes/Captum_Recipe.html
+
+How to use TensorBoard with PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
+
+Automatic Mixed Precision
+
+https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html
+
+Performance Tuning Guide
+
+https://docs.pytorch.org/tutorials/recipes/recipes/tuning_guide.html
+
+(beta) Compiling the optimizer with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer.html
+
+Timer quick start
+
+https://docs.pytorch.org/tutorials/recipes/recipes/timer_quick_start.html
+
+Shard Optimizer States with ZeroRedundancyOptimizer
+
+https://docs.pytorch.org/tutorials/recipes/zero_redundancy_optimizer.html
+
+Getting Started with CommDebugMode
+
+https://docs.pytorch.org/tutorials/recipes/distributed_comm_debug_mode.html
+
+Demonstration of torch.export flow, common challenges and the solutions to address them
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_challenges_solutions.html
+
+PyTorch Benchmark
+
+https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html
+
+Tips for Loading an nn.Module from a Checkpoint
+
+https://docs.pytorch.org/tutorials/recipes/recipes/module_load_state_dict_tips.html
+
+Reasoning about Shapes in PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/reasoning_about_shapes.html
+
+Extension points in nn.Module for load_state_dict and tensor subclasses
+
+https://docs.pytorch.org/tutorials/recipes/recipes/swap_tensors.html
+
+torch.export AOTInductor Tutorial for Python runtime (Beta)
+
+https://docs.pytorch.org/tutorials/recipes/torch_export_aoti_python.html
+
+How to use TensorBoard with PyTorch
+
+https://docs.pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
+
+(beta) Utilizing Torch Function modes with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_torch_function_modes.html
+
+(beta) Running the compiled optimizer with an LR Scheduler
+
+https://docs.pytorch.org/tutorials/recipes/compiling_optimizer_lr_scheduler.html
+
+Explicit horizontal fusion with foreach_map and torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/foreach_map.html
+
+Using User-Defined Triton Kernels with torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html
+
+Compile Time Caching in torch.compile
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_caching_tutorial.html
+
+Compile Time Caching Configuration
+
+https://docs.pytorch.org/tutorials/recipes/torch_compile_caching_configuration_tutorial.html
+
+Reducing torch.compile cold start compilation time with regional compilation
+
+https://docs.pytorch.org/tutorials/recipes/regional_compilation.html
+
+Reducing AoT cold start compilation time with regional compilation
+
+https://docs.pytorch.org/tutorials/recipes/regional_aot.html
+
+Ease-of-use quantization for PyTorch with Intel® Neural Compressor
+
+https://docs.pytorch.org/tutorials/recipes/intel_neural_compressor_for_pytorch.html
+
+Getting Started with DeviceMesh
+
+https://docs.pytorch.org/tutorials/recipes/distributed_device_mesh.html
+
+Getting Started with Distributed Checkpoint (DCP)
+
+https://docs.pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html
+
+Asynchronous Saving with Distributed Checkpoint (DCP)
+
+https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html
+
+DebugMode: Recording Dispatched Operations and Numerical Debugging
+
+https://docs.pytorch.org/tutorials/recipes/debug_mode_tutorial.html
+
+Unstable
+
+https://docs.pytorch.org/tutorials/unstable_index.html
+
+Introduction to Context Parallel
+
+https://docs.pytorch.org/tutorials/unstable/context_parallel.html
+
+Flight Recorder for Debugging Stuck Jobs
+
+https://docs.pytorch.org/tutorials/unstable/flight_recorder_tutorial.html
+
+TorchInductor C++ Wrapper Tutorial
+
+https://docs.pytorch.org/tutorials/unstable/inductor_cpp_wrapper_tutorial.html
+
+How to use torch.compile on Windows CPU/XPU
+
+https://docs.pytorch.org/tutorials/unstable/inductor_windows.html
+
+torch.vmap
+
+https://docs.pytorch.org/tutorials/unstable/vmap_recipe.html
+
+Getting Started with Nested Tensors
+
+https://docs.pytorch.org/tutorials/unstable/nestedtensor.html
+
+MaskedTensor Overview
+
+https://docs.pytorch.org/tutorials/unstable/maskedtensor_overview.html
+
+MaskedTensor Sparsity
+
+https://docs.pytorch.org/tutorials/unstable/maskedtensor_sparsity.html
+
+MaskedTensor Advanced Semantics
+
+https://docs.pytorch.org/tutorials/unstable/maskedtensor_advanced_semantics.html
+
+Efficiently writing “sparse” semantics for Adagrad with MaskedTensor
+
+https://docs.pytorch.org/tutorials/unstable/maskedtensor_adagrad.html
+
+Autoloading Out-of-Tree Extension
+
+https://docs.pytorch.org/tutorials/unstable/python_extension_autoload.html
+
+Using Max-Autotune Compilation on CPU for Better Performance
+
+https://docs.pytorch.org/tutorials/unstable/max_autotune_on_CPU_tutorial.html
+
+Go to pytorch.org
+
+https://pytorch.org/
+
+ 
+
+Ctrl
+
+ + 
+
+K
+
+×
+
+javascript:void(0)
+
+Custom Search
+
+Sort by
+
+Relevance
+
+Date
+
+ 
+
+[-]
+
+X
+
+https://x.com/PyTorch
+
+GitHub
+
+https://github.com/pytorch/tutorials
+
+Discourse
+
+https://dev-discuss.pytorch.org/
+
+PyPi
+
+https://pypi.org/project/torch/
+
+Getting...
+
+Rate this Page
+
+★
+
+★
+
+★
+
+★
+
+★
+
+intermediate/FSDP1_tutorial
+
+Run in Google Colab Colab
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html
+
+Download Notebook Notebook
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html
+
+View on GitHub GitHub
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html
+
+Getting Started with Fully Sharded Data Parallel(FSDP)
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#getting-started-with-fully-sharded-data-parallel-fsdp
+
+Author
+
+: 
+
+Hamid Shojanazeri
+
+https://github.com/HamidShojanazeri
+
+, 
+
+Yanli Zhao
+
+https://github.com/zhaojuanmao
+
+, 
+
+Shen Li
+
+https://mrshenli.github.io/
+
+Note
+
+FSDP1 is deprecated. Please check out 
+
+FSDP2 tutorial
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html
+
+.
+
+Training AI models at a large scale is a challenging task that requires a lot of compute power and resources. It also comes with considerable engineering complexity to handle the training of these very large models. 
+
+PyTorch FSDP
+
+https://pytorch.org/blog/introducing-pytorch-fully-sharded-data-parallel-api/
+
+, released in PyTorch 1.11 makes this easier.
+
+In this tutorial, we show how to use 
+
+FSDP APIs
+
+https://pytorch.org/docs/stable/fsdp.html
+
+, for simple MNIST models that can be extended to other larger models such as 
+
+HuggingFace BERT models
+
+https://huggingface.co/blog/zero-deepspeed-fairscale
+
+, 
+
+GPT 3 models up to 1T parameters
+
+https://pytorch.medium.com/training-a-1-trillion-parameter-model-with-pytorch-fully-sharded-data-parallel-on-aws-3ac13aa96cff
+
+ . The sample DDP MNIST code courtesy of 
+
+Patrick Hu
+
+https://github.com/yqhu/
+
+.
+
+How FSDP works
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#how-fsdp-works
+
+In 
+
+DistributedDataParallel
+
+https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html
+
+, (DDP) training, each process/ worker owns a replica of the model and processes a batch of data, finally it uses all-reduce to sum up gradients over different workers. In DDP the model weights and optimizer states are replicated across all workers. FSDP is a type of data parallelism that shards model parameters, optimizer states and gradients across DDP ranks.
+
+When training with FSDP, the GPU memory footprint is smaller than when training with DDP across all workers. This makes the training of some very large models feasible by allowing larger models or batch sizes to fit on device. This comes with the cost of increased communication volume. The communication overhead is reduced by internal optimizations like overlapping communication and computation.
+
+FSDP Workflow
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#id1
+
+At a high level FSDP works as follow:
+
+In constructor
+
+Shard model parameters and each rank only keeps its own shard
+
+In forward path
+
+Run all_gather to collect all shards from all ranks to recover the full parameter in this FSDP unit
+
+Run forward computation
+
+Discard parameter shards it has just collected
+
+In backward path
+
+Run all_gather to collect all shards from all ranks to recover the full parameter in this FSDP unit
+
+Run backward computation
+
+Run reduce_scatter to sync gradients
+
+Discard parameters.
+
+One way to view FSDP's sharding is to decompose the DDP gradient all-reduce into reduce-scatter and all-gather. Specifically, during the backward pass, FSDP reduces and scatters gradients, ensuring that each rank possesses a shard of the gradients. Then it updates the corresponding shard of the parameters in the optimizer step. Finally, in the subsequent forward pass, it performs an all-gather operation to collect and combine the updated parameter shards.
+
+FSDP Allreduce
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#id2
+
+How to use FSDP
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#how-to-use-fsdp
+
+Here we use a toy model to run training on the MNIST dataset for demonstration purposes. The APIs and logic can be applied to training larger models as well.
+
+Setup
+
+1.1 Install PyTorch along with Torchvision
+
+See the 
+
+Get Started guide
+
+https://pytorch.org/get-started/locally/
+
+ for information on installation.
+
+We add the following code snippets to a python script “FSDP_mnist.py”.
+
+1.2 Import necessary packages
+
+Note
+
+This tutorial is intended for PyTorch versions 1.12 and later. If you are using an earlier version, replace all instances of size_based_auto_wrap_policy with default_auto_wrap_policy and fsdp_auto_wrap_policy with auto_wrap_policy .
+
+# Based on: https://github.com/pytorch/examples/blob/master/mnist/main.py
+import os
+import argparse
+import functools
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+
+
+from torch.optim.lr_scheduler import StepLR
+
+import torch.distributed as dist
+import torch.multiprocessing as mp
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data.distributed import DistributedSampler
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from torch.distributed.fsdp.fully_sharded_data_parallel import (
+    CPUOffload,
+    BackwardPrefetch,
+)
+from torch.distributed.fsdp.wrap import (
+    size_based_auto_wrap_policy,
+    enable_wrap,
+    wrap,
+)
+
+
+1.3 Distributed training setup. As we mentioned FSDP is a type of data parallelism which requires a distributed training environment, so here we use two helper functions to initialize the processes for distributed training and clean up.
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+
+    # initialize the process group
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+
+def cleanup():
+    dist.destroy_process_group()
+
+
+2.1 Define our toy model for handwritten digit classification.
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(9216, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+
+        x = self.conv1(x)
+        x = F.relu(x)
+        x = self.conv2(x)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = self.dropout1(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)
+        output = F.log_softmax(x, dim=1)
+        return output
+
+
+2.2 Define a train function
+
+def train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler=None):
+    model.train()
+    ddp_loss = torch.zeros(2).to(rank)
+    if sampler:
+        sampler.set_epoch(epoch)
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(rank), target.to(rank)
+        optimizer.zero_grad()
+        output = model(data)
+        loss = F.nll_loss(output, target, reduction='sum')
+        loss.backward()
+        optimizer.step()
+        ddp_loss[0] += loss.item()
+        ddp_loss[1] += len(data)
+
+    dist.all_reduce(ddp_loss, op=dist.ReduceOp.SUM)
+    if rank == 0:
+        print('Train Epoch: {} \tLoss: {:.6f}'.format(epoch, ddp_loss[0] / ddp_loss[1]))
+
+
+2.3 Define a validation function
+
+def test(model, rank, world_size, test_loader):
+    model.eval()
+    correct = 0
+    ddp_loss = torch.zeros(3).to(rank)
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(rank), target.to(rank)
+            output = model(data)
+            ddp_loss[0] += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            ddp_loss[1] += pred.eq(target.view_as(pred)).sum().item()
+            ddp_loss[2] += len(data)
+
+    dist.all_reduce(ddp_loss, op=dist.ReduceOp.SUM)
+
+    if rank == 0:
+        test_loss = ddp_loss[0] / ddp_loss[2]
+        print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
+            test_loss, int(ddp_loss[1]), int(ddp_loss[2]),
+            100. * ddp_loss[1] / ddp_loss[2]))
+
+
+2.4 Define a distributed train function that wraps the model in FSDP
+
+Note: to save the FSDP model, we need to call the state_dict on each rank then on Rank 0 save the overall states.
+
+def fsdp_main(rank, world_size, args):
+    setup(rank, world_size)
+
+    transform=transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
+    dataset1 = datasets.MNIST('../data', train=True, download=True,
+                        transform=transform)
+    dataset2 = datasets.MNIST('../data', train=False,
+                        transform=transform)
+
+    sampler1 = DistributedSampler(dataset1, rank=rank, num_replicas=world_size, shuffle=True)
+    sampler2 = DistributedSampler(dataset2, rank=rank, num_replicas=world_size)
+
+    train_kwargs = {'batch_size': args.batch_size, 'sampler': sampler1}
+    test_kwargs = {'batch_size': args.test_batch_size, 'sampler': sampler2}
+    cuda_kwargs = {'num_workers': 2,
+                    'pin_memory': True,
+                    'shuffle': False}
+    train_kwargs.update(cuda_kwargs)
+    test_kwargs.update(cuda_kwargs)
+
+    train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
+    test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
+    my_auto_wrap_policy = functools.partial(
+        size_based_auto_wrap_policy, min_num_params=100
+    )
+    torch.cuda.set_device(rank)
+
+
+    init_start_event = torch.cuda.Event(enable_timing=True)
+    init_end_event = torch.cuda.Event(enable_timing=True)
+
+    model = Net().to(rank)
+
+    model = FSDP(model)
+
+    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+
+    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    init_start_event.record()
+    for epoch in range(1, args.epochs + 1):
+        train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler=sampler1)
+        test(model, rank, world_size, test_loader)
+        scheduler.step()
+
+    init_end_event.record()
+
+    if rank == 0:
+        init_end_event.synchronize()
+        print(f"CUDA event elapsed time: {init_start_event.elapsed_time(init_end_event) / 1000}sec")
+        print(f"{model}")
+
+    if args.save_model:
+        # use a barrier to make sure training is done on all ranks
+        dist.barrier()
+        states = model.state_dict()
+        if rank == 0:
+            torch.save(states, "mnist_cnn.pt")
+
+    cleanup()
+
+
+2.5 Finally, parse the arguments and set the main function
+
+if __name__ == '__main__':
+    # Training settings
+    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
+    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
+                        help='input batch size for training (default: 64)')
+    parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
+                        help='input batch size for testing (default: 1000)')
+    parser.add_argument('--epochs', type=int, default=10, metavar='N',
+                        help='number of epochs to train (default: 14)')
+    parser.add_argument('--lr', type=float, default=1.0, metavar='LR',
+                        help='learning rate (default: 1.0)')
+    parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
+                        help='Learning rate step gamma (default: 0.7)')
+    parser.add_argument('--no-cuda', action='store_true', default=False,
+                        help='disables CUDA training')
+    parser.add_argument('--seed', type=int, default=1, metavar='S',
+                        help='random seed (default: 1)')
+    parser.add_argument('--save-model', action='store_true', default=False,
+                        help='For Saving the current Model')
+    args = parser.parse_args()
+
+    torch.manual_seed(args.seed)
+
+    WORLD_SIZE = torch.cuda.device_count()
+    mp.spawn(fsdp_main,
+        args=(WORLD_SIZE, args),
+        nprocs=WORLD_SIZE,
+        join=True)
+
+
+We have recorded cuda events to measure the time of FSDP model specifics. The CUDA event time was 110.85 seconds.
+
+python FSDP_mnist.py
+
+CUDA event elapsed time on training loop 40.67462890625sec
+
+
+Wrapping the model with FSDP, the model will look as follows, we can see the model has been wrapped in one FSDP unit. Alternatively, we will look at adding the auto_wrap_policy next and will discuss the differences.
+
+   FullyShardedDataParallel(
+   (_fsdp_wrapped_module): FlattenParamsWrapper(
+       (_fpw_module): Net(
+       (conv1): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1))
+       (conv2): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1))
+       (dropout1): Dropout(p=0.25, inplace=False)
+       (dropout2): Dropout(p=0.5, inplace=False)
+       (fc1): Linear(in_features=9216, out_features=128, bias=True)
+       (fc2): Linear(in_features=128, out_features=10, bias=True)
+       )
+   )
+)
+
+
+The following is the peak memory usage from FSDP MNIST training on g4dn.12.xlarge AWS EC2 instance with 4 GPUs captured from PyTorch Profiler.
+
+FSDP Peak Memory Usage
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#id3
+
+Applying 
+
+auto_wrap_policy
+
+ in FSDP otherwise, FSDP will put the entire model in one FSDP unit, which will reduce computation efficiency and memory efficiency. The way it works is that, suppose your model contains 100 Linear layers. If you do FSDP(model), there will only be one FSDP unit which wraps the entire model. In that case, the allgather would collect the full parameters for all 100 linear layers, and hence won't save CUDA memory for parameter sharding. Also, there is only one blocking allgather call for the all 100 linear layers, there will not be communication and computation overlapping between layers.
+
+To avoid that, you can pass in an auto_wrap_policy, which will seal the current FSDP unit and start a new one automatically when the specified condition is met (e.g., size limit). In that way you will have multiple FSDP units, and only one FSDP unit needs to collect full parameters at a time. E.g., suppose you have 5 FSDP units, and each wraps 20 linear layers. Then, in the forward, the 1st FSDP unit will allgather parameters for the first 20 linear layers, do computation, discard the parameters and then move on to the next 20 linear layers. So, at any point in time, each rank only materializes parameters/grads for 20 linear layers instead of 100.
+
+To do so in 2.4 we define the auto_wrap_policy and pass it to FSDP wrapper, in the following example, my_auto_wrap_policy defines that a layer could be wrapped or sharded by FSDP if the number of parameters in this layer is larger than 100. If the number of parameters in this layer is smaller than 100, it will be wrapped with other small layers together by FSDP. Finding an optimal auto wrap policy is challenging, PyTorch will add auto tuning for this config in the future. Without an auto tuning tool, it is good to profile your workflow using different auto wrap policies experimentally and find the optimal one.
+
+my_auto_wrap_policy = functools.partial(
+        size_based_auto_wrap_policy, min_num_params=20000
+    )
+torch.cuda.set_device(rank)
+model = Net().to(rank)
+
+model = FSDP(model,
+    auto_wrap_policy=my_auto_wrap_policy)
+
+
+Applying the auto_wrap_policy, the model would be as follows:
+
+  FullyShardedDataParallel(
+(_fsdp_wrapped_module): FlattenParamsWrapper(
+  (_fpw_module): Net(
+    (conv1): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1))
+    (conv2): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1))
+    (dropout1): Dropout(p=0.25, inplace=False)
+    (dropout2): Dropout(p=0.5, inplace=False)
+    (fc1): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): FlattenParamsWrapper(
+        (_fpw_module): Linear(in_features=9216, out_features=128, bias=True)
+      )
+    )
+    (fc2): Linear(in_features=128, out_features=10, bias=True)
+  )
+)
+
+
+python FSDP_mnist.py
+
+CUDA event elapsed time on training loop 41.89130859375sec
+
+
+The following is the peak memory usage from FSDP with auto_wrap policy of MNIST training on a g4dn.12.xlarge AWS EC2 instance with 4 GPUs captured from PyTorch Profiler. It can be observed that the peak memory usage on each device is smaller compared to FSDP without auto wrap policy applied, from ~75 MB to 66 MB.
+
+FSDP Peak Memory Usage using Auto_wrap policy
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#id4
+
+CPU Off-loading
+
+: In case the model is very large that even with FSDP wouldn't fit into GPUs, then CPU offload can be helpful here.
+
+Currently, only parameter and gradient CPU offload is supported. It can be enabled via passing in cpu_offload=CPUOffload(offload_params=True).
+
+Note that this currently implicitly enables gradient offloading to CPU in order for params and grads to be on the same device to work with the optimizer. This API is subject to change. The default is None in which case there will be no offloading.
+
+Using this feature may slow down the training considerably, due to frequent copying of tensors from host to device, but it could help improve memory efficiency and train larger scale models.
+
+In 2.4 we just add it to the FSDP wrapper
+
+model = FSDP(model,
+    auto_wrap_policy=my_auto_wrap_policy,
+    cpu_offload=CPUOffload(offload_params=True))
+
+
+Compare it with DDP, if in 2.4 we just normally wrap the model in DPP, saving the changes in “DDP_mnist.py”.
+
+model = Net().to(rank)
+model = DDP(model)
+
+
+python DDP_mnist.py
+
+CUDA event elapsed time on training loop 39.77766015625sec
+
+
+The following is the peak memory usage from DDP MNIST training on g4dn.12.xlarge AWS EC2 instance with 4 GPUs captured from PyTorch profiler.
+
+DDP Peak Memory Usage using Auto_wrap policy
+
+#
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#id5
+
+Considering the toy example and tiny MNIST model we defined here, we can observe the difference between peak memory usage of DDP and FSDP. In DDP each process holds a replica of the model, so the memory footprint is higher compared to FSDP which shards the model parameters, optimizer states and gradients over DDP ranks. The peak memory usage using FSDP with auto_wrap policy is the lowest followed by FSDP and DDP.
+
+Also, looking at timings, considering the small model and running the training on a single machine, FSDP with and without auto_wrap policy performed almost as fast as DDP. This example does not represent most of the real applications, for detailed analysis and comparison between DDP and FSDP please refer to this 
+
+blog post
+
+https://pytorch.medium.com/6c8da2be180d
+
+ .
+
+Rate this Page
+
+★
+
+★
+
+★
+
+★
+
+★
+
+Send Feedback
+
+Built with the 
+
+PyData Sphinx Theme
+
+https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html
+
+ 0.15.4.
+
+On this page
+
+How FSDP works
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#how-fsdp-works
+
+How to use FSDP
+
+https://docs.pytorch.org/tutorials/intermediate/FSDP1_tutorial.html#how-to-use-fsdp
+
+PyTorch Libraries
+
+ExecuTorch
+
+https://docs.pytorch.org/executorch
+
+Helion
+
+https://docs.pytorch.org/helion
+
+torchao
+
+https://docs.pytorch.org/ao
+
+kineto
+
+https://github.com/pytorch/kineto
+
+torchtitan
+
+https://github.com/pytorch/torchtitan
+
+TorchRL
+
+https://docs.pytorch.org/rl
+
+torchvision
+
+https://docs.pytorch.org/vision
+
+torchaudio
+
+https://docs.pytorch.org/audio
+
+tensordict
+
+https://docs.pytorch.org/tensordict
+
+PyTorch on XLA Devices
+
+https://docs.pytorch.org/xla
+
+Docs
+
+Access comprehensive developer documentation for PyTorch
+
+View Docs
+
+https://docs.pytorch.org/docs/stable/index.html
+
+Tutorials
+
+Get in-depth tutorials for beginners and advanced developers
+
+View Tutorials
+
+https://docs.pytorch.org/tutorials
+
+Resources
+
+Find development resources and get your questions answered
+
+View Resources
+
+https://pytorch.org/resources
+
+Stay in touch
+
+ for updates, event info, and the latest news
+
+Select Country*
+
+Afghanistan
+
+Åland Islands
+
+Albania
+
+Algeria
+
+American Samoa
+
+Andorra
+
+Angola
+
+Anguilla
+
+Antarctica
+
+Antigua and Barbuda
+
+Argentina
+
+Armenia
+
+Aruba
+
+Asia/Pacific Region
+
+Australia
+
+Austria
+
+Azerbaijan
+
+Bahamas
+
+Bahrain
+
+Bangladesh
+
+Barbados
+
+Belarus
+
+Belgium
+
+Belize
+
+Benin
+
+Bermuda
+
+Bhutan
+
+Bolivia
+
+Bosnia and Herzegovina
+
+Botswana
+
+Bouvet Island
+
+Brazil
+
+British Indian Ocean Territory
+
+British Virgin Islands
+
+Brunei
+
+Bulgaria
+
+Burkina Faso
+
+Burundi
+
+Cambodia
+
+Cameroon
+
+Canada
+
+Canary Islands
+
+Cape Verde
+
+Caribbean Netherlands
+
+Cayman Islands
+
+Central African Republic
+
+Chad
+
+Chile
+
+China
+
+Christmas Island
+
+Cocos (Keeling) Islands
+
+Colombia
+
+Comoros
+
+Congo
+
+Cook Islands
+
+Costa Rica
+
+Cote d'Ivoire
+
+Croatia
+
+Cuba
+
+Curaçao
+
+Cyprus
+
+Czech Republic
+
+Democratic Republic of the Congo
+
+Denmark
+
+Djibouti
+
+Dominica
+
+Dominican Republic
+
+East Timor
+
+Ecuador
+
+Egypt
+
+El Salvador
+
+Equatorial Guinea
+
+Eritrea
+
+Estonia
+
+Ethiopia
+
+Europe
+
+Falkland Islands
+
+Faroe Islands
+
+Fiji
+
+Finland
+
+France
+
+French Guiana
+
+French Polynesia
+
+French Southern and Antarctic Lands
+
+Gabon
+
+Gambia
+
+Georgia
+
+Germany
+
+Ghana
+
+Gibraltar
+
+Greece
+
+Greenland
+
+Grenada
+
+Guadeloupe
+
+Guam
+
+Guatemala
+
+Guernsey
+
+Guinea
+
+Guinea-Bissau
+
+Guyana
+
+Haiti
+
+Heard Island and McDonald Islands
+
+Honduras
+
+Hong Kong
+
+Hungary
+
+Iceland
+
+India
+
+Indonesia
+
+Iran
+
+Iraq
+
+Ireland
+
+Isle of Man
+
+Israel
+
+Italy
+
+Jamaica
+
+Japan
+
+Jersey
+
+Jordan
+
+Kazakhstan
+
+Kenya
+
+Kiribati
+
+Kosovo
+
+Kuwait
+
+Kyrgyzstan
+
+Laos
+
+Latvia
+
+Lebanon
+
+Lesotho
+
+Liberia
+
+Libya
+
+Liechtenstein
+
+Lithuania
+
+Luxembourg
+
+Macau
+
+Macedonia (FYROM)
+
+Madagascar
+
+Malawi
+
+Malaysia
+
+Maldives
+
+Mali
+
+Malta
+
+Marshall Islands
+
+Martinique
+
+Mauritania
+
+Mauritius
+
+Mayotte
+
+Mexico
+
+Micronesia
+
+Moldova
+
+Monaco
+
+Mongolia
+
+Montenegro
+
+Montserrat
+
+Morocco
+
+Mozambique
+
+Myanmar (Burma)
+
+Namibia
+
+Nauru
+
+Nepal
+
+Netherlands
+
+Netherlands Antilles
+
+New Caledonia
+
+New Zealand
+
+Nicaragua
+
+Niger
+
+Nigeria
+
+Niue
+
+Norfolk Island
+
+North Korea
+
+Northern Mariana Islands
+
+Norway
+
+Oman
+
+Pakistan
+
+Palau
+
+Palestine
+
+Panama
+
+Papua New Guinea
+
+Paraguay
+
+Peru
+
+Philippines
+
+Pitcairn Islands
+
+Poland
+
+Portugal
+
+Puerto Rico
+
+Qatar
+
+Réunion
+
+Romania
+
+Russia
+
+Rwanda
+
+Saint Barthélemy
+
+Saint Helena
+
+Saint Kitts and Nevis
+
+Saint Lucia
+
+Saint Martin
+
+Saint Pierre and Miquelon
+
+Saint Vincent and the Grenadines
+
+Samoa
+
+San Marino
+
+Sao Tome and Principe
+
+Saudi Arabia
+
+Senegal
+
+Serbia
+
+Seychelles
+
+Sierra Leone
+
+Singapore
+
+Sint Maarten
+
+Slovakia
+
+Slovenia
+
+Solomon Islands
+
+Somalia
+
+South Africa
+
+South Georgia and the South Sandwich Islands
+
+South Korea
+
+South Sudan
+
+Spain
+
+Sri Lanka
+
+Sudan
+
+Suriname
+
+Svalbard and Jan Mayen
+
+Swaziland
+
+Sweden
+
+Switzerland
+
+Syria
+
+Taiwan
+
+Tajikistan
+
+Tanzania
+
+Thailand
+
+Togo
+
+Tokelau
+
+Tonga
+
+Trinidad and Tobago
+
+Tunisia
+
+Türkiye
+
+Turkmenistan
+
+Turks and Caicos Islands
+
+Tuvalu
+
+U.S. Virgin Islands
+
+Uganda
+
+Ukraine
+
+United Arab Emirates
+
+United Kingdom
+
+United States
+
+United States Minor Outlying Islands
+
+Uruguay
+
+Uzbekistan
+
+Vanuatu
+
+Vatican City
+
+Venezuela
+
+Vietnam
+
+Wallis and Futuna
+
+Western Sahara
+
+Yemen
+
+Zambia
+
+Zimbabwe
+
+By submitting this form, I consent to receive marketing emails from the LF and its projects regarding their events, training, research, developments, and related announcements. I understand that I can unsubscribe at any time using the links in the footers of the emails I receive. 
+
+Privacy Policy
+
+https://www.linuxfoundation.org/legal/privacy-policy
+
+ 
+
+SUBMIT
+
+By submitting this form, I consent to receive marketing emails from the LF and its projects regarding their events, training, research, developments, and related announcements. I understand that I can unsubscribe at any time using the links in the footers of the emails I receive. 
+
+Privacy Policy
+
+https://www.linuxfoundation.org/privacy/
+
+.
+
+© PyTorch. Copyright © The Linux Foundation®. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For more information, including terms of use, privacy policy, and trademark usage, please see our 
+
+Policies
+
+https://www.linuxfoundation.org/legal/policies
+
+ page. 
+
+Trademark Usage
+
+https://www.linuxfoundation.org/trademark-usage
+
+. 
+
+Privacy Policy
+
+http://www.linuxfoundation.org/privacy
+
+.
+
+To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook's Cookies Policy applies. Learn more, including about available controls: 
+
+Cookies Policy
+
+https://opensource.fb.com/legal/cookie-policy
+
+.
+
+© Copyright 2024, PyTorch.
+
+Created using 
+
+Sphinx
+
+https://www.sphinx-doc.org/
+
+ 7.2.6.
+
+Built with the 
+
+PyData Sphinx Theme
+
+https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html
+
+ 0.15.4.

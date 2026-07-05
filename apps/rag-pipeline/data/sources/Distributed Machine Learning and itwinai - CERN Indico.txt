@@ -1,0 +1,813 @@
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFfKrwnEDylZ9_F8sKsK6J3O2wKrR-tU53yetOUwdFJ0CUrMDnwTubT9K7WSdytYEP5OHrO_V94E0zU4YPXv2xv_GsDNxVYlPyjQ2iOpH9AtgQMktTgM5tajcadFyx23c18hK9HdQ=w1200-h620-v0
+
+661c065c-4c42-41b4-853a-b9563a7757d8
+
+Distributed Machine Learning and itwinai 
+
+a presentation by Jarl and Linus
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHFcn8haq-aeCZKs38tvZGdj1L8pi9LbpeV5BfMtqSVCmUhaRADMOH4_D6FoDQG5brJO2lrdObsy8qfus5YJg21tcVxIIqe3nK9bt0vk3cx7N16BdQIGqMcuXTiHm-VAySLlc67FA=w1015-h571-v0
+
+93d41929-6daf-4fa6-914a-e9d0381c949d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE5tRvV--1dOTNMlDfl4AV3K6goR5l78iiY1ZXxid6VUXe7zuHR12KtU0nd7kBpVuhEhIn0Nd2JXVpRvTujxTGYciivEme1uU_ZRAJ1mEnCBpbkA4p6deudFeAAGkx62vsk5qKPuw=w500-h600-v0
+
+02620490-03fe-483e-bfb6-269a7ec0585d
+
+contents 
+
+70% Distributed Machine Learning 
+
+ motivation 
+
+ collective communication 
+
+ distributed data parallel 
+
+ pipeline parallelism 
+
+ deepspeed and ZeRO 
+
+ HPO with Ray 
+
+30% itwinai 
+
+ intertwin 
+
+ use case: drought prediction 
+
+ use case: gravitational weights 
+
+ demo 
+
+ scalability of the use cases 
+
+https://itwinai.readthedocs.io/latest/gettin g-started/glossary.html
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQErKiD6ngj4W8tvi7mBCJbrWsusEQVKayOQfNjIyydZgZMRDFNsoi9Hp1UNr_etI5-Yc6axzsNVQmFQuxjdxncitU4G5G4HWc55MxhrvzYZIipzSx0VHXGWNbLl7gIYAFHiek8-Xg=w1015-h571-v0
+
+1d7c4a9c-6abf-4816-902d-17aac3b394b8
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEP5nWt7c52UeiJtAm0nAH5PsZKfrtEUSTGFP4RZHXcS-CB1HYC2f7m5paro_XAB1z9jLZ05jE-ThlOAcQ84dVk3Fa1ECI0pClCc7dDIAFA8Y4wStBHpv8Bh79DdZiII8sfl5kdQQ=w724-h345-v0
+
+4529a626-7b40-42fd-a34f-fa667117d6c0
+
+motivation 
+
+ Modern ML research uses more and more parameters 
+
+ Training on a single GPU becomes intractable 
+
+ Moore’s Law kinda doesn’t work anymore—gotta go horizontally
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFvg7lTfsdq6rc-rgxAhhHQVHnYAm4VACrWbSbwUkq_3VQDG90orOrv6KaTbd32pu1nsRoeo41WB-0EOmMK2DyOfWIa1XUmeAH_vwWRO3yHQEQFFhcjU5DYE1NNjvsyDhSMN6j6=w1015-h571-v0
+
+7a86ac37-0839-4a32-9593-ea0729db5ec8
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG5Yxkj4m76ni5MWKGn5fOwtFY8rtKVRHWP-om-BWfPtknD4ZuhLcH1gPnoRfrc8EFOY3Hn1i8FXmErIMMIn6ch0tEAW6LqOV01JXcQfhabx9ew2jRBXv9D36csnphnS6aJMhTi=w928-h441-v0
+
+81118fbb-685b-475c-b467-9e87f6464ed3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE94iynk5IsUyQkWlwElF3xFx-Aj6MLD1shGtS7yGuoCViOcvslXTNgDZRtstW8qrgH4zdHrBZYeY5wg_PvXoJgE4bh43ZfCX80Ob0P9QB9bxHMmyyn85HH-uTXk5iDmZ71CVBmdg=w425-h576-v0
+
+0a4714b1-a036-4e2b-9b15-48bab25de651
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGnmXRvYYgNHuefHOX_WHw6FNj6W_niWLhRt-UUfWw_bgu2650LVbU1AvGNOGhg72VJKxhDUgMHSBAjyAxW9Y3d7AFC2JQqxnobLSwWcW1eX1x5lE4jhi9utCAltOwNA07r1ya9xQ=w1280-h836-v0
+
+7e045f4c-6d98-4e79-9c92-aa9b201f6d3c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE8BYgmutoY156zUOdFPzR7f7hnkjmGem-FTvyuBnXZjm2DNoBGVtdKzrp14UAiy2anebYHE_xjjwkzDr9n5V0aDq3J5uENOwfFWtm2bxuHM-9iHKgAphnenI5G9wQZLnMDYAeasw=w855-h361-v0
+
+b8415a5b-0a7d-46fd-83ba-b790dcadbe00
+
+solution: distributed machine learning 
+
+slow program? just use more processors:)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGoNkWz-6-Z61sA68SyQJdkohRTfQxcTgAeXFLTjkv2GKN-1Gepr_Z1YvkZNniCcl8izkrkOeypB9CiZ9jp98xLXRcDnrTdOre6ly8yCblaZEO56WsdbLU7R2SXrbWn2eY_rOLQdw=w1015-h571-v0
+
+05846f38-1145-4ee4-8e69-6dd999bda462
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHqmW1cJYhi-5HuuM0yy1bc5mlhe0OobdY-PdRMyLy35PMTTMhrTYSBv-xtE9LXTPLGgBAGFzcyNKw2UQQLw3eqDzhah9EErGCknqoxfQwpN-3Y4uAIOihqAVwL1U5Rhfh8YPtQ=w709-h473-v0
+
+bca09d3a-a20a-4a8a-aca6-7a606d6dd780
+
+distributed machine learning 101 
+
+- split the model? - split the data? - both? 
+
+https://community.intel.com/t5/Blogs/Tech-Innovation/Cloud/Boost-Your-AI-Capabili ties-with-Effective-Distributed-Training/post/1541602#_edn1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFVCn8uODwHNLkHR9YWnpyLEanFN1Wzo9MJLIhs391kDHtTMWusPPMM7Lcvn1qGoh4n1XheWgOQb2EKLirkTf67mO8eu1kadYGbrZ7PoYFp9wdzp-qJj3mwstBgHvYSUTh-nx0l=w1015-h571-v0
+
+8d951081-475a-4d38-bfef-39fedc5f1ecc
+
+collective communication 
+
+communication involving all ranks, in a single operation 
+
+rank = index of device (e.g. index of GPU) 
+
+implemented by: 
+
+- MPI (Message Passing Interface) - NCCL (NVIDIA Collective Communications Library) - RCCL (AMD’s Radeon Collective Communications Library) 
+
+https://recovery.org/alcoholics-anonymous/
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEOpTD66YH5Yfy89tIwDcNLBrXy91hCkHvIuKuYuHTSfgRtt6Rgelgw_vdmOhH7vxvifIy6RlBKajNgXDJh_6lNrKEv3xYtYUeGTXh1DFBZ_s-TtEGtzEE52rSPQ-UimKKjI3GauA=w650-h200-v0
+
+2c2a7c67-3f35-4cf1-a2a1-d76b05d60e62
+
+broadcast 
+
+broadcast from one rank to all others 
+
+https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/operations.html
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFjBoCpMeysFG2pPf76NIUNRL1IeSQ6ZccVYhYn8AieVo0vWnYSKI310I2SMowqB25wblx_X4PupjSTj6ZybYnJ4O_5ZtsevNWXqTTVJPYFGKXITDnSW1PpEPGfC93YbFAgJPyt=w1015-h571-v0
+
+ac6af8de-735b-48d1-a4ee-cb0d28b0e5c0
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEj2TWhhYqlhtk6u1K6Lyo8mpAygkCbQrlU_yqLnll4fgzYbQUNbKMRsB732HZzl4emV7xT4ZyZu9ZslWmp3riwOKbSBBhiLJTUxdpncQwTMszxKtE1vxiTR5wsa6jC9bBVK0WZ=w650-h205-v0
+
+21dfaae6-13cb-476d-b38c-b294acdd6fe5
+
+AllGather 
+
+every rank sends one part, every rank gets the full result 
+
+https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/operations.html
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEWBUQKrfmzjQyP3Y897J0_xtD7k7WRxATNY_lf9DHkEIfTn_w1jkOLsqi-zF4dCmVKy3wxdlHOBi8CUqVNGx1RDv3ZdJb2OQ-GnejVJaJkw-f405UrZicnye0rJFoPbQRrQxNvnA=w1015-h571-v0
+
+0a94c697-683d-4430-a3b4-78e46b233419
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFXfkrTLaD7FJbAsmTElsC2Uy0UMnRu2IyRbCIDxtffcivb9K9PCuaKrStbhQKtAURohChariR9M0MtRlx10OjhEvJhA408fflgwagcNIrBznNBWzbQTnT6QyDdJJ513SDTtU-2=w650-h200-v0
+
+1468db58-6343-4685-b289-ff25a0d052bb
+
+AllReduce 
+
+reduce data (e.g. sum, min, max) of all ranks in each rank 
+
+https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/operations.html
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG2rqdAowRhZp9rON1WXVlNX-gTaTpPaXFb8MLB2pr3scCbNtVzHN0msFLxtQLP41blwYKcM2w2xY4fnae-G6XmWV9TVB5uqY5cJ7NqK6_G1OcjgYV5HFLWFaIbXlYbZu-iyr6NGw=w1015-h571-v0
+
+10b50571-a88c-4cfe-b954-9b5e58e32acd
+
+implementation of the AllReduce
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH0y7VX2Iwnve8XXF6Iwor1xjMvtqALznp0Qd_EZ92XG7ren6maagDTkuOQocoAlGsiaJ7Ganv8D_6T8ZCQFBTjmDCVy_22pDFnSJaYWX55wH9d2krniAyVhze0gEtmMuj5quW2=w1000-h571-v0
+
+fab37e14-2d4f-4adb-891b-c7ddf25b020f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEfqTn9Kmy07UliXRWkflGgHa_HdqSZUewhyBsn6kMbNn3uc-6ImdEgLYxZq3cOtyeY4lgHJLefdGDv5cb4myjUApcwe7zbGLUBBaEAM7Le3R7b5SxIURq9-_YPonHInm2BQyjacg=w320-h180-v0
+
+adeb6c5a-c9ef-48c6-80b4-d00c23e44533
+
+ring AllReduce 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG7i0H_Uyco_229P2-D2zXqF_ojUPEXCtxqsiUppD7v1mVO-WwZ2hXJ_usGPvA65tmSN8lT9JG6_YAAAVKVZv8nGrvmfATHVHNww_qFJAca47bpQkvZVr4v9x57OfNdl9mycmdJvg=w1015-h571-v0
+
+34d78715-ac10-47f8-8a5d-794c52bcc9f3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEzuEOpUPouoHfVKvQKpwNp6wuTAIRvCkXa7GzB4ZR7-HWevb8bCDNaKjNae0c6sSksRaokYXuyOdMf3UXApJ2B3lKMcEBBj112_azNdKmkgxkVDavUYHSyvpkHvV2kGfZYzJ6PYQ=w1280-h749-v0
+
+a5dfdc8b-b5a8-47ee-bdfe-150f3f8fc8a9
+
+distributed data parallel 
+
+each gpu gets a distinct share of the data and a copy of the model 
+
+1) perform forward pass 2) calculate loss and gradients 3) sync gradients between gpus 4) update weights on all gpus 
+
+repeat the above till success
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEnAfyF3y20HMm6CaMo9MyMdeP-HvlyHrTg1mBXoP1EUiwDqdhyd6WGpWUdFNHzfiZmpA7wpLZL3hO5L5gnD3xo8URfcxZR-wzAHPAo49nKzK3-6oYq5Chi_g9ZPs88Gbiop2QSsA=w1015-h571-v0
+
+a515ddb6-af72-411d-9a7d-2f43f43fd471
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHDUv09Dq5eeYruVkls1g5vxv5ASpP7aqIN9gE4KYrlIBkc6glp0pWJQU5IfM-2z6k-Rsd8Iqag7rky0l34ERir3ppJqUaLVq3D4Bd2w48-APjt0W2y5iyCSK5JvyL4YgvetnpYHg=w1011-h308-v0
+
+2be76478-45ab-40b5-9a88-957ab9cdf6b6
+
+but gradients? 
+
+mathematical equivalence to single-gpu training would be neat :^) 
+
+let’s look at batches! 
+
+- mini-batch SGD w/ batch size 8:
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGW9JJ97s05CBFQwz5ivx0wJQXr6ggUVKtzNnUrgzTb9eeSrjbHofL08BjBf74HDXwPnDFWQndcj4yt3hH_ojPBQXxDSXg3lkWmXPRusRKpNwS8blmj-haCiHIvcLh6S1BPy80Pcg=w1015-h571-v0
+
+5570cc1c-fde0-4070-ae39-aa00741a9738
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFLBZNYTCNQHFm-TXFpj54lkSINhCJHNyoIATvZfOk3y1Kgc_kiKA38nYxzAdr_ImZjRTtyl44JUyzerDNh2r1vSE_KPGWO11f4hIXqulTQ6ePiBGR52ilado5IodRa4gxjCP1aVQ=w1028-h328-v0
+
+a19c2e0b-e074-4ef0-a9da-e909b8f2a90c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH2VH-MGqGaYPgRzZyknUQdY3qKFLzpTHDcrmkxiMgrT3C4zZFKYnQTgfXu_4MHthVEqKmWGyGvMguaGFD8FKW-VE04wgM33kdXg6utxFTT05HtZGaBlj5PYQiFZXDzvk8Tnhxp_Q=w1011-h308-v0
+
+9d23406b-7183-4756-94cd-f6f8f5926a27
+
+but gradients? 
+
+mathematical equivalence to single-gpu training would be neat :^) 
+
+let’s look at batches! 
+
+- mini-batch SGD w/ batch size 8: - avg of two GPUs with batch size 4 each:
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFdAOF3I93oNibGbUrDmIk-j_OwFoxjLKooWR6p85GRynsEr22WV8OZ4lUEaZvR3-DD4roS4TCK85q4_zE6pQqY39e-I807H6AU342DP53bnxNxuLUB9No7s8QmMEuxK_NeAceeow=w1015-h571-v0
+
+22143c9b-5743-4670-ad44-5b4ad7fd350e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHWIcNEK7QIX3qEycbCTS9EESiufiTUS9cUNhF3Eu07P56nPppjVHTBD9R-7IIzpMVqcl-g4PvJtVhi99rUj2qUq_OOhfQtMj7QISGv987NH2LH-0PUY1wgn3tqTKJlaAkNBGmr0Q=w1144-h1238-v0
+
+6cfa8545-6664-43ba-a7b6-5e1530cf7393
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGtS-OOBZHc4BGq4vOs9CNAAgO3TjxM9TFRXhrI4BM9VUPoDYSXiBlodsGRxEsYNRI5dMCEgW3x6S4vfVkIaKRULPM72P4dkDohq3Wh2bSoCCwy78koZLYUA84dhltUtZosLl0KSg=w1280-h383-v0
+
+c3c86f7c-6176-498e-83ba-17238c346eb1
+
+first we do the backprop
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGAB4ySVJI4vEtAelKr1XmimEY5yBQ4thV4Ty2Xm3WTSKcwCXLoptnDKNwtvxn4WntOClRqgffkEx83Hw23XWYeQiJPkeKjk25OOIVHvuCikm7FNvDsAlvREJno040DbtVyhvDO=w1015-h571-v0
+
+36399980-7329-4d0a-bcfe-6f4c573005ad
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGmd2GWVzLYIZkJlMDwznCj8LPs6nTU-4uW4Sm4hg3NBKPhAIdpIyAsyH91R9ZQTW0Ol9OB91lVoz76qE7_9bq1Li2iWHtbcpc-A59tG494KQ_3OcadJdtTCf--1MlAGe4dt0ceaw=w1280-h385-v0
+
+14ce97d9-26b4-4263-a114-837d2895f041
+
+then let’s sync (for each layer)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFuY2ou6pw9RrQlWaYOFcGj3nWh81M7N_LEwxiq_YxdIWUfHAsJXlKrhYcli0EsfNMuJ6nYh8WiJqxIbWKRNVLSo5jyQomKiQ0gzGAy1OcxeMM09fAWWn78BHNCXbd9lcvaVP5E=w1015-h571-v0
+
+42ceb091-0747-4949-b5d6-53e7e0155907
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEccecc8lw8AcQ6qGUvMWEKy-rA3N3H3Yj5wXwWw73AhDyqUoEmpy8u4JntjztB6U4G0TE4_GeGom8kjsfpgYZL2_roP-fmFM4cmwUBc9WrlT-Nq5W3Wpe_NO1LCuneZA-NpYn3zw=w929-h356-v0
+
+398e6918-2cc0-49ef-b362-e73ca641399e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHd7daGA4Bd-R9b-r9kZF4DN5aUdBhA8bfglIUvk3E_W4MFXJd48wiFvsL6wFnwB6uU6216Ts34lgT4zLRqtko44ANnI7wAbzzZzIZsxNBYn2ihqwwOkEvnEKLd__hDlbubNqoc=w1000-h514-v0
+
+225b6b42-c7b5-4295-8a58-9dd6ba52a01a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGOpw_MSXiFaOYTid2IYW2GM4U42tjV75G0d_DdgWee1qskqlxjjsJu_3ITK2hkR_qOsRDzcgk6pHEZPgKZonwVCjmZWlopDhBHnSj-7hUomh4kgihtxjBljXPwu6viTfEcc-wk=w962-h155-v0
+
+e9ac12db-aae7-47e5-b231-a846081d9c4a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFN2RlcU9GsKZdoNbNkDdNU3BCzrtX_i3KgqOl6s3AuxCz_S3QMYYyE5e9DhHVXKjlY_28CVWliuRbaC7lvSGgob2bOx1_bR3TU5dOrSBViyf5aq-V76Di6ISNlfTFfQ_MYJb-Aqw=w708-h147-v0
+
+7c53ebc6-0593-4d97-a521-db238136c4d3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGojDQ7Jai-zwJlcuE7VqJSI9U2afK815Z5-p7uvSKNoHmYbLLgLXrZ8iS3M0sw9dciM2nH89DdB9KJ4q_hKeU6ITKzD5Em0R76tk1EELJYeU1-npApxkz4jUAo1oZcB0t1GMmgEA=w837-h220-v0
+
+e5bc01df-4712-4b6a-949f-b1c32fffe81f
+
+why can’t we just sync the loss once and be done with it? 
+
+define a model and a loss function: 
+
+chain rule: 
+
+avg gradients per layer: 
+
+avg loss once: 
+
+notice a problem?
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGC0DvDYyA6vYC5S6QyXcH3cUZVq9W9HkNx2_d2vWJ6ZCwdsWUz0u4RTxvhxz_dQkGU-XurUbsROvqOPGxdBsjNGS5QdvUTc0pizcSUe4vvr6ZUNwerCIUYlrUWRt5tiSwNup2eGw=w1015-h571-v0
+
+85f86f35-5d8a-4788-a3a2-2a57899c0d5e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEj9ptgMiWV0wZ0H2A2MpWbUxxO3mBb73ZQtZD_2X4itvdZqz9T3MPKoF9z9194HFE9Fc49H8UQDE9p-Cgks-NeFS1eNInuUwsD53N0vJ2iKqnctL36LMAnvMXWJwm3BuumFX_P=w702-h435-v0
+
+d2234d06-bc7f-4c78-b840-76d093d1f04c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHdMMglYj4-AQeAuNqS3EAxQ4yhkYxgNxXMujoENl40ftMCQ6cg_wkERNgVHkT4a7BERO86zE6w-Lxd-X44ft6TuvsCN2tCFjzInrMApGp7XmqB59oL2qLxrYs47jf2G9Zp9Kn6fA=w1280-h767-v0
+
+5ff15a6c-b319-49ac-9dc8-48fdc3609afa
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGds40nPrcLvZ_mdwXyc6kxYMxX7W9nvjfO5Nl_fq-K8vi5NmzfvMvuOOOpieoTBwpRs_5YUy-9NnlI0RUMIZxg_BGy3d8JZtyu-WwqSEJOJ1jcRpe2NAO9k_cX382MEHZv_dtW=w1000-h426-v0
+
+03122b79-0a74-4a49-9fdd-9cd191612e41
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF29ukIZZT5FgN6q48cQ1t303inS0BrJrXnLzbw62otA3FecKJkH1WPKgiZRpTYIb7joNUhOGw3kDSbrq5TdiZacTObeZFL6dgqmN4WNxAS6wwY16hBfhnmb20_zX-081Kzcc93EA=w1092-h443-v0
+
+202af634-55b8-4b1c-81a1-c708414d9994
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFgx8TZwqpbcgLxjkOa2TD9CZaGn6dl683h--lMIS4oKe80snboNbCGLBOf9r3UpLr-D1TcYW2cBKRAKcgrJbluoEW3Uc-Ae36OoOWjMEFw-YeDfkYf6cBghqABaq_eokd_9qgkNw=w1000-h238-v0
+
+00d9394f-e1f6-4f97-85be-f175476e283b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEWIFQ79LCs2sdJTAxT_IXS2oYhFpcKc33W4x77rCrIy_vVtoECy7c7b_0VxcWiYghXQtSbUGlQCms-2eImmu6Xv7M8J4jaQVTGXEFQsq8jhQGyzf2o51116-gXU_X-WfUPeM50=w1041-h221-v0
+
+c2f76118-fc7d-447a-97a6-733b75932b40
+
+problem 
+
+synchronization is slow :/ 
+
+-> lets do it in parallel to updating weights! 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHiVAMjL3iq0K3tHIe2nf13b-FH8Tjeg8r0md65RlyDMs5wzUJ8fx02n79RKAJoUJQyxkwFRsqTRci5DHGqqNRf0wRmvndk8KS1jOjczYPe-_GwVTrC6qiZpHA6UJudUE_6DU5j6w=w260-h260-v0
+
+0fd39178-d909-41f0-bb95-78dfa73dde8f
+
+but what if we train some huge models? 
+
+most LLMs during training will not fit on one gpu anymore (A100 VRAM ~80gb) 
+
+- 
+
+we have to split the model into chunks! -> model parallelism 
+
+- during training with AdamW the model size quadruples! 
+
+weights + gradients + Adam_m + Adam_v 
+
+…and this is not even regarding (pre-)activations 
+
+https://imgflip.com/gif/75k1lq
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGt2WM0mgebGOhnQ1vQxhV2X_0Abec_B303J2i1z_jQrRrbw88uulOGik1MEAM9ELKeXUgQYRR420XWdHzy5Uaism72OD0vwCkY3y5uRkviugnM0-fOuPhVpkmwsN5lzzC-tYLQ1A=w1280-h410-v0
+
+cc5e6c3d-1aa1-40b8-93ee-9f2f14333259
+
+naive pipeline parallelism 
+
+MIT Han Lab, Lecture 19, Distributed Training (Part I)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE8xX732jAs4wOB7IiLLHNQRlgy7vdViLOuTWC2gNlca0Kvakp1UtWkrPPtm-oCVARTWNpPLd_Eht6yATklFr2ykEmClxiqx9uwS0VZ2L0k-Ny4KuoEXnRp_o-NLJICOYLBognJxg=w1015-h571-v0
+
+a71f5a66-5658-4978-8985-d8e3b4eccb38
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH2r3Db96glASjEkyurrRGAIJRbZ_jfduHNB4acp_NaaAuZQePGk38o7GjpeDU64k1h1qSKy6TAfiuvMfZGaldpG08FVwcM-HTv0JnpwzxvpYKyfDuyZGcQwxXGqOK4LnA8iAPQ_w=w1280-h545-v0
+
+dc690d1b-0c5f-45b0-8155-76afb04e5abb
+
+pipeline parallelism 
+
+MIT Han Lab, Lecture 19, Distributed Training (Part I)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF5LMN6Jgvys7cOYTRWwJCU7LQT46AIcPdsXL51U8oBzlCPDUHhYy2J8Ohu4xjZQ8Iyg1xpagEjw2tPUKvmBLOHciYqgLue67y-G6v1bRXDAI4skABS88gTexnmVkUBgZdIBY2N2g=w1015-h571-v0
+
+5c65f392-6922-4fad-957e-29da4933bb9f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEq50YknfxrwoFbn1RN5NgpJ1a3Y2d6aYBJYWGaSixX_gURxwwxdNGBJCgHn4TzfmB56N24zFkPRrmHr4Lh_o2VcI8mjHuBR5buHAsyh7cixqEHo7Pl8sepN-JSvyIRG31nJrtijA=w1280-h738-v0
+
+4aac3955-5bf6-4a92-b40c-ed8a8ba43ef6
+
+overview of different parallelisms 
+
+MIT Han Lab, Lecture 19, Distributed Training (Part II)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE9i0baDd3xSE7SwhBmPcJjW9mlEV7TT9pKK68T9jKdl3Y-0WKSJiXHBP3Domy8ynNMoQNTlr-Y6VNPOEsE1q4lLrK-_Fk7gFXGMUja6-tCwgqkIxXdhignWrnQZkIpNZMDmTaMOg=w1015-h571-v0
+
+37c356dc-a21c-4309-9121-76cf0eccb840
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEgweB3fCdgppMSbJ900qnrW9qfiVyqQtc9D-79aIn6vgzKwIaRAsf8dRQ3_NO7rafBJ2dyqHvguFIOz9ScsIglicwsIAovjrKXNzJlYCPi5ciMehlh0yyemYaoOayrrdmX-u5cQw=w640-h759-v0
+
+b218a89a-b526-4ebe-bea9-34cf7dd6653a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFhoA6_ycUL92QBO6k7YkbrvTIGyUhFd1faEbpnZjGvrR4FdNVSHumd5D-D6g9M1bcrWY9v7aj7Fo8jSxib4vQiRdJuuKJguk0e-KMe7Hg9L_fTet_q2vQoWVXMYxy4HRMzNifD=w287-h107-v0
+
+c73ae9be-72e7-4e82-86f5-96ca81943849
+
+deepspeed 
+
+very fast :) 
+
+supports all kinds of parallelization: 
+
+- Data, Pipeline, Tensor, expert (for MoE) and ZeRO Parallelism 
+
+ZeRO (Zero Redundancy Optimizer) 
+
+- Removes memory redundancies in data-parallelism 
+
+- No model code modifications required!
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFJUums100NrYa2Rr5oO7TxFHGeSLRfUcJElbWxffSvaqEeYV1ISHuPRFfKjWJmJhWkLjFxur5XWierYCXbIJLJNL_YWsKJ4SnxxLpcM7p2keRAb0ixUhMSrjRS8H_CtoLJFF3XUA=w1015-h571-v0
+
+d0cc3144-7a90-4867-b4e5-edaec6ca0e16
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG1-1fXk0h-XpvYqGshQqim40E0w08BCxaGbvwFdeu2-8KW2c-XDkUK3i4Dtqu-btp3PHi8_ECz_39rLeLIdCgdj_5U4WWu0iBcsU-JcuwEy0KAuM-7zxogPKcUzhTCWuR4a3zkWg=w287-h107-v0
+
+271dc886-17e5-4c22-b36b-5f7f6a8ad5d0
+
+ZeRO 
+
+ZeRO Stage 1: The optimizer states (e.g., for Adam optimizer, 32-bit weights, and the 
+
+first, and second moment estimates) are partitioned across the processes, so that each process updates only its partition. 
+
+ZeRO Stage 2: The reduced 16-bit gradients for updating the model weights are also 
+
+partitioned such that each process retains only the gradients corresponding to its portion of the optimizer states. 
+
+ZeRO Stage 3: The 16-bit model parameters are partitioned across the processes. 
+
+ZeRO-3 will automatically collect and partition them during the forward and backward passes. 
+
+https://deepspeed.readthedocs.io/en/latest/zero3.html Adam: A Method for Stochastic Optimization (Kingma and Ba, 2014) ZeRO: Memory Optimizations Toward Training Trillion Parameter Models (Microsoft, 2020) 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGM9gz-zC4YdzLzHyhKWpJZoQr-U0TBTVyEiBcI7f-LNDS9ifYgfh7kKRe2-DcrmJSLC-x1LJzR_eoMYamB3B_KWUtV-cUA1dibbRrBgX-5h8OIDQ0ONggH8FyTjsVqyINyyhVWEw=w1015-h571-v0
+
+608fe49d-fc13-49b6-a02b-0cec9d091cc4
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQENuO4Kl0h9FnRrz3CmBQiF_1KTVyte4ub41p85DSY03xX5mUecXoOQfv5F0G739sJq2pTbCp5riHuTidBQ0MOB0vSM8Hs7XpFiy2VQPkS5ikb_FZEeIFgZvfHQF7CwYUAg77suwg=w287-h107-v0
+
+2c832588-bb2c-4a5e-84ab-8d2efff67961
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFprC7a6Vz4Dtp5BV35TQXX_y6Ar8pILHMwgGEuNBqAULmtRZr3ds5wr5Y87XmpkPZcHappS8n8GdC-B8yaTHXBQ6sxTp7cTfPDk99zUzMRBKEt6K10gXv41DHBWpio2owxV1YEng=w1280-h553-v0
+
+96f0ed7e-32d5-4976-9eb0-6b542989b255
+
+ZeRO memory reduction 
+
+ZeRO: Memory Optimizations Toward Training Trillion Parameter Models (Microsoft, 2020) 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF1fNfVr0pIYSCv7KIXjn_ioS0J3XYzieWzxJvbWfnl0kaHktMLibSDKUVDmXotoVRSVyl6sCP4ff9BevCk1v1JILTEBOf9mVX9g4D867d9VS3CN8pRwhqk3TEEDxtknuXTqUarhA=w1015-h571-v0
+
+e6980fe4-e46f-4e3f-9c57-b556f35e62b5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF5JHARjE6mtyNSPvBGRdCZ2lFS7n-abbSUmiteRNUQ6iE1zCT8oufLb6Vsnh2b3Tus_iU4RX3mHMKH2u9dzeE_1ixJ7GEJ-aJriom2saL0IOh69olCa3vUEFZ3ct_96mHniF14nA=w287-h107-v0
+
+3f9c6034-4fda-4243-906d-d921efe4a8d1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEFQ74WxWuX7lbcujhZvaysPiAwYVjtXbjQA_BFg-dnfbXjn75u8Qrz6xLfJ4n6t9F-tlumIFEpvJriOLXqP4-1FL6E1ibnlVEGs5AFRXV3mDclAyg_A_jjNtfFoP9E-9EDxszl=w1280-h290-v0
+
+fd2f5ac1-600c-4e9f-95f1-09ed472e3ebb
+
+ZeRO (hybrid parallelism) 
+
+https://www.deepspeed.ai/tutorials/pipeline/ 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFuHRLapIIFrFTtTTkEAPmhwlcVA3pPNWnDa1mctN07-lbpSJfpPW2EMjlmmQzRQWUM2PfvaLDj8dtkRlCRtVnM9G_BcS5KoG3MoCblhJh53wVr1BCdCmCtbvxP4QD5NWQwhjn4=w1015-h571-v0
+
+a929c6bc-c545-44ac-9849-8c23775d3096
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHb7FiEiCuQMHWjLUv0r-eukfaZ37ib_rJO1H08FeVGmn8WkCHi8fmZkd7n_eTbPnLZ9ggLw7xp8oeOLSAPLlYTSNcOPPLiaoSQ_kreR2vz7sla1RR9SjV70uY74cSB6vdVVF9PPQ=w287-h107-v0
+
+b16ec34a-2560-45a8-90d4-3c74394a430b
+
+more improvements 
+
+there is a lot more… 
+
+- ZeRO-R (improved memory consumption by activations, memory fragmentation) - ZeRO-Offload (manages automatic offloading from GPU to CPU for small 
+
+computations) - ZeRO-Infinity (improvement of ZeRO-Offload for ZeRO-3, allowing offloading to 
+
+disk (NVMe memory) - ZeRO++ (quantized weights and gradients, hierarchical partitioning) 
+
+https://sumanthrh.com/post/distributed-and-efficient-finetuning/#zero-powered-data-parallelism ZeRO++: Extremely Efficient Collective Communication for Giant Model Training (Wang et al., 2023) 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFqfQzOc_5pijKTGsPOuajxxkIzHj-DVOa7pR-cpsdDVWKUtNdirPieLym5raFUX6VtSYo6bbw_okZZ7AnczHrYdY7V5F_UyyByce1_4C3GsEISKUWwS2SOn-XPAfA4_UNv0xVa2A=w1015-h571-v0
+
+73643a5d-608c-4e9d-a3aa-59ba31e41c4e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHxAxKza8GLoo1hQ3GIZg4LjFcTLVxDLO1Ajq1VO9EAQlm69PZv7PmH5qZx1KO6KxTrDy9PlpvD5FvY_ztZziArUXovYxSS3dWaIQ0fBKliMgNHq2915hicOOcFNjzt59nYuNNznQ=w287-h107-v0
+
+16bdb93f-d919-4742-916b-a128b22c8fbd
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEnIcXW-d5HX6PYCzucVECsf5IU2aVGIUaH-sM_m50ODT8Yh_gNVNd89NTuwES8c-HxzvtK10sBN-ki2dsjOcx5iEwBK3mAgoeZLKzwMeMVxmTxYh9P8YsE3736C1_EbemzEjfT=w1280-h299-v0
+
+c024d973-a979-4cff-8d95-48dc25749d1d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGP3UrawN8xpOGrzTC1bpEBSMIcSBxcBS7bAjPfPC-DUv2NO6p-qt6XquttCQTZPbyOQxG9vN7oCmWJIJGEW-LYjVNNOGBTa8O9VmQ5zG1fUcLl5t5xz_fIReRQVEzOiPEEitm6KA=w1280-h662-v0
+
+9e894834-561c-4036-be9f-f5e0557ba2e4
+
+getting started with deepspeed 
+
+https://deepspeed.readthedocs.io/en/latest/zero3.html https://www.deepspeed.ai/getting-started/ 
+
+ 
+
+run with ZeRO-3: 
+
+deepspeed --num_nodes=2 \ <client_entry.py> <client args> \ 
+
+--deepspeed --deepspeed_config 
+
+ds_config.jsonsetup model for pipeling:
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGygrJSVgsxG5Pfl4yfJg5vDbP1t9zFs4DR7CgI7pebZPmhvJ5VNwtdGBlzmJu0_9kLi8cbLdDybnrRywX-mwJdLeKg25fA87g4IFMA6rMMRjEqKs7IGWM54B_-VE2-wFqP4A1d=w1015-h571-v0
+
+1b70acfe-8431-4653-b653-cf6713ef697f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHogAwBlD7V3IA9pdOPd22H_8b5pP90-H0ZFWOvppAdPqB2pRJZtgMs4gMu0vtjPhhtft-l8pcNln8lpNoRtZ6BB_P1tvBBm1nhSA2wC6zsGXRdCdGB1w4yy2xV5POTcYqfKlAqDg=w640-h640-v0
+
+10f16ad7-00e1-4684-86fc-99a385b2e1c8
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEtrfnyoYg8PGbngrf_kAL2Vx9olEo3qKq7Om5baTwMNDqQ38y7dWVNHjJ5rxVa_ZDRE248H41mCmYvsnfm07SOLpKsTAy3738OACuKqX69ixi-JMMs3RXiIq1SUc0N84A2uwgo=w1059-h1280-v0
+
+2f130e2b-85a8-43cc-aa3b-a0c9fa1e6232
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHUEBZY8F4F7c_0dEpvePLe__NJ3o19kjyNLZbUg8i_1Or3OcK-PNubpq5w3zbARtl6Sbsrq3Ad8wjEcfVgQDNldE54lBxgFEX8rvr4_1xiYfnrRd66IW7RHNGR0_wnW7L5Cvv8fg=w1200-h260-v0
+
+1cba70b3-057c-4b18-9da2-c78577eccaf1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF0fxdAWWjPc3VOi5BMZp5voKwmp3eeOO4koBwzYcE8fZ5R7oNRW_iRjW-0hr8iewRwCJJXxDiUTLi1kXMU_wA7lhk6F5W2FtVYq_pg47yQDR_fuZ8dOvTbrI8gdxRTAYFFgAPPGg=w1200-h648-v0
+
+24aeefa2-82ed-4d99-a7f4-fd1a47c5047a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHhDD3E1g2pp7NSh6M82ZMnLt13xbvg8EgZh7toLOWeqOPSquGE3VXO9G3Im8XPnDuNAkrwBza91l_gZdsKfoI1izNT378GpimcV3uoZObxxJD779nVRDhcXK8EoYNNRbEbRQpfAg=w1280-h245-v0
+
+dc17bff5-ea3c-423d-9e4e-1daf83cd3dc7
+
+alternative distributed-ML frameworks 
+
+(torch.distributed, torch-ddp, torch-fsdp)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHA5c8GLuHiHRBwVl9E6FeiN4QwHYNgOex046ap0_phny25rIcqnbgYw1PZDc9k-mqV8ACxQoLPFaGBgzns9PJDiGosq46BeK-EjiYqjImDKwtCO9dhSvrR-RyaqU4rkuw_pnPgWw=w1015-h571-v0
+
+7172c29e-4f2b-4229-9858-aef59f6a8273
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHNnbwXQKAwmcQW6iKCUBk0vL2WCpHySO_949UDMebz0iDKQBh97H9EUK7KxwjNHvLzATN2dspe2UtYNLPsn_No3Ow6OoEpBj1TiL9hGX3pXIGnlMS_hMhlrK2M_-YI4AELB0yD1g=w1280-h640-v0
+
+aed2846f-3176-4cd0-9e11-cb964bc68ba5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFaMPMU19I6eK14Rv7BbCDwdurEwk9pKoQpjDsTrRXUAtZmhJ106CMZo5ttKE2PLcwhR1kc0lunEnVsWj0bCgrz1cI3Em_P3HRAwbWWXeAj5FF8tiRez4VPbwrQqfgLgy9ZghI17w=w1205-h539-v0
+
+b19350bb-9080-4852-9091-a3f63edc86a7
+
+hyperparameter optimization with Ray 
+
+distributed execution framework offering HPO and task, actor, and object store abstractions for Python. 
+
+- 
+
+integrates with multiple Distributed-ML libraries like torch-ddp and deepspeed 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF5ejpWVzrA2UsNOhSukwtihOT5Hleo_6SIwC8oGtbzYP_vFWFiJJAYdvycrbBHn986HA-_somWTveZRjYJuOUAaB9wyj_ziXuu1XjAR68zrVzlE6syq0WlwFBl_ZebikJja5LS_A=w1015-h571-v0
+
+42aba998-275a-4824-bc7e-0a059bed6349
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHY0KDB_CipGWhtn3QMh7ehxEiQk_aY4gFoVAKJ_IXAhKThW-tfxNVwtjEySa15skOErvMu-9HZo6IrYiDgBfHwSuXhKMvCSgKXwdAQ7fp2CbFhQe5lv0f8F3m1z_RXX6TeuvgA=w1078-h818-v0
+
+9c2a83e4-0fc9-4321-9723-5d9b4a2ab90d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEOJbpNAQu_Tkk_KRVgnBcY5rC-GAqd3kaoH-HQUvQDDtxloG4pwxomeNZkl4Mb31-_8Rzu6zB_eVNqTJYIN5gu-83oz_5aEiyGM8MHJyiZEWknfdMpvUcvH2JJDMey6dmBJWBw=w1280-h1280-v0
+
+339efeea-58e5-4ac7-b863-6e24eae4c043
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGUYDItCt9du-AdsUmMkyDpRs_RuTkVDYkbpSP6sGnx0KTlAQMA0k-s0jgVLkJUHM1S9Hnclr8ehRJb0JlUU5y5ILcroUTqAqboWQ_ZpSI0y3ntrcOR7-PTDTKsVLdL7oA4IE7rWA=w1280-h211-v0
+
+016c92b2-17ad-47f8-afa3-4c9272be2f23
+
+- Digital Twins in physics and climate sciences 
+
+- What is a digital twin? 
+
+- Digital copy of physical system, e.g. for 
+
+simulation or testing 
+
+- Collaborative effort
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFiH5npj66BPZEWRkUQBroEgEA5f9nt0Vz8CYlCqt3-XR0qh9jsXSoY5cnh1HoJywV-EiKYEknfuJfJCuHUZTpCFnuAFaRflI7eo6V5I2Wz1hEALWq9VnU6rGA6vrAiY3mF85mPnQ=w1015-h571-v0
+
+b4cb2cf2-9e11-4363-bd38-7c5164a7c296
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHLDQZq-RGadG69bGE8l7NySvU7nsxXS9uCoLL992tz9wmDvAc0dfcS6EJI7SF93FPoIMA8mn76RAY3DxMSPwZH1yLtR8q-nrScTUUBROV8Cs0P7aipmqr6tu3RY_a0Ho9SyT0v-w=w1280-h333-v0
+
+f383d345-4913-4e89-9ef0-10f7eb8acd8a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEZGtB7MjzWz6C34diKPANV6_XZJSr1uiAezkse-oBNg8hz8PaEdG6n-oYA08ID5bakEpcF2BPL_yCjEEbRHvpH6x5Jo_tAqx5gwWX8gKNNJvIlfR0zrxIlQvzkf49Te8rkoi5u=w1280-h926-v0
+
+b0b52186-e592-4657-bd39-2b8c8abdb259
+
+A core module in interTwin 
+
+ Automates distributed deep learning 
+
+ Specify your pipeline in a yaml file 
+
+ Supports multiple frameworks 
+
+ Analytics of your model, e.g. power 
+
+consumption and scalability
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHI6Q3X7UHYH0k3hIggacYdXULIH4q0VdkfwfR_lROnlyrdY8Ahaxv1iEfM4iPrDD0Rgh6i8W6lhBe29QcH4i7TMesKzuucnWmc-IdUSmmQnX-95oJHHCAw4MTv5D4LEvQ2iogiJw=w1015-h571-v0
+
+6ed2307a-f6fc-4d96-981e-35a952a0156c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHhbTeyecxUhuLg5tUekcmjJGdPZLShx1Xe66yGZnjjWgY0rdv1qKQ__nfQ_f79iwlIqNPTMoHjY1hSmrQHqv6tlRYtRj94xEUgaKg7qzpKh3v6S8LwhuGrb_DgECxS8jwHZv9oQg=w1280-h720-v0
+
+4f39f9f4-7619-4153-b941-338bb4a0faf7
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQERjVmBbc67sZkmP-73_RHrsjNRnlVW5bSvqxNNdiHdwoFe8cd2Oo45f5fJae9LfBEXTfNlFG6iIev8AHX0s6jul9d8nQixroNzdNsGoar5AewMtm22b_aoDxFQ13GvXnmDGtIVew=w287-h107-v0
+
+593484ea-a22b-417b-a30e-0754007e153b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGkT99b-QmBaSTs21e7pwzVZ4KD-sPYHJQKu9eIPZ3Kd1QntSJW_9oSmMKlchWqVNjBeFQ6ubDAVHKk_MacCYfx6SKAX4dWkiN7ozwbYizZsYEaCJTg4uoq2ucapsYM0BLBsIlcSQ=w1280-h1275-v0
+
+796d12da-ae3d-4d89-93d6-43ccc0ed7a1f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEyMfvs041iZ0tBPB6QTT1XWccR4UzR4uqXtjf7PBMheZpBEpSbfxZzjglfW40JhZ1FKqzNf2RsMAnKIcaqZrPsF2dR1PgOYVbVDk0HQE1ZbIOIVJk5qMHn_CyGdmVEzMOksOHVbw=w1025-h205-v0
+
+c49888fa-78e2-4da9-9923-857eca3aeb36
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFkwPWmYfsJG1ViHk_ZvZ3qrhA7Wvj2XOpENl1jRiBqbDHk9RHwUeXll2Ntmu82tcEVl_fr3a5UfwxENi8VbcQpip8_RQFz-j6fcEvLhFs-ajvREUKO96_Qc9utQdsgT6tH98ry=w755-h238-v0
+
+b2f73588-fddb-4108-8b99-21a118a66dd4
+
+ 
+
+Different Distributed Strategies 
+
+itwinai currently supports three strategies: 
+
+❖ PyTorch’s Distributed Data Parallel (DDP) ❖ Microsoft’s deepspeed (DS) ❖ Horovod 
+
+out of these, DDP is considered the de facto standard 
+
+Image Sources: ❖ https://github.com/pytorch/pytorch 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF7vNhsuEUiq9NS_lNDTL0PZPTp5BpaJGWHMqHVOlS_rRqZRaM4bHl76VLzeVSfvJLgOY0N7YhFs6uBiJJ89iw5MPxMLmnbiEXK2CIs-h4pFpbmqVsOATitKJYS1cb9BJYs8SK1hA=w1015-h571-v0
+
+52d24d7b-3d32-490e-86cd-01423648cee4
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGym0AswdtVFOCLKUeDwA6cSnScKIkWVNKuzhOSCEo_83QHhPbr5lT51cqBwm-48MSXYtS-j69wGxibQoSuOXxu30tDL4buKKj4EGTA7cK7J4pWwTcKMXujWMUEIPeKLXIBP9gEtA=w1280-h720-v0
+
+4328c2ea-02b6-4593-8c76-1978f7b9d74a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGzkZf7uZp_alb5KvhMSkUnBh2nlTHocjAkZ1sGkOKz9iuRjGSlq7truLoIITGzFiGmFTHjvaLyXQSvZkm45VEEV669NjtCWwoSAi4Ha6eC8M2SxqKyG5CXeXY2-JWCWTM1BzyWng=w755-h238-v0
+
+f44839fb-7cce-43a9-9953-74561bbdfd54
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHtXyrdgzP9Sdhd_5ib4GOcF3TSG5mQSJe93rlCZVkS1doFhlyxu7QVU_wQtvTsfKtqwaRc_pxvYraysmDUw45-pTZc0swkMAAmTD1jh9qJbd7RyBYZnDwKZltUO0x-5re2SKbJ=w1280-h572-v0
+
+3601e353-51cd-4405-96fc-76ee55d77a6f
+
+ 
+
+itwinai — EURAC use case (drought prediction) 
+
+surrogate RNN model to predict hydrological parameters in the alps over time. 
+
+https://zenodo.org/records/15096734 
+
+distributed!
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGMfJQrfrAzrc-neEzknn6B4JRm5US3ueUcrGn5cnWHTMHkzkp4carGmiVV-SGXyhmZ4kiUtF5FbRj34z9Y1Y_KWTsmGxgy7V1IEZPnDyMhb_txIe9_3WW5QpX69HsqGOtiDw9-2Q=w1015-h571-v0
+
+ece75d17-37e7-42a6-982f-ddb668e559cc
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH0iNhtetlak9DxNg8Nghj68HEhECqMzpFbsA3JzT_xIiM0QLDYd70iNS54FGLYiyGZFJ5RqGp6_0eQBaarrMIUjXLGtby6skDpQURYam7pUn80AGICIi3Jfi-FBW5LdyOyxksAKw=w1280-h720-v0
+
+f79c1279-770a-4563-aa99-40e491cdedfe
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHloW-H21sFTQbi9bnxnQVDk5rWz0o4P_UPH4O_xsl_X46-xBxjD8Kigt2uRiDPArMKuLsZOUKY5qyONRIFw0uZyimD3NxGDY1AqubZSk_e1dPQ_BDpgzKVc4KjDYtJ-6SOeBwtbw=w755-h238-v0
+
+6f49c0ca-0ecf-4a07-9db5-d0f732ddf2b3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHk5g2Pj1Q1pNjrCQ4KhljJUzORCVb2irleIvR_iUKVRX-VfpRtf5lDyh2wQm6eidSLsyJ_v7OPY9Z2FJMA0ZVpkObG_X69MjrgfFL-n2wHOxf8bj4GvWZXp2ABXsX0Tp2E7H-i=w1280-h698-v0
+
+1653af54-39a3-48ef-b72d-9200782dff53
+
+ 
+
+itwinai — Virgo Noise Simulation for Gravitational Waves Detector 
+
+Background: Gravitational Wave (GW) interferometers detect GWs produced by the acceleration of massive 
+
+objects, such as black holes or neutron stars 
+
+Detector measures deformation of interferometer arms 
+
+→ the strain 
+
+Constant monitoring of interferometer status and 
+
+environmental conditions to control noise     → auxiliary channels 
+
+Goal: Denoise main detector channel using AI-generated 
+
+signal glitches from auxiliary channels
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH4uzDO2XCUHIExPjD6Yre86RoGiOomV2aQzZSz2szStFwrw3SPat9XsEy03ua3jHOwz-hUkKr6sQ0uCVOW20JgyNfngC0IA9d0SU-A67mL8Reh8lOQAQlstcB34MstxX4dLLIKqQ=w1015-h571-v0
+
+a8e5583a-63ae-45df-a613-af829cf2d723
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG_4MUKINzZ7Bb9rW8xxyTIYo7KNkKUfS2O0sXn8cumkTCS3KPFO3KbbEYYqrzAPjy_YCwqtCHnzPUhaRBtgw7ZqzDSPFg1U5G04PD4et1A79MioGbkuhuFBFc49AQcWp0FcOHO3Q=w1280-h720-v0
+
+4cd60195-b8f8-4564-96c9-54c3d3ca431c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGaLfOI5FBL6kyrSjdsp0ITz11bxf5BcOpplfQM4ikyyJH7lVzDGi0fo66fhqjnMCHxm-WIuNPjlYVN00eoLfbVQVSYgkMjjpSYOB4PELe9WlCk_WejOzr_zyEn-o3Fji-KX0btbg=w755-h238-v0
+
+10c28162-8b09-48bd-868d-ad68e5a45c10
+
+ 
+
+itwinai - live demo 
+
+Image Sources: ❖ https://github.com/pytorch/pytorch 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF6qBL1rVh3_MVHS7IF8v2gLvNka91zmQ50QDJz6MigqS_8XKAoJwo50_kDSrikJMY7h3cHULruO6KQ0bP2t1DeSTnltYP_V7yu6P9d01t0DXwuizTq3HTBM7cOoFEQz1uyIZhd=w1015-h571-v0
+
+7bd8e136-45da-4bdc-980d-e6380408d320
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFiS_kDg7U1EVjWD4sabjyF30JN4j1BLDJ1DfP5ZzlDdEAzL_T7SJYk-ngizCkEsdE4lLnKBrVc_ZEEhXZ6RjVcmdRgYDiLqHhPn97DH2wYvX7ZHW2OT90kB8xRxGrUBIMjS4B9IQ=w1280-h720-v0
+
+282f9ae1-858d-4b85-b071-132896a86218
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHpouOXQS98Am7GsBtJCehVsr5B4NKcPfkr2GuNyO0U3c72vuO3vkW0c6xw68auG4kzzjpa15DEfI0UT0PtIWt2D1Em8ZUcXW9PWmdNBhoRtrSUZrTVDI1QfVck8Pr6zdf8aCE0=w755-h238-v0
+
+af335671-7462-4722-a9a9-b96ae5964f7d
+
+ 
+
+The itwinai Scalability Report 
+
+Goals: 
+
+❖ 
+
+Measure the model’s scalability wrt. number of workers 
+
+❖ Find the best distributed strategy for your use case 
+
+Five metrics: 
+
+❖ Average time per epoch ❖ Relative speedup of time per epoch ❖ GPU Utilization (0–100%) (per worker over time) ❖ GPU Power Consumption (W) (per worker over time) ❖ Communication overhead (0–100%) 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFKevfkcjIZh7koc7FUTvAsb5ktYUyH9hNw6FflGPTO3I6bzbnYMHwWClzC4Wj26eejuXbU5bZH9FbA2aKmf1r86_lkHv4llA_QVr5BHVHTGYmul9RCg4aN8DUCh-M8djAbPQ0JWQ=w1015-h571-v0
+
+247b75f2-4c0d-4014-83b6-883a62a1ddfc
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHKf8Trz-TV3sMWCBlKHQwiz5PYOEuVhA3YFMAyLz9uwQCOcoqwE-NZglq1-4Vn70m5EgbuAh2zHbobJSs-EknoPNWh4RZLPJhivu5E2sPoimhYiA3JM8F14m5N4pUVOdOzmEiKUQ=w1280-h720-v0
+
+7605b62e-be69-4a0f-8449-d9f40cce7eda
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGh5W4t9daEbYtV6bWwYkwRW6TUROoBTIUhH_3f-PSEPJm8_p2oAwdT8g7UohvJLUPi6g_ICjG6AxxmbC7javRep1SU7AAODkGzWJYGqTU4jNYQ_rIxrg7eJ6NA6zr4tEf6BLa8Uw=w755-h238-v0
+
+75ceb6e4-eecc-4d22-b6b5-ea3b74780b0e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHQ17JE6Dll5lnwo9onoR6Eysz_aAvGMQyblyXMS5lDsKO1KSLtmTEZN9-yNmB2qP8DGG8Bbu_Wzm4dqLpAB1ncCWnUrL3NbutgVQxGNmXyDueY6BmNYon2Ne7A3oWuJgUVB-syKA=w1280-h768-v0
+
+1e570a54-b90f-407f-8a3b-441288ef2a0d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFpuzEcsZTHOU_AIL1146ecdOaA3saf2MhH5cDt_ufxMMJryDZwHzE-gXyFmsMD2_sI3hOjNjaWm2l5_KawcYS1-G6drbNzgG7HiY-OUSMBE-NmFRVKcoh6Esu9g2CmjuaOqKe5=w800-h600-v0
+
+d8109dd1-b543-44a8-87a5-e9ab6ebe12fa
+
+ 
+
+Scalability of MNIST 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHz622uWOfa05PRfVMJfLWC2TT6nHw3nX7IfJQ0x9ihlrFmlJs-bQvST8GMLQm7kbLPLKNxR8_XGzjCf1i0MXyPvjpPQ3pbwmORAVcMbH_QBFbYMQ5-k5S2B_o-WbAUodJ0oDHrYQ=w1015-h571-v0
+
+85b1b4c3-b36c-4bee-95ca-1eca2d1b9d0b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHWSEK8PAl9ojen1cjPUXEiZ2MHqPUNs2fLQdWG4wLyJrZM9TrFe7zZGayoSCZWoxaf-OIK_Y3e9js_5e5Wuv7sDqQ4C2CvX8FhPjiD01wBXaxJtwp8VJ6vdw0cB6QRjO7Xa8E_=w1280-h720-v0
+
+1a718704-44d1-41e4-8085-37f397bb59e6
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHIsGOApIixthvxr9jA0we20BgoNhVlBCuVH-9xkQZEMHqkvYDvaz_q4WWgdvI6JVmQoll7IbR3Ks7Vi09GZe6qBTBCoyl8sQM83bHuCPh07G0-nsCORASuZf8YsER2PvZfvSkT=w755-h238-v0
+
+bc2f0e06-9b48-47ab-8900-38908ba35f4a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFI2cV6CDrscRh5pBsGOLrarF_jQl_v9OHH1z8muP_q7wphW8Acx--n8U2tF0iELLPA4Fa6I7h48trKRNWEQF7LaQvMBZl1Yeh-mKI5BEDiyeAmDw9zbq_5HBq1HiqSytpz68Bc=w1280-h959-v0
+
+36d15bc8-7ddf-46f6-bafe-40091802c34d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFLn04oey0Lp9QPH1rKJqi-r_lQuybSvuMQ-npsWwzmkS1AIH5EOp0cl-mDeZF2SOL8PwafXU-PQAvp2F3W7FJiQ1iAAhI5QH1LviEF49qdH9CNv5y5OxxQKPaNpfwjEKG1yQFgBw=w1280-h768-v0
+
+8664a5c6-5115-449d-bb00-c6212798dcc7
+
+ 
+
+Scalability of Virgo 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFszO_P_mc6BhmeQ-LnMjaHqCBBEwymIKjMvN2bqJJY3Tumd40Y65Z6pwfrKQpBfx_Sem2VVlHFG1kcfUHjVPlEUCsIz0ojERaPiqE5-TBw7dPLRrmaeJ0CkewvnBJZIMOa1fh_=w1015-h571-v0
+
+e1fa0da3-42c5-44ef-bb73-862a99df8e38
+
+Thank you! <3 
+
+- Jarl Sondre Sæther (jarl.sondre.saether@cern.ch) - Linus Eickhoff (linus.maximilian.eickhoff@cern.ch)
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH3PLjBfIGwaDiqWgmtXgrKjkiK4Dq4JCiBMOH6Oh7ShJHPBQkQ_vvVm1aiaETCbMwqOpiVlQOHyepr5-x6mtNBQgJ9H8znTIZ3NzNs08wfL8-_yZsRLwByqL_d9pMTG7OtuFW23A=w1015-h571-v0
+
+c67fb2fa-30b0-4cc5-a6c9-8f6abe87e4b6
+
+sauce and further reads 
+
+- 
+
+https://lilianweng.github.io/posts/2021-09-25-train-large/ - https://sumanthrh.com/post/distributed-and-efficient-finetuning/#zero-powered 
+
+-data-parallelism - https://siboehm.com/articles/22/pipeline-parallel-training - https://siboehm.com/articles/22/data-parallel-training - https://blog.eleuther.ai/transformer-math/ 
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFjy_uzXw-Ec-F4M9JK4gYPB9ropkmTE_mgJO0srAeaeFGDvFEvG0NL0Ci_q6IZhxN5GW71HbuJwWDQYfr3iMHsNQS2SXhumI4ZIGw8hoJ1G1pXJ1jGZYwhg06pXevvV7ONHD6u2A=w1015-h571-v0
+
+ed2850f0-55ed-4d63-aac5-ebe418e870b8

@@ -1,0 +1,772 @@
+Accelerate · Hugging Face
+
+ Hugging Face
+
+https://huggingface.co/
+
+Models
+
+https://huggingface.co/models
+
+Datasets
+
+https://huggingface.co/datasets
+
+Spaces
+
+https://huggingface.co/spaces
+
+Buckets new
+
+https://huggingface.co/storage
+
+Docs
+
+https://huggingface.co/docs
+
+Enterprise
+
+https://huggingface.co/enterprise
+
+Pricing
+
+https://huggingface.co/pricing
+
+Log In
+
+https://huggingface.co/login
+
+Sign Up
+
+https://huggingface.co/join
+
+Transformers documentation
+
+Accelerate
+
+Transformers
+
+🏡 View all docs
+
+AWS Trainium & Inferentia
+
+Accelerate
+
+Argilla
+
+AutoTrain
+
+Bitsandbytes
+
+CLI
+
+Chat UI
+
+Dataset viewer
+
+Datasets
+
+Deploying on AWS
+
+Diffusers
+
+Distilabel
+
+Evaluate
+
+Google Cloud
+
+Google TPUs
+
+Gradio
+
+Hub
+
+Hub Python Library
+
+Huggingface.js
+
+Inference Endpoints (dedicated)
+
+Inference Providers
+
+Kernels
+
+LeRobot
+
+Leaderboards
+
+Lighteval
+
+Microsoft Azure
+
+Optimum
+
+PEFT
+
+Reachy Mini
+
+Safetensors
+
+Sentence Transformers
+
+TRL
+
+Tasks
+
+Text Embeddings Inference
+
+Text Generation Inference
+
+Tokenizers
+
+Trackio
+
+Transformers
+
+Transformers.js
+
+Xet
+
+smolagents
+
+timm
+
+Search documentation 
+
+Ctrl+K
+
+main
+
+v5.6.2
+
+v5.5.4
+
+v5.4.0
+
+v5.3.0
+
+v5.2.0
+
+v5.1.0
+
+v5.0.0
+
+v4.57.6
+
+v4.56.2
+
+v4.55.4
+
+v4.53.3
+
+v4.52.3
+
+v4.51.3
+
+v4.50.0
+
+v4.49.0
+
+v4.48.2
+
+v4.47.1
+
+v4.46.3
+
+v4.45.2
+
+v4.44.2
+
+v4.43.4
+
+v4.42.4
+
+v4.41.2
+
+v4.40.2
+
+v4.39.3
+
+v4.38.2
+
+v4.37.2
+
+v4.36.1
+
+v4.35.2
+
+v4.34.1
+
+v4.33.3
+
+v4.32.1
+
+v4.31.0
+
+v4.30.0
+
+v4.29.1
+
+v4.28.1
+
+v4.27.2
+
+v4.26.1
+
+v4.25.1
+
+v4.24.0
+
+v4.23.1
+
+v4.22.2
+
+v4.21.3
+
+v4.20.1
+
+v4.19.4
+
+v4.18.0
+
+v4.17.0
+
+v4.16.2
+
+v4.15.0
+
+v4.14.1
+
+v4.13.0
+
+v4.12.5
+
+v4.11.3
+
+v4.10.1
+
+v4.9.2
+
+v4.8.2
+
+v4.7.0
+
+v4.6.0
+
+v4.5.1
+
+v4.4.2
+
+v4.3.3
+
+v4.2.2
+
+v4.1.1
+
+v4.0.1
+
+v3.5.1
+
+v3.4.0
+
+v3.3.1
+
+v3.2.0
+
+v3.1.0
+
+v3.0.2
+
+v2.11.0
+
+v2.10.0
+
+v2.9.1
+
+v2.8.0
+
+v2.7.0
+
+v2.6.0
+
+v2.5.1
+
+v2.4.1
+
+v2.3.0
+
+v2.2.2
+
+v2.1.1
+
+v2.0.0
+
+v1.2.0
+
+v1.1.0
+
+v1.0.0
+
+doc-builder-html
+
+AR
+
+DE
+
+EN
+
+ES
+
+FR
+
+HI
+
+IT
+
+JA
+
+KO
+
+PT
+
+TR
+
+ZH
+
+159,978
+
+https://github.com/huggingface/transformers
+
+Get started
+
+Transformers
+
+https://huggingface.co/docs/transformers/index
+
+ 
+
+Installation
+
+https://huggingface.co/docs/transformers/installation
+
+ 
+
+Quickstart
+
+https://huggingface.co/docs/transformers/quicktour
+
+Base classes
+
+Models
+
+Preprocessors
+
+Inference
+
+Pipeline API
+
+Generate API
+
+Optimization
+
+Chat with models
+
+Serving
+
+Training
+
+Get started
+
+Customization
+
+Parameter-efficient fine-tuning
+
+https://huggingface.co/docs/transformers/peft
+
+Performance
+
+Distributed training
+
+Accelerator selection
+
+https://huggingface.co/docs/transformers/accelerator_selection
+
+ 
+
+Accelerate
+
+https://huggingface.co/docs/transformers/accelerate
+
+ 
+
+FullyShardedDataParallel
+
+https://huggingface.co/docs/transformers/fsdp
+
+ 
+
+DeepSpeed ZeRO
+
+https://huggingface.co/docs/transformers/deepspeed
+
+ 
+
+Ulysses sequence parallelism
+
+https://huggingface.co/docs/transformers/deepspeed_alst
+
+ 
+
+Tensor parallelism
+
+https://huggingface.co/docs/transformers/tensor_parallelism
+
+ 
+
+Debugging
+
+https://huggingface.co/docs/transformers/debugging
+
+ 
+
+Parallelism methods
+
+https://huggingface.co/docs/transformers/perf_train_gpu_many
+
+Hardware
+
+Quantization
+
+Ecosystem integrations
+
+Resources
+
+API
+
+ 
+
+Join the Hugging Face community
+
+and get access to the augmented documentation experience
+
+Collaborate on models, datasets and Spaces
+
+Faster examples with accelerated inference
+
+Switch between documentation themes
+
+Sign Up
+
+https://huggingface.co/join
+
+to get started
+
+Copy page
+
+Accelerate
+
+Accelerate
+
+https://hf.co/docs/accelerate/index
+
+ is a library designed to simplify distributed training on any type of setup with PyTorch by uniting the most common frameworks ( 
+
+Fully Sharded Data Parallel (FSDP)
+
+https://pytorch.org/blog/introducing-pytorch-fully-sharded-data-parallel-api/
+
+ and 
+
+DeepSpeed
+
+https://www.deepspeed.ai/
+
+) for it into a single interface. 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.6.2/en/main_classes/trainer#transformers.Trainer
+
+ is powered by Accelerate under the hood, enabling loading big models and distributed training.
+
+This guide will show you two ways to use Accelerate with Transformers, using FSDP as the backend. The first method demonstrates distributed training with 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.6.2/en/main_classes/trainer#transformers.Trainer
+
+, and the second method demonstrates adapting a PyTorch training loop. For more detailed information about Accelerate, please refer to the 
+
+documentation
+
+https://hf.co/docs/accelerate/index
+
+.
+
+Copied
+
+pip install accelerate
+
+
+Start by running 
+
+accelerate config
+
+https://hf.co/docs/accelerate/main/en/package_reference/cli#accelerate-config
+
+ in the command line to answer a series of prompts about your training system. This creates and saves a configuration file to help Accelerate correctly set up training based on your setup.
+
+Copied
+
+accelerate config
+
+
+Depending on your setup and the answers you provide, an example configuration file for distributing training with FSDP on one machine with two GPUs may look like the following.
+
+Copied
+
+compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: FSDP
+downcast_bf16: 'no'
+fsdp_config:
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  fsdp_backward_prefetch_policy: BACKWARD_PRE
+  fsdp_forward_prefetch: false
+  fsdp_cpu_ram_efficient_loading: true
+  fsdp_offload_params: false
+  fsdp_sharding_strategy: FULL_SHARD
+  fsdp_state_dict_type: SHARDED_STATE_DICT
+  fsdp_sync_module_states: true
+  fsdp_transformer_layer_cls_to_wrap: BertLayer
+  fsdp_use_orig_params: true
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 2
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
+
+
+Trainer
+
+Pass the path to the saved configuration file to 
+
+TrainingArguments
+
+https://huggingface.co/docs/transformers/v5.6.2/en/main_classes/trainer#transformers.TrainingArguments
+
+, and from there, pass your 
+
+TrainingArguments
+
+https://huggingface.co/docs/transformers/v5.6.2/en/main_classes/trainer#transformers.TrainingArguments
+
+ to 
+
+Trainer
+
+https://huggingface.co/docs/transformers/v5.6.2/en/main_classes/trainer#transformers.Trainer
+
+.
+
+Copied
+
+from transformers import TrainingArguments, Trainer
+
+training_args = TrainingArguments(
+    output_dir="your-model",
+    learning_rate=2e-5,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
+    num_train_epochs=2,
+    fsdp_config="path/to/fsdp_config",
+    fsdp="full_shard",
+    weight_decay=0.01,
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+    push_to_hub=True,
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=dataset["train"],
+    eval_dataset=dataset["test"],
+    processing_class=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+
+trainer.train()
+
+
+Native PyTorch
+
+Accelerate can also be added to any PyTorch training loop to enable distributed training. The 
+
+Accelerator
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/accelerator#accelerate.Accelerator
+
+ is the main entry point for adapting your PyTorch code to work with Accelerate. It automatically detects your distributed training setup and initializes all the necessary components for training. You don't need to explicitly place your model on a device because 
+
+Accelerator
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/accelerator#accelerate.Accelerator
+
+ knows which device to move your model to.
+
+Copied
+
+from accelerate import Accelerator
+
+accelerator = Accelerator()
+device = accelerator.device
+
+
+All PyTorch objects (model, optimizer, scheduler, dataloaders) should be passed to the 
+
+prepare
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/accelerator#accelerate.Accelerator.prepare
+
+ method now. This method moves your model to the appropriate device or devices, adapts the optimizer and scheduler to use 
+
+AcceleratedOptimizer
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/torch_wrappers#accelerate.optimizer.AcceleratedOptimizer
+
+ and 
+
+AcceleratedScheduler
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/torch_wrappers#accelerate.scheduler.AcceleratedScheduler
+
+, and creates a new shardable dataloader.
+
+Copied
+
+train_dataloader, eval_dataloader, model, optimizer = accelerator.prepare(
+    train_dataloader, eval_dataloader, model, optimizer
+)
+
+
+Replace 
+
+loss.backward
+
+ in your training loop with Accelerates 
+
+backward
+
+https://huggingface.co/docs/accelerate/v1.13.0/en/package_reference/accelerator#accelerate.Accelerator.backward
+
+ method to scale the gradients and determine the appropriate 
+
+backward
+
+ method to use depending on your framework (for example, DeepSpeed or Megatron).
+
+Copied
+
+for epoch in range(num_epochs):
+    for batch in train_dataloader:
+        outputs = model(**batch)
+        loss = outputs.loss
+        accelerator.backward(loss)
+        optimizer.step()
+        lr_scheduler.step()
+        optimizer.zero_grad()
+        progress_bar.update(1)
+
+
+Combine everything into a function and make it callable as a script.
+
+Copied
+
+from accelerate import Accelerator
+  
+def main():
+  accelerator = Accelerator()
+
+  model, optimizer, training_dataloader, scheduler = accelerator.prepare(
+      model, optimizer, training_dataloader, scheduler
+  )
+
+  for batch in training_dataloader:
+      optimizer.zero_grad()
+      inputs, targets = batch
+      outputs = model(inputs)
+      loss = loss_function(outputs, targets)
+      accelerator.backward(loss)
+      optimizer.step()
+      scheduler.step()
+
+if __name__ == "__main__":
+    main()
+
+
+From the command line, call 
+
+accelerate launch
+
+https://hf.co/docs/accelerate/main/en/package_reference/cli#accelerate-launch
+
+ to run your training script. Any additional arguments or parameters can be passed here as well.
+
+To launch your training script on two GPUs, add the 
+
+--num_processes
+
+ argument.
+
+Copied
+
+accelerate launch --num_processes=2 your_script.py
+
+
+Refer to the 
+
+Launching Accelerate scripts
+
+https://hf.co/docs/accelerate/main/en/basic_tutorials/launch
+
+ for more details.
+
+Update on GitHub
+
+https://github.com/huggingface/transformers/blob/main/docs/source/en/accelerate.md
+
+← Accelerator selection
+
+https://huggingface.co/docs/transformers/accelerator_selection
+
+ 
+
+FullyShardedDataParallel →
+
+https://huggingface.co/docs/transformers/fsdp
+
+Accelerate
+
+https://huggingface.co/docs/transformers/accelerate#accelerate
+
+ 
+
+Trainer
+
+https://huggingface.co/docs/transformers/accelerate#trainer
+
+ 
+
+Native PyTorch
+
+https://huggingface.co/docs/transformers/accelerate#native-pytorch

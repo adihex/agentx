@@ -1,0 +1,1231 @@
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEZgR6BTZVI_qFFWbTDqsNIffg7xQy1hJg_-vT8owoSjCJFww3D5M2SUz0y9YFHO8KRd4x3oqMwWGPOCZau6iJghmJ7Z4uHahDiF9t3we_PoY3GfcGImeYJBjExLq31bnSh7GHkNQ=w960-h540-v0
+
+fbd8cf7b-594c-4491-9618-3163cff53b0f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGora5LDs2jdpHE0QBfyC1t9kjTxOW6segp2NBiJYvKA1wg1apren_YrD6mZfHxpZvuUOlMWYT1thFTF-O5oZbBIq4zDp8HTYJ2KCHb_67U6NaNtLnnudG9voYrStojfIA8rmqu7Q=w1280-h664-v0
+
+8a1a2a19-a66c-449f-98aa-50316a2489a5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHEOtLcMLmL87gMpI5ykubn8z5TqcePjoncAeojrWe6cbSBioBZheHYRhsumq1z25mSGHLrtnQ9azuF8-XQKIzQwSZntz0kFNAcvr3ZQ2tISDn1NFXDc7pU9Bs9fMIcea4HIuBWeA=w220-h56-v0
+
+9c1d7e25-c80f-4e04-b203-6eceab13649b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFX2pSuhoLzCX8lxAgGBsuNySk8pmZ8GICekBVLFCTsbrAX9JYsNDUEWEpTXn0pma8voL_zHfacKAZUaiS0AIFNmRIkU2cxMq4YOOz101-QKyXc2SO7uxybLkoIDWJvTlSqMsAuPA=w571-h67-v0
+
+d6da9220-de72-4aca-965d-6bef1d7a951b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHIIpZsSlqeagoy_9kjjia8Y3DQ8Oq7T5AMAwMtNOM2hHC5h46nij7DDtT6k8N4xC-u2kox57kYf2U9ad5y5k1hkkiapyaIZIc5vpJrTRcMat3XPBh3-2RdQmFOIbw73mkkJlXH=w323-h74-v0
+
+b11e2f36-ea12-46c4-9a9f-0c30990c38b4
+
+DeepSpeed – Effi c ient  Tra ining Sca lab i l i ty  fo r Deep Learn ing Models 
+
+Olatunji (Tunji)  Ruwase
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFhSmhzKoQE3NHQtOThUr5mC7T1ERn6-aniRjbLrzziZ51W8FUsfstnrdBdDiuM-2wwZ-23h0YpRBJb71Ktex06RhB0ckylH70JpNj2M3RCZwPphMGu4G4-c9SJeA-tVccTrn48Hw=w1280-h230-v0
+
+d5538a7e-9aad-44bf-b6f4-7ef3de5e65e0
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGJnRJ8gXB5JpqrJ3UAby9S_nFJQD57bcCh5w8LlhBERvE-VOA1m_mDmpPo05deDBcplZnW0cPFDpbaRHqipU2lzNmDyUiNhfWnW00cWAeQy2XGZRaBUseBj5YrfNIjTAua8QEGKg=w220-h56-v0
+
+577fcff2-8822-4837-ad8a-1d2524f86ac9
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHOiD5r1UIuj5lBzUjkH1m2rlD9TxOFkRvkvufZtQ7vPRdL_j9vRrzYZyc_-qjg7gj32rgcwJGiyWpOFDrvW12qq7ZH8NTIvuKhQWXh6OnxKlMv8hpCl0dNg80OrqUD_iCQHGvwpw=w571-h67-v0
+
+1363054d-3b9e-4e9c-ad62-cbde7800c73b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGvCfqPEtxZLWXPgN02fVgCHA1Urb1iaV-zZEB-2poiSbTjCQg6_H5qi1XT0-h0e6PdRa2lVDydqc9sCOOy4P25nnfhh55RmSsLGjtZ5-trl3DeulU6cDXwoJIIkSlLzL143wOcbQ=w1223-h669-v0
+
+03bde3fb-cc27-4817-ab74-e6a7dceee577
+
+What is DeepSpeed? 
+
+DeepSpeed is an OSS deep learning optimization library that makes distributed training easy, efficient, and effective 
+
+➢ Efficiency: high-performance on 1 to 100K GPUs ➢ Ease-of-use: minimal effort to run out of the box ➢ Democratization: low-budget access to SOTA AI
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFiWqmXdIz9JS-H7ST_jEb1d0KEsSALjVvM1x2oMvYradkzx74A5TeLDJDXkIuSDvEyTh8ZWUClN4xGas4KEa0BGSvGtz0knCEgPA3xn2_O6LOgZC5uljVJfB9C0YBVEkLOqMjLXQ=w1280-h230-v0
+
+4f6eff0f-c7b1-4f3e-ad59-0f4b452a510e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFYS21jLvxHcaMpFBcboQspXq3cyfQmecsgpE1MvFfoZ8d106rJxX6FRr_X3WAPE96Esoh8ke7tccQDZKdcxEefOe4h1il0aJH37Gofo4Vz1-9lO_d1dkKPjzrFBYkXxVJtytRRnA=w220-h56-v0
+
+abd2b47b-cd8d-4370-9839-0b57b729690e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH48SJzwY6hQIjkRz9dCGsNaVDIWo4XD4ms7AhLdinvFYNUUaDZeET1BRa0ehgmzG-W2IjBRmYe13m3OZF94miyIrSJOjiJ4m7y0cHAtaSXttBOvEjqRxyiVciCeQOf_DG60KsEKw=w571-h67-v0
+
+a99259c4-bf46-4bea-8c7d-906b6780f54c
+
+Scaling drives SOTA Deep Learning 
+
+BERT (2018) 
+
+GPT-2 (2019) 
+
+Turing-NLG (2020) 
+
+GPT-3 (2020) 
+
+BLOOM (2022) 
+
+MT-NLG (2022) 
+
+PaLM (2022) 
+
+Llama 2 (2023) 
+
+DBRX (2024) 
+
+ARCTIC (2024) 
+
+Llama 3 (2024) 
+
+Phi-3 (2024) 
+
+Phi-3-MoE (2024) 
+
+Grok-1 (2024) 
+
+DeepSeek-R1 (2025) 
+
+Llama 4 (2025) 
+
+1.E+02 
+
+1.E+03 
+
+1.E+04 
+
+1.E+05 
+
+1.E+06 
+
+1.E+07 
+
+1.E+00 1.E+01 1.E+02 1.E+03 1.E+04 1.E+05 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Billion Tokens
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGzEMnY8Ik9DJ_p2ZSq_S7x14VdFy3ds_4vPfKd8DCf4vRv-dQvlskjq8vlockbeRyfnYTRKAM9cXT40B8uXLMkdZCxn4dOmeHj86nszFJIYavOUyPNWe0prYcaS9zErx0AvhAdFw=w1280-h230-v0
+
+477ebc76-00e8-4f7a-b199-072e2863b336
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHSsMUvw5eLaJ7G05lGTV-oRCVan2n34oGMGw5_ah83_UfgV55o0PuyLKfeK61zSlqpXdfvr7jxKPxUuYMjLAbdmmmTSC7M4_XMdpmeKD0UpxLe4C_ucB3gV_BXGX5FuKPAE_vh=w220-h56-v0
+
+5d1b33cb-bfaf-4858-9f18-4b4fc9eacf05
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG35famExOYPKTR9FSWMKWM49R-2MW8NZoMsFCdBuiG1b8sjkvJxUwBAoRoEKUbvMlb276_KC6cNd2SMYF6ttw0GpKaDDtyApqjqOnBFXhEO33lWRNPr7gJuG86ohzl19TEjbkMRw=w571-h67-v0
+
+1820c2bb-ae35-47a3-9105-e867f87c5731
+
+DeepSpeed so lves  c r i t i ca l  DL Sca l ing  cha l lenges 
+
+BERT (2018) 
+
+GPT-2 (2019) Turing-NLG (2020) 
+
+GPT-3 (2020) 
+
+BLOOM (2022) 
+
+MT-NLG (2022) PaLM (2022) 
+
+Llama 2 (2023) DBRX (2024) 
+
+ARCTIC (2024) 
+
+Llama 3 (2024) 
+
+Phi-3 (2024) 
+
+Phi-3-MoE (2024) 
+
+Grok-1 (2024) DeepSeek-R1 (2025) 
+
+Llama 4 (2025) 
+
+1.E+02 
+
+1.E+03 
+
+1.E+04 
+
+1.E+05 
+
+1.E+06 
+
+1.E+07 
+
+1.E+00 1.E+01 1.E+02 1.E+03 1.E+04 1.E+05 
+
+M ill 
+
+io n 
+
+ P a 
+
+ra m 
+
+e te 
+
+rs 
+
+Billion Tokens 
+
+Memory Compute Data Comm. I/O
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHuOZ18MORjW5VxEH_4R9ugFgdMlFxdx5nNTerDRSZfkghvSzisZmcHixAq5hEVoMqy7gDWijhmvgdMYYtRn6PThjPPuBQpVXYOi_yHu6xKmIJMaZ-xU6rwkCq49Xw523pKbxO5bQ=w1280-h230-v0
+
+06d51ed1-38cf-4568-8659-e14eb39c2f9d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE-qefuj65_gCwthX4mHvfgzJKTbQ90RCZ7t2CJoJnuKYq7jpVDfb0djlawV39B8TXiEIxfP9y0OcLMx0_BgWJdNm0dZRMezZDZEZFZ2nJZliXP0UWAttGKsvrf69GMCg3wzdoE4A=w220-h56-v0
+
+69b7e914-31b5-4446-aeb7-952b551ba2bd
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFeRBagS9bF7qyryIxwwge6eaEgG_JK_45jtuQ1AZDsLzMzFFZsAzxqpBPppim_zDcVDSiCLh9l_SLxLMKjoQcznIwy3FfVm37aWMuOussM-44NUJgwSh5j2rlqzsZT7PcThYdXvg=w571-h67-v0
+
+9d58a812-9f0e-4dec-b508-6be72b4f2c41
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHaXR_wuCSFEY0gsofl-V5u8pXrwshd8w8qj1SahmnHiEPBvnGQdBWaqvGXTKrza8gALoSjTxZKQ-aXc0mw29GFGzksfbzIgHYQfAdgbl1Mn0tlPPmk8iAMmMyWo6SyseTsJuoi0g=w1050-h548-v0
+
+33f0b577-22ee-411d-8ba0-78a1919b6205
+
+DL Sca l ing Chal lenge:  GPU Memory Wal l 
+
+*AI and Memory Wall. (This blogpost has been written in… | by Amir Gholami | riselab | Medium 
+
+Accelerator HBM (GB) 
+
+NVIDIA B300 SXM 288 
+
+AMD MI355X 288 
+
+AMD MI325X 256 
+
+NVIDIA B200 SXM 192 
+
+NVIDIA B100 SXM 192 
+
+AMD MI300X 192 
+
+NVIDIA H200 SXM 141 
+
+Intel Gaudi3 128 
+
+AWS Trainium2 96 
+
+Google TPU v5p 95 
+
+Accelerator memory size and speed
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHjPyvBnZk7cGO-PqTsBffD7dmOh19pKjp0R7SbHBQr40asJ2XEky1weVdhu6bA_MXWEuCJ4KOWx5KkGG5Eqg7gTOSGyqfgMtACC6B_Vtv5nCBkrv_ZOfAWM2p1gkq-aFiQa8GMbw=w1280-h230-v0
+
+42f1c84c-848c-4c75-a069-67a760ca2b60
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGEDm8XNAIIJTd-I5nErbl4uL2iHvp0t5MozBLL41ox4dX3Y1qRVEE2_REv93SA5AhBzAvoDKhR2cLWGtJ-v1ndik6QIvuaieZawg2Aq9GIdqMVkm7swWo6HLt3T1ZhDlUpOhHS=w220-h56-v0
+
+f9f09567-2bb0-4f36-954b-94cd7ac72525
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFzagN-Q8ru0nZhC1uOev8LKRjkOQKKU8t2HS8K43x205aZ6oTwkZ--DLkIFXkNA2k1ii5L3CznBTop4Zjc4ocLJlygZPIQR20fjcNeL7JQvazrIPmxp_ORw1cAhyY9PqH2yaT5Ow=w571-h67-v0
+
+cf766675-571f-47f5-99df-87614f8eaba5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGwJo7aGTeOGiPN9xKSc97r_W7YAQIQeceXJrkXP-cs5gTyPIjKCeqIHBVom8ZnHKYG5sYh6Yd3FzXRjn980BhMzntVxN7jDzFbji2v78QRa8dziH_SROYnQzMPzKTEugyjvKWc=w1280-h828-v0
+
+5e604add-59a6-4fbf-95de-5a72122d86e1
+
+DeepSpeed: Reshap ing DL Tra in ing  Landscape 
+
+Model state memory optimizations 
+
+1. ZeRO 
+
+ Partition across data parallel ranks 
+
+ Offload to CPU & NVMe 
+
+ Stages 1 – 3 
+
+2. 3D parallelism 
+
+ Tensor parallelism 
+
+ Pipeline parallelism 
+
+ ZeRO-DP 
+
+Impact on GPU Memory Wall 
+
+1. Trillion-parameter support available in ~2021 
+
+2. Inspired other scaling frameworks: FSDP, Colossal-AI, Megatron-LM, etc.
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEYvTunRjFf_xWoW6NtLHSEBbX1AsYAtMmj4kVOSyyTCAnhiK4G0H-pNG-YtzerGi-0UqsL-z2MF5PNWHaRd0elMnoDRBSWYxgzmnk1fhNLfXHCs-cgsq5a0B4stD9Z2RhSIIEADQ=w1280-h230-v0
+
+1b9571bb-d489-4581-bedc-25ea9df7961b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFIjbhkyYT8s9JI5z3KxTH5asPM_7vm2G__qFF_wWaRd4lOHkfygzUxv_5EIT0EydKYiYR3EqYDJ9PyPHlCbpiTkSbwfIAiu3eZTAZ0rlE_uUDEiRT3YfdS9TC08h0GcOQiqjW0xw=w220-h56-v0
+
+bc49cf94-bc77-4cf6-aa99-ecf65b8ed706
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEkgb5ZiQGT7Sr6tO3UQs3i9awFyCP3q51O_aikNbWVcWGpOcCxImfTYU1P0muSDhsSTT82rIPsg9maKgi4mjh4W6XQmu-A-GMsFc3jRzIrFLnEpgkNXUbI17bnjJ50xvmmnGFEWA=w571-h67-v0
+
+e10f13d9-2298-4bcc-835a-7dbd6f2d2889
+
+➢Universal Checkpoint 
+
+➢Domino 
+
+➢DeepCompile 
+
+➢DeepNVMe 
+
+DeepSpeed: New Direct ions
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEWJOTq5rsjC09bvIdEO61DlldzLJYEu1FxkmbhK466OA_aGOJ32U86oy22-EUl1xRt_iho1WPtM9vAUR_8e2S8dPjgWHehXipNjYAHgot8pljX6WYwscUDxpIKw_c8WciElHoCgQ=w1280-h230-v0
+
+064367c6-56be-4473-b269-14f4aa212a51
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHLWQyuZG14d8cotS4xTix53cCTGBK1K2qyph5Py6eQfGrYnFhVFLbiLpcIo9ltuGAd7MuWvHZuUbpi3av4zOD98cCyWYPIizYOqJaWI0O9-2ugPpBAU8Vz-5mQHRlDp094K8jBiQ=w220-h56-v0
+
+a1325364-e099-4f8a-b2d1-de6e3940fd88
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGO_JxySnLUHEb9akSQFpA_S4VpJCo4vkjG9z8TlU7DXzNb8vv9j9etk8JmT7AtZ1KtNqSqhFekNB_3dGgPw5XBQ7AUqoa_jlXbRvsOapl9FonvobUEhr4AEMm0Ch9OTMc0FP7Y=w571-h67-v0
+
+8e3e7525-d839-4ac8-95f7-f3c66cc02648
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGQ0gZy_ILpiPwmzFY_trjxxOTevut9QkWqCTQpCxP_ZYRGw7r6GQUhENIjFC1c8FNfefF13ov8IX1jcgbfHmtjb1WV3Ft3_0yZnXC_azeq5wPr7uTSOqCilbqK40fo-AaQtf9Ggg=w1020-h385-v0
+
+4f4a2b7b-8646-4652-871b-2deaef257b3e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHrMLIiJPm0Tuv0ubuBpWf_6c1A_o1E7qbhXCg6SYBuxp6_MF_2biz-FNQXABfsKX5OJqMhorwM8lfBprcSTPVRSVdk_xp6iwiscKxQ7sDCQCbXgB-QgIzjMFaiJ_A9RuEGQkY9=w70-h80-v0
+
+892ba2bb-0787-47f3-80f7-cea6e9894dc9
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFfpdPECI-CC3igxTUINO-iEeYsDDVR3Puyd0-glcGVbqPl7G0M8NeoW7W7Tzw2aQy5A-0Cj7FrL0ZpD8UsaYJJS5wl-R532s3IRAnE_gEoHkx6dK5KzdKfz3g8IeN68Pz-I3Rt0A=w90-h75-v0
+
+a7540a43-b99f-46a7-bf1e-0cd77a357385
+
+Solution 
+
+: Decouple distributed checkpoint from 
+
+hardware configurat ion 
+
+ Faul t tolerance: cont inue with healthy nodes 
+
+ Faster tra ining: opportunist ica lly use e last ic nodes 
+
+Universal Checkpoint:  Motivat ion 
+
+Worker 0 Worker n 
+
+…... 
+
+Metadata 
+
+Checkpoint 0 
+
+Param 
+
+Optim State 
+
+… 
+
+Save/load 
+
+Param 
+
+Optim State 
+
+Metadata 
+
+Checkpoint n 
+
+Param 
+
+Optim StateCheckpoint Storage 
+
+…... 
+
+…... …... 
+
+Problem: Distributed checkpoints cannot resume 
+
+on different hardware configurat ion 
+
+To appear at USENIX ATC 2025
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGGHZCs-U1ymCwBP6j5vKgM5Cywc9zX3o4_dgfDTqCcV2QLb7zUFuCwj2eFxov-nYWrD4k1-inMKJBm8Y63rt8uFNE-lG8h33JX7jThg8y4Bsy8qgmCqm7tr8clUd1mR5LRXq6XJg=w1280-h230-v0
+
+30c9da3a-e5ed-482f-9088-df60d08737ef
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGwCqRCpQF-kENxTATquPuwyCvHxuuDiVyapAmgRzOaIKyP2SMouOrDoiFmqnAlmXBWNWY44zXL3EG4pVfY0qC3OtNcJ4j0Wt0a_G07yC0xS0SDxD1VsRtnf4oTue1LQQrS5cab=w220-h56-v0
+
+2ae90794-a468-4f31-a5ec-fed03b7d3a29
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH3v2ZGPUZZKSv2TAzMtTs889k__OdkShD1r5OsziIagzBQjbh2YqHclDSiJFLBuvu-c2Rr6atsFEdW7zn90PXrklM5j0-hKiXtX7KO0lE5A66WEZ22NJmxwrTAaaj82Fn3vK2MHg=w571-h67-v0
+
+991d3828-5081-49fc-b1d6-d71f4a735dec
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHdPbeaxtqBGERdm2Ce17iHJI3oUcfzj0x_MOa7MPIHNzL54VxpvDSDpqywK-oe868THf6JrgVA8OUl5RLEwl3XzJ3z1zz4palWE51bd-TbHKOX02pTcqNoy51rOZefQm6HPdmQ3w=w34-h34-v0
+
+19befa62-cc04-4f22-bd26-d237c42d97ac
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG2uw8fBMYWmcP7FX1x3XdR4FPHd-nGJEZC4JfNwy8xJqSQKjP9SElwdDpu1K6sRU4YA537PVqO91cnmJDEBwfFti4y7LZ_lv2C8OmYaARB88NF1X9JT87RnUpWc2XAdaa2FkkCsg=w33-h34-v0
+
+356f2ba3-2074-4e07-8354-00bcc3631987
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEJvSmKzOamc-gueC3ikK2JasBelLrf0y1humYbQ8C3-8GDdhLEZuM-io2mVWet9wlgImjlXj_h6NzT4d9yrbAn7oq1v7W0BwMkmAG7puu4istaGVPX--OTiGVx6_DJO0dVguKH5g=w33-h34-v0
+
+dbd85008-792a-4385-9afd-ceb24a91cef3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFh7sXkX9YzKDAV-6sev6P7pG8IFTVytAJCbUrJZcIgC3kpI_tlxAY69Wk8iXhbi-f_5AyaIoNTByiZjihq59QMGmlkZHw-HreSRsb1WkuYsP0iaynHQb-UOARm-oP5SM5k3UGfEA=w33-h34-v0
+
+e6f20897-72a8-47c2-b2d4-64309df5d456
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG4-e3WsPQ5EVY4Evb41ecuzwofgAvuJOfijYUGHqCcg6VwvYfSsdS-w0VLGwDHNveGwtRMHPnxoaowwpIPE42txlfWpmyYkKIzgd1awUW_4CDuRuQ6xZktyujyLj_KX43IrvPQ5g=w34-h34-v0
+
+c044f895-7d0e-45a5-8009-e7a25091a67e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG4IGV7qH08rCMfODBisNtHgcF32shtLjU-hMPtsqM4pF7q5osCgY2YdF1AhhGYWgVFcMnMxN-Qkw0XYLBSULCovuYqvZx_o0YJmrWYLchy1F7a6EjjgHMQGbyUAqdz-_o5Adl-=w33-h34-v0
+
+f26191e4-a616-43e3-b6b6-a0cecc7fd3c2
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFWAWTCC8abVPDZBQLy_go_TNjb8JfiMU7WoH9s80Ke8MICQ7CDrdfPP8SPuu_ZdXbX6un48k3OZVC1TM2e-Wuu0Lk20E5wxQTJ3JLsddSEoXgxfkTfkrrVr6TtHPfTOJXBqtv6=w33-h34-v0
+
+654b6f36-e3a3-44ca-903a-974b6e880d52
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEaZ5qFnBZFLzAy30yMlivY41YSG4vpGUB6A3mo5x6uvZDTH3H3Gi-SuHDC8rhhGpByrw4OPrYIfkGaO7XZQgwkw7mbQFvmgfMJupViy9PZSu_776-IULI004qAVahOrpmH3NxRGw=w33-h34-v0
+
+c63f09d1-b377-4538-ba49-693680befa03
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEJLpbPCDF0k8Nl3oN8zMiQkLbl0py39LKTb0aOZ1g3SsUjAwPJtYyxxiuTMBnl7S2OxlTE0R6NRjRLU4fAPBGAXw9pxWPVSSxbcYqkCyWs_BPTbQ3Q376BrI3bCobaQ-z9p5B6WA=w34-h34-v0
+
+2b54e282-9b02-4f08-a0f4-eafb34992523
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHgrWOFda1rLKNUkDIIz7cIKc5cDqgyy7aRDphozCFqRPnAA3BpJqkVG5RYUXMA1LHNjCWG9BW4GmpIGbiDnfvXItwtwHkcFzI2lx9XRyZcUVnXKjYB5aKmbftuXRZzbgiB6jzkPA=w33-h34-v0
+
+54ace179-3826-4468-96fa-08d451046962
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG3Gueguo-CdXiXLtbj52znOZvCkxOMLdNDEjLK0ymwDomEDfNTWziTxXocHon4YFjMnBGkgGU-Z7mQ-eS7CQrRTxxxy1-e0zyl4rKCPhu5Cfv2XjvXXbIweaZR7Kh7XnIes-EC=w33-h34-v0
+
+d08c37af-e43d-4503-90e1-07a507ae05c5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHk8tC8wT1FAl7RA6PkMA4Kej6pJeRtro1fRe1N5tre_u9ChKw-U6fiyD3r2g-PLu_Q1dxg7D4OfNLUuP854EjBmyOSfi7g47MrW2Ko5yjILrnSohXPBdQKkQcu1b2pfrG9nkFD_A=w33-h34-v0
+
+1152e11e-7dfe-4cec-be2a-4f2355d0db50
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGIOyKG13UG-t-DC9XqTp8eSWE3dCu1TGOhtm1vlS6hlqYaBL0qJsM0FmDfTgugcc3cS15VuS8kbm2DOgfTzyYrzSRaWkc0bJMViQuOewPIRzLsBKgMlgT19Pla3rjKL8Tdbxug=w34-h34-v0
+
+3b768778-e9b9-421a-a27d-c4ded7297295
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE2fIHYRHFaNniD6eNA3i4MvLy-U17ZSU1SCROMc4UUapLKo6Xr88GU55_lGBGxUHya9i-G9TzAGHmxNVGsRqI9e5Ia4G3_w2CXvf4nc47uRQj9L8NOSUM_-MxJvFnr71BBHObX=w33-h34-v0
+
+94fd8c73-7b9e-4cbb-b73e-75cde31afb09
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE29dKD-87W9zldKA1OKYEheY7EAxTlgY5zOpXFNOG5OxFehhQ-T-rmA2X49WJA_sO4VWcHVTE6w_5-NdugDWDzxU5xts67i84flNUqEV8_GTnMBgsMoBywBsXNbs82QEUvGm5kBg=w33-h34-v0
+
+6d59c091-59cc-4ef4-9635-a8642b50932c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFHIBQ04dD0lM0lpMgjVRaLhe007CyZDWMSRlxuZyqx7mQgYPv4VrTxAjLN9Hdw-nKeDHn60QEOm-qxUrlNtdhe9jqX8kxIE83NhQ3o4Uaui4bDNNanf8bvFilKUGsNH4kZbkX38Q=w33-h34-v0
+
+bce8b86c-7a56-4748-9875-43a741a65317
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFUFF6PlLmGp284jl6HDNP8Ezzuynapjt_ZKdnwpL-jMZ7WsbWDNajQXgRhExV1oZjemGUyVQPZClqa9pErgy6S7Lt3f44uLfqbbnXGb-gm682UBdM2sD9Xh-rxvyRuh7312YOPUA=w33-h34-v0
+
+7430d3dd-3dde-4d89-8f03-3f773210fff5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF8W-RzldmIDVJQmWKxOb8E4uJ__QdVO3qYmyM-FqqFM2oL7XeADvKoAaxIAUuXXPfD-iqL8djonJHi3msUS59pp-zwGjJQK6KoBxyuolEo20ftK5B6hdCriyAgGOiepnAzLPh6Yg=w33-h34-v0
+
+7bb34abc-2e41-48e3-a1f7-c71cca50970f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE_0fQnZH06eRrv04ZDgC2BYmSXe6X7eJeRle_AQ1bZ3IsO9cfR5L-NqVFW0lwH4IsKMnc0PK9OPDSQXCwkFXo3o5O2_Ok7wvk5841O9hM7GA7c4JP8f7w3nxh4ch0_Eb82m8WSPQ=w34-h34-v0
+
+a8740961-34db-478e-8994-4984a6e753eb
+
+ Paralle lism strategy reconf igurat ion 
+
+ 
+
+Any Source 
+
+→ 
+
+any Target 
+
+ Supports S OTA strateg ies 
+
+ TP, P P, ZeRO-DP, SP, etc . 
+
+ Supports dense and sparse models 
+
+ Pattern-based reconf igurat ion 
+
+ Reconfigurat ion optimizat ions 
+
+Universal Checkpoint:  Overview 
+
+S o u 
+
+rc e  # 
+
+G P 
+
+U  8 
+
+ZeRO-1 DP=2 PP=4 
+
+GPU0 A0 A1 
+
+GPU1 B0 B1 
+
+GPU2 C0 C1 
+
+GPU3 D0 D1 
+
+GPU4 A0 A1 
+
+GPU5 B0 B1 
+
+GPU6 C0 C1 
+
+GPU7 D0 D1 
+
+data data 
+
+ZeRO-3 DP=2 SP=4 
+
+GPU0 D0C0A0 B0 
+
+data data 
+
+GPU1 D0C0A0 B0 
+
+GPU2 D0C0A0 B0 
+
+GPU3 D0C0A0 B0 
+
+GPU0 D1C1A1 B1 
+
+GPU1 D1C1A1 B1 
+
+GPU2 D1C1A1 B1 
+
+GPU3 D1C1A1 B1 
+
+data 
+
+DP=2 PP=2 TP=2 
+
+GPU0 A0 B0 
+
+GPU1 A1 B1 
+
+GPU2 C0 D0 
+
+GPU3 C1 D1 
+
+GPU4 A0 B0 
+
+GPU5 A1 B1 
+
+GPU6 C0 D0 
+
+GPU7 C1 D1 
+
+data data 
+
+DP=2 PP=2(Interleaved) TP=2 
+
+GPU0 A0 C0 
+
+GPU1 A1 C1 
+
+GPU2 B0 D0 
+
+GPU3 B1 D1 
+
+GPU4 A0 C0 
+
+GPU5 A1 C1 
+
+GPU6 B0 D0 
+
+GPU7 B1 D1 
+
+data 
+
+data 
+
+PP=2 TP=2 
+
+GPU0 A0 B0 
+
+GPU1 A1 B1 
+
+GPU2 C0 D0 
+
+GPU3 C1 D1 
+
+ZeRO-1 DP=2 PP=2 
+
+GPU0 B1B0 
+
+A0 A1 
+
+GPU1 C0 C1 
+
+D0 D1 
+
+data data 
+
+GPU3 B1B0 
+
+A0 A1 
+
+GPU4 C0 C1 
+
+D0 D1 
+
+ZeRO-2 DP=2 TP=2 
+
+GPU0 D0C0 
+
+A0 B0 
+
+GPU1 A1 B1 
+
+C1 D1 
+
+data data 
+
+GPU3 D0C0 
+
+A0 B0 
+
+GPU4 A1 B1 
+
+C1 D1 
+
+data 
+
+PP=4 
+
+GPU0 A0 A1 
+
+GPU1 B1 B1 
+
+GPU2 C0 C1 
+
+GPU3 D0 D1 
+
+ZeRO-1 DP=4 
+
+data 
+
+G P U 0 
+
+B1B0 
+
+A0 A1 
+
+C0 C1 
+
+D0 D1 
+
+G P U 1 
+
+B1B0 
+
+A0 A1 
+
+C0 C1 
+
+D0 D1 
+
+data 
+
+… 
+
+T a rg 
+
+e t 
+
+# G 
+
+P U 
+
+ 4 
+
+Universal Checkpoint Metadata: # Iteration, loss_scaler, clip_grad, …  
+
+Param A Adam_m A Adam_v A 
+
+Param B Adam_m B Adam_v B 
+
+Param C Adam_m C Adam_v C 
+
+Param D Adam_m D Adam_v D 
+
+An atomic checkpoint file Atomic checkpoint for one parameter Partitioned model state
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF5lXOXrSnTBWSjiOiprADzuxNBXU-1rkMW1K6zJUvXBx-WhWr-6SVpzOGiNqEN896UbMqd_UY8KckJczjny48poXMvIwfJZmkyuvIpVVeKv7CzgHoIk0o-9iwJyTX2EztbwiYqQw=w1280-h230-v0
+
+2de64f55-658f-4d5d-b8c0-c5c42004b94e
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEO5uQr7wdSzFZ3JLIjFcwCG0O0hFAkzr4_vhptn8vF651uEaH7iwuk3cqR0gAhIE-bTbVdiSJxptLAcAw9i7oVLcVVorK8J-g6Q5o356UJqp5n3xuszu8BjVPtyWSG4quq2-pgeg=w220-h56-v0
+
+b98017e5-8f5d-45f3-8c57-2f4975f0cbd6
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGbm62VA6WzW3Ek7xDIlr2xn0dsQMVqanE3uKuOd20cUqOQ5UdOPCPTJwG1_i3513-9Zpcyrhj0H53eABXYq5-GLqAHplhNw2Qbs85zV6pClBXIUla2aCdYNiWo6SENZNdgkONvPw=w571-h67-v0
+
+eddf8de1-3c47-49cb-8b74-fa9c58657383
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGXvNPIOcN3E2J0uOwGNE5--6wh8kElYXBZutRRfwCeQoo8PHRiFZgtkptcvloszh1offJFAGzvfbxVI7TXQ43Uq1XbyyMK5VONcwys-TyXcf_ZzTeIUITJhTBWD_POletFIJsNXg=w1280-h320-v0
+
+4387f0fd-57e7-4da9-bdbf-4a64381378f2
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH8W1U_llNZp4I67Tsxm9t1O_ZnXQMF3GZvYCIoB50JPcFdzZDgOxh8Ld548XYruA29FbrrJgkj_Xr6h1Ks2vR7Y7_0kzTphzopPUoXOHo6-wpfIbsp0Su3xjrSmGQ9QaDE1sYH=w1280-h203-v0
+
+7cc7ab57-f6d4-41af-bd8f-26311210dc91
+
+ Reshape 
+
+ 1 → N 
+
+ N→ 1 
+
+ TP/PP /DP/SP 
+
+Universal Checkpoint:  Results 
+
+ E2E 
+
+ Dense model 
+
+ Sparse model
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEuV9j-V_4K4TwlxgJdeNtn3jLUMGX-XAkah5ZAsmxB5qCNZ1ZB6iwkzAE0VKdqhkvgk9tKUWxylDGhjSpQ4AhF8OcLh-6B3iZtzZex2Pj1JNBWBZ8xUHZANA75pMux3-_awKcM=w1280-h230-v0
+
+152057c6-50de-4c6a-b870-457def3f0e90
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGCMFYmsLbSDKdD8NnW0Lh9lhav0cdhRImG4T7Le8tRolKNBy28oQdp7IhQya5P4lO3KpLADzJ9cgbvqqHYMQIg1s0YmCEFnSfyKhxHCus1kqOXc4GuHNSz9DnqlNkv_CeF6N-D=w220-h56-v0
+
+f6436f8c-4b9c-4d82-b274-450d64d6b24f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHkYpAAMlMGmhQBwWX6lGw9LY47qlcDlXHLMRIVG0iDl3rGBvXl_48OC8OskrvccyL5zXHUMYw1xvgQEzfWqsnestQcxm74lm48yHF5jW_B377hiooO729P_xnPZ_08iDEm2eVCqA=w571-h67-v0
+
+692bdbc3-db78-4adc-80c3-f18bb6d26298
+
+ BigScience: BLOOM (176B) model p re-train ing . 
+
+ Microsoft : Phi-3.5-MoE (42B) model p re-train ing . 
+
+ Universi ty of Cal i fornia, Berke ley : SmileyLlama (8B) model f ine-tuning. 
+
+ Renmin Universi ty of China: YuLan-Mini  (2.4B) model p re-train ing . 
+
+ Argonne National Lab: Tested on Aurora SuperComputer with DP=768 
+
+ AMD: to  appear at FMS’25 . 
+
+ “Fle xible, Eff ic ient , Resi li ent  Training  on AMD GPUs wi th DeepSp eed UCP” 
+
+Universal Checkpoint:  Adoptions
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFaN7q_ynPhUtwuos7tod_a79EHZKR8goyStg7d0spKivyf_tBLuvMrldgeIF_S0SX683q3KvPL4FXkPemue3c4ct7fSJXom7b3fZUKBAk0gK11eiTpsjECV1OIMfaqw3gt0X37=w1280-h230-v0
+
+56d99bf5-9d1f-47fd-b049-de1297d3af1d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGhccdMQbUxrHOSB6zoW76RNxvKQSkbgAlupHLPGY1DPm5MlFfjpl5q8vBJQI5KweCmRzSJQ608mG9yqe8hspm20P3mHNgBvKX2Pu7PC9d1hWQW7XR_af5Jo-b7CI8yxYdJJzq0eQ=w220-h56-v0
+
+0de50b49-0531-454e-b763-389914254415
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGiEu_XiVpRljbFE3kvl-ZctdgKYH-0kTh45C7jtH-3UU7AEtIAOA5kXtah6v8kVN8nB7FR5obbyNp7Bt6_8PCehgfwHyRee1AnB1beO9tN7oyWXeKTOq4TyP_9qNPxhH6ouZLE=w571-h67-v0
+
+0917d045-0083-42c5-918f-aff33ab0353b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGKZ2M-x_AAG3wyiTrs9av_KlDjz6IxFXcpxoSL0u5v9qb0iEFS1dPWXJYKoYJ5QQaNlXhGqw6pXGCWPiiM-6lamnEDhzI_QMh-gw4eRkzgtpkHS0XQkenx_r-2Jp1ngR69qX0vgw=w564-h347-v0
+
+ff5fa2b4-527d-4c42-813a-1ad6ba794528
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE0Oza-3-D3Q54cHeOcctLYKGNtRJn-V7hJITOhzPytYL_r5WapIFvgMCKCLEkInO_VHEjUYsZEUzv0T9JcL0w0tAW02vZF3XF2COjmi2d8l83BOyFrkDm5GAZ2tX-5FiwV6NtX=w934-h199-v0
+
+a161bbd0-194f-4c04-bdb6-a6595ed9c235
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHwnEl7m4CgENxlTzYzJg7s2IQioQcjaNit-TDpOD8Btb5Y_fMV-7nJ-U9Xgr6g7OkZ8ALMq_k-j88wEQLcDNLCuYbTMCI59pBdI2CriDVqNFknZcDjoGg_RDLBv8jzNKIFPlqw=w892-h243-v0
+
+caeefadc-cea9-4bf5-bdd6-851943e37b5a
+
+Problem: 
+
+ Communicat ion costs of 
+
+Tensor para lle lism (TP) 
+
+ Tolerable in  sing le -node: ~10% 
+
+ Signif icant in  mul t i -node: >  40% 
+
+Domino: Communicat ion -Free Train ing  Engine 
+
+GPT-3-13B: Tensor Parallel Training 
+
+Megatron-LM 
+
+Domino TP 
+
+Transformer forward pass 
+
+Solution 
+
+:  Fine-gra ined computation/communication overlap 
+
+ Ins ide t ransformer b lock 
+
+ Across t rans former  blocks
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEagwnTDavB08F-fBEpKJLXCfvu5pazPtLPir_UtZZhibAkF1bdtekikODEDYQ2wRu5WDJubL369_8e7Ank3OAibP140JH2wj3QBMV9nxxFKiuR1x_rNlDy3h1Eou9Sb_ZSTdIW=w1280-h230-v0
+
+292c2dc1-c049-4048-9264-07c177ec49f4
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEhcJgFT1b18q3C0QpJO_IflVC9W6Ago-wb__O-rnOvyVt5wNP44f3y0jM8lua14_Njrgqswbdzp3FnBgvN3hJUQZ4s6I2ZaDRZWITaKnHt39iBad914kKqyGNcIu7-0CeSBaHVVQ=w220-h56-v0
+
+455ff444-b0e9-4d1e-9fe0-4b01f1e61663
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE60Vocoyv3rhQuAHQy3_-WFD2kdxjJ_fkqsxZrb8g5lBdD-sQ9CawK4fKqpOoyumL_IxTWu8P2NGpyuJl6wuGJF7DNK7X1D_uvv9Q3A2x6SRiSyxQ9wbzkytY_oF2g6Z7DLsgG=w571-h67-v0
+
+30068c56-a54c-4aca-835f-1276710ff2dd
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHpbJ9Xu2ChYumcXrAEu7LPkL96vU1fR4LakoyXYClvOLOFWCgPLFFmQ8QjRXc0ZXaS_GX4b5mOJkq-NfVwT1mMNFLqMCjtaC2bhp19Z8V_lUvt15PclxuU4WkP1s7Brg5sXL-rzw=w1280-h131-v0
+
+dca55edb-ce21-4ee0-8712-58836b76514d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGcf2KyG8KfLv84k1hb4q1lvHXK2MbV7DcsBWI3fTK-2ZMuqlE1mAAZzb2yAGbCf7BfgREJH4SEcfUEUXQwEkg2TMSaEdLCovU2VXIgIaFv0RhkdM-8nUqBJyKreFtdDBIkGUWW=w1280-h141-v0
+
+acee51b7-dc7b-4423-ade3-67e50f91473c
+
+Domino: Eva lua t ion 
+
+GPUs Batch Size Inside Transformer Across Transformer 
+
+8 x H200 16 12.4% 15.4% 
+
+8 x MI300 16 8.9% 15.6% 
+
+16 x MI300 16 7.5% 14.8% 
+
+16 x MI300 24 8.6% 16.0% 
+
+Backward Pass 
+
+Forward Pass 
+
+GPT3-13B on one H200 node: Communication-free TP training (Megatron-LM) 
+
+GPT3-13B: Training Speedup over Async Megatron-LM
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEfaD7lZ1P89S6IZLi9a2Qau-BES9WFXE_mA3gNs5zAaKLMXpcxnRL_VXKjMlMejvyYXHm9YRK5_Cq_gpEeNKs3su4OyOvsrVGUz9lJt7sKkRydRiKITYakhqQOvqw-Ejoet5t9SQ=w1280-h230-v0
+
+d583b2c2-6d0a-430e-b4b4-ca3c75024ce5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEq60kAJtdHdaaJZdUQCOCKhbo4tAcsVoOEJiAgNNUij8fAViVBOXxd16TD7dOcImExkQETJqrWoBq7lt1SmAE8_KPvoxTXlARKWub85skjQCTbcka-bIsoBlgmtyDcSllDC3FkDw=w220-h56-v0
+
+214a19ea-0248-4766-b6f3-30ca5b941e62
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGXKz_bgsPnwPOyg9UvJ-eJNWASbwlNBAhHY1Hg6oVxlHGU0HAK9fEmj5SD3PUeA-Liyo6ADdE-U7DSHUnO8W7LliGQd1iJBFbG9ZnVib4mnF4PXJR6reBi5OoJoDQBxs8RFG5B=w571-h67-v0
+
+cb841402-68fd-43ac-a849-1c705733eeb8
+
+Domino: Ongo ing  work 
+
+ Generalize to other TP algorithms 
+
+ HF Nanotron integrat ion (achieved 75% comm. hid ing) 
+
+ MoE Inference 
+
+ Long sequence Training 
+
+ Quantized communication collectives
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHOpq2XBqeQ-kLhLLSRNaexK1kJWvwDhNxnuQm2nAtR1WGCBu0afK3bhoxGAqJSnVzi8cMHMHfOhvVTTCgPnQTvregWOb-g94jRixW8a4rfmCBCR8lOKp8uKkaIPuiEne_ciP5Lbw=w1280-h230-v0
+
+9b7142ef-4a1b-4b9d-839a-8dadef6ad999
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFvToZtNVrjnHZb_7GodWqpz6-VMsNDVcUzl1ZfjRr7daVaLIsVrt06XcVkoIsm_7n768dZ7GBY-dPtfRnX2vHPUGt3B3MbvHTC3L6HjcdUr-CplL2vU62eJJyUOEErBydl6-yO=w220-h56-v0
+
+7b166741-42fc-403b-8894-e3b3cddf29ec
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHiqDJyJhwfZh-0b0a9zAE7goR_hPyjJy2zFqtkA8Ft5FUPZI93YO5ePovVYDVSdUrDwWDPWm03KY_xTNo2EeMgw4PmqVJmJvlHjiZ4VEdMT5vnnB2XZdms-9bNhsCo0Sv-bnS0ag=w571-h67-v0
+
+9c6a3c46-b9ac-49df-886a-9f1a3be18229
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHAgGE4EIxVBiFsHj4P5j49TvQcbSGMbR4ivzFWIDRX-QVrAJGv4SrhMFljZZUAWGKTadcqXasiwuL_F6xOQb3chdQH2-hO-eUhAF-ZPToYbGM8J5PNSbhg5tOnk4BN71PyFcljIQ=w1280-h847-v0
+
+f56bc486-c2e7-4cf2-b4df-938d9d4c0081
+
+DeepCompi le :  Compi le r -based DL opt im izat ions 
+
+Solution: 
+
+Optimizations via compiler transformations 
+
+ Automatic parallelization 
+
+ Profile-guided performance tuning 
+
+ Build on torch.compile 
+
+Current optimizations 
+
+ ZeRO3 (parameter sharding) 
+
+ ZeRO1 (optimizer state sharding) 
+
+ Offloading 
+
+Base Compiler (e.g., torch) 
+
+Problem: 
+
+Distributed training/inference optimization is hard 
+
+ Developer effort 
+
+ Manual performance tuning
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGRGFFBX0YXV2NxD1-2O_A9c4yyz9O6pJaelLBm1Gisw7uRco4HYGrq1cOR3rCgu9wejdavWq5peeqGjn1FT_JA5g0M4KyBFYBH13YcAarC7GkDXJTxBQTh4KiJeVsnBHkvPsPCuw=w1280-h230-v0
+
+f08a0483-8dfb-48fb-8d89-e94c19a3752a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFdmrjSISYl5LGd6Jt7Y3QTgcpw559n1fXOuWAD00NUXv5D0BNJDeR_cOAiLmnRR10r2lNXUe7SNXt2WIkuLronB_cHo-qzXUjROBpd4eFwy6SZ0tyfBwurpWVW1n5AknRcNjGL1A=w220-h56-v0
+
+126bfb4a-fe19-4850-8961-45107f62bacc
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG-D_VjjTc4NdIKzJAo6cfrCNx8XimMqaILdpxi2OiUnXvvktWQvY0tm-p-JKRpiJOFM5K87aDoKIB4GBswMbUJA7Q9e6Iav5kCGyXgSgS3H2fJ6Gyt4NSHKRzFPfZvcj5a3MXVzA=w571-h67-v0
+
+023c4af8-ca58-42e5-89b4-ae745199c59b
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEA_GZSDzRldwIcYmPh4udHEiAgW2E-j54LqIQ8UrYS4IQ-_THQ9FY06e4GounHo9eGm9_kMgU-baakGRnOScKRVw0Qj5tsMrSIdofo2FwKBz3VLxtDBo-j_tdzWgLIo5UdQg3b=w40-h57-v0
+
+72ec1ccd-1521-4309-8b36-4950a9cef0bd
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQE9y0XFQMI8JxJveciomi1o540unePT7nYnkGJE-NDPwwIHn6Xn3NFHKV7x2y3ixZa89YNYkEZPztiNnf3WuWz1ilhKwUHIF0TpMOJF9j9ENtXlCRvUQRmKThw8ifdeR9XO4QfZhg=w40-h55-v0
+
+0194044b-6723-498d-95b9-4e3e1c30dc3a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHLQYR_Vr7LAMEGaxX13m-kmeAo4tQfyefp1iz4OrSb3Xlyl5Vm9MUyaovPDsclYNhpsFcMy7DrBnHaRstL1ZCnw7HSGPpwaAJalF4MvaSL91zj0e8prPFyO5VFxAn8EZ2Ul85m-Q=w46-h176-v0
+
+4bf23870-bd39-4c7f-8439-6b30cadaf85c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGatq3yk9VFg7lEbQLUJflZDBkNctakV821OVSFltG0ahRxnl4CUoZvlXO0W9X3llj1ZRQuvoC0RD8zKjDXwmu3RtoXfjvqnP1D14MPHf4DADqHtTBRc8boDDpzwhLMVF83y9eRGw=w102-h112-v0
+
+5f2b07d8-d75f-45bf-9659-8a8b7acb22e5
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGXgKbnSrCHxmzIT-qjhyjO_WBpGg4oWIvnfA6ll0xx4LvpdeBoYeoYHhrl2CR422ChhYsl59fpd6ja2otj7damiTKacoaih8vOi_A0g5Y6xY6HPhvuy_vOtCFStruSjYMAtKgdZA=w89-h71-v0
+
+23a51805-3906-4f73-939a-6ad497bda3ed
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF-_nghz-ksgmjfxnLM3HokSHVmX7lmTquzWqFXlbNZTeGPaQOnInMXTZTfIsqbXrTwzaw2r8b0C8Kriuk2fBMioI8eHs0pQYcK_pid8yQPOL_q-wLdPN9tyqpwMC16FPZUinSX=w58-h71-v0
+
+23407d0d-4b77-4bdc-87a7-0f61c4b75019
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHBkJmBqq0Hu1qlcuMcYeqg-nmln3mGE8tfYTzhHo-lfG8CUG7J1o6J0JRj7-RUUvyXH6rUjcFrMF6EO527BPLgkkBSIbR_Ilg_X4Fpl7gYr1BYWEIUYDyV1PJHDQGfU9d2MamY=w41-h224-v0
+
+8ad08848-f839-41cb-a2c5-ff50029cc130
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHmQjP811QhQbjd4gOGrk_dRjzJrhS8cbCJzQVm8ob8DNCsSy-rbcbZkNpnMP4kkBtRgXUW6JGK1zUDwFsrJ4D9ceZ-OGQXlYXayvm3ZNbSBVDQGWiEa5a71l8JwSGSFOD6txqsEA=w71-h136-v0
+
+8780344d-eaee-4bfd-a78e-629759e562b6
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQF54AeLLHEXOMjhYfrhRVZ1mQ9CYs7mPlaEKYrfESJEgcNXpIXH-K_pCUv3YGgVxFNTLCarfjSLyTonRp1hDmQ3Bf2Si8krqaGvCu8oxiOV3Ni7db0TABTW2bZjuwdTyWnurIGXcQ=w73-h94-v0
+
+c975bdd1-3299-42db-8949-9048a745757a
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH4ohcXKIGfNPHSjRb32BogaXlxVAc8mpYFkl27NAPXItn_GKREBVzlVZ5v4M_Beq2PkoaEWwyyfj9kStmNCOKUphI1fk3zh9O-LniXJb8fd8rDiL8RKfIYr5PDH6vtONAgEpq9=w79-h66-v0
+
+a1e2e36e-c961-46a8-99e4-03e5965ddac0
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEShhWeY68fUPA2S7YR4JJIpEq8ybtTCudiluCMPmZBkFgIZKMcxBEG0l961_j_zS4fqOyIfnfYNC85m2cQJsABh4e67YPC891sohl3Yo5WNqmC0NV7bzW56PQSTqeAw7P2ZP2U=w540-h294-v0
+
+5e0b3738-bb1e-4f99-a8ee-42a2d8919b1c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGEQS4rM-D1IKAQMQutOOGNE6iqxwxxnwPkGecI4vKYpMQdMYobuKiTqbom4qiIXXzJ8Zug9e_8MvY7d2HBLeYoMWA08CMktqB7LjLXAkILcAeQPnwNOe8wP6rMuHXVii7wkTCY2w=w254-h45-v0
+
+65118627-465f-4d88-bede-4d48e94f0d61
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHsN2hRXvkjeGDrWVeRbhhFTZGgvwoKa9tWrLPt6vmfhk0Yn1CrtDtyqdCrRn0XFgpeyps-F-aeA7QWGFm3WU3m4tFXmr1o0Pl3Xee4fviXyP1qh8kIv7jyYNbBxeWYV16pBQ0H6Q=w319-h38-v0
+
+c89ab85f-91ef-4248-9dbb-f0db29af4bee
+
+Parameter (Sharded) 
+
+Operator 2 
+
+Operator 3 
+
+Gather 
+
+Release 
+
+Operator 1 
+
+Parameter 
+
+Operator 2 
+
+Operator 3 
+
+Operator 1 
+
+DeepCompile: ZeRO3 Optimizations 
+
+50 
+
+60 
+
+70 
+
+80 
+
+(GB) 
+
+Unused 
+
+forward backward 
+
+Aggressive 
+
+prefetching 
+
+Unused Aggressive 
+
+prefetching 
+
+Automatic parallelization phase 
+
+ Apply sharding logic 
+
+ Convert into multi-GPU graph 
+
+Profile-guided tuning phase 
+
+ All-gather 
+
+ Prefetching 
+
+ Sharding
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQH5vFfkZhC04fhN_4Cw9h6lDqBOpLYUHBLxeSjMzGskKb0ZTbPD5Xxcr0BqjEyhT4eQWsvOlnhUYy6RtQeanTbrSpNtG5jW15kSyLsnRpwLKx2CHgdIGhvbb69I8NpD927KlEtyRg=w1280-h230-v0
+
+f40dfa19-546d-475c-9427-1c9a4f28ca0d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFU3k9TaGEQ8eYR61mmiBifqnL56LL0XjXFhQyC1HZJrgbLGp_hqQEbLSEMXiZSuhJK2ry-0I5PSXC2Q2OdcHFiDFqstLc8_IkYkCQW6SFc15c5HNHz0mu1hEdGdHtQgOsN9yVu=w220-h56-v0
+
+b5c750b1-40cc-4cd2-99e0-384da0cce2db
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFWTygd9Y602eNXDakQ7fIPZQqM24loSS5xiCNMTnWFmAo7BuQB3OTU4dIQGoTFfgMjpymBGwVZXMBICRhljH-D2CxZt2vE7G5ZnQM9DJQsLvniG39L2ccurOQvNMD4rfNeqvIm=w571-h67-v0
+
+c436f111-0b27-49b7-b348-5ea4d123c227
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEdE-gMTdJd1kLF0v2guy65eLeqt17SWXhRjoTmYa6BExM8ViT8xbfuOViQ4joZlRMPrXTgU9kSsrOyBRbA31UZgNbrGazUDfybxJ1b68RUG0pGUgidxYFt6SoJ7V8dN7Q_cY9t=w640-h480-v0
+
+94ec44db-16aa-443f-887c-ec8e5ac08800
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHfEHriwY6kd9oJuIVujQIv6PPm2uEEhad4rM4uMiLdL0L2rQzHycW2xYhzlNq9JofuaCuwwyNQy8ZP4NhWeZTt_D8mCPDOqtC9y4sBF7NXFS5jO94LrUMrGjJ_9QixakjC91a_7Q=w640-h480-v0
+
+43df23bb-6e25-46af-90ff-da1f85564f9f
+
+DeepCompile: Training Speedups 
+
+*Batch size/GPU: 1, sequence length: 1024 , 32 GPUs 
+
+Mixtral-8x7BLlama-3-70B 
+
+1.24x 1.5x 
+
+1.18x 1.18x
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHE_UV-C5Fxhdf67zkZ6oFfh0515_0W7QTqkKGd7Ro51P00J_ewFESeMhyzUA9epUjKwI4nEhzop5H3lsfao309exQgtGaoVx6ua3aSUHiZkGqNO9R6mA1oMrpkkNvjBUk1ec8U0Q=w1280-h230-v0
+
+9da0f5a8-ffb0-42ec-92e1-6e289403deb3
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGPrSNtUkbT3SYbKspsoVSBLrdgpZlOW44CF7aDei6uxIxGorZj8nQwQOszjDN0bSLiDTQZuYxfgbUUa4x3LH0zmGgAzCoBBtVwQtOGcmwO4YDPYbFHoPvItvUitcQe6Jzm-ST1eQ=w220-h56-v0
+
+06bb477e-c925-4fbe-9780-e7115b692026
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGCj3lgnU4gdA_IDxlIsEmN7mZ7i-Rc42Jf9FZLxyILc6k7V-6TWuwCh91DYUglzCnPwuInYzErtAyJ_nerB_EXPiURsvmwV9xUBTtYML6N1Vx67JVMOiMtGstLHDgk-GN_dmA_UA=w571-h67-v0
+
+387d8c60-8d79-481c-beeb-2dc8b2bd7b3c
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGy6qyC3-bB4V4JOJGe1oFlf0wIb4BxK7El2-Rxk3i7mWDRbN6c8H7qh7X4xBoT6hTIwr3PpyZGo9g5E0b66hieTrMudliurGt3Bs817LKulRmrdZzsVuW-bJnjBY8yZULBVn-bOw=w640-h480-v0
+
+3a6f02d1-feff-4a41-8aef-d079b08dde7f
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFqaclaXM4snst563It_HlHWKwyPzW_JUJkYvd6A5ujgv_aaMgMvb7PI10Yh8JoKVQay73ub9FpTanhbncFVmu7RAHRvWu92cO4Iy3byPLeBZ4U2CIYEh3sEx6f1CoIgIMqFb1mHg=w640-h480-v0
+
+c4730525-522f-4088-80aa-caf36640aead
+
+DeepCompile: Training Speedups 
+
+1.63x 
+
+1.37x 5.3x 
+
+7.0x 
+
+ZeRO3-Offloading 
+
+Llama-3-70B (16 GPU) Llama-3-8B (8 GPU) 
+
+ZeRO1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFHbMtRnC5L8QrmejPmG2Ok5yXQMA0bFKohVcK92YYKS3u_ltOIi9tRw-A2Tlu_J646njaDDs0ZH_ZZ8ZDQKc0bL-fEmW7eT8yIetRarQpt6G7aBTxRIPPGH4XHHYzW2yoWobVp=w1280-h230-v0
+
+d1a70320-3dcd-42f5-960a-1bf47fb416c2
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFEb-mjIyGEiL7-uMeOk_WsBq0mK358QZTGBgLBL4z_27kH1km1BHxqrPqIdflVZA1JyLMVA0x6Kt9mjQ07kYsJCSUFaUizMy8q8x7PpL0QS6fak7uLS34X1eA4Eg9vcHkqQiZ9Rg=w220-h56-v0
+
+a0dd24cc-e5dc-4787-ab66-da98b1bba9da
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEZPskowVWQjL-yk9X02iiogC3dsxYvdphCe8kikxF7PEvaR1qEpmY2Q8DJ9HdpGnRb_t2ckzgvuXpSzEPw-FpLQexo68Vcj1Ws-YaiHFmCo6IzMlQzgT915Ubsee3O2T1U0PQ5ng=w571-h67-v0
+
+35c8cb81-96dd-475a-bbf1-0a36a19b76e4
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHtKhwfBBIAWPVmDtaeINVPqsuV3cHVRpzRJR5_jBEGPKtSX-dSiZH8skBsKHeJDhBJQRDvsbWpjNalV-OoImw_cdm5lWwyuCyAjl58nJcHJGt3QJMJTTf6wK0rF5jYHN7uR-zR=w937-h525-v0
+
+9840d70f-78f0-4cb7-86f9-0c725c59db83
+
+DeepNVMe: I/O opt imizations for DL 
+
+Problem: I/O is a growing DL scalability bottleneck 
+
+ Data loading/preprocessing 
+
+ Model checkpointing 
+
+ Tensor offloading 
+
+ Weights 
+
+ Optimizer states 
+
+ KV Cache 
+
+Solution: Leverage storage innovations for optimizations 
+
+ NVMe SSDs 
+
+ Linux Async I/O (AIO) 
+
+ NVIDIA GPUDirect Storage (GDS) 
+
+Current Optimizations: 
+
+ Non-blocking I/O 
+
+ Bulk I/O 
+
+ Intra-op parallelism 
+
+➢ 48GB/sec disk reads 
+
+➢ 25GB/sec disk writes 
+
+➢ I/O HW scalability
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEAHdxuAuR5d0I7xaGTtsgBha1kAnRWTMn0R2FA7YqdMSuH5Fne3KfXTcykoxYrOr_EMIRn4e4GJ_2XGEh1oeQ-XrtNftOzp82yX18kBfms6kDXV_F5CYRsD0F_bWseMR58BCxFTA=w1280-h230-v0
+
+02697d7f-1e39-443b-b683-2d4d7f92e968
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGe7gA689obo-UEYwX2-v59qwvt74KspaLbj8X-3LSeTBMGIQbQ9IhIYazmb_L2cqmBKKDCPqQgq5AXkRW1YbgoIFl0J0BfGtG3ZjiSXaBVvYbW9XVymMlakAnlWYMPsHB9WsXx=w220-h56-v0
+
+ead90854-0cd4-4694-8daa-67d3767a00b1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEgqUHZqPcihf04YncY-2kTWJpOqaJZnM5tfgZSDB9LqMQtqLHhbFTi3SewnJpoR-qn_qcGsgVsJcPrZn3dZkfM-17edciNwk2mCoG1y0bewtm55HkzTec0KVigrJX-9jOmbT3E1Q=w571-h67-v0
+
+abebbcbf-f544-4115-95bc-cd837ac0d5b0
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHSBEaew_sV0g5YG-na35pvPaZUO-Pr8RNONakkItZPZ_oMqOAAJ1xAW5CKgE6_h8ScrIM2Ec6g6f_1UB5XX4w4U35bSxD-g9pchF9WuClh5A_gZGPUW19H_XX7zhzSh_Mofr2bwQ=w912-h445-v0
+
+33f6ca77-c328-4820-b62c-c95be0f71210
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQEfrXEhmbLuCzHSApYq5ibNvDnv1-FY6ZZTBsrPA2Gmt70KFm9SFATcqFr4l7tIKwN8ilKcvHPGWdTnQ7sqdJYi2BgDbNBU0_wb1PxfWeOsxEqsAhqKipbDUoAPkrcTPhTIeDmjBg=w972-h520-v0
+
+0c207d6d-6e72-4115-b459-48b303efd04b
+
+DeepNVMe: Applicat ion benefi ts 
+
+Affordable SOTA generative AI via NVMe offloading 20X faster model checkpointing
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHJyxP333F17sPNPb91IuIcg54YF_uO7oDD1rSXhQQZTWZkZ7xdcgOkHFvnXPlo7uuP8m4hUMS1jXq6hT5-OTwFmIUZJStA_dxivW-D3jpVRL9gjMboHFFs61M4wWZVBVyUvV89yg=w1280-h230-v0
+
+b6f44520-a184-4079-87e6-c5390a61f547
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFG8bLjmuUzW1yk4eBrrSjISU38K5nkzb44IW-sSMjz4hT41c7Lxa84X8Z4WVKbPRcNIWoeCWwSbWMNxrgRgSVwPc9EbX9Rfkcuzlwc7aEeXHDeGt4n9N3BaROUJ7esU0q2QWYvbg=w220-h56-v0
+
+ddbb4c23-429d-4436-9fda-c577adf1a7b6
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHgOC8ENHTkX3wSt1WleK6dZ8cJ-getHdu67I-gjIbbcld9rC1JavvzyBsiCl26_H4WJ8VcOYMsLqFvE7uj4bJ_12ozFle9ygYbpJ25Ic5bboJ6vRqJ2iKK6ik8GiSySjbd8W-JTQ=w571-h67-v0
+
+ed93ddaf-e754-425b-a943-d5ed611c0e32
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHWVOvLr4avu4_0SNLhuacjxk4xbxfyekFZgeKobBatOIOgZPN1ML3WJMXq_Jyiw5wbRqeKYTPJMsEJX_ODyhO43B_0u8Nn8ls69iX5IPY27jpg2V9gWFTFSgpcC8_zXmmHDu02=w584-h296-v0
+
+56c636a7-2986-4db7-9f74-c113a4e83a87
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG9itvXsQoVUAre40W_IQZ8DAQZOOU7i61C33gC3UpoGV7deIcCDMk-AKe8sxp1xhjZxrvD4CnLJgVhKFeaBulYypcz2ADKkws6PQzVSgnJd667GUxtOXupejfQC75fDwvqbPf8Pw=w306-h94-v0
+
+44211728-ca54-4f17-86fe-dfe7e0d8ed21
+
+DeepSpeed is a Community Project 
+
+Organizations 
+
+Microsoft Snowflake 
+
+UIUC Intel 
+
+AMD Argonne National Lab 
+
+AWS Huawei 
+
+… 
+
+JOIN US!
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGv4KuWcerYziI2IuZQn1qNU5tXqRimjMz2lqfUVYcGveaeplnBQv-n0zCdW6rOFPdkuy0qDIaS3NAsLPfhyH_8gPixkNKOpcLITvYfNA9Hc08-yvVAcOZPMEMLnq8xkwxEp6e3vQ=w960-h540-v0
+
+0d3b7067-7dfb-4c83-ba9d-39cda05f2e55
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQFXqFlCQEANxuQjtcUx4o1d0WRulkZqL1ILq884isunDGD0TBF7qqjbIOb-DgjBBM5WI105Febs4Gtk0yPKghDIRIi3ShJalazHk5bLPv0ubA4F42kF--vkYldVNZAfIfCixe2cnw=w1280-h664-v0
+
+5ed95213-6789-49fe-ad5f-b788ee001715
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQGy_4CFe0sB04IGgWpttoFHg04P46fDicypZq_Csf8sGZ-49EV_bQ3xc3cYsWm9FO9rUFG7nHjO8DPoIFOAxJJJRhZ1nLLtnz2fjYLEZ_exnhIVDdJtDAIg4HHIP4jUCYvvOQv3ag=w220-h56-v0
+
+bf8c2348-9924-4ec5-910c-19fbae5990b1
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQHy0vPjNT3CvE11ORi8MkdDMQtcn0t6QUNLB6hyo3gfIYFa11g-2stMBRBBbpeigVm9gTK6wR8ivddw2bPW5JGyNbcQ2nfnZ-lcPxMRRrtp0dpEB7hRFeoMgNmO_9dKBk2HtH_7EQ=w571-h67-v0
+
+e200d7ce-ba56-4214-aa1f-cec71e40c13d
+
+https://lh3.googleusercontent.com/notebooklm/AKXwDQG7GxGFq9jRMV6UmY3SprACwCS-oQ1j1C214AJ7MjI0eAKK17E1IpEKMK9pTg6aWCATsf_KB2LkvHFYe9uCxNIo7vQ9L0-EZLYbHVS9ZdKetT05muStelTJ3GWmWCVbE0B79AGQNQ=w725-h125-v0
+
+382f89ca-1b53-4791-8243-2cb954a45f17
+
+www.deepspeed.a i 
+
+g i thub.com/deepspeedai/DeepSpeed

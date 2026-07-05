@@ -1,0 +1,1382 @@
+Deploying LLMs on Kubernetes: vLLM, Ray Serve & GPU Scheduling Guide (2026)
+
+Homepage
+
+https://www.premai.io/
+
+All Articles
+
+https://blog.premai.io/
+
+Resources
+
+https://docs.premai.io/
+
+Sign in
+
+https://blog.premai.io/deploying-llms-on-kubernetes-vllm-ray-serve-gpu-scheduling-guide-2026/#/portal/signin
+
+ 
+
+Subscribe
+
+https://blog.premai.io/deploying-llms-on-kubernetes-vllm-ray-serve-gpu-scheduling-guide-2026/#/portal/signup
+
+By 
+
+Arnav Jalan
+
+https://blog.premai.io/author/arnav/
+
+ — 17 Mar 2026
+
+Deploying LLMs on Kubernetes: vLLM, Ray Serve & GPU Scheduling Guide (2026)
+
+Most K8s LLM guides stop at kubectl apply. This one covers GPU topology, KV-cache autoscaling, graceful shutdown, and canary deployments for production inference.
+
+ 
+
+Most guides stop at 
+
+kubectl apply
+
+ and call it done. Then you hit production: GPU nodes sitting idle because the scheduler doesn't understand topology. Autoscaling that triggers on CPU while your inference queue backs up. Model updates that drop in-flight requests.
+
+This guide covers the full stack. vLLM and Ray Serve deployment, GPU scheduling with MIG and topology awareness, autoscaling on queue depth and KV cache utilization, Prometheus/Grafana monitoring, and production patterns like canary rollouts and graceful shutdown. Configurations are verified against vLLM v0.17.0 and Ray 2.54.0.
+
+Prerequisites:
+
+ A Kubernetes cluster with GPU nodes (NVIDIA), kubectl, Helm 3+, and working knowledge of K8s concepts (Deployments, Services, PVCs).
+
+Why Kubernetes for LLM Inference
+
+Kubernetes isn't the only way to serve LLMs. But once you need to scale, it handles GPU workloads better than any alternative.
+
+The 
+
+NVIDIA GPU Operator
+
+https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/overview.html?ref=blog.premai.io
+
+ (v25.10.1) gives you automatic GPU discovery, MIG partitioning, and time-slicing from a single Helm install. GPU Feature Discovery auto-labels nodes with hardware metadata — model, memory, CUDA version — so you can schedule a 70B model to H100 nodes and a 7B model to L40S nodes using node affinity rules.
+
+Kubernetes HPA with 
+
+custom metrics
+
+https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/?ref=blog.premai.io
+
+ lets you scale on inference-specific signals like queue depth and KV cache utilization instead of CPU. The 
+
+Gateway API Inference Extension
+
+https://github.com/kubernetes-sigs/gateway-api-inference-extension?ref=blog.premai.io
+
+ (GA as of February 2026, v1.3.1) adds model-aware routing, KV-cache-aware scheduling, and traffic splitting by model name for A/B testing.
+
+When not to use Kubernetes:
+
+ one model, one GPU, no scaling needs. Standalone vLLM with Docker is enough. Don't add K8s complexity for a single-replica deployment.
+
+Choosing Your Serving Engine
+
+Three stacks dominate LLM inference on Kubernetes. Each fits a different scale.
+
+Feature
+
+vLLM (standalone)
+
+Ray Serve + vLLM
+
+llm-d
+
+Best for
+
+Single-node, single-model
+
+Multi-node, multi-model
+
+Disaggregated serving at scale
+
+Multi-node inference
+
+Manual setup
+
+Automatic placement groups
+
+Native with NIXL KV transfer
+
+Multi-model serving
+
+Separate Deployments
+
+Single cluster, shared resources
+
+Shared infrastructure with SLO guarantees
+
+Autoscaling
+
+External (HPA/KEDA)
+
+Built-in (replica + cluster + infra)
+
+Workload-variant autoscaler
+
+K8s integration
+
+Raw manifests or Helm
+
+KubeRay operator (RayService CRD)
+
+Helm + K8s Inference Gateway
+
+Operational complexity
+
+Low
+
+Medium
+
+High
+
+GitHub stars
+
+72.4k
+
+41.6k (Ray) / 2.4k (KubeRay)
+
+2.6k
+
+Stars as of March 2026. Sources:
+
+ 
+
+vLLM
+
+https://github.com/vllm-project/vllm?ref=blog.premai.io
+
+,
+
+ 
+
+Ray
+
+https://github.com/ray-project/ray?ref=blog.premai.io
+
+,
+
+ 
+
+KubeRay
+
+https://github.com/ray-project/kuberay?ref=blog.premai.io
+
+,
+
+ 
+
+llm-d
+
+https://github.com/llm-d/llm-d?ref=blog.premai.io
+
+.
+
+The decision is simple. If your model fits on one node's GPUs, start with standalone vLLM. When you need multi-node inference or want to serve multiple models from one cluster, move to 
+
+Ray Serve
+
+https://docs.ray.io/en/latest/serve/llm/index.html?ref=blog.premai.io
+
+. The official Ray docs are direct about this: "Traditional vLLM serves single-node scenarios better; Ray Serve LLM adds coordination overhead justified only by distributed scaling requirements."
+
+For disaggregated prefill/decode at massive scale, consider 
+
+llm-d
+
+https://github.com/llm-d/llm-d?ref=blog.premai.io
+
+ (co-created by Red Hat, Google, and IBM). The team reports ~3.1k tokens/sec per B200 decode GPU.
+
+The K8s ecosystem also has higher-level operators worth knowing: 
+
+vLLM Production Stack
+
+https://github.com/vllm-project/production-stack?ref=blog.premai.io
+
+ (2.2k stars) bundles vLLM with a KV-cache-aware request router and Prometheus/Grafana. 
+
+AIBrix
+
+https://github.com/vllm-project/aibrix?ref=blog.premai.io
+
+ (4.7k stars) adds LoRA management and SLO-aware autoscaling. 
+
+KubeAI
+
+https://github.com/substratusai/kubeai?ref=blog.premai.io
+
+ (1.2k stars) is a lightweight operator with scale-from-zero and no Istio dependencies.
+
+GPU Scheduling for LLM Workloads
+
+Setting Up the NVIDIA GPU Stack
+
+Install the GPU Operator via Helm:
+
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia
+helm install gpu-operator nvidia/gpu-operator \
+  --namespace gpu-operator --create-namespace
+
+
+This deploys the device plugin (exposes 
+
+nvidia.com/gpu
+
+ resources), GPU Feature Discovery (auto-labels nodes), and DCGM Exporter (GPU metrics for Prometheus). After install, verify with:
+
+kubectl get nodes -o json | jq '.items[].status.allocatable["nvidia.com/gpu"]'
+
+
+GPU Feature Discovery labels nodes automatically. Target specific GPU types like this:
+
+nodeSelector:
+  nvidia.com/gpu.product: "NVIDIA-A100-SXM4-80GB"
+
+
+Node Affinity and Taints
+
+Isolate GPU nodes from non-GPU workloads with taints:
+
+kubectl taint nodes gpu-node-1 nvidia.com/gpu=true:NoSchedule
+
+
+Add tolerations to your LLM pods:
+
+tolerations:
+- key: nvidia.com/gpu
+  operator: Equal
+  value: "true"
+  effect: NoSchedule
+
+
+For multi-GPU-type clusters, use node affinity with GPU Feature Discovery labels to route models to the right hardware:
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: nvidia.com/gpu.product
+          operator: In
+          values: ["NVIDIA-H100-SXM5-80GB"]
+        - key: nvidia.com/gpu.memory
+          operator: Gt
+          values: ["40000"]
+
+
+GPU Sharing: MIG and Time-Slicing
+
+Multi-Instance GPU (MIG)
+
+ partitions A100 and H100 GPUs into hardware-isolated instances, each with dedicated memory and compute. A single A100 80GB can run up to seven 
+
+1g.10gb
+
+ instances.
+
+Enable MIG through the GPU Operator:
+
+helm install gpu-operator nvidia/gpu-operator --set mig.strategy=single
+kubectl label nodes gpu-node nvidia.com/mig.config=all-1g.10gb
+
+
+Pods request MIG slices instead of full GPUs:
+
+resources:
+  limits:
+    nvidia.com/mig-1g.10gb: 1
+
+
+Time-slicing
+
+ shares a GPU across multiple workloads without hardware isolation. Configure via ConfigMap:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-slicing-config
+data:
+  any: |-
+    version: v1
+    sharing:
+      timeSlicing:
+        resources:
+        - name: nvidia.com/gpu
+          replicas: 4
+
+
+Use MIG for production multi-tenant workloads where memory isolation matters. Use time-slicing for development and testing. Time-slicing works on all NVIDIA GPUs; MIG requires A100 or newer ( 
+
+source
+
+https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-sharing.html?ref=blog.premai.io
+
+).
+
+Topology-Aware Scheduling
+
+For latency-sensitive inference, configure the 
+
+Topology Manager
+
+https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/?ref=blog.premai.io
+
+ to keep GPU and CPU on the same NUMA node:
+
+# In kubelet configuration
+topologyManagerPolicy: single-numa-node
+topologyManagerScope: pod
+
+
+For multi-GPU jobs that require all GPUs allocated simultaneously (tensor parallelism across GPUs), 
+
+Volcano
+
+https://volcano.sh/en/docs/?ref=blog.premai.io
+
+ (v1.12.0) provides gang scheduling. This prevents deadlocks where half the GPUs for a model are allocated on one node while the other half wait on a different node.
+
+Deploying vLLM on Kubernetes
+
+Model Storage with Persistent Volumes
+
+LLM weights are large. A 70B model is ~140GB in FP16. Cache them on a PersistentVolumeClaim so pods don't re-download on every restart.
+
+Create the PVC and a Secret for HuggingFace auth:
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vllm-models
+  namespace: llm-inference
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hf-token
+  namespace: llm-inference
+type: Opaque
+stringData:
+  token: "your-hf-token-here"
+
+
+For multi-replica deployments sharing the same model weights, use 
+
+ReadOnlyMany
+
+ (ROX) access mode with NFS, Amazon EFS, or CephFS. This avoids duplicating 140GB per replica ( 
+
+K8s PV docs
+
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/?ref=blog.premai.io
+
+).
+
+The vLLM Deployment Manifest
+
+A complete production Deployment for vLLM serving Mistral 7B on a single GPU:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-mistral
+  namespace: llm-inference
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      initContainers:
+      - name: model-download
+        image: bitnami/huggingface-hub-cli:latest
+        command:
+        - huggingface-cli
+        - download
+        - mistralai/Mistral-7B-Instruct-v0.3
+        - --cache-dir
+        - /models
+        env:
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: token
+        volumeMounts:
+        - name: model-cache
+          mountPath: /models
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest
+        command:
+        - vllm
+        - serve
+        - mistralai/Mistral-7B-Instruct-v0.3
+        - --tensor-parallel-size
+        - "1"
+        - --max-model-len
+        - "8192"
+        - --enable-chunked-prefill
+        - --gpu-memory-utilization
+        - "0.9"
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: HF_HOME
+          value: /models
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: token
+        resources:
+          requests:
+            cpu: "4"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+          limits:
+            cpu: "8"
+            memory: 24Gi
+            nvidia.com/gpu: "1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 120
+          periodSeconds: 5
+        volumeMounts:
+        - name: model-cache
+          mountPath: /models
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: vllm-models
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Gi
+      terminationGracePeriodSeconds: 300
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  namespace: llm-inference
+  labels:
+    app: vllm
+spec:
+  selector:
+    app: vllm
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+
+
+Three things most guides skip:
+
+Shared memory volume.
+
+ The 
+
+emptyDir
+
+ with 
+
+medium: Memory
+
+ at 
+
+/dev/shm
+
+ is required for tensor parallel inference. Without it, vLLM crashes with OOM errors on multi-GPU setups ( 
+
+source
+
+https://docs.vllm.ai/en/latest/deployment/k8s/?ref=blog.premai.io
+
+).
+
+terminationGracePeriodSeconds: 300 .
+
+ The default 30 seconds kills in-flight inference requests. Increase this to let ongoing generations finish before the pod shuts down.
+
+initialDelaySeconds: 120 .
+
+ A 7B model takes 30-60 seconds to load into GPU memory. Set readiness probes accordingly or you'll route traffic to a pod that isn't ready.
+
+Deploying with the vLLM Helm Chart
+
+For a faster setup, use the official Helm chart:
+
+helm install vllm oci://ghcr.io/vllm-project/vllm-chart \
+  --set model=mistralai/Mistral-7B-Instruct-v0.3 \
+  --set gpu=1 \
+  --namespace llm-inference --create-namespace
+
+
+The chart lives in the vLLM repo at 
+
+examples/online_serving/chart-helm/
+
+ ( 
+
+docs
+
+https://docs.vllm.ai/en/latest/deployment/frameworks/helm/?ref=blog.premai.io
+
+).
+
+For production clusters serving multiple models, the 
+
+vLLM Production Stack
+
+https://docs.vllm.ai/en/latest/deployment/integrations/production-stack/?ref=blog.premai.io
+
+ (v0.1.10) adds a KV-cache-aware request router and bundled Prometheus/Grafana:
+
+helm repo add vllm https://vllm-project.github.io/production-stack
+helm install vllm vllm/vllm-stack -f values.yaml
+
+
+Testing the Deployment
+
+Port-forward and send a request:
+
+kubectl port-forward svc/vllm-service 8000:8000 -n llm-inference
+
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "mistralai/Mistral-7B-Instruct-v0.3",
+    "messages": [{"role": "user", "content": "What is Kubernetes?"}],
+    "max_tokens": 100
+  }'
+
+
+Verify Prometheus metrics:
+
+curl http://localhost:8000/metrics | grep vllm
+
+
+You should see 
+
+vllm:num_requests_running
+
+ , 
+
+vllm:gpu_cache_usage_perc
+
+ , and 
+
+vllm:time_to_first_token_seconds
+
+ .
+
+Deploying with Ray Serve on Kubernetes
+
+When you need multi-node inference or multi-model serving from a shared GPU cluster, Ray Serve adds the coordination layer that standalone vLLM lacks. If you're running 
+
+self-hosted fine-tuned models
+
+https://docs.premai.io/inference/self-host?ref=blog.premai.io
+
+, this is the setup that scales.
+
+Installing KubeRay
+
+helm repo add kuberay https://ray-project.github.io/kuberay-helm/
+helm install kuberay-operator kuberay/kuberay-operator \
+  --namespace kuberay-system --create-namespace
+
+
+Verify the CRDs are installed:
+
+kubectl get crd | grep ray
+# rayclusters.ray.io, rayjobs.ray.io, rayservices.ray.io
+
+
+KubeRay v1.5.1 provides three CRDs: RayCluster for raw clusters, RayJob for batch workloads, and RayService for serving with zero-downtime upgrades ( 
+
+source
+
+https://docs.ray.io/en/latest/cluster/kubernetes/getting-started.html?ref=blog.premai.io
+
+).
+
+RayService Manifest for LLM Serving
+
+Deploy a Qwen 2.5 7B model with autoscaling:
+
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: llm-serve
+  namespace: llm-inference
+spec:
+  serveConfigV2: |
+    applications:
+    - name: llms
+      import_path: ray.serve.llm:build_openai_app
+      route_prefix: "/"
+      args:
+        llm_configs:
+        - model_loading_config:
+            model_id: qwen2.5-7b
+            model_source: Qwen/Qwen2.5-7B-Instruct
+          engine_kwargs:
+            dtype: bfloat16
+            max_model_len: 4096
+            gpu_memory_utilization: 0.85
+          deployment_config:
+            autoscaling_config:
+              min_replicas: 1
+              max_replicas: 4
+              target_ongoing_requests: 64
+            max_ongoing_requests: 128
+          accelerator_type: A10G
+  rayClusterConfig:
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: "0.0.0.0"
+      template:
+        spec:
+          containers:
+          - name: ray-head
+            image: rayproject/ray-ml:2.54.0
+            resources:
+              requests:
+                cpu: "4"
+                memory: 8Gi
+    workerGroupSpecs:
+    - groupName: gpu-workers
+      replicas: 2
+      minReplicas: 1
+      maxReplicas: 4
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+          - name: ray-worker
+            image: rayproject/ray-ml:2.54.0
+            resources:
+              requests:
+                cpu: "4"
+                memory: 16Gi
+                nvidia.com/gpu: "1"
+              limits:
+                nvidia.com/gpu: "1"
+          tolerations:
+          - key: nvidia.com/gpu
+            operator: Equal
+            value: "true"
+            effect: NoSchedule
+
+
+Ray Serve autoscaling works at three levels simultaneously. The application autoscaler adjusts model replicas based on 
+
+target_ongoing_requests
+
+ . The Ray Autoscaler adds/removes worker pods based on logical resource demands. The Kubernetes Cluster Autoscaler provisions new GPU nodes when needed ( 
+
+source
+
+https://docs.ray.io/en/latest/cluster/kubernetes/user-guides/configuring-autoscaling.html?ref=blog.premai.io
+
+).
+
+Multi-Model Serving
+
+Pass multiple 
+
+LLMConfig
+
+ objects to serve multiple models from one cluster:
+
+args:
+  llm_configs:
+  - model_loading_config:
+      model_id: mistral-7b
+      model_source: mistralai/Mistral-7B-Instruct-v0.3
+    engine_kwargs:
+      max_model_len: 8192
+    deployment_config:
+      autoscaling_config:
+        min_replicas: 1
+        max_replicas: 2
+    accelerator_type: A10G
+  - model_loading_config:
+      model_id: qwen-7b
+      model_source: Qwen/Qwen2.5-7B-Instruct
+    engine_kwargs:
+      max_model_len: 4096
+    deployment_config:
+      autoscaling_config:
+        min_replicas: 1
+        max_replicas: 2
+    accelerator_type: A10G
+
+
+Each model gets independent autoscaling. Clients select the model via the 
+
+model
+
+ field in the request body — identical to OpenAI's API. For scenarios with many similar models (fine-tuned variants), Ray Serve's 
+
+model multiplexing
+
+https://docs.ray.io/en/latest/serve/model-multiplexing.html?ref=blog.premai.io
+
+ serves them from a shared replica pool with LRU eviction.
+
+Autoscaling LLM Inference on Kubernetes
+
+Why CPU and Memory Metrics Don't Work
+
+This is the most common mistake in LLM deployment. Standard HPA scales on CPU utilization, but LLM inference is GPU-bound. Your CPU can sit at 5% while your inference queue backs up with 50 waiting requests.
+
+Google's GKE best practices
+
+https://docs.cloud.google.com/kubernetes-engine/docs/best-practices/machine-learning/inference/autoscaling?ref=blog.premai.io
+
+ document this clearly:
+
+GPU Utilization
+
+ ( 
+
+DCGM_FI_DEV_GPU_UTIL
+
+ ) is a duty cycle measurement. A GPU at "100% utilization" could be processing 10 requests or 100. This metric won't tell you the difference.
+
+GPU Memory
+
+ is pre-allocated by vLLM for the KV cache. Memory usage stays constant regardless of load, so it never triggers scale-down.
+
+Scale on queue depth and batch size instead.
+
+Metric
+
+vLLM Prometheus Name
+
+Best For
+
+Starting Threshold
+
+Queue depth
+
+vllm:num_requests_waiting
+
+Maximizing throughput
+
+3-5 requests
+
+Batch size
+
+vllm:num_requests_running
+
+Latency-sensitive workloads
+
+Below max observed batch size
+
+KV cache utilization
+
+vllm:gpu_cache_usage_perc
+
+Memory pressure detection
+
+0.85 (85%)
+
+TTFT p99
+
+vllm:time_to_first_token_seconds
+
+User experience SLOs
+
+App-specific
+
+Thresholds from
+
+ 
+
+GKE best practices
+
+https://docs.cloud.google.com/kubernetes-engine/docs/best-practices/machine-learning/inference/autoscaling?ref=blog.premai.io
+
+. Metric names from
+
+ 
+
+vLLM metrics docs
+
+https://docs.vllm.ai/en/stable/usage/metrics/?ref=blog.premai.io
+
+.
+
+HPA with vLLM Queue Depth (Prometheus Adapter)
+
+Wire vLLM's queue depth to Kubernetes HPA using the 
+
+Prometheus Adapter
+
+https://github.com/kubernetes-sigs/prometheus-adapter?ref=blog.premai.io
+
+ (v0.12.0).
+
+Configure the adapter to expose 
+
+vllm:num_requests_waiting
+
+ as a custom metric:
+
+# prometheus-adapter-config ConfigMap
+rules:
+- seriesQuery: 'vllm:num_requests_waiting{namespace!="",pod!=""}'
+  resources:
+    overrides:
+      namespace: {resource: "namespace"}
+      pod: {resource: "pod"}
+  name:
+    matches: 'vllm:num_requests_waiting'
+    as: 'vllm_queue_depth'
+  metricsQuery: 'sum(vllm:num_requests_waiting{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+
+
+Then create an HPA targeting that metric:
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: vllm-hpa
+  namespace: llm-inference
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vllm-mistral
+  minReplicas: 1
+  maxReplicas: 8
+  metrics:
+  - type: Pods
+    pods:
+      metric:
+        name: vllm_queue_depth
+      target:
+        type: AverageValue
+        averageValue: "5"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+
+
+GKE best practices recommend scale-up stabilization of 0 seconds (respond immediately to load) and scale-down stabilization of 300 seconds to avoid premature downscaling.
+
+Scale-to-Zero with KEDA
+
+Standard HPA can't scale to zero replicas. 
+
+KEDA
+
+https://keda.sh/docs/2.16/scalers/prometheus/?ref=blog.premai.io
+
+ (v2.19) adds this, which cuts GPU costs significantly for low-traffic models:
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vllm-scaledobject
+  namespace: llm-inference
+spec:
+  scaleTargetRef:
+    name: vllm-mistral
+  minReplicaCount: 0
+  maxReplicaCount: 8
+  cooldownPeriod: 300
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      threshold: "1"
+      query: sum(rate(vllm:request_success_total{namespace="llm-inference"}[2m]))
+      activationThreshold: "0.5"
+
+
+The tradeoff is cold start time. Scaling from zero means re-loading the model into GPU memory. A 7B model takes 30-60 seconds. A 70B model takes several minutes. Use scale-to-zero for models with predictable low-traffic windows, not for latency-critical endpoints.
+
+GPU Node Autoscaling with Karpenter
+
+Karpenter
+
+https://karpenter.sh/docs/concepts/nodepools/?ref=blog.premai.io
+
+ provisions GPU nodes automatically when pods can't be scheduled:
+
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-inference
+spec:
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+  template:
+    spec:
+      requirements:
+      - key: node.kubernetes.io/instance-type
+        operator: In
+        values: ["p4d.24xlarge", "g6e.xlarge", "g6e.2xlarge"]
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values: ["on-demand", "spot"]
+      taints:
+      - key: nvidia.com/gpu
+        value: "true"
+        effect: NoSchedule
+
+
+consolidationPolicy: WhenEmptyOrUnderutilized
+
+ bin-packs GPU workloads to minimize idle nodes. Including both 
+
+on-demand
+
+ and 
+
+spot
+
+ lets Karpenter fall back to on-demand when spot GPU instances are unavailable — which happens more than you'd expect.
+
+Monitoring LLM Inference with Prometheus and Grafana
+
+Scraping vLLM Metrics
+
+vLLM exposes Prometheus metrics at 
+
+/metrics
+
+ on port 8000 with the 
+
+vllm:
+
+ prefix. Create a ServiceMonitor for the Prometheus Operator:
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vllm-metrics
+  namespace: llm-inference
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: vllm
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - llm-inference
+
+
+For Ray Serve deployments, use a PodMonitor targeting the head node on port 8080:
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: ray-head-monitor
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      ray.io/node-type: head
+  podMetricsEndpoints:
+  - port: metrics
+  - port: as-metrics
+  - port: dash-metrics
+
+
+Ray Serve includes a pre-built Grafana dashboard since Ray 2.51 ( 
+
+source
+
+https://docs.ray.io/en/latest/serve/llm/user-guides/observability.html?ref=blog.premai.io
+
+).
+
+Essential PromQL Queries
+
+Time to First Token (P95):
+
+histogram_quantile(0.95, rate(vllm:time_to_first_token_seconds_bucket[5m]))
+
+
+Generation Tokens Per Second:
+
+rate(vllm:generation_tokens_total[1m])
+
+
+KV Cache Utilization:
+
+vllm:gpu_cache_usage_perc
+
+
+Request Queue Depth:
+
+vllm:num_requests_waiting
+
+
+End-to-End Latency (P99):
+
+histogram_quantile(0.99, rate(vllm:e2e_request_latency_seconds_bucket[5m]))
+
+
+Set up alerting rules for production:
+
+groups:
+- name: vllm-alerts
+  rules:
+  - alert: HighKVCacheUsage
+    expr: vllm:gpu_cache_usage_perc > 0.9
+    for: 5m
+    annotations:
+      summary: "KV cache usage above 90%, requests may be preempted"
+  - alert: HighQueueDepth
+    expr: vllm:num_requests_waiting > 10
+    for: 2m
+    annotations:
+      summary: "Request queue backing up, consider scaling replicas"
+  - alert: HighTTFT
+    expr: histogram_quantile(0.99, rate(vllm:time_to_first_token_seconds_bucket[5m])) > 5
+    for: 5m
+    annotations:
+      summary: "TTFT P99 above 5 seconds"
+
+
+Production Patterns
+
+Graceful Shutdown for Long-Running Inference
+
+The default 
+
+terminationGracePeriodSeconds
+
+ of 30 seconds kills in-flight LLM requests. A streaming response generating 500 tokens can take 10-30 seconds. Batch requests take longer.
+
+Increase the grace period and add a preStop hook:
+
+spec:
+  terminationGracePeriodSeconds: 300
+  containers:
+  - name: vllm
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh", "-c", "sleep 10"]
+
+
+The preStop hook runs before SIGTERM, giving the load balancer time to drain the pod from its endpoint list. For streaming workloads, 600+ seconds is more appropriate ( 
+
+source
+
+https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-terminating-with-grace?ref=blog.premai.io
+
+).
+
+Canary Deployments for Model Updates
+
+Hard cutovers on model updates are risky. Use 
+
+Argo Rollouts
+
+https://github.com/argoproj/argo-rollouts?ref=blog.premai.io
+
+ (v1.8.4) to gradually shift traffic to the new version while monitoring TTFT and error rates.
+
+The 
+
+Gateway API Inference Extension
+
+https://gateway-api-inference-extension.sigs.k8s.io/?ref=blog.premai.io
+
+ gives you a more LLM-native approach: traffic splitting by model name. Route 10% of requests to the new model version, watch quality metrics, promote incrementally. This operates at the request routing layer rather than the replica layer, giving you finer control.
+
+Security Hardening
+
+Pod security.
+
+ Apply the 
+
+Baseline Pod Security Standard
+
+https://kubernetes.io/docs/concepts/security/pod-security-standards/?ref=blog.premai.io
+
+ to your inference namespace. The Restricted standard conflicts with GPU driver requirements, so Baseline is the practical choice.
+
+Secret management.
+
+ Don't rely on base64-encoded Kubernetes Secrets alone for HuggingFace tokens. Use the 
+
+External Secrets Operator
+
+https://github.com/external-secrets/external-secrets?ref=blog.premai.io
+
+ (v2.1.0) to sync secrets from AWS Secrets Manager, HashiCorp Vault, or your cloud provider's KMS.
+
+Network isolation.
+
+ Create NetworkPolicies that restrict traffic to your inference namespace. Only the API gateway and monitoring stack should reach your vLLM pods.
+
+Choosing the Right Stack
+
+Scenario
+
+Recommended Stack
+
+Why
+
+Single model, single GPU
+
+vLLM + K8s Deployment
+
+Lowest complexity
+
+Single model, multi-GPU (70B+)
+
+vLLM + tensor parallelism
+
+Set 
+
+--tensor-parallel-size
+
+ to match GPU count
+
+Multiple models, shared cluster
+
+Ray Serve + KubeRay
+
+Built-in multi-model, independent autoscaling per model
+
+Massive scale, latency SLOs
+
+llm-d + K8s Inference Gateway
+
+Disaggregated prefill/decode, KV-cache-aware routing
+
+Managed, no K8s ops
+
+PremAI Platform
+
+https://www.premai.io/?ref=blog.premai.io
+
+Deploys in your VPC, zero data retention, no infra management
+
+If managing Kubernetes GPU infrastructure isn't where your team's time adds value, 
+
+PremAI
+
+https://www.premai.io/?ref=blog.premai.io
+
+ deploys LLM inference in your own cloud account with zero data retention and built-in autoscaling. 
+
+Book a technical call
+
+https://form.typeform.com/to/VJZVAsao?ref=blog.premai.io
+
+ to discuss your setup.
+
+Common Pitfalls
+
+OOMKilled on startup.
+
+ Two causes: missing shared memory volume at 
+
+/dev/shm
+
+ for tensor parallelism, or the model is too large for available GPU VRAM. Fix: add the 
+
+emptyDir
+
+ with 
+
+medium: Memory
+
+ , or use quantization ( 
+
+--quantization awq
+
+ ) to reduce memory footprint.
+
+Slow cold starts.
+
+ Model download from HuggingFace takes 5-10 minutes for 7B models, 20+ minutes for 70B. Fix: use init containers to pre-download to a PVC, and set 
+
+initialDelaySeconds: 120
+
+ on readiness probes.
+
+CUDA version mismatch.
+
+ vLLM compiled for CUDA 12.x fails with 
+
+PTX was compiled with an unsupported toolchain
+
+ on CUDA 13.x nodes. Fix: use the official 
+
+vllm/vllm-openai
+
+ Docker image, which bundles the correct CUDA version ( 
+
+source
+
+https://docs.vllm.ai/en/stable/getting_started/installation/gpu/?ref=blog.premai.io
+
+).
+
+Pods stuck in Pending.
+
+ The NVIDIA device plugin DaemonSet isn't running on GPU nodes, or all GPUs are allocated. Verify with 
+
+kubectl get daemonset -n gpu-operator
+
+ and check allocatable GPU count with 
+
+kubectl describe node
+
+ .
+
+Autoscaling not working.
+
+ You're scaling on CPU utilization, which stays flat during GPU inference. Switch to queue depth ( 
+
+vllm:num_requests_waiting
+
+ ) via Prometheus Adapter.
+
+FAQ
+
+How much GPU memory do I need for a 70B model?
+
+In FP16, a 70B model needs ~140GB of GPU VRAM for weights, plus memory for the KV cache. That's 2x A100 80GB or 4x A100 40GB with tensor parallelism. With INT4 quantization (AWQ or GPTQ), the weight footprint drops to ~35GB — fitting on a single A100 80GB or H100.
+
+Can I run multiple models on the same GPU?
+
+Yes. Use MIG on A100/H100 for hardware-isolated partitions, or time-slicing for software-level sharing. Ray Serve's model multiplexing also supports multiple models on shared replicas with LRU eviction. Time-slicing has no memory isolation between models.
+
+What's the difference between vLLM standalone and Ray Serve?
+
+vLLM standalone runs a single inference engine on one node. Ray Serve wraps vLLM with distributed coordination for multi-node inference, multi-model serving, built-in autoscaling, and zero-downtime upgrades via KubeRay. Ray Serve uses the same vLLM engine underneath — you can migrate with zero code changes ( 
+
+source
+
+https://docs.ray.io/en/latest/serve/llm/user-guides/vllm-compatibility.html?ref=blog.premai.io
+
+).
+
+How do I scale LLM inference to zero?
+
+Standard HPA can't go below 1 replica. Use KEDA with a Prometheus trigger monitoring request rate. When requests drop to zero, KEDA scales to 0. The tradeoff: cold start time when the first request arrives (30-60 seconds for a 7B model with cached weights).
+
+How long does cold start take for LLM pods?
+
+With weights pre-cached on a PVC: 30-60 seconds for a 7B model, 2-5 minutes for a 70B model. Without caching (downloading from HuggingFace): add 5-10 minutes for 7B and 20+ minutes for 70B.
+
+Should I use MIG or time-slicing?
+
+MIG gives hardware-level isolation with dedicated memory and compute per instance. Use it for production multi-tenant workloads on A100/H100. Time-slicing has no memory isolation but works on all NVIDIA GPUs. Use it for development, testing, and non-critical workloads.
+
+How do I monitor LLM inference quality?
+
+Track four metrics via vLLM's Prometheus endpoint: TTFT (time to first token) for perceived latency, inter-token latency for streaming quality, KV cache utilization for memory pressure, and queue depth for capacity planning. Starting alert thresholds: TTFT P99 above 5s, KV cache above 90%, queue depth above 10.
+
+What Kubernetes version do I need?
+
+1.26+ for stable GPU scheduling. 1.27+ for topology manager stability. 1.29+ for llm-d. 1.30+ for scheduling gates. 1.31+ for Image Volume (OCI model artifacts).
+
+For teams evaluating managed LLM deployment without Kubernetes overhead, see the
+
+ 
+
+PremAI self-host guide
+
+https://docs.premai.io/inference/self-host?ref=blog.premai.io
+
+ 
+
+or
+
+ 
+
+book a technical call
+
+https://form.typeform.com/to/VJZVAsao?ref=blog.premai.io
+
+ 
+
+to talk through your setup.
+
+[Previous issue
+
+How to Self-Host DeepSeek R1: Hardware, Setup, and Privacy Guide (2026)
+
+](https://blog.premai.io/how-to-self-host-deepseek-r1-hardware-setup-and-privacy-guide-2026/)
+
+[Next issue
+
+Hybrid Search for RAG: BM25, SPLADE, and Vector Search Combined
+
+](https://blog.premai.io/hybrid-search-for-rag-bm25-splade-and-vector-search-combined/)
+
+Subscribe to Prem AI
+
+Don't miss out on the latest issues. Sign up now to get access to the library of members-only issues.
+
+jamie@example.com Subscribe
+
+https://blog.premai.io/deploying-llms-on-kubernetes-vllm-ray-serve-gpu-scheduling-guide-2026/#/portal/signup
+
+Prem AI © 2026
+
+Sign up
+
+https://blog.premai.io/deploying-llms-on-kubernetes-vllm-ray-serve-gpu-scheduling-guide-2026/#/portal/
+
+Powered by Ghost
+
+https://ghost.org/

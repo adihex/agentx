@@ -1,0 +1,26 @@
+{
+    // ── Python Language Server ──────────────────────
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.analysis.typeCheckingMode": "strict",
+    // ── Type checker: ty (Astral) ──────────────────
+    // Stop python extension's language server from running, since we are using ty for type checking.
+    "python.languageServer": "None",
+
+    // ── Formatter: ruff ────────────────────────────
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    // ── Notebooks ──────────────────────────────────
+    "notebook.defaultFormatter": "charliermarsh.ruff",
+    "notebook.formatOnSave.enabled": true,
+
+    // ── General Python ─────────────────────────────
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true
+}

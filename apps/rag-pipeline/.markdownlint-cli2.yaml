@@ -1,0 +1,27 @@
+config:
+  default: true
+  MD013: false
+  MD033: false
+  MD024:
+    siblings_only: true
+  MD041: false
+  MD001: false
+  MD045: false
+  MD047: false
+  MD060: false
+  MD031: false
+  MD032: false
+  MD022: false
+  MD036: false
+  MD051: false
+  MD040: false
+  MD007: false
+  MD029: false
+
+ignores:
+  - "node_modules"
+  - ".venv"
+  - ".worktrees"
+  - "*__worktrees"
+  - ".git"
+

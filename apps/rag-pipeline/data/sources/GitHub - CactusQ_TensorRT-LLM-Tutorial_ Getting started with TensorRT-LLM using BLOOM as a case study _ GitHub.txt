@@ -1,0 +1,832 @@
+GitHub - CactusQ/TensorRT-LLM-Tutorial: Getting started with TensorRT-LLM using BLOOM as a case study · GitHub
+
+Skip to content
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial#start-of-content
+
+Navigation Menu
+
+Toggle navigation 
+
+https://github.com/
+
+Sign in
+
+https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2FCactusQ%2FTensorRT-LLM-Tutorial
+
+Appearance settings
+
+Platform
+
+AI CODE CREATION
+
+GitHub Copilot Write better code with AI
+
+https://github.com/features/copilot
+
+GitHub Spark Build and deploy intelligent apps
+
+https://github.com/features/spark
+
+GitHub Models Manage and compare prompts
+
+https://github.com/features/models
+
+MCP Registry New Integrate external tools
+
+https://github.com/mcp
+
+DEVELOPER WORKFLOWS
+
+Actions Automate any workflow
+
+https://github.com/features/actions
+
+Codespaces Instant dev environments
+
+https://github.com/features/codespaces
+
+Issues Plan and track work
+
+https://github.com/features/issues
+
+Code Review Manage code changes
+
+https://github.com/features/code-review
+
+APPLICATION SECURITY
+
+GitHub Advanced Security Find and fix vulnerabilities
+
+https://github.com/security/advanced-security
+
+Code security Secure your code as you build
+
+https://github.com/security/advanced-security/code-security
+
+Secret protection Stop leaks before they start
+
+https://github.com/security/advanced-security/secret-protection
+
+EXPLORE
+
+Why GitHub
+
+https://github.com/why-github
+
+Documentation
+
+https://docs.github.com/
+
+Blog
+
+https://github.blog/
+
+Changelog
+
+https://github.blog/changelog
+
+Marketplace
+
+https://github.com/marketplace
+
+ 
+
+View all features
+
+https://github.com/features
+
+Solutions
+
+BY COMPANY SIZE
+
+Enterprises
+
+https://github.com/enterprise
+
+Small and medium teams
+
+https://github.com/team
+
+Startups
+
+https://github.com/enterprise/startups
+
+Nonprofits
+
+https://github.com/solutions/industry/nonprofits
+
+BY USE CASE
+
+App Modernization
+
+https://github.com/solutions/use-case/app-modernization
+
+DevSecOps
+
+https://github.com/solutions/use-case/devsecops
+
+DevOps
+
+https://github.com/solutions/use-case/devops
+
+CI/CD
+
+https://github.com/solutions/use-case/ci-cd
+
+View all use cases
+
+https://github.com/solutions/use-case
+
+BY INDUSTRY
+
+Healthcare
+
+https://github.com/solutions/industry/healthcare
+
+Financial services
+
+https://github.com/solutions/industry/financial-services
+
+Manufacturing
+
+https://github.com/solutions/industry/manufacturing
+
+Government
+
+https://github.com/solutions/industry/government
+
+View all industries
+
+https://github.com/solutions/industry
+
+ 
+
+View all solutions
+
+https://github.com/solutions
+
+Resources
+
+EXPLORE BY TOPIC
+
+AI
+
+https://github.com/resources/articles?topic=ai
+
+Software Development
+
+https://github.com/resources/articles?topic=software-development
+
+DevOps
+
+https://github.com/resources/articles?topic=devops
+
+Security
+
+https://github.com/resources/articles?topic=security
+
+View all topics
+
+https://github.com/resources/articles
+
+EXPLORE BY TYPE
+
+Customer stories
+
+https://github.com/customer-stories
+
+Events & webinars
+
+https://github.com/resources/events
+
+Ebooks & reports
+
+https://github.com/resources/whitepapers
+
+Business insights
+
+https://github.com/solutions/executive-insights
+
+GitHub Skills
+
+https://skills.github.com/
+
+SUPPORT & SERVICES
+
+Documentation
+
+https://docs.github.com/
+
+Customer support
+
+https://support.github.com/
+
+Community forum
+
+https://github.com/orgs/community/discussions
+
+Trust center
+
+https://github.com/trust-center
+
+Partners
+
+https://github.com/partners
+
+ 
+
+View all resources
+
+https://github.com/resources
+
+Open Source
+
+COMMUNITY
+
+GitHub Sponsors Fund open source developers
+
+https://github.com/sponsors
+
+PROGRAMS
+
+Security Lab
+
+https://securitylab.github.com/
+
+Maintainer Community
+
+https://maintainers.github.com/
+
+Accelerator
+
+https://github.com/accelerator
+
+GitHub Stars
+
+https://stars.github.com/
+
+Archive Program
+
+https://archiveprogram.github.com/
+
+REPOSITORIES
+
+Topics
+
+https://github.com/topics
+
+Trending
+
+https://github.com/trending
+
+Collections
+
+https://github.com/collections
+
+Enterprise
+
+ENTERPRISE SOLUTIONS
+
+Enterprise platform AI-powered developer platform
+
+https://github.com/enterprise
+
+AVAILABLE ADD-ONS
+
+GitHub Advanced Security Enterprise-grade security features
+
+https://github.com/security/advanced-security
+
+Copilot for Business Enterprise-grade AI features
+
+https://github.com/features/copilot/copilot-business
+
+Premium Support Enterprise-grade 24/7 support
+
+https://github.com/premium-support
+
+Pricing
+
+https://github.com/pricing
+
+Search or jump to...
+
+Search code, repositories, users, issues, pull requests...
+
+Search
+
+Clear
+
+Search syntax tips
+
+https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax
+
+Provide feedback
+
+We read every piece of feedback, and take your input very seriously.
+
+ 
+
+[-]
+
+Include my email address so I can be contacted
+
+Cancel Submit feedback
+
+Saved searches
+
+Use saved searches to filter your results more quickly
+
+Name
+
+Query
+
+To see all available qualifiers, see our 
+
+documentation
+
+https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax
+
+.
+
+Cancel Create saved search
+
+Sign in
+
+https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2FCactusQ%2FTensorRT-LLM-Tutorial
+
+Sign up
+
+https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=CactusQ%2FTensorRT-LLM-Tutorial
+
+Appearance settings
+
+Resetting focus
+
+You signed in with another tab or window. 
+
+Reload
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+ to refresh your session. You signed out in another tab or window. 
+
+Reload
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+ to refresh your session. You switched accounts on another tab or window. 
+
+Reload
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+ to refresh your session. Dismiss alert
+
+CactusQ
+
+https://github.com/CactusQ
+
+ / 
+
+TensorRT-LLM-Tutorial
+
+ Public
+
+Notifications
+
+https://github.com/login?return_to=%2FCactusQ%2FTensorRT-LLM-Tutorial
+
+ You must be signed in to change notification settings
+
+Fork 5
+
+https://github.com/login?return_to=%2FCactusQ%2FTensorRT-LLM-Tutorial
+
+Star 24
+
+https://github.com/login?return_to=%2FCactusQ%2FTensorRT-LLM-Tutorial
+
+Code
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+Issues 0
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/issues
+
+Pull requests 0
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/pulls
+
+Actions
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/actions
+
+Projects
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/projects
+
+Security and quality 0
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/security
+
+Insights
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/pulse
+
+Additional navigation options
+
+Code
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+Issues
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/issues
+
+Pull requests
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/pulls
+
+Actions
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/actions
+
+Projects
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/projects
+
+Security and quality
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/security
+
+Insights
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/pulse
+
+ 
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+CactusQ/TensorRT-LLM-Tutorial
+
+main
+
+1 Branch
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/branches
+
+ 
+
+0 Tags
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/tags
+
+ 
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/branches
+
+ 
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/tags
+
+Go to file
+
+Code
+
+Open more actions menu
+
+Folders and files
+
+Name
+
+Name
+
+Last commit message
+
+Last commit date
+
+## Latest commit 
+
+ 
+
+CactusQ
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commits?author=CactusQ
+
+ 
+
+Update README.md
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commit/18e958d8fa3f19e9e1e0f62f4ff7b6ce71230628
+
+ 2 years ago 
+
+18e958d
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commit/18e958d8fa3f19e9e1e0f62f4ff7b6ce71230628
+
+ · 2 years ago ## History 
+
+5 Commits
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commits/main/
+
+ Open commit details 
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commits/main/
+
+ 5 Commits
+
+LICENSE
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/LICENSE
+
+LICENSE
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/LICENSE
+
+Initial commit
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commit/763d3d941332a48d39c9eed868a86819991065c7
+
+2 years ago
+
+README.md
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/README.md
+
+README.md
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/README.md
+
+Update README.md
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commit/18e958d8fa3f19e9e1e0f62f4ff7b6ce71230628
+
+2 years ago
+
+TensorRT-LLM-Bloom-Example.ipynb
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/TensorRT-LLM-Bloom-Example.ipynb
+
+TensorRT-LLM-Bloom-Example.ipynb
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/blob/main/TensorRT-LLM-Bloom-Example.ipynb
+
+Add files via upload
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/commit/4d1938d2580ae8554bd9dba78c2be5d27c990494
+
+2 years ago
+
+View all files
+
+Repository files navigation
+
+README
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+MIT license
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+TensorRT-LLM: A Tutorial On Getting Started
+
+Beginner-friendly tutorial for Tensor-RT-LLM using BLOOM-560M as an example model.
+
+Video walkthrough and explanation:
+
+Accelerating BLOOM 560M Inference with TensorRT-LLM
+
+This Jupyter notebook demonstrates the optimization of the BLOOM 560M model, a large language model, for faster inference using NVIDIA's TensorRT-LLM. The guide covers the installation of necessary tools, downloading and preparing the BLOOM model, and the steps to convert and optimize the model using TensorRT-LLM for both FP16 and INT8 quantization. It also includes a comparison of inference speed results between the baseline model from Huggingface, the optimized FP16 model, and the INT8 quantized model.
+
+Prerequisites
+
+NVIDIA GPU with CUDA support
+
+Docker and NVIDIA Container Toolkit installed (will be installed in the notebook as well)
+
+Python 3.10, pip, and necessary Python libraries
+
+Jupyter or Google Colab
+
+Or run the docker container and install Jupyter there:
+
+docker run --rm --runtime=nvidia --gpus all --entrypoint /bin/bash -it nvidia/cuda:12.1.0-devel-ubuntu22.04
+
+
+Overview
+
+This notebook provides a detailed walkthrough for:
+
+Installing the NVIDIA Container Toolkit
+
+: Ensures that Docker containers can utilize the full power of NVIDIA GPUs.
+
+Installing TensorRT-LLM
+
+: Steps to clone the NVIDIA TensorRT-LLM repository and install the required Python packages.
+
+Downloading BLOOM
+
+: Instructions to download the BLOOM 560M model from Huggingface.
+
+Converting and Building the BLOOM Model
+
+: Processes to convert the BLOOM model from its original Huggingface format to a format compatible with TensorRT-LLM and optimize it for faster inference using FP16 and INT8 quantization.
+
+Benchmarking
+
+: Compares execution time and ROUGE metrics for summarization tasks between the baseline Huggingface model and the optimized TensorRT-LLM models.
+
+Key Steps
+
+Model Loading and Conversion
+
+: Load the BLOOM 560M model and convert it to the TensorRT-LLM optimized format.
+
+Accelerating Inference with TensorRT
+
+: The notebook demonstrates converting the BLOOM model to a TensorRT-optimized model, significantly reducing inference times.
+
+Applying INT8 Quantization
+
+: Further optimization using INT8 quantization to reduce model size and accelerate inference speed, with a comparative analysis of performance impact.
+
+Benchmarking and Results Analysis
+
+: In-depth comparison of inference speeds and performance metrics (like ROUGE scores) across the baseline, TensorRT-optimized, and INT8-quantized models. Visualizations included showcase the performance improvements.
+
+Results
+
+The notebook concludes with a comparative analysis showcasing the inference speed improvements and performance metrics. It provides a clear visualization of the speed-ups achieved through TensorRT optimization and INT8 quantization, highlighting the substantial decrease in inference time while maintaining or improving model performance.
+
+Conclusion
+
+This guide demonstrates the effectiveness of TensorRT-LLM in optimizing the BLOOM 560M model for faster inference. It serves as a valuable resource for AI practitioners looking to enhance the performance of large language models for real-world applications, making it especially useful for tasks requiring high throughput and low latency.
+
+About
+
+Getting started with TensorRT-LLM using BLOOM as a case study
+
+Topics
+
+jupyter-notebook
+
+https://github.com/topics/jupyter-notebook
+
+ 
+
+deeplearning
+
+https://github.com/topics/deeplearning
+
+ 
+
+tensorrt
+
+https://github.com/topics/tensorrt
+
+ 
+
+tensorrt-inference
+
+https://github.com/topics/tensorrt-inference
+
+ 
+
+llms
+
+https://github.com/topics/llms
+
+ 
+
+llm-inference
+
+https://github.com/topics/llm-inference
+
+ 
+
+tensorrt-llm
+
+https://github.com/topics/tensorrt-llm
+
+Resources
+
+Readme
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial#readme-ov-file
+
+License
+
+MIT license
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial#MIT-1-ov-file
+
+Uh oh!
+
+There was an error while loading. 
+
+Please reload this page
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial
+
+.
+
+Activity
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/activity
+
+Stars
+
+24 stars
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/stargazers
+
+Watchers
+
+1 watching
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/watchers
+
+Forks
+
+5 forks
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/forks
+
+Report repository
+
+https://github.com/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2FCactusQ%2FTensorRT-LLM-Tutorial&report=CactusQ+%28user%29
+
+Releases
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/releases
+
+No releases published
+
+Packages 0
+
+https://github.com/users/CactusQ/packages?repo_name=TensorRT-LLM-Tutorial
+
+No packages published
+
+Contributors 1
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/graphs/contributors
+
+ 
+
+CactusQ long
+
+https://github.com/CactusQ
+
+Languages
+
+Jupyter Notebook 100.0%
+
+https://github.com/CactusQ/TensorRT-LLM-Tutorial/search?l=jupyter-notebook
+
+Footer
+
+© 2026 GitHub, Inc.
+
+Footer navigation
+
+Terms
+
+https://docs.github.com/site-policy/github-terms/github-terms-of-service
+
+Privacy
+
+https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+
+Security
+
+https://github.com/security
+
+Status
+
+https://www.githubstatus.com/
+
+Community
+
+https://github.community/
+
+Docs
+
+https://docs.github.com/
+
+Contact
+
+https://support.github.com?tags=dotcom-footer
+
+Manage cookies
+
+Do not share my personal information
+
+You can't perform that action at this time.

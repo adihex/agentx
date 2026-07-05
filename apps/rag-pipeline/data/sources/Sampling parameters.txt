@@ -1,0 +1,31 @@
+Sampling parameters
+
+### Parameter Guide
+
+Here's a quick reference for when to use different parameter values:
+
+**temperature** (0.0 to 1.0)
+
+- **0.1-0.3** → Predictable, consistent, factual (good for Q&A, facts)
+
+- **0.5-0.7** → Balanced (good for general chatting)
+
+- **0.8-1.0** → Creative, varied, surprising (good for storytelling, brainstorming)
+
+**max_tokens**
+
+- **50-100** → Short, concise answers
+
+- **150-300** → Medium responses (good default)
+
+- **500+** → Long, detailed explanations
+
+**top_p** (0.0 to 1.0)
+
+- **0.1-0.5** → Conservative word choices
+
+- **0.7-0.9** → Balanced (good default is 0.9)
+
+- **0.95-1.0** → Maximum diversity
+
+Now try experimenting yourself!
