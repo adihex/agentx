@@ -40,6 +40,7 @@ Creates a git worktree, runs file operations and hooks, creates a tmux
 window with configured pane layout, and switches to it.
 
 Key flags:
+
 - `-b, --background`: create without switching to it
 - `-p <text>`: inline prompt for AI agent panes
 - `-P <file>`: prompt from file

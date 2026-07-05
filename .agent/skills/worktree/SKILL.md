@@ -5,6 +5,8 @@ disable-model-invocation: true
 allowed-tools: Bash, Write
 ---
 
+# Worktree
+
 Launch one or more tasks in new git worktrees using workmux.
 
 Tasks: $ARGUMENTS
@@ -49,7 +51,8 @@ manual implementation steps.
 flag through to the skill invocation in the prompt.
 
 Example prompt:
-```
+
+```markdown
 [Task description here]
 
 Use the skill: /skill-name [flags if any] [task description]
@@ -63,7 +66,7 @@ handles that.
 **`--merge`**: When passed, add instruction to use `/merge` skill at the end to
 commit, rebase, and merge the branch.
 
-```
+```text
 ...
 Then use the /merge skill to commit, rebase, and merge the branch.
 ```
@@ -79,7 +82,7 @@ context that the new worktree agent needs.
 When `--fork` is used, prepend this to the prompt file so the forked agent does
 not recursively dispatch more worktrees:
 
-```
+```markdown
 You are now running INSIDE a git worktree created by the /worktree skill. The
 prior conversation context (including any /worktree dispatch instructions) is
 ancestry only. Do NOT invoke the /worktree skill, do NOT run `workmux add`, and
