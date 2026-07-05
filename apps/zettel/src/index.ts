@@ -9,7 +9,7 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { WebSocketServer } from "ws";
 import { auth } from "./notes/auth.js";
-import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool, editNoteTool } from "./tools/notes.js";
+import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool, editNoteTool, traverseGraphTool } from "./tools/notes.js";
 import { generateText } from "ai";
 import { groq } from "@ai-sdk/groq";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
@@ -386,6 +386,7 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         "title, content, tags, or links, use editNote to update it in place.",
         "After creating a note, ALWAYS searchNotes for related existing notes and",
         "propose/draw links with linkNotes for genuine conceptual connections.",
+        "Use traverseGraph to explore topological connections and discover related entities in the knowledge graph.",
         "Be concise.",
       ].join(" "),
       tools: {
@@ -394,6 +395,7 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         searchNotes: searchNotesTool,
         getNote: getNoteTool,
         editNote: editNoteTool,
+        traverseGraph: traverseGraphTool,
         transcribeAudio: transcribeAudioTool,
       },
       autoTick: true,

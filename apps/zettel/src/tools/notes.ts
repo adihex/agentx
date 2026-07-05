@@ -14,6 +14,8 @@ import {
   searchNotes as searchNotesStore,
   addLink,
   backlinksOf,
+  updateNote,
+  traverseGraphStore,
 } from "../notes/store.js";
 
 // ── createNote ────────────────────────────────────────────────────────────────
@@ -98,6 +100,28 @@ export async function getNote(args: GetNoteInput & { userId?: string }) {
   }
 }
 
+// ── editNote ──────────────────────────────────────────────────────────────────
+
+export const editNoteSchema = z.object({
+  id: z.string().min(1).describe("Id of the note to edit."),
+  title: z.string().optional().describe("New title for the note."),
+  content: z.string().optional().describe("New content (markdown) for the note."),
+  tags: z.array(z.string()).optional().describe("Replacement tags for the note."),
+  links: z.array(z.string()).optional().describe("Replacement links for the note."),
+});
+export type EditNoteInput = z.infer<typeof editNoteSchema>;
+
+export async function editNote(args: EditNoteInput & { userId?: string }) {
+  const { id, title, content, tags, links } = editNoteSchema.parse(args);
+  const userId = args.userId ?? "default";
+  try {
+    await updateNote(userId, id, { title, content, tags, links });
+    return { success: true, id };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 // ── ToolDefinitions ───────────────────────────────────────────────────────────
 
 export const createNoteTool: ToolDefinition<CreateNoteInput> = {
@@ -132,4 +156,40 @@ export const getNoteTool: ToolDefinition<GetNoteInput> = {
   inputSchema: getNoteSchema,
   modulePath: new URL(import.meta.url).pathname,
   exportName: "getNote",
+};
+
+export const editNoteTool: ToolDefinition<EditNoteInput> = {
+  name: "editNote",
+  description:
+    "Update an existing note's title, content, tags, or links by id. Omitting a field leaves it unchanged.",
+  inputSchema: editNoteSchema,
+  modulePath: new URL(import.meta.url).pathname,
+  exportName: "editNote",
+};
+
+// ── traverseGraph ─────────────────────────────────────────────────────────────
+
+export const traverseGraphSchema = z.object({
+  entityName: z.string().describe("The name of the entity to start the traversal from."),
+  depth: z.number().int().min(1).max(5).optional().describe("Depth of traversal (default 2, max 5).")
+});
+export type TraverseGraphInput = z.infer<typeof traverseGraphSchema>;
+
+export async function traverseGraph(args: TraverseGraphInput & { userId?: string }) {
+  const { entityName, depth } = traverseGraphSchema.parse(args);
+  const userId = args.userId ?? "default";
+  try {
+    const result = await traverseGraphStore(userId, entityName, depth ?? 2);
+    return { success: true, result };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+export const traverseGraphTool: ToolDefinition<TraverseGraphInput> = {
+  name: "traverseGraph",
+  description: "Traverse the knowledge graph starting from a specific entity to discover related entities and concepts.",
+  inputSchema: traverseGraphSchema,
+  modulePath: new URL(import.meta.url).pathname,
+  exportName: "traverseGraph",
 };
