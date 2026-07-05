@@ -247,7 +247,7 @@ const GraphSchema = z.object({
 
 async function extractGraph(content: string) {
   const { object } = await generateObject({
-    model: google("gemini-2.5-flash"),
+    model: google("gemini-2.5-flash") as any,
     schema: GraphSchema,
     prompt: `Extract explicit concepts (nodes) and relationships (edges) from the following note:\n\n${content}`,
   });
@@ -289,7 +289,7 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
   let embeddingArray: number[] | null = null;
   try {
     const { embedding } = await embed({
-      model: google("text-embedding-004"),
+      model: google.textEmbeddingModel("text-embedding-004") as any,
       value: `Title: ${title}\n\nBody: ${input.content}`,
     });
     embeddingArray = embedding;
@@ -443,7 +443,7 @@ export async function listNotes(userId: string): Promise<Note[]> {
   }));
 }
 
-/** Case-insensitive search over title + tags + body using SQLite. */
+/** Case-insensitive hybrid search over title + tags + body + vectors using SQLite. */
 export async function searchNotes(
   userId: string,
   query: string,
@@ -451,8 +451,21 @@ export async function searchNotes(
 ): Promise<NoteSearchResult[]> {
   await ensureDb();
 
+  let queryEmbedding: number[] | null = null;
+  try {
+    const { embedding } = await embed({
+      model: google.textEmbeddingModel("text-embedding-004") as any,
+      value: query.trim(),
+    });
+    queryEmbedding = embedding;
+  } catch (err) {
+    console.error("Failed to generate query embedding", err);
+  }
+
   const q = `%${query.trim().toLowerCase()}%`;
-  const res = await client.execute({
+  
+  // 1. Keyword search
+  const ftsRes = await client.execute({
     sql: `
       SELECT id, title, body FROM notes
       WHERE user_id = ?
@@ -462,14 +475,74 @@ export async function searchNotes(
       ORDER BY id DESC
       LIMIT ?
     `,
-    args: [userId, q, q, q, limit],
+    args: [userId, q, q, q, limit * 2],
   });
 
-  return res.rows.map((row) => ({
+  const ftsNotes = ftsRes.rows.map((row) => ({
     id: row.id as string,
     title: row.title as string,
-    snippet: snippetFor(row.body as string, query.trim().toLowerCase()),
+    body: row.body as string,
   }));
+
+  let vectorNotes: { id: string; title: string; body: string }[] = [];
+
+  if (queryEmbedding) {
+    try {
+      // 2. Vector search
+      const vecRes = await client.execute({
+        sql: `
+          SELECT id, title, body
+          FROM notes
+          WHERE user_id = ? AND embedding IS NOT NULL
+          ORDER BY vector_distance_cos(embedding, ?) ASC
+          LIMIT ?
+        `,
+        args: [userId, JSON.stringify(queryEmbedding), limit * 2],
+      });
+
+      vectorNotes = vecRes.rows.map((row) => ({
+        id: row.id as string,
+        title: row.title as string,
+        body: row.body as string,
+      }));
+    } catch (err) {
+      console.error("Vector search failed, falling back to FTS only", err);
+    }
+  }
+
+  // 3. RRF (Reciprocal Rank Fusion)
+  const K = 60;
+  const scores = new Map<string, number>();
+  const noteMap = new Map<string, { id: string; title: string; body: string }>();
+
+  // Add FTS scores
+  ftsNotes.forEach((note, index) => {
+    noteMap.set(note.id, note);
+    const rank = index + 1;
+    scores.set(note.id, (scores.get(note.id) || 0) + 1 / (K + rank));
+  });
+
+  // Add Vector scores
+  vectorNotes.forEach((note, index) => {
+    noteMap.set(note.id, note);
+    const rank = index + 1;
+    scores.set(note.id, (scores.get(note.id) || 0) + 1 / (K + rank));
+  });
+
+  // Sort and take top N
+  const sortedIds = Array.from(scores.entries())
+    .sort((a, b) => b[1] - a[1]) // highest score first
+    .slice(0, limit)
+    .map((entry) => entry[0]);
+
+  return sortedIds.map((id) => {
+    const note = noteMap.get(id)!;
+    return {
+      id: note.id,
+      title: note.title,
+      snippet: snippetFor(note.body, query.trim().toLowerCase()),
+    };
+  });
 }
 
 function snippetFor(body: string, q: string): string {
