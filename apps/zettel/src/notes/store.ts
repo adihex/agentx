@@ -10,6 +10,9 @@ import fs from "node:fs/promises";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { embed, generateObject } from "ai";
+import { google } from "@ai-sdk/google";
+import { z } from "zod";
 
 export type NoteSource = "text" | "audio";
 
@@ -70,12 +73,19 @@ async function initDb(): Promise<void> {
       title TEXT NOT NULL,
       created TEXT NOT NULL,
       source TEXT NOT NULL,
-      body TEXT NOT NULL
+      body TEXT NOT NULL,
+      embedding F32_BLOB(768)
     )
   `);
 
   try {
     await client.execute("ALTER TABLE notes ADD COLUMN user_id TEXT DEFAULT 'default'");
+  } catch {
+    // Column already exists
+  }
+
+  try {
+    await client.execute("ALTER TABLE notes ADD COLUMN embedding F32_BLOB(768)");
   } catch {
     // Column already exists
   }
@@ -218,6 +228,32 @@ export interface WriteNoteInput {
   source?: NoteSource;
 }
 
+const GraphSchema = z.object({
+  nodes: z.array(
+    z.object({
+      name: z.string(),
+      type: z.string(),
+      description: z.string(),
+    })
+  ),
+  edges: z.array(
+    z.object({
+      source: z.string(),
+      target: z.string(),
+      relationship: z.string(),
+    })
+  ),
+});
+
+async function extractGraph(content: string) {
+  const { object } = await generateObject({
+    model: google("gemini-2.5-flash"),
+    schema: GraphSchema,
+    prompt: `Extract explicit concepts (nodes) and relationships (edges) from the following note:\n\n${content}`,
+  });
+  return object;
+}
+
 /** Create a new atomic note in the database. */
 export async function writeNote(userId: string, input: WriteNoteInput): Promise<Note> {
   await ensureDb();
@@ -249,10 +285,30 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
   const tags = input.tags ?? [];
   const links = input.links ?? [];
 
+  // Generate embedding
+  let embeddingArray: number[] | null = null;
+  try {
+    const { embedding } = await embed({
+      model: google("text-embedding-004"),
+      value: `Title: ${title}\n\nBody: ${input.content}`,
+    });
+    embeddingArray = embedding;
+  } catch (err) {
+    console.error("Failed to generate embedding", err);
+  }
+
   // Write Note
   await client.execute({
-    sql: "INSERT INTO notes (id, user_id, title, created, source, body) VALUES (?, ?, ?, ?, ?, ?)",
-    args: [id, userId, title, created, source, input.content],
+    sql: "INSERT INTO notes (id, user_id, title, created, source, body, embedding) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    args: [
+      id,
+      userId,
+      title,
+      created,
+      source,
+      input.content,
+      embeddingArray ? JSON.stringify(embeddingArray) : null,
+    ],
   });
 
   // Write Tags
@@ -275,6 +331,26 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
         args: [target, id],
       },
     ]);
+  }
+
+  // Write Graph
+  let graph: z.infer<typeof GraphSchema> | null = null;
+  try {
+    graph = await extractGraph(input.content);
+    for (const node of graph.nodes) {
+      await client.execute({
+        sql: "INSERT OR REPLACE INTO entities (name, type, description) VALUES (?, ?, ?)",
+        args: [node.name, node.type, node.description],
+      });
+    }
+    for (const edge of graph.edges) {
+      await client.execute({
+        sql: "INSERT INTO entity_relations (source, target, relationship, note_id) VALUES (?, ?, ?, ?)",
+        args: [edge.source, edge.target, edge.relationship, id],
+      });
+    }
+  } catch (err) {
+    console.error("Failed to extract or save graph", err);
   }
 
   return {
@@ -660,4 +736,75 @@ export async function deleteNote(userId: string, id: string): Promise<void> {
       args: [id, userId],
     },
   ]);
+}
+
+export interface GraphTraversalResult {
+  entities: string[];
+  relations: Array<{ source: string; target: string; relationship: string; noteId: string }>;
+}
+
+/**
+ * Traverse the knowledge graph starting from a specific entity up to a given depth.
+ */
+export async function traverseGraphStore(
+  userId: string,
+  entityName: string,
+  depth: number = 2,
+): Promise<GraphTraversalResult> {
+  await ensureDb();
+
+  const entities = new Set<string>();
+  const relationsMap = new Map<
+    string,
+    { source: string; target: string; relationship: string; noteId: string }
+  >();
+
+  entities.add(entityName);
+  let currentFrontier = [entityName];
+
+  for (let d = 0; d < depth; d++) {
+    if (currentFrontier.length === 0) break;
+
+    const placeholders = currentFrontier.map(() => "?").join(",");
+    const query = `
+      SELECT er.source, er.target, er.relationship, er.note_id
+      FROM entity_relations er
+      JOIN notes n ON er.note_id = n.id
+      WHERE n.user_id = ?
+        AND (er.source IN (${placeholders}) OR er.target IN (${placeholders}))
+    `;
+
+    const args = [userId, ...currentFrontier, ...currentFrontier];
+    const res = await client.execute({ sql: query, args });
+
+    const nextFrontier = new Set<string>();
+
+    for (const row of res.rows) {
+      const source = row.source as string;
+      const target = row.target as string;
+      const relationship = row.relationship as string;
+      const noteId = row.note_id as string;
+
+      const relKey = `${source}|${target}|${relationship}|${noteId}`;
+      if (!relationsMap.has(relKey)) {
+        relationsMap.set(relKey, { source, target, relationship, noteId });
+      }
+
+      if (!entities.has(source)) {
+        entities.add(source);
+        nextFrontier.add(source);
+      }
+      if (!entities.has(target)) {
+        entities.add(target);
+        nextFrontier.add(target);
+      }
+    }
+
+    currentFrontier = Array.from(nextFrontier);
+  }
+
+  return {
+    entities: Array.from(entities),
+    relations: Array.from(relationsMap.values()),
+  };
 }
