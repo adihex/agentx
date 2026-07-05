@@ -1848,12 +1848,7 @@ body {
 
 /* Shimmer utility for text loading states */
 .text-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--ink-3) 0%,
-    var(--ink-2) 50%,
-    var(--ink-3) 100%
-  );
+  background: linear-gradient(90deg, var(--ink-3) 0%, var(--ink-2) 50%, var(--ink-3) 100%);
   background-size: 200% auto;
   color: transparent;
   background-clip: text;
@@ -2092,7 +2087,9 @@ body {
   cursor: pointer;
   padding: 4px;
   font-size: 20px;
-  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition:
+    color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
 .modal-close-btn:hover {
@@ -2106,13 +2103,23 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleUp {
-  from { transform: scale(0.96); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ============================ EDIT MODE SPLIT ============================ */
@@ -2177,4 +2184,3 @@ body {
     min-height: 300px;
   }
 }
-

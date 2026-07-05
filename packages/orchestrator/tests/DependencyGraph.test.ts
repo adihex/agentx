@@ -47,13 +47,13 @@ describe("DependencyGraph", () => {
   };
 
   it("should identify ready steps", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     expect(graph.getReadySteps()).toHaveLength(1);
     expect(graph.getReadySteps()[0].id).toBe("1");
   });
 
   it("should update ready steps after completion", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     graph.markStarted("1");
     expect(graph.getReadySteps()).toHaveLength(0);
 
@@ -65,7 +65,7 @@ describe("DependencyGraph", () => {
   });
 
   it("should handle complex dependencies", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     graph.markCompleted("1");
     graph.markCompleted("2");
     expect(graph.getReadySteps().map((s) => s.id)).toEqual(["3"]);
@@ -75,7 +75,7 @@ describe("DependencyGraph", () => {
   });
 
   it("should track plan completion", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     expect(graph.isPlanComplete()).toBe(false);
 
     mockPlan.steps.forEach((s) => graph.markCompleted(s.id));
@@ -91,18 +91,18 @@ describe("DependencyGraph", () => {
         { id: "2", dependencies: ["1"] },
       ],
     };
-    expect(() => new DependencyGraph(circularPlan as any)).toThrow("Circular dependency");
+    expect(() => new DependencyGraph(circularPlan as unknown)).toThrow("Circular dependency");
   });
 
   it("should handle blocking failures", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     expect(graph.hasBlockingFailures()).toBe(false);
     graph.markFailed("1");
     expect(graph.hasBlockingFailures()).toBe(true);
   });
 
   it("should manage pending reviews", () => {
-    const graph = new DependencyGraph(mockPlan as any);
+    const graph = new DependencyGraph(mockPlan as unknown);
     graph.markStarted("1");
     graph.setPendingReviews("1", ["review-1", "review-2"]);
 

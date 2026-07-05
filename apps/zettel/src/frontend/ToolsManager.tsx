@@ -139,7 +139,7 @@ export default function ToolsManager({ onClose }: ToolsManagerProps) {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error((data as any).error || `Save failed (${res.status})`);
+        throw new Error((data as unknown).error || `Save failed (${res.status})`);
       }
       setShowForm(false);
       resetForm();

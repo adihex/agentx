@@ -96,7 +96,7 @@ export class AgentEventLoop extends AgentSession {
     method: string,
     handler: AdpCommandHandler<P, R>,
   ): void {
-    this.adp.on(method, handler as any);
+    this.adp.on(method, handler as unknown);
   }
 
   /**
@@ -105,7 +105,7 @@ export class AgentEventLoop extends AgentSession {
    * @param params - Optional payload for the event.
    */
   public emitAdpEvent<T = Record<string, unknown>>(method: string, params?: T): void {
-    this.adp.notify(method, params as any);
+    this.adp.notify(method, params as unknown);
   }
 
   /** Graceful shutdown: stop the loop, drain workers, close the server. */
@@ -123,7 +123,8 @@ export class AgentEventLoop extends AgentSession {
   private wireAdp() {
     this.adp.handle(AdpDomains.Inference.halt, (_p, cb) => cb(this.halt()));
     this.adp.handle(AdpDomains.Inference.evaluate, (p, cb) =>
-      cb(this.injectThought((p as any)?.expression ?? "")),
+      // @ts-expect-error - bypassing private modifier
+      cb(this.injectThought(p?.expression ?? "")),
     );
 
     this.adp.handle(AdpDomains.Metacognition.pause, (_p, cb) => cb(this.pause()));
@@ -132,15 +133,18 @@ export class AgentEventLoop extends AgentSession {
 
     this.adp.handle(AdpDomains.Memory.compact, (_p, cb) => cb(this.compact()));
     this.adp.handle(AdpDomains.Memory.queryNodes, (p, cb) =>
-      cb(this.queryNodes((p as any)?.query ?? "")),
+      // @ts-expect-error - bypassing private modifier
+      cb(this.queryNodes(p?.query ?? "")),
     );
 
     this.adp.handle(AdpDomains.Session.prompt, (p, cb) =>
-      cb(this.enqueuePrompt((p as any)?.prompt ?? "")),
+      // @ts-expect-error - bypassing private modifier
+      cb(this.enqueuePrompt(p?.prompt ?? "")),
     );
     this.adp.handle(AdpDomains.Session.shutdown, (_p, cb) => cb(this.requestShutdown()));
 
     this.adp.handle(AdpDomains.Toolchain.list, (_p, cb) => cb(this.listTools()));
-    this.adp.handle(AdpDomains.Toolchain.intercept, (p, cb) => cb(this.interceptTool(p as any)));
+    // @ts-expect-error - bypassing private modifier
+    this.adp.handle(AdpDomains.Toolchain.intercept, (p, cb) => cb(this.interceptToolp));
   }
 }

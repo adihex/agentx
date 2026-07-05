@@ -41,8 +41,8 @@ vi.mock("ws", () => {
       readyState: 1, // WebSocket.OPEN
     };
   });
-  (MockWebSocket as any).OPEN = 1;
-  (MockWebSocket as any).CLOSED = 3;
+  (MockWebSocket as unknown).OPEN = 1;
+  (MockWebSocket as unknown).CLOSED = 3;
   return { WebSocket: MockWebSocket };
 });
 

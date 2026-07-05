@@ -119,9 +119,16 @@ export class AgentSessionHost {
    * @param handler - Receives the params and a session-scoped context.
    */
   public registerCommand(method: string, handler: SessionCommandHandler): void {
-    this.adp.on(method, (params: Record<string, unknown> | undefined, cb: (r: unknown) => void, sessionId: string) => {
-      handler(params, this.contextFor(sessionId, cb));
-    });
+    this.adp.on(
+      method,
+      (
+        params: Record<string, unknown> | undefined,
+        cb: (r: unknown) => void,
+        sessionId: string,
+      ) => {
+        handler(params, this.contextFor(sessionId, cb));
+      },
+    );
   }
 
   /** Graceful shutdown: stop every session, drain workers, close the server. */
@@ -206,7 +213,11 @@ export class AgentSessionHost {
     ) => {
       this.adp.on(
         method,
-        (params: Record<string, unknown> | undefined, cb: (r: unknown) => void, sessionId: string) => {
+        (
+          params: Record<string, unknown> | undefined,
+          cb: (r: unknown) => void,
+          sessionId: string,
+        ) => {
           const session = this.sessions.get(sessionId);
           if (!session) {
             cb({ status: "error", reason: "no active session" });

@@ -54,3 +54,5 @@ There are NO unit tests. The `test` script is a stub: `echo 'No tests'`. Verify 
 - `tsx` (`catalog:`) — TypeScript execution runtime used by the `start`, `dev`, and `admin` scripts.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

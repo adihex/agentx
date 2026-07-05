@@ -1,0 +1,6 @@
+id: no-as-any-tsx
+language: tsx
+severity: error
+message: "Avoid `as any` — it disables type checking. Use a precise type or `unknown`."
+rule:
+  pattern: $EXPR as any

@@ -385,7 +385,7 @@ export class AgentSession extends EventEmitter {
             toolCallId: item.toolCallId,
             toolName: item.toolName,
             output: r.success
-              ? { type: "json", value: (r.data ?? null) as any }
+              ? { type: "json", value: (r.data ?? null) as unknown }
               : { type: "error-text", value: r.error ?? "tool execution failed" },
           },
         ],

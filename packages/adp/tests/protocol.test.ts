@@ -162,12 +162,15 @@ describe("AdpServer", () => {
 
   it("should handle wss.close error", async () => {
     // Mock wss.close to return an error
-    const originalClose = (server as any).wss.close;
-    (server as any).wss.close = (cb: any) => cb(new Error("Close error"));
+    // @ts-expect-error - bypassing private modifier
+    const originalClose = server.wss.close;
+    // @ts-expect-error - bypassing private modifier
+    server.wss.close = (cb: any) => cb(new Error("Close error"));
 
     await expect(server.close()).rejects.toThrow("Close error");
 
     // Restore
-    (server as any).wss.close = originalClose;
+    // @ts-expect-error - bypassing private modifier
+    server.wss.close = originalClose;
   });
 });

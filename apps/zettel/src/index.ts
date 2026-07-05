@@ -9,7 +9,14 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { WebSocketServer } from "ws";
 import { auth } from "./notes/auth.js";
-import { createNoteTool, linkNotesTool, searchNotesTool, getNoteTool, editNoteTool, traverseGraphTool } from "./tools/notes.js";
+import {
+  createNoteTool,
+  linkNotesTool,
+  searchNotesTool,
+  getNoteTool,
+  editNoteTool,
+  traverseGraphTool,
+} from "./tools/notes.js";
 import { generateText } from "ai";
 import { groq } from "@ai-sdk/groq";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
@@ -195,7 +202,7 @@ const routes = api
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       const status = msg === "Note not found" ? 404 : 500;
-      return c.json({ error: msg }, status as any);
+      return c.json({ error: msg }, status as unknown);
     }
   })
   .delete("/note", async (c) => {
@@ -210,7 +217,7 @@ const routes = api
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       const status = msg === "Note not found" ? 404 : 500;
-      return c.json({ error: msg }, status as any);
+      return c.json({ error: msg }, status as unknown);
     }
   })
   .get("/graph", async (c) => {
@@ -240,10 +247,10 @@ const routes = api
     const entity = c.req.param("entity");
     try {
       const results = await searchNotes(user.id, entity, 50);
-      
+
       let markdown = `# ${entity}\n\n`;
       markdown += `## Related Notes\n\n`;
-      
+
       if (results.length === 0) {
         markdown += `No notes found mentioning this entity.\n`;
       } else {
@@ -403,10 +410,13 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
     });
 
     // Intercept/override the thread pool execute method to inject the userId into req.args
-    const originalExecute = (userAgent as any).threadPool.execute.bind(
-      (userAgent as any).threadPool,
+    // @ts-expect-error - bypassing private modifier
+    const originalExecute = userAgent.threadPool.execute.bind(
+      // @ts-expect-error - bypassing private modifier
+      userAgent.threadPool,
     );
-    (userAgent as any).threadPool.execute = async (req: any) => {
+    // @ts-expect-error - bypassing private modifier
+    userAgent.threadPool.execute = async (req: any) => {
       req.args = { ...req.args, userId };
       return originalExecute(req);
     };
@@ -488,7 +498,8 @@ httpServer.on("upgrade", async (request, socket, head) => {
 
       wss.handleUpgrade(request, socket, head, (ws) => {
         // Direct connection mapping: emit connection event on the agent's private wss
-        (userAgent.adp as any).wss.emit("connection", ws, request);
+        // @ts-expect-error - bypassing private modifier
+        userAgent.adp.wss.emit("connection", ws, request);
       });
     } catch (err) {
       console.error("[zettel] Upgrade auth failed:", err);

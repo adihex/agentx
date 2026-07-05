@@ -45,3 +45,5 @@ No unit tests (the `test` script just echoes). Validate changes by running it: `
 - `typescript` (via root `tsc`) — used only by the `build` script.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

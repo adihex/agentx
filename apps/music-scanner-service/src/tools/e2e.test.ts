@@ -25,7 +25,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
 
   it("E2E: full workflow — search → download → process", async () => {
     // 1. Search for a song
-    (execFileSync as any).mockReturnValueOnce(
+    (execFileSync as unknown).mockReturnValueOnce(
       "Stairway to Heaven\nabc123\n8:02\nHotel California\ndef456\n6:30\n",
     );
 
@@ -36,7 +36,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
     expect(bestId).toBe("abc123");
 
     // 2. Download and upload
-    (execFileSync as any)
+    (execFileSync as unknown)
       .mockReturnValueOnce("") // yt-dlp download
       .mockReturnValueOnce("") // gcloud upload
       .mockReturnValueOnce(""); // rm cleanup
@@ -50,7 +50,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
     expect(downloadResult.fileName).toBe(`${bestId}.mp3`);
 
     // 3. Trigger Cloud Run job
-    (execFileSync as any).mockReturnValueOnce("Job completed successfully");
+    (execFileSync as unknown).mockReturnValueOnce("Job completed successfully");
 
     const processResult = await triggerCloudRun({ fileName: `${bestId}.mp3` });
     expect(processResult.success).toBe(true);
@@ -58,7 +58,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
   });
 
   it("E2E: workflow handles search failure gracefully", async () => {
-    (execFileSync as any).mockImplementationOnce(() => {
+    (execFileSync as unknown).mockImplementationOnce(() => {
       throw new Error("yt-dlp: network error");
     });
 
@@ -71,7 +71,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
   });
 
   it("E2E: workflow handles download failure gracefully", async () => {
-    (execFileSync as any).mockImplementationOnce(() => {
+    (execFileSync as unknown).mockImplementationOnce(() => {
       throw new Error("yt-dlp: download failed");
     });
 
@@ -82,7 +82,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
   });
 
   it("E2E: workflow handles Cloud Run failure gracefully", async () => {
-    (execFileSync as any).mockImplementationOnce(() => {
+    (execFileSync as unknown).mockImplementationOnce(() => {
       throw new Error("gcloud: permission denied");
     });
 
@@ -92,7 +92,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
   });
 
   it("E2E: triggerCloudRun uses defaults for optional fields", async () => {
-    (execFileSync as any).mockReturnValueOnce("Job completed");
+    (execFileSync as unknown).mockReturnValueOnce("Job completed");
 
     const result = await triggerCloudRun({ fileName: "song.mp3" });
     expect(result.success).toBe(true);
@@ -100,7 +100,7 @@ describe("E2E: music-scanner-service Tool Workflow", () => {
   });
 
   it("E2E: triggerCloudRun accepts custom overrides", async () => {
-    (execFileSync as any).mockReturnValueOnce("Job completed");
+    (execFileSync as unknown).mockReturnValueOnce("Job completed");
 
     const result = await triggerCloudRun({
       fileName: "song.mp3",

@@ -40,9 +40,7 @@ export function Bubble({
 
   return (
     <div
-      className={`chat-bubble chat-bubble-${variant} chat-bubble-align-${align} ${
-        className || ""
-      }`}
+      className={`chat-bubble chat-bubble-${variant} chat-bubble-align-${align} ${className || ""}`}
       {...props}
     >
       <div className="chat-bubble-content">{children}</div>

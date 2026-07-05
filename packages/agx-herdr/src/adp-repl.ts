@@ -54,7 +54,7 @@ async function startRepl() {
     }
     // Also show agent status updates in the REPL
     if (ev.method === "Agent.StatusUpdate") {
-      const p = ev.params as any;
+      const p = ev.params as unknown;
       console.log(`\n\x1b[90m[ADP] ${p.agentId}: ${p.status} (${p.progress}%)\x1b[0m`);
       rl.prompt();
     }

@@ -4,7 +4,7 @@
 # `language: tsx` to also lint .tsx files.
 id: no-as-any
 language: typescript
-severity: warning
+severity: error
 message: "Avoid `as any` — it disables type checking. Use a precise type or `unknown`."
 rule:
   pattern: $EXPR as any

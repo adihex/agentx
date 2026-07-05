@@ -62,3 +62,5 @@ Tests run from the repo root via Vitest (`vitest run`, also the package's `test`
 | `docs/`   | Generated TypeDoc API reference (do not hand-edit) |
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

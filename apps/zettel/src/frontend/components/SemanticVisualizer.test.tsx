@@ -70,13 +70,7 @@ const mockNotes: Note[] = [
 
 describe("SemanticVisualizer Component", () => {
   it("renders empty state placeholder when no selected note is active", () => {
-    render(
-      <SemanticVisualizer
-        selectedNote={null}
-        notes={mockNotes}
-        backlinks={[]}
-      />
-    );
+    render(<SemanticVisualizer selectedNote={null} notes={mockNotes} backlinks={[]} />);
     expect(screen.getByText("Awaiting Mapping...")).toBeInTheDocument();
   });
 
@@ -87,7 +81,7 @@ describe("SemanticVisualizer Component", () => {
         notes={mockNotes}
         backlinks={["note-3"]}
         interactive={true}
-      />
+      />,
     );
 
     // Should render the central node
@@ -107,7 +101,7 @@ describe("SemanticVisualizer Component", () => {
         backlinks={["note-3"]}
         interactive={true}
         onNodeClick={handleNodeClick}
-      />
+      />,
     );
 
     const nodeButton = screen.getByTestId("node-note-2");
@@ -125,7 +119,7 @@ describe("SemanticVisualizer Component", () => {
         notes={mockNotes}
         backlinks={["note-3"]}
         onPreviewClick={handlePreviewClick}
-      />
+      />,
     );
 
     // Controls button (hamburger 'menu' icon) should NOT be rendered in preview mode

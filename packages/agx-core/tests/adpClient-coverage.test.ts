@@ -19,8 +19,10 @@ describe("AdpClient — destroyed guards", () => {
       this.readyState = mockWs.readyState;
       return mockWs;
     });
-    (MockWS as any).OPEN = 1;
-    (MockWS as any).CLOSED = 3;
+    // @ts-expect-error - bypassing private modifier
+    MockWS.OPEN = 1;
+    // @ts-expect-error - bypassing private modifier
+    MockWS.CLOSED = 3;
 
     vi.stubGlobal("WebSocket", MockWS);
     vi.useFakeTimers();

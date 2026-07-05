@@ -66,3 +66,5 @@
 - `@types/ws`, `typescript` (dev).
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

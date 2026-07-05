@@ -120,12 +120,21 @@ export default function App() {
 
   const isEditingRef = useRef(false);
   const selectedRef = useRef<Note | null>(null);
-  const editOriginalRef = useRef<{ title: string; body: string; tags: string; links: string[] } | null>(null);
+  const editOriginalRef = useRef<{
+    title: string;
+    body: string;
+    tags: string;
+    links: string[];
+  } | null>(null);
   const editThreadEndRef = useRef<HTMLDivElement | null>(null);
 
   // Keep refs in sync with state for use in event handlers
-  useEffect(() => { isEditingRef.current = isEditing; }, [isEditing]);
-  useEffect(() => { selectedRef.current = selected; }, [selected]);
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
   // Apply theme and persist to localStorage (useLayoutEffect prevents flash on load)
   useLayoutEffect(() => {
@@ -537,7 +546,7 @@ export default function App() {
       const res = await api.note.$get({ query: { id } });
       if (res.ok) {
         const data = await res.json();
-        setSelected(data.note as any);
+        setSelected(data.note as unknown);
         setSelectedBacklinks(data.backlinks || []);
         setIsEditing(false);
         setEditMessages([]);
@@ -657,7 +666,7 @@ export default function App() {
           file,
         },
       });
-      const data = (await res.json()) as any;
+      const data = (await res.json()) as unknown;
       if (data.transcript?.text) {
         const text = data.transcript.text;
         pushMsg({ id: Math.random().toString(), role: "user", text });
@@ -673,7 +682,11 @@ export default function App() {
         });
       }
     } catch (e) {
-      pushMsg({ id: Math.random().toString(), role: "system", text: `upload failed: ${String(e)}` });
+      pushMsg({
+        id: Math.random().toString(),
+        role: "system",
+        text: `upload failed: ${String(e)}`,
+      });
     } finally {
       setTranscribing(false);
     }
@@ -748,7 +761,9 @@ export default function App() {
   const titleFor = (id: string): string =>
     graph.nodes.find((n) => n.id === id)?.title ?? notes.find((n) => n.id === id)?.title ?? id;
 
-  const streaming = messages.some((m) => m.id === "streaming-msg") || editMessages.some((m) => m.id === "streaming-msg");
+  const streaming =
+    messages.some((m) => m.id === "streaming-msg") ||
+    editMessages.some((m) => m.id === "streaming-msg");
   const fmtSecs = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const activity = recording
     ? `recording ${fmtSecs(recordSecs)}`
@@ -775,519 +790,508 @@ export default function App() {
   return (
     <MessageScrollerProvider>
       <div className="app">
-      {/* ---------- Index rail ---------- */}
-      <aside className="rail">
-        <div className="rail-head">
-          <div className="brand">
-            <BrandMark size={20} className="brand-mark" />
-            <span className="wordmark">
-              zettel<b>kattan</b>
-            </span>
-            <span className="rail-count">{notes.length}</span>
-          </div>
-          <p className="tagline">To jot down your thoughts while enjoying your kattan.</p>
-        </div>
-
-        <div className="search-wrapper">
-          <span className="material-symbols-outlined search-icon">search</span>
-          <input
-            className="search"
-            type="text"
-            placeholder="Search notes…"
-            value={query}
-            onChange={(e) => runSearch(e.target.value)}
-          />
-        </div>
-
-        <nav className="index" aria-label="Notes">
-          {!loaded ? (
-            <>
-              <div className="skeleton" style={{ width: "70%" }} />
-              <div className="skeleton" style={{ width: "85%" }} />
-              <div className="skeleton" style={{ width: "60%" }} />
-            </>
-          ) : listForRail.length === 0 ? (
-            <div className="index-empty">
-              {query.trim()
-                ? "No notes match that."
-                : "No notes yet.\nCapture your first thought below."}
+        {/* ---------- Index rail ---------- */}
+        <aside className="rail">
+          <div className="rail-head">
+            <div className="brand">
+              <BrandMark size={20} className="brand-mark" />
+              <span className="wordmark">
+                zettel<b>kattan</b>
+              </span>
+              <span className="rail-count">{notes.length}</span>
             </div>
-          ) : (
-            listForRail.map((r) => (
-              <div
-                key={r.id}
-                role="button"
-                tabIndex={0}
-                className={`index-item ${selected?.id === r.id ? "active" : ""}`}
-                onClick={() => {
-                  void openNote(r.id);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+            <p className="tagline">To jot down your thoughts while enjoying your kattan.</p>
+          </div>
+
+          <div className="search-wrapper">
+            <span className="material-symbols-outlined search-icon">search</span>
+            <input
+              className="search"
+              type="text"
+              placeholder="Search notes…"
+              value={query}
+              onChange={(e) => runSearch(e.target.value)}
+            />
+          </div>
+
+          <nav className="index" aria-label="Notes">
+            {!loaded ? (
+              <>
+                <div className="skeleton" style={{ width: "70%" }} />
+                <div className="skeleton" style={{ width: "85%" }} />
+                <div className="skeleton" style={{ width: "60%" }} />
+              </>
+            ) : listForRail.length === 0 ? (
+              <div className="index-empty">
+                {query.trim()
+                  ? "No notes match that."
+                  : "No notes yet.\nCapture your first thought below."}
+              </div>
+            ) : (
+              listForRail.map((r) => (
+                <div
+                  key={r.id}
+                  role="button"
+                  tabIndex={0}
+                  className={`index-item ${selected?.id === r.id ? "active" : ""}`}
+                  onClick={() => {
                     void openNote(r.id);
-                  }
-                }}
-              >
-                <div className="index-item-title">{r.title}</div>
-                <div className="index-item-snippet">{r.snippet || "…"}</div>
-                {selected?.id === r.id && (
-                  <div className="index-item-actions" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      className="index-action-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing();
-                      }}
-                      title="Edit note"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle" }}>edit</span>
-                    </button>
-                    <button
-                      className="index-action-btn index-action-delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void deleteCurrentNote();
-                      }}
-                      title="Delete note"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle" }}>delete</span>
-                    </button>
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      void openNote(r.id);
+                    }
+                  }}
+                >
+                  <div className="index-item-title">{r.title}</div>
+                  <div className="index-item-snippet">{r.snippet || "…"}</div>
+                  {selected?.id === r.id && (
+                    <div className="index-item-actions" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        className="index-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing();
+                        }}
+                        title="Edit note"
+                      >
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: "16px", verticalAlign: "middle" }}
+                        >
+                          edit
+                        </span>
+                      </button>
+                      <button
+                        className="index-action-btn index-action-delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void deleteCurrentNote();
+                        }}
+                        title="Delete note"
+                      >
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: "16px", verticalAlign: "middle" }}
+                        >
+                          delete
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </nav>
+
+          <button
+            className={`rail-tools-btn ${showTools ? "active" : ""}`}
+            onClick={() => {
+              setShowTools(!showTools);
+              if (!showTools) setSelected(null);
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+            Tools
+          </button>
+
+          <div className="rail-foot">
+            <span className={`status-dot ${connected ? "on" : ""}`} />
+            <span>{connected ? "Connected" : "Connecting…"}</span>
+            <button
+              type="button"
+              className="rail-button"
+              role="switch"
+              aria-checked={isDark}
+              onClick={() => setIsDark(!isDark)}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              <span className="material-symbols-outlined">
+                {isDark ? "light_mode" : "dark_mode"}
+              </span>
+            </button>
+            <button
+              type="button"
+              className="signout-btn"
+              onClick={() => void authClient.signOut()}
+              title="Sign out of your Zettelkasten"
+            >
+              Sign Out
+            </button>
+          </div>
+        </aside>
+
+        {/* ---------- Manuscript canvas ---------- */}
+        <main className="canvas">
+          <div className="canvas-scroll">
+            {/* Sync status bar */}
+            <div className="sync-bar">
+              <div className="sync-bar-left">
+                <span className="sync-dot" />
+                <span className="sync-label">Synchronized</span>
+              </div>
+              <div className="sync-bar-right">
+                <span className="material-symbols-outlined sync-icon">settings</span>
+                <span className="material-symbols-outlined sync-icon">sync</span>
+                <span className="material-symbols-outlined sync-icon">account_circle</span>
+              </div>
+            </div>
+            {showTools ? (
+              <ToolsManager onClose={() => setShowTools(false)} />
+            ) : selected ? (
+              <>
+                <div className="canvas-header">
+                  <button
+                    className="canvas-back"
+                    onClick={() => {
+                      setSelected(null);
+                      setIsEditing(false);
+                    }}
+                  >
+                    ← all notes
+                  </button>
+                </div>
+
+                {isEditing ? (
+                  <div className="edit-split">
+                    <div className="edit-split-editor">
+                      {showAiProposal && (
+                        <div className="edit-proposal-banner">
+                          <span className="edit-proposal-text">
+                            AI proposed changes — Review below
+                          </span>
+                          <div className="edit-proposal-actions">
+                            <button type="button" className="btn-primary" onClick={acceptAiEdit}>
+                              Accept
+                            </button>
+                            <button
+                              type="button"
+                              className="tool-action-btn"
+                              onClick={rejectAiEdit}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <form className="note-edit-form" onSubmit={(e) => e.preventDefault()}>
+                        <div className="edit-field">
+                          <label className="edit-label" htmlFor="edit-title">
+                            Title
+                          </label>
+                          <input
+                            id="edit-title"
+                            type="text"
+                            className="edit-input-title"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            placeholder="Note title"
+                            required
+                          />
+                        </div>
+                        <div className="edit-field">
+                          <label className="edit-label" htmlFor="edit-body">
+                            Content
+                          </label>
+                          <textarea
+                            id="edit-body"
+                            className="edit-input-body"
+                            value={editBody}
+                            onChange={(e) => setEditBody(e.target.value)}
+                            placeholder="Type your markdown content here..."
+                            required
+                          />
+                        </div>
+                        <div className="edit-field">
+                          <label className="edit-label" htmlFor="edit-tags">
+                            Tags (comma-separated)
+                          </label>
+                          <input
+                            id="edit-tags"
+                            type="text"
+                            className="edit-input-tags"
+                            value={editTags}
+                            onChange={(e) => setEditTags(e.target.value)}
+                            placeholder="e.g. thoughts, math, ideas"
+                          />
+                        </div>
+                        <div className="edit-field">
+                          <label className="edit-label" htmlFor="add-link-select">
+                            Links
+                          </label>
+                          <div className="edit-links-list">
+                            {editLinks.length === 0 ? (
+                              <div className="edit-links-empty">No links yet.</div>
+                            ) : (
+                              editLinks.map((linkId) => (
+                                <div key={linkId} className="edit-link-item">
+                                  <span className="edit-link-title">{titleFor(linkId)}</span>
+                                  <button
+                                    type="button"
+                                    className="tool-action-btn tool-action-delete btn-sm"
+                                    onClick={() =>
+                                      setEditLinks((prev) => prev.filter((id) => id !== linkId))
+                                    }
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                          <div className="add-link-section">
+                            <select
+                              id="add-link-select"
+                              value=""
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (val && !editLinks.includes(val)) {
+                                  setEditLinks((prev) => [...prev, val]);
+                                }
+                              }}
+                              className="edit-select-link"
+                            >
+                              <option value="">-- Add Link to Another Note --</option>
+                              {notes
+                                .filter((n) => n.id !== selected.id && !editLinks.includes(n.id))
+                                .map((n) => (
+                                  <option key={n.id} value={n.id}>
+                                    {n.title || n.id}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="edit-actions">
+                          <button type="button" className="btn-primary" onClick={saveEdit}>
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            className="tool-action-btn"
+                            onClick={() => {
+                              setIsEditing(false);
+                              setShowAiProposal(false);
+                              editOriginalRef.current = null;
+                            }}
+                            style={{ height: "2.5rem", padding: "0 1.5rem" }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                    <div className="edit-split-chat">
+                      <MessageScroller>
+                        <MessageScrollerViewport>
+                          <MessageScrollerContent className="thread">
+                            {editThread.map((msg, idx) => {
+                              const isConsecutive =
+                                idx > 0 && editThread[idx - 1].role === msg.role;
+                              return (
+                                <MessageScrollerItem
+                                  key={msg.id}
+                                  messageId={msg.id}
+                                  scrollAnchor={msg.role === "user"}
+                                >
+                                  {msg.role === "assistant" ? (
+                                    <Message
+                                      role="assistant"
+                                      isConsecutive={isConsecutive}
+                                      header={
+                                        <span className="chat-label-assistant">Assistant</span>
+                                      }
+                                    >
+                                      <Bubble variant="default" align="left">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                          {msg.text}
+                                        </ReactMarkdown>
+                                      </Bubble>
+                                    </Message>
+                                  ) : msg.role === "user" ? (
+                                    <Message
+                                      role="user"
+                                      isConsecutive={isConsecutive}
+                                      header={<span className="chat-label-user">You</span>}
+                                    >
+                                      <Bubble variant="accent" align="left">
+                                        {msg.text}
+                                      </Bubble>
+                                    </Message>
+                                  ) : (
+                                    <Message role="system" isConsecutive={isConsecutive}>
+                                      <Marker type={msg.role === "tool" ? "tool" : "system"}>
+                                        {msg.text}
+                                      </Marker>
+                                    </Message>
+                                  )}
+                                </MessageScrollerItem>
+                              );
+                            })}
+                            <div ref={editThreadEndRef} />
+                          </MessageScrollerContent>
+                        </MessageScrollerViewport>
+                        <MessageScrollerButton />
+                      </MessageScroller>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="note-wrap" key={selected.id}>
+                    <article>
+                      <h1 className="note-title">{selected.title || "Untitled"}</h1>
+                      <div className="note-metaline">
+                        <span>{selected.id}</span>
+                        <span>
+                          {new Date(selected.created).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                        <span className="src">
+                          {selected.source === "audio" && <span className="status-dot" />}
+                          {selected.source}
+                        </span>
+                        {selected.tags.map((t) => (
+                          <span key={t} className="tag">
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="note-body md">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.body}</ReactMarkdown>
+                      </div>
+                    </article>
+
+                    <aside className="margin">
+                      <div className="margin-label">Links</div>
+                      {linkIds.length === 0 ? (
+                        <div className="margin-empty">
+                          No links yet. Capture a related thought and I&apos;ll connect them.
+                        </div>
+                      ) : (
+                        linkIds.map((id) => (
+                          <button
+                            key={id}
+                            className="margin-link"
+                            onClick={() => {
+                              void openNote(id);
+                            }}
+                          >
+                            {titleFor(id)}
+                          </button>
+                        ))
+                      )}
+                    </aside>
                   </div>
                 )}
-              </div>
-            ))
-          )}
-        </nav>
+              </>
+            ) : (
+              <div className="home">
+                <div className="home-welcome">
+                  <h1>A quiet place to think.</h1>
+                  <p>
+                    Tell me a thought — I&apos;ll keep it as an atomic note and link it to what
+                    you&apos;ve already written. Or drop an audio file to capture aloud.
+                  </p>
+                </div>
 
-        <button
-          className={`rail-tools-btn ${showTools ? "active" : ""}`}
-          onClick={() => {
-            setShowTools(!showTools);
-            if (!showTools) setSelected(null);
-          }}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-          </svg>
-          Tools
-        </button>
+                <MessageScroller>
+                  <MessageScrollerViewport>
+                    <MessageScrollerContent className="thread">
+                      {thread.map((msg, idx) => {
+                        const isConsecutive = idx > 0 && thread[idx - 1].role === msg.role;
 
-        <div className="rail-foot">
-          <span className={`status-dot ${connected ? "on" : ""}`} />
-          <span>{connected ? "Connected" : "Connecting…"}</span>
-          <button
-            type="button"
-            className="rail-button"
-            role="switch"
-            aria-checked={isDark}
-            onClick={() => setIsDark(!isDark)}
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            <span className="material-symbols-outlined">{isDark ? "light_mode" : "dark_mode"}</span>
-          </button>
-          <button
-            type="button"
-            className="signout-btn"
-            onClick={() => void authClient.signOut()}
-            title="Sign out of your Zettelkasten"
-          >
-            Sign Out
-          </button>
-        </div>
-      </aside>
-
-      {/* ---------- Manuscript canvas ---------- */}
-      <main className="canvas">
-        <div className="canvas-scroll">
-          {/* Sync status bar */}
-          <div className="sync-bar">
-            <div className="sync-bar-left">
-              <span className="sync-dot" />
-              <span className="sync-label">Synchronized</span>
-            </div>
-            <div className="sync-bar-right">
-              <span className="material-symbols-outlined sync-icon">settings</span>
-              <span className="material-symbols-outlined sync-icon">sync</span>
-              <span className="material-symbols-outlined sync-icon">account_circle</span>
-            </div>
-          </div>
-          {showTools ? (
-            <ToolsManager onClose={() => setShowTools(false)} />
-          ) : selected ? (
-            <>
-              <div className="canvas-header">
-                <button
-                  className="canvas-back"
-                  onClick={() => {
-                    setSelected(null);
-                    setIsEditing(false);
-                  }}
-                >
-                  ← all notes
-                </button>
-              </div>
-
-              {isEditing ? (
-                <div className="edit-split">
-                  <div className="edit-split-editor">
-                    {showAiProposal && (
-                      <div className="edit-proposal-banner">
-                        <span className="edit-proposal-text">AI proposed changes — Review below</span>
-                        <div className="edit-proposal-actions">
-                          <button type="button" className="btn-primary" onClick={acceptAiEdit}>
-                            Accept
-                          </button>
-                          <button type="button" className="tool-action-btn" onClick={rejectAiEdit}>
-                            Reject
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    <form className="note-edit-form" onSubmit={(e) => e.preventDefault()}>
-                      <div className="edit-field">
-                        <label className="edit-label" htmlFor="edit-title">
-                          Title
-                        </label>
-                        <input
-                          id="edit-title"
-                          type="text"
-                          className="edit-input-title"
-                          value={editTitle}
-                          onChange={(e) => setEditTitle(e.target.value)}
-                          placeholder="Note title"
-                          required
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label className="edit-label" htmlFor="edit-body">
-                          Content
-                        </label>
-                        <textarea
-                          id="edit-body"
-                          className="edit-input-body"
-                          value={editBody}
-                          onChange={(e) => setEditBody(e.target.value)}
-                          placeholder="Type your markdown content here..."
-                          required
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label className="edit-label" htmlFor="edit-tags">
-                          Tags (comma-separated)
-                        </label>
-                        <input
-                          id="edit-tags"
-                          type="text"
-                          className="edit-input-tags"
-                          value={editTags}
-                          onChange={(e) => setEditTags(e.target.value)}
-                          placeholder="e.g. thoughts, math, ideas"
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label className="edit-label" htmlFor="add-link-select">
-                          Links
-                        </label>
-                        <div className="edit-links-list">
-                          {editLinks.length === 0 ? (
-                            <div className="edit-links-empty">No links yet.</div>
-                          ) : (
-                            editLinks.map((linkId) => (
-                              <div key={linkId} className="edit-link-item">
-                                <span className="edit-link-title">{titleFor(linkId)}</span>
-                                <button
-                                  type="button"
-                                  className="tool-action-btn tool-action-delete btn-sm"
-                                  onClick={() =>
-                                    setEditLinks((prev) => prev.filter((id) => id !== linkId))
-                                  }
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                        <div className="add-link-section">
-                          <select
-                            id="add-link-select"
-                            value=""
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              if (val && !editLinks.includes(val)) {
-                                setEditLinks((prev) => [...prev, val]);
-                              }
-                            }}
-                            className="edit-select-link"
+                        return (
+                          <MessageScrollerItem
+                            key={msg.id}
+                            messageId={msg.id}
+                            scrollAnchor={msg.role === "user"}
                           >
-                            <option value="">-- Add Link to Another Note --</option>
-                            {notes
-                              .filter((n) => n.id !== selected.id && !editLinks.includes(n.id))
-                              .map((n) => (
-                                <option key={n.id} value={n.id}>
-                                  {n.title || n.id}
-                                </option>
-                              ))}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="edit-actions">
-                        <button type="button" className="btn-primary" onClick={saveEdit}>
-                          Save
-                        </button>
-                        <button
-                          type="button"
-                          className="tool-action-btn"
-                          onClick={() => {
-                            setIsEditing(false);
-                            setShowAiProposal(false);
-                            editOriginalRef.current = null;
-                          }}
-                          style={{ height: "2.5rem", padding: "0 1.5rem" }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                  <div className="edit-split-chat">
-                    <MessageScroller>
-                      <MessageScrollerViewport>
-                        <MessageScrollerContent className="thread">
-                          {editThread.map((msg, idx) => {
-                            const isConsecutive = idx > 0 && editThread[idx - 1].role === msg.role;
-                            return (
-                              <MessageScrollerItem
-                                key={msg.id}
-                                messageId={msg.id}
-                                scrollAnchor={msg.role === "user"}
+                            {msg.role === "assistant" ? (
+                              <Message
+                                role="assistant"
+                                isConsecutive={isConsecutive}
+                                header={<span className="chat-label-assistant">Assistant</span>}
                               >
-                                {msg.role === "assistant" ? (
-                                  <Message
-                                    role="assistant"
-                                    isConsecutive={isConsecutive}
-                                    header={<span className="chat-label-assistant">Assistant</span>}
-                                  >
-                                    <Bubble variant="default" align="left">
-                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
-                                    </Bubble>
-                                  </Message>
-                                ) : msg.role === "user" ? (
-                                  <Message
-                                    role="user"
-                                    isConsecutive={isConsecutive}
-                                    header={<span className="chat-label-user">You</span>}
-                                  >
-                                    <Bubble variant="accent" align="left">
-                                      {msg.text}
-                                    </Bubble>
-                                  </Message>
-                                ) : (
-                                  <Message role="system" isConsecutive={isConsecutive}>
-                                    <Marker type={msg.role === "tool" ? "tool" : "system"}>
-                                      {msg.text}
-                                    </Marker>
-                                  </Message>
-                                )}
-                              </MessageScrollerItem>
-                            );
-                          })}
-                          <div ref={editThreadEndRef} />
-                        </MessageScrollerContent>
-                      </MessageScrollerViewport>
-                      <MessageScrollerButton />
-                    </MessageScroller>
-                  </div>
-                </div>
-              ) : (
-                <div className="note-wrap" key={selected.id}>
-                  <article>
-                    <h1 className="note-title">{selected.title || "Untitled"}</h1>
-                    <div className="note-metaline">
-                      <span>{selected.id}</span>
-                      <span>
-                        {new Date(selected.created).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                      <span className="src">
-                        {selected.source === "audio" && <span className="status-dot" />}
-                        {selected.source}
-                      </span>
-                      {selected.tags.map((t) => (
-                        <span key={t} className="tag">
-                          #{t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="note-body md">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.body}</ReactMarkdown>
-                    </div>
-                  </article>
-
-                  <aside className="margin">
-                    <div className="margin-label">Links</div>
-                    {linkIds.length === 0 ? (
-                      <div className="margin-empty">
-                        No links yet. Capture a related thought and I&apos;ll connect them.
-                      </div>
-                    ) : (
-                      linkIds.map((id) => (
-                        <button
-                          key={id}
-                          className="margin-link"
-                          onClick={() => {
-                            void openNote(id);
-                          }}
-                        >
-                          {titleFor(id)}
-                        </button>
-                      ))
-                    )}
-                  </aside>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="home">
-              <div className="home-welcome">
-                <h1>A quiet place to think.</h1>
-                <p>
-                  Tell me a thought — I&apos;ll keep it as an atomic note and link it to what
-                  you&apos;ve already written. Or drop an audio file to capture aloud.
-                </p>
+                                <Bubble variant="default" align="left">
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {msg.text}
+                                  </ReactMarkdown>
+                                </Bubble>
+                              </Message>
+                            ) : msg.role === "user" ? (
+                              <Message
+                                role="user"
+                                isConsecutive={isConsecutive}
+                                header={<span className="chat-label-user">You</span>}
+                              >
+                                <Bubble variant="accent" align="left">
+                                  {msg.text}
+                                </Bubble>
+                              </Message>
+                            ) : (
+                              <Message role="system" isConsecutive={isConsecutive}>
+                                <Marker type={msg.role === "tool" ? "tool" : "system"}>
+                                  {msg.text}
+                                </Marker>
+                              </Message>
+                            )}
+                          </MessageScrollerItem>
+                        );
+                      })}
+                      <div ref={threadEndRef} />
+                    </MessageScrollerContent>
+                  </MessageScrollerViewport>
+                  <MessageScrollerButton />
+                </MessageScroller>
               </div>
+            )}
+          </div>
 
-              <MessageScroller>
-                <MessageScrollerViewport>
-                  <MessageScrollerContent className="thread">
-                    {thread.map((msg, idx) => {
-                      const isConsecutive = idx > 0 && thread[idx - 1].role === msg.role;
-                      
-                      return (
-                        <MessageScrollerItem
-                          key={msg.id}
-                          messageId={msg.id}
-                          scrollAnchor={msg.role === "user"}
-                        >
-                          {msg.role === "assistant" ? (
-                            <Message
-                              role="assistant"
-                              isConsecutive={isConsecutive}
-                              header={<span className="chat-label-assistant">Assistant</span>}
-                            >
-                              <Bubble variant="default" align="left">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
-                              </Bubble>
-                            </Message>
-                          ) : msg.role === "user" ? (
-                            <Message
-                              role="user"
-                              isConsecutive={isConsecutive}
-                              header={<span className="chat-label-user">You</span>}
-                            >
-                              <Bubble variant="accent" align="left">
-                                {msg.text}
-                              </Bubble>
-                            </Message>
-                          ) : (
-                            <Message role="system" isConsecutive={isConsecutive}>
-                              <Marker type={msg.role === "tool" ? "tool" : "system"}>
-                                {msg.text}
-                              </Marker>
-                            </Message>
-                          )}
-                        </MessageScrollerItem>
-                      );
-                    })}
-                    <div ref={threadEndRef} />
-                  </MessageScrollerContent>
-                </MessageScrollerViewport>
-                <MessageScrollerButton />
-              </MessageScroller>
-            </div>
-          )}
-        </div>
-
-        {/* ---------- Docked capture bar ---------- */}
-        <div className="capture">
-          <div className="capture-inner">
-            <div className="capture-activity">
-              {activity && (
-                <Marker type="status" shimmer={activity.includes("thinking") || activity.includes("transcribing")}>
-                  {activity}
-                </Marker>
-              )}
-            </div>
-            <div className="capture-row">
-              <input
-                className="capture-input"
-                type="text"
-                placeholder={connected ? "Capture a thought…" : "Connecting to agent…"}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSend();
-                }}
-                disabled={!connected}
-              />
-              <label
-                className={`icon-btn ${transcribing ? "busy" : ""}`}
-                title="Upload an audio file"
-                aria-label="Upload an audio file"
-              >
-                <svg
-                  width="17"
-                  height="17"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 15V3" />
-                  <path d="m7 8 5-5 5 5" />
-                  <path d="M5 21h14" />
-                </svg>
+          {/* ---------- Docked capture bar ---------- */}
+          <div className="capture">
+            <div className="capture-inner">
+              <div className="capture-activity">
+                {activity && (
+                  <Marker
+                    type="status"
+                    shimmer={activity.includes("thinking") || activity.includes("transcribing")}
+                  >
+                    {activity}
+                  </Marker>
+                )}
+              </div>
+              <div className="capture-row">
                 <input
-                  type="file"
-                  accept="audio/*"
-                  disabled={transcribing || recording}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void handleAudio(file);
-                    e.target.value = "";
+                  className="capture-input"
+                  type="text"
+                  placeholder={connected ? "Capture a thought…" : "Connecting to agent…"}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSend();
                   }}
+                  disabled={!connected}
                 />
-              </label>
-              <button
-                type="button"
-                className={`icon-btn ${recording ? "recording" : ""} ${transcribing ? "busy" : ""}`}
-                onClick={toggleRecord}
-                disabled={transcribing}
-                title={recording ? "Stop recording" : "Record a thought"}
-                aria-label={recording ? "Stop recording" : "Record a thought"}
-              >
-                {recording ? (
-                  <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="5" y="5" width="14" height="14" rx="2.5" fill="currentColor" />
-                  </svg>
-                ) : (
+                <label
+                  className={`icon-btn ${transcribing ? "busy" : ""}`}
+                  title="Upload an audio file"
+                  aria-label="Upload an audio file"
+                >
                   <svg
                     width="17"
                     height="17"
@@ -1299,97 +1303,140 @@ export default function App() {
                     strokeLinejoin="round"
                     aria-hidden="true"
                   >
-                    <rect x="9" y="2" width="6" height="12" rx="3" />
-                    <path d="M5 10a7 7 0 0 0 14 0" />
-                    <path d="M12 17v4" />
+                    <path d="M12 15V3" />
+                    <path d="m7 8 5-5 5 5" />
+                    <path d="M5 21h14" />
                   </svg>
-                )}
-              </button>
-              <button
-                className="btn-primary"
-                onClick={handleSend}
-                disabled={!connected || !input.trim()}
-              >
-                Capture
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* ---------- Context Inspector ---------- */}
-      <aside className="inspector">
-        <div className="inspector-section">
-          <h3 className="inspector-label">Linked Context</h3>
-          {selected ? (
-            <div className="inspector-links">
-              {linkIds.length > 0 ? (
-                linkIds.map((id) => (
-                  <div
-                    key={id}
-                    className="inspector-link-card"
-                    onClick={() => {
-                      void openNote(id);
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    disabled={transcribing || recording}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleAudio(file);
+                      e.target.value = "";
                     }}
-                  >
-                    <div className="inspector-card-ref">REF_ID: {id.slice(0, 6).toUpperCase()}</div>
-                    <div className="inspector-card-title">{titleFor(id)}</div>
-                    <div className="inspector-card-tags">
-                      {notes.find((n) => n.id === id)?.tags?.map(t => `#${t}`).join(", ") || "no tags"}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="inspector-empty">No links established yet.</div>
-              )}
-            </div>
-          ) : (
-            <div className="inspector-empty">Select a note to inspect context.</div>
-          )}
-        </div>
-
-        <div className="inspector-section">
-          <h3 className="inspector-label">Semantic Visualizer</h3>
-          <SemanticVisualizer
-            selectedNote={selected}
-            notes={notes}
-            backlinks={selectedBacklinks}
-            interactive={false}
-            onPreviewClick={() => setIsVisualizerModalOpen(true)}
-          />
-        </div>
-
-      </aside>
-
-      {/* ---------- Semantic Visualizer Enlarged Modal ---------- */}
-      {isVisualizerModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsVisualizerModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Semantic Visualizer</h3>
-              <button
-                className="modal-close-btn material-symbols-outlined"
-                onClick={() => setIsVisualizerModalOpen(false)}
-                title="Close"
-              >
-                close
-              </button>
-            </div>
-            <div className="modal-body">
-              <SemanticVisualizer
-                selectedNote={selected}
-                notes={notes}
-                backlinks={selectedBacklinks}
-                interactive={true}
-                onNodeClick={(id) => {
-                  void openNote(id);
-                  setIsVisualizerModalOpen(false);
-                }}
-              />
+                  />
+                </label>
+                <button
+                  type="button"
+                  className={`icon-btn ${recording ? "recording" : ""} ${transcribing ? "busy" : ""}`}
+                  onClick={toggleRecord}
+                  disabled={transcribing}
+                  title={recording ? "Stop recording" : "Record a thought"}
+                  aria-label={recording ? "Stop recording" : "Record a thought"}
+                >
+                  {recording ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="5" y="5" width="14" height="14" rx="2.5" fill="currentColor" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="17"
+                      height="17"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="9" y="2" width="6" height="12" rx="3" />
+                      <path d="M5 10a7 7 0 0 0 14 0" />
+                      <path d="M12 17v4" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={handleSend}
+                  disabled={!connected || !input.trim()}
+                >
+                  Capture
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        </main>
+
+        {/* ---------- Context Inspector ---------- */}
+        <aside className="inspector">
+          <div className="inspector-section">
+            <h3 className="inspector-label">Linked Context</h3>
+            {selected ? (
+              <div className="inspector-links">
+                {linkIds.length > 0 ? (
+                  linkIds.map((id) => (
+                    <div
+                      key={id}
+                      className="inspector-link-card"
+                      onClick={() => {
+                        void openNote(id);
+                      }}
+                    >
+                      <div className="inspector-card-ref">
+                        REF_ID: {id.slice(0, 6).toUpperCase()}
+                      </div>
+                      <div className="inspector-card-title">{titleFor(id)}</div>
+                      <div className="inspector-card-tags">
+                        {notes
+                          .find((n) => n.id === id)
+                          ?.tags?.map((t) => `#${t}`)
+                          .join(", ") || "no tags"}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="inspector-empty">No links established yet.</div>
+                )}
+              </div>
+            ) : (
+              <div className="inspector-empty">Select a note to inspect context.</div>
+            )}
+          </div>
+
+          <div className="inspector-section">
+            <h3 className="inspector-label">Semantic Visualizer</h3>
+            <SemanticVisualizer
+              selectedNote={selected}
+              notes={notes}
+              backlinks={selectedBacklinks}
+              interactive={false}
+              onPreviewClick={() => setIsVisualizerModalOpen(true)}
+            />
+          </div>
+        </aside>
+
+        {/* ---------- Semantic Visualizer Enlarged Modal ---------- */}
+        {isVisualizerModalOpen && (
+          <div className="modal-overlay" onClick={() => setIsVisualizerModalOpen(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3 className="modal-title">Semantic Visualizer</h3>
+                <button
+                  className="modal-close-btn material-symbols-outlined"
+                  onClick={() => setIsVisualizerModalOpen(false)}
+                  title="Close"
+                >
+                  close
+                </button>
+              </div>
+              <div className="modal-body">
+                <SemanticVisualizer
+                  selectedNote={selected}
+                  notes={notes}
+                  backlinks={selectedBacklinks}
+                  interactive={true}
+                  onNodeClick={(id) => {
+                    void openNote(id);
+                    setIsVisualizerModalOpen(false);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </MessageScrollerProvider>
   );

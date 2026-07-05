@@ -56,3 +56,5 @@
 - Dev/support: `tsx` (runs `adp-repl.ts`), `typescript`, `yoga-layout` (flexbox engine), `@types/react`, `@types/ws`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

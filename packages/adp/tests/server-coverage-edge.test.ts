@@ -159,12 +159,15 @@ describe("AdpServer — edge paths", () => {
     port++;
     server = new AdpServer(port);
 
-    const originalClose = (server as any).wss.close;
-    (server as any).wss.close = (cb: any) => cb(new Error("Close error"));
+    // @ts-expect-error - bypassing private modifier
+    const originalClose = server.wss.close;
+    // @ts-expect-error - bypassing private modifier
+    server.wss.close = (cb: any) => cb(new Error("Close error"));
 
     await expect(server.close()).rejects.toThrow("Close error");
 
-    (server as any).wss.close = originalClose;
+    // @ts-expect-error - bypassing private modifier
+    server.wss.close = originalClose;
     server = null;
   }, 10000);
 
@@ -190,7 +193,8 @@ describe("AdpServer — edge paths", () => {
       ws.on("close", () => {
         setTimeout(() => {
           // After client disconnects, server's clients set should be empty
-          expect((server as any).clients.size).toBe(0);
+          // @ts-expect-error - bypassing private modifier
+          expect(server.clients.size).toBe(0);
           resolve();
         }, 200);
       });

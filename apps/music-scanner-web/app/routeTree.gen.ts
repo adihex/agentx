@@ -19,7 +19,7 @@ const IndexRoute = IndexImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRoute,
-} as any);
+} as unknown);
 
 // Populate the FileRoutesByPath interface
 

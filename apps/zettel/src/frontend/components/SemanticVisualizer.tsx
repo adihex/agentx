@@ -1,5 +1,13 @@
 import React, { useMemo, memo, useState } from "react";
-import ReactFlow, { Background, Handle, Position, ReactFlowProvider, useReactFlow, type Node, type Edge } from "reactflow";
+import ReactFlow, {
+  Background,
+  Handle,
+  Position,
+  ReactFlowProvider,
+  useReactFlow,
+  type Node,
+  type Edge,
+} from "reactflow";
 import "reactflow/dist/style.css";
 
 interface Note {
@@ -23,7 +31,14 @@ interface SemanticVisualizerProps {
 // Custom Circular Node with Label Above
 const CircularNode = memo(({ data }: any) => {
   return (
-    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       {/* Label floating above the node */}
       <div
         style={{
@@ -96,7 +111,7 @@ function SemanticVisualizerInner({
     // Collect all links and backlinks
     const outwardLinks = selectedNote.links ?? [];
     const uniqueConnections = Array.from(new Set([...outwardLinks, ...backlinks])).filter(
-      (id) => id !== centerId
+      (id) => id !== centerId,
     );
 
     const nodesList: Node[] = [];
@@ -301,7 +316,12 @@ function SemanticVisualizerInner({
           pointerEvents: "none",
         }}
       >
-        <span className="live" style={{ marginRight: "4px", color: "var(--clay)", animation: "pulse 1.2s infinite" }}>●</span>
+        <span
+          className="live"
+          style={{ marginRight: "4px", color: "var(--clay)", animation: "pulse 1.2s infinite" }}
+        >
+          ●
+        </span>
         Active Mapping
       </div>
     </div>

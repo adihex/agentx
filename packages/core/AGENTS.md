@@ -90,3 +90,5 @@ The engine was split so it can be served single- or multi-tenant:
 `@agentx/adp`'s `AdpServer` gained per-connection session ids, `notifyClient(sessionId, …)`,
 `onConnection`/`onDisconnection`, and a third `sessionId` arg passed to command handlers
 (all additive — broadcast `notify`, `clients`, and `wss` are unchanged).
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

@@ -35,7 +35,7 @@ describe("LLMOrchestrator", () => {
       yield { type: "text-delta", id: "1", text: " World" };
     })();
 
-    (streamText as any).mockReturnValue({
+    (streamText as unknown).mockReturnValue({
       fullStream,
       response: Promise.resolve({ messages: [{ role: "assistant", content: "Hello World" }] }),
       toolCalls: Promise.resolve([
@@ -79,7 +79,7 @@ describe("LLMOrchestrator", () => {
   it("should route to Vertex AI when gemini model is requested", async () => {
     const orchestrator = new LLMOrchestrator({ apiKey: "test" });
 
-    (streamText as any).mockReturnValue({
+    (streamText as unknown).mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),

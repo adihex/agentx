@@ -51,7 +51,7 @@ export const client = createClient({
   url: dbUrl,
   authToken: dbAuthToken,
   timeout: 5000, // Wait up to 5s for locks to clear (resolves SQLITE_BUSY in concurrent tests/threads)
-} as any);
+} as unknown);
 
 // ── Database Schema Initialization ─────────────────────────────────────────────
 
@@ -234,20 +234,20 @@ const GraphSchema = z.object({
       name: z.string(),
       type: z.string(),
       description: z.string(),
-    })
+    }),
   ),
   edges: z.array(
     z.object({
       source: z.string(),
       target: z.string(),
       relationship: z.string(),
-    })
+    }),
   ),
 });
 
 async function extractGraph(content: string) {
   const { object } = await generateObject({
-    model: google("gemini-2.5-flash") as any,
+    model: google("gemini-2.5-flash"),
     schema: GraphSchema,
     prompt: `Extract explicit concepts (nodes) and relationships (edges) from the following note:\n\n${content}`,
   });
@@ -289,7 +289,7 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
   let embeddingArray: number[] | null = null;
   try {
     const { embedding } = await embed({
-      model: google.textEmbeddingModel("text-embedding-004") as any,
+      model: google.textEmbeddingModel("text-embedding-004"),
       value: `Title: ${title}\n\nBody: ${input.content}`,
     });
     embeddingArray = embedding;
@@ -454,7 +454,7 @@ export async function searchNotes(
   let queryEmbedding: number[] | null = null;
   try {
     const { embedding } = await embed({
-      model: google.textEmbeddingModel("text-embedding-004") as any,
+      model: google.textEmbeddingModel("text-embedding-004"),
       value: query.trim(),
     });
     queryEmbedding = embedding;
@@ -463,7 +463,7 @@ export async function searchNotes(
   }
 
   const q = `%${query.trim().toLowerCase()}%`;
-  
+
   // 1. Keyword search
   const ftsRes = await client.execute({
     sql: `

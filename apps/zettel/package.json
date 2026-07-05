@@ -16,7 +16,7 @@
     "@agentx/agx-core": "workspace:*",
     "@agentx/core": "workspace:*",
     "@agentx/shared-ui": "workspace:*",
-    "@ai-sdk/google": "^4.0.8",
+    "@ai-sdk/google": "catalog:",
     "@ai-sdk/groq": "catalog:",
     "@better-auth/infra": "^0.3.2",
     "@hono/node-server": "catalog:",

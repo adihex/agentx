@@ -79,7 +79,8 @@ describe("AdpClient", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    (server as any).wss.clients.forEach((ws: any) => {
+    // @ts-expect-error - bypassing private modifier
+    server.wss.clients.forEach((ws: any) => {
       ws.send("not json");
     });
 

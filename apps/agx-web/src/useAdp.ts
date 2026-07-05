@@ -30,14 +30,14 @@ export function useAdp(url = "ws://localhost:9222") {
     const offEvent = client.onEvent((ev) => {
       const t = nowHHMMSS();
       if (ev.method === "Agent.StatusUpdate") {
-        const { agentId, status, progress, detail } = ev.params as any;
+        const { agentId, status, progress, detail } = ev.params as unknown;
         dispatch({ type: "STATUS_UPDATE", id: agentId, status, progress, detail });
         addLog({ time: t, level: "INFO", msg: `[${agentId}] → ${status} (${progress}%)` });
       }
       if (ev.method === "Log.Entry") {
         addLog({
           time: t,
-          level: (ev.params.level as any) ?? "INFO",
+          level: (ev.params.level as unknown) ?? "INFO",
           msg: ev.params.message as string,
         });
       }

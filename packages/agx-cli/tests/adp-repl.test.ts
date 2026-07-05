@@ -59,33 +59,38 @@ describe("agx-cli REPL — extracted functions", () => {
   });
 
   it("handleReplInput returns continue for empty input", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     const result = handleReplInput("", client);
     expect(result.action).toBe("continue");
     expect(result.message).toBeUndefined();
   });
 
   it("handleReplInput returns continue for whitespace-only", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     const result = handleReplInput("   ", client);
     expect(result.action).toBe("continue");
   });
 
   it("handleReplInput returns help for /help", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     const result = handleReplInput("/help", client);
     expect(result.action).toBe("continue");
     expect(result.message).toBe("help");
   });
 
   it("handleReplInput returns exit for /exit or /quit", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     expect(handleReplInput("/exit", client).action).toBe("exit");
     expect(handleReplInput("/quit", client).action).toBe("exit");
   });
 
   it("handleReplInput parses and sends valid commands", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     const result = handleReplInput("/pause agent1", client);
     expect(result.action).toBe("continue");
     expect(result.message).toContain("sent:Debugger.Pause");
@@ -96,14 +101,16 @@ describe("agx-cli REPL — extracted functions", () => {
   });
 
   it("handleReplInput returns error for unknown format", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     const result = handleReplInput("garbage", client);
     expect(result.action).toBe("error");
     expect(result.message).toContain("Unknown command format");
   });
 
   it("handleReplInput returns error when send fails", () => {
-    const client = new (AdpClient as any)();
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient();
     client.send.mockReturnValue(false);
     const result = handleReplInput("/halt", client);
     expect(result.action).toBe("error");

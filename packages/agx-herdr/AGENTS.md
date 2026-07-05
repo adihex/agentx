@@ -57,3 +57,5 @@ There are no tests. `package.json`'s `test` script is `echo 'No tests yet'`. Ver
 - External services (not npm deps): a running **herdr** server (Unix socket API) and the **AgentX runtime**'s ADP WebSocket at `ws://localhost:9222`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

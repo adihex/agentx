@@ -28,7 +28,7 @@ describe("searchMusic tool", () => {
   });
 
   it("should return results from yt-dlp output", async () => {
-    (execFileSync as any).mockReturnValue(
+    (execFileSync as unknown).mockReturnValue(
       "Song Title 1\nsongid1\n3:45\nSong Title 2\nsongid2\n4:20\n",
     );
 
@@ -40,7 +40,7 @@ describe("searchMusic tool", () => {
   });
 
   it("should handle yt-dlp error gracefully", async () => {
-    (execFileSync as any).mockImplementation(() => {
+    (execFileSync as unknown).mockImplementation(() => {
       throw new Error("yt-dlp not found");
     });
 
@@ -50,7 +50,7 @@ describe("searchMusic tool", () => {
   });
 
   it("should handle non-Error throws", async () => {
-    (execFileSync as any).mockImplementation(() => {
+    (execFileSync as unknown).mockImplementation(() => {
       throw "some string error";
     });
 
@@ -62,7 +62,7 @@ describe("searchMusic tool", () => {
   it("should skip incomplete result lines", async () => {
     // 4 lines = 1 complete triplet (lines 0-2) + 1 dangling (line 3)
     // The dangling line 3 ("Extra") should be skipped
-    (execFileSync as any).mockReturnValue("Title\nid\n1:00\nExtra");
+    (execFileSync as unknown).mockReturnValue("Title\nid\n1:00\nExtra");
 
     const result = await searchMusic({ query: "test" });
     expect(result.results).toHaveLength(1);
@@ -76,14 +76,14 @@ describe("triggerCloudRun tool", () => {
   });
 
   it("should use defaults for optional fields", async () => {
-    (execFileSync as any).mockReturnValue("Job completed");
+    (execFileSync as unknown).mockReturnValue("Job completed");
 
     const result = await triggerCloudRun({ fileName: "song.mp3" });
     expect(result.success).toBe(true);
   });
 
   it("should accept custom project/region/job", async () => {
-    (execFileSync as any).mockReturnValue("Job completed");
+    (execFileSync as unknown).mockReturnValue("Job completed");
 
     const result = await triggerCloudRun({
       fileName: "song.mp3",
@@ -95,7 +95,7 @@ describe("triggerCloudRun tool", () => {
   });
 
   it("should handle gcloud error", async () => {
-    (execFileSync as any).mockImplementation(() => {
+    (execFileSync as unknown).mockImplementation(() => {
       throw new Error("gcloud not found");
     });
 
@@ -117,7 +117,7 @@ describe("downloadAndUpload tool", () => {
   });
 
   it("should handle exec error", async () => {
-    (execFileSync as any).mockImplementation(() => {
+    (execFileSync as unknown).mockImplementation(() => {
       throw new Error("download failed");
     });
 
@@ -127,7 +127,7 @@ describe("downloadAndUpload tool", () => {
   });
 
   it("should succeed with valid exec", async () => {
-    (execFileSync as any).mockReturnValue("");
+    (execFileSync as unknown).mockReturnValue("");
 
     const result = await downloadAndUpload({ id: "abc", bucket: "bucket" });
     expect(result.success).toBe(true);

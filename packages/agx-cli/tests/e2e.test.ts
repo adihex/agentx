@@ -28,8 +28,10 @@ vi.mock("ws", () => {
       _trigger: (event: string, ...args: any[]) => handlers[event]?.(...args),
     };
   });
-  (MockWS as any).OPEN = 1;
-  (MockWS as any).CLOSED = 3;
+  // @ts-expect-error - bypassing private modifier
+  MockWS.OPEN = 1;
+  // @ts-expect-error - bypassing private modifier
+  MockWS.CLOSED = 3;
   return { default: MockWS };
 });
 
@@ -80,7 +82,8 @@ describe("E2E: agx-cli REPL Lifecycle", () => {
 
   it("E2E: AdpClient connect and event lifecycle", async () => {
     const { AdpClient } = await import("@agentx/agx-core");
-    const client = new (AdpClient as any)("ws://localhost:9222");
+    // @ts-expect-error - bypassing private modifier
+    const client = new AdpClient("ws://localhost:9222");
 
     const events: any[] = [];
     client.onEvent((ev: any) => events.push(ev));

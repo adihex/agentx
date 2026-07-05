@@ -72,11 +72,13 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("should handle non-abort inference errors and push error assistant message", async () => {
     loop = new AgentEventLoop({ adpPort: 9901 });
-    (loop as any).llm.runStep = vi.fn().mockRejectedValue(new Error("LLM connection lost"));
+    // @ts-expect-error - bypassing private modifier
+    loop.llm.runStep = vi.fn().mockRejectedValue(new Error("LLM connection lost"));
 
     const result = await loop.run("trigger error");
     expect(result).toContain("[inference error");
-    const lastMsg = (loop as any).context[(loop as any).context.length - 1];
+    // @ts-expect-error - bypassing private modifier
+    const lastMsg = loop.context[loop.context.length - 1];
     expect(lastMsg.role).toBe("assistant");
     expect(lastMsg.content).toContain("LLM connection lost");
   });
@@ -85,7 +87,8 @@ describe("AgentEventLoop — error handling coverage", () => {
     loop = new AgentEventLoop({ adpPort: 9902 });
     const abortErr = new Error("something");
     abortErr.name = "AbortError";
-    (loop as any).llm.runStep = vi.fn().mockRejectedValue(abortErr);
+    // @ts-expect-error - bypassing private modifier
+    loop.llm.runStep = vi.fn().mockRejectedValue(abortErr);
 
     const result = await loop.run("trigger abort");
     expect(result).toBe("[inference halted by operator]");
@@ -93,7 +96,8 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("should handle Error with 'aborted' in message", async () => {
     loop = new AgentEventLoop({ adpPort: 9903 });
-    (loop as any).llm.runStep = vi
+    // @ts-expect-error - bypassing private modifier
+    loop.llm.runStep = vi
       .fn()
       .mockRejectedValue(new Error("The operation was aborted by the user"));
 
@@ -103,19 +107,21 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("waitForPrompt returns null when shutdown is requested", async () => {
     loop = new AgentEventLoop({ adpPort: 9904 });
-    (loop as any).shutdownRequested = true;
+    // @ts-expect-error - bypassing private modifier
+    loop.shutdownRequested = true;
     expect(await loop.waitForPrompt()).toBeNull();
   });
 
   it("waitForPrompt returns queued prompt immediately", async () => {
     loop = new AgentEventLoop({ adpPort: 9905 });
-    (loop as any).promptQueue = ["cached prompt"];
+    // @ts-expect-error - bypassing private modifier
+    loop.promptQueue = ["cached prompt"];
     expect(await loop.waitForPrompt()).toBe("cached prompt");
   });
 
   it("Inference.halt returns no_active_inference when no abort controller", async () => {
     loop = new AgentEventLoop({ adpPort: 9906 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const haltHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Inference.halt")[1];
 
     const cb = vi.fn();
@@ -125,7 +131,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Session.prompt with empty string returns error", async () => {
     loop = new AgentEventLoop({ adpPort: 9907 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const promptHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Session.prompt")[1];
 
     const cb = vi.fn();
@@ -135,7 +141,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Toolchain.intercept with missing toolName returns error", async () => {
     loop = new AgentEventLoop({ adpPort: 9908 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const interceptHandler = adp.handle.mock.calls.find(
       (c: any) => c[0] === "Toolchain.intercept",
     )[1];
@@ -147,18 +153,19 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Session.shutdown triggers shutdown flow", async () => {
     loop = new AgentEventLoop({ adpPort: 9909 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const shutdownHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Session.shutdown")[1];
 
     const cb = vi.fn();
     shutdownHandler({}, cb);
     expect(cb).toHaveBeenCalledWith({ status: "shutting_down" });
-    expect((loop as any).shutdownRequested).toBe(true);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.shutdownRequested).toBe(true);
   });
 
   it("Metacognition.getCallFrame returns introspection data", async () => {
     loop = new AgentEventLoop({ adpPort: 9910 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find(
       (c: any) => c[0] === "Metacognition.getCallFrame",
     )[1];
@@ -174,7 +181,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Toolchain.list returns registered tools", async () => {
     loop = new AgentEventLoop({ adpPort: 9911 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Toolchain.list")[1];
 
     const cb = vi.fn();
@@ -184,7 +191,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Memory.compact with small context does nothing", async () => {
     loop = new AgentEventLoop({ adpPort: 9912 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Memory.compact")[1];
 
     const cb = vi.fn();
@@ -194,7 +201,7 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Inference.evaluate injects expression into context", async () => {
     loop = new AgentEventLoop({ adpPort: 9913 });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Inference.evaluate")[1];
 
     const cb = vi.fn();
@@ -207,7 +214,7 @@ describe("AgentEventLoop — error handling coverage", () => {
     const handler = vi.fn();
     loop.registerAdpHandler("Custom.test", handler);
 
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     expect(adp.on).toHaveBeenCalledWith("Custom.test", expect.any(Function));
   });
 
@@ -215,16 +222,18 @@ describe("AgentEventLoop — error handling coverage", () => {
     loop = new AgentEventLoop({ adpPort: 9915 });
     loop.emitAdpEvent("Custom.event", { field: true });
 
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     expect(adp.notify).toHaveBeenCalledWith("Custom.event", { field: true });
   });
 
   it("shutdown aborts pending prompts and inference", async () => {
     loop = new AgentEventLoop({ adpPort: 9916 });
     const resolver = vi.fn();
-    (loop as any).promptResolver = resolver;
+    // @ts-expect-error - bypassing private modifier
+    loop.promptResolver = resolver;
     const abortCtrl = { abort: vi.fn() };
-    (loop as any).inferenceAbort = abortCtrl;
+    // @ts-expect-error - bypassing private modifier
+    loop.inferenceAbort = abortCtrl;
 
     await loop.shutdown();
     expect(resolver).toHaveBeenCalled();
@@ -234,15 +243,17 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("Session.shutdown aborts inference via ADP handler", async () => {
     loop = new AgentEventLoop({ adpPort: 9921 });
     const abortCtrl = { abort: vi.fn() };
-    (loop as any).inferenceAbort = abortCtrl;
+    // @ts-expect-error - bypassing private modifier
+    loop.inferenceAbort = abortCtrl;
 
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Session.shutdown")[1];
 
     const cb = vi.fn();
     handler({}, cb);
     expect(abortCtrl.abort).toHaveBeenCalled();
-    expect((loop as any).shutdownRequested).toBe(true);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.shutdownRequested).toBe(true);
     expect(cb).toHaveBeenCalledWith({ status: "shutting_down" });
 
     await loop.shutdown();
@@ -251,7 +262,8 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("uid helper is called during dispatchTool", async () => {
     loop = new AgentEventLoop({ adpPort: 9917 });
     loop.dispatchTool("testTool", { arg: 1 }, "tc-test");
-    expect((loop as any).pendingToolCalls).toBe(1);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.pendingToolCalls).toBe(1);
     await loop.shutdown();
   });
 
@@ -262,11 +274,11 @@ describe("AgentEventLoop — error handling coverage", () => {
         toolA: {
           name: "toolA",
           description: "First",
-          inputSchema: {} as any,
+          inputSchema: {} as unknown,
         },
       },
     });
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Toolchain.list")[1];
 
     const cb = vi.fn();
@@ -280,10 +292,12 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("Memory.queryNodes without query returns all nodes", async () => {
     loop = new AgentEventLoop({ adpPort: 9919 });
-    (loop as any).context.push({ role: "user", content: "M1" });
-    (loop as any).context.push({ role: "assistant", content: [{ type: "text", text: "Complex" }] });
+    // @ts-expect-error - bypassing private modifier
+    loop.context.push({ role: "user", content: "M1" });
+    // @ts-expect-error - bypassing private modifier
+    loop.context.push({ role: "assistant", content: [{ type: "text", text: "Complex" }] });
 
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const handler = adp.handle.mock.calls.find((c: any) => c[0] === "Memory.queryNodes")[1];
 
     const cb = vi.fn();

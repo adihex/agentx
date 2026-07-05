@@ -17,7 +17,7 @@ describe("Message Component", () => {
     render(
       <Message role="assistant" header={<span>Assistant Header</span>}>
         Hello world
-      </Message>
+      </Message>,
     );
 
     expect(screen.getByText("Assistant Header")).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe("Message Component", () => {
     render(
       <Message role="assistant" header={<span>Assistant Header</span>} isConsecutive={true}>
         Hello consecutive
-      </Message>
+      </Message>,
     );
 
     expect(screen.queryByText("Assistant Header")).not.toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("Message Component", () => {
     const { container } = render(
       <Message role="assistant" header={<span>Assistant Header</span>}>
         {""}
-      </Message>
+      </Message>,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -55,7 +55,7 @@ describe("Bubble Component", () => {
     const { container } = render(
       <Bubble variant="accent" align="right">
         Bubble Text
-      </Bubble>
+      </Bubble>,
     );
 
     expect(screen.getByText("Bubble Text")).toBeInTheDocument();
@@ -67,9 +67,7 @@ describe("Bubble Component", () => {
 
 describe("Attachment Component", () => {
   it("renders audio attachment with name, size and audio type styles", () => {
-    const { container } = render(
-      <Attachment name="recording.webm" size="145 KB" type="audio" />
-    );
+    const { container } = render(<Attachment name="recording.webm" size="145 KB" type="audio" />);
 
     expect(screen.getByText("recording.webm")).toBeInTheDocument();
     expect(screen.getByText("145 KB")).toBeInTheDocument();
@@ -79,9 +77,7 @@ describe("Attachment Component", () => {
 
   it("triggers onRemove when delete button clicked", () => {
     const handleRemove = vi.fn();
-    render(
-      <Attachment name="test.txt" onRemove={handleRemove} />
-    );
+    render(<Attachment name="test.txt" onRemove={handleRemove} />);
 
     const button = screen.getByRole("button", { name: "Remove attachment" });
     button.click();
@@ -94,7 +90,7 @@ describe("Marker Component", () => {
     const { container } = render(
       <Marker type="tool" shimmer={true}>
         Tool executing...
-      </Marker>
+      </Marker>,
     );
 
     expect(screen.getByText("Tool executing...")).toBeInTheDocument();
@@ -111,7 +107,7 @@ describe("MessageScroller Component", () => {
         <MessageScroller>
           <div>Scroller content</div>
         </MessageScroller>
-      </MessageScrollerProvider>
+      </MessageScrollerProvider>,
     );
 
     expect(screen.getByText("Scroller content")).toBeInTheDocument();

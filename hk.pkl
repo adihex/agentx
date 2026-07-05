@@ -1,0 +1,15 @@
+amends "package://github.com/jdx/hk/releases/download/v1.49.0/hk@1.49.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.49.0/hk@1.49.0#/Builtins.pkl"
+
+local linters = new Mapping<String, Step> {
+    ["pnpm-check"] {
+        check = "pnpm check"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = false
+        steps = linters
+    }
+}

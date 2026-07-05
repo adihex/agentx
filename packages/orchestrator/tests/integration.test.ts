@@ -124,7 +124,7 @@ describe("Orchestrator Integration — Full Workflow", () => {
       (e) =>
         e.type === "plan.step.assigned" &&
         e.stepId === "step-1" &&
-        (e as any).executorId === "auto-retry",
+        (e as unknown).executorId === "auto-retry",
     );
     expect(retryAssignment).toBeDefined();
 

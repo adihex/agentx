@@ -171,7 +171,13 @@ export const editNoteTool: ToolDefinition<EditNoteInput> = {
 
 export const traverseGraphSchema = z.object({
   entityName: z.string().describe("The name of the entity to start the traversal from."),
-  depth: z.number().int().min(1).max(5).optional().describe("Depth of traversal (default 2, max 5).")
+  depth: z
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .optional()
+    .describe("Depth of traversal (default 2, max 5)."),
 });
 export type TraverseGraphInput = z.infer<typeof traverseGraphSchema>;
 
@@ -188,7 +194,8 @@ export async function traverseGraph(args: TraverseGraphInput & { userId?: string
 
 export const traverseGraphTool: ToolDefinition<TraverseGraphInput> = {
   name: "traverseGraph",
-  description: "Traverse the knowledge graph starting from a specific entity to discover related entities and concepts.",
+  description:
+    "Traverse the knowledge graph starting from a specific entity to discover related entities and concepts.",
   inputSchema: traverseGraphSchema,
   modulePath: new URL(import.meta.url).pathname,
   exportName: "traverseGraph",

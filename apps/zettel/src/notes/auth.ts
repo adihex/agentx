@@ -10,7 +10,7 @@ export const auth = betterAuth({
   },
   database: {
     dialect: new LibsqlDialect({
-      client: client as any,
+      client: client as unknown,
     }),
     type: "sqlite",
   },

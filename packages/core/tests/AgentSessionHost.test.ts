@@ -76,8 +76,14 @@ describe("AgentSessionHost", () => {
   let adp: any;
 
   beforeEach(() => {
-    host = new AgentSessionHost({ adpPort: 9990, systemPrompt: "sys", autoTick: true, quiet: true });
-    adp = (host as any).adp;
+    host = new AgentSessionHost({
+      adpPort: 9990,
+      systemPrompt: "sys",
+      autoTick: true,
+      quiet: true,
+    });
+    // @ts-expect-error - bypassing private modifier
+    adp = host.adp;
   });
 
   afterEach(async () => {
@@ -113,8 +119,8 @@ describe("AgentSessionHost", () => {
     expect(adp.notifyClient).not.toHaveBeenCalledWith("s2", "Session.message", expect.anything());
 
     // Conversation state is isolated: s1 advanced, s2 still only has its system prompt.
-    const s1 = host.getSession("s1") as any;
-    const s2 = host.getSession("s2") as any;
+    const s1 = host.getSession("s1") as unknown;
+    const s2 = host.getSession("s2") as unknown;
     expect(s1.context.length).toBeGreaterThan(s2.context.length);
   });
 

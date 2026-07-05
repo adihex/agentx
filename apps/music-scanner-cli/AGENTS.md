@@ -58,3 +58,5 @@ The terminal (TUI) client for AgentX, built with OpenTUI + React and run on Bun.
 - `ws` — WebSocket client for the ADP connection.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

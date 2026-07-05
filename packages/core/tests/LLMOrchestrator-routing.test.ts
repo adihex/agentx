@@ -29,7 +29,8 @@ describe("LLMOrchestrator routing", () => {
   it("should route qwen models to Anthropic Messages API", async () => {
     const orchestrator = new LLMOrchestrator({ apiKey: "test" });
 
-    (streamText as any).mockReturnValue({
+    // @ts-expect-error - bypassing private modifier
+    streamText.mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),
@@ -53,7 +54,8 @@ describe("LLMOrchestrator routing", () => {
   it("should route google/ models to Vertex AI", async () => {
     const orchestrator = new LLMOrchestrator({ apiKey: "test" });
 
-    (streamText as any).mockReturnValue({
+    // @ts-expect-error - bypassing private modifier
+    streamText.mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),
@@ -77,7 +79,8 @@ describe("LLMOrchestrator routing", () => {
   it("should route unknown models to OpenAI Chat", async () => {
     const orchestrator = new LLMOrchestrator({ apiKey: "test" });
 
-    (streamText as any).mockReturnValue({
+    // @ts-expect-error - bypassing private modifier
+    streamText.mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),
@@ -113,7 +116,8 @@ describe("LLMOrchestrator routing", () => {
       model: "default-gpt",
     });
 
-    (streamText as any).mockReturnValue({
+    // @ts-expect-error - bypassing private modifier
+    streamText.mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),
@@ -135,7 +139,8 @@ describe("LLMOrchestrator routing", () => {
       apiKey: "test",
     });
 
-    (streamText as any).mockReturnValue({
+    // @ts-expect-error - bypassing private modifier
+    streamText.mockReturnValue({
       fullStream: (async function* () {})(),
       response: Promise.resolve({ messages: [] }),
       toolCalls: Promise.resolve([]),
@@ -147,7 +152,7 @@ describe("LLMOrchestrator routing", () => {
       [{ role: "user", content: "hi" }],
       {},
       new AbortController().signal,
-      undefined as any,
+      undefined as unknown,
     );
 
     expect(streamText).toHaveBeenCalledWith(

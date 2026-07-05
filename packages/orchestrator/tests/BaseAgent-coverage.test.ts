@@ -24,8 +24,8 @@ describe("BaseAgent coverage", () => {
   it("should wire events and dispatch step results", async () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
-    const loop = new (AgentEventLoop as any)();
-    const agent = new BaseAgent("agent-1", loop as any, bus);
+    const loop = new (AgentEventLoop as unknown)();
+    const agent = new BaseAgent("agent-1", loop as unknown, bus);
 
     const startedSpy = vi.fn();
     const completedSpy = vi.fn();
@@ -69,12 +69,12 @@ describe("BaseAgent coverage", () => {
   it("should handle step failure and dispatch failed event", async () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
-    const loop = new (AgentEventLoop as any)();
+    const loop = new (AgentEventLoop as unknown)();
 
     // Mock run to throw
     loop.run = vi.fn().mockRejectedValue(new Error("Tool crash"));
 
-    const agent = new BaseAgent("agent-2", loop as any, bus);
+    const agent = new BaseAgent("agent-2", loop as unknown, bus);
 
     const failedSpy = vi.fn();
     bus.onEvent("plan.step.failed", failedSpy);
@@ -108,8 +108,8 @@ describe("BaseAgent coverage", () => {
   it("should handle plan.step.assigned with pool-default executor", async () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
-    const loop = new (AgentEventLoop as any)();
-    const agent = new BaseAgent("default-executor", loop as any, bus);
+    const loop = new (AgentEventLoop as unknown)();
+    const agent = new BaseAgent("default-executor", loop as unknown, bus);
 
     const startedSpy = vi.fn();
     bus.onEvent("plan.step.started", startedSpy);
@@ -141,8 +141,8 @@ describe("BaseAgent coverage", () => {
   it("should not execute step when currentPlanId is null", async () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
-    const loop = new (AgentEventLoop as any)();
-    const agent = new BaseAgent("agent-3", loop as any, bus);
+    const loop = new (AgentEventLoop as unknown)();
+    const agent = new BaseAgent("agent-3", loop as unknown, bus);
 
     const startedSpy = vi.fn();
     bus.onEvent("plan.step.started", startedSpy);

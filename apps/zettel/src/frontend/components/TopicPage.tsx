@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-// A custom remark plugin could be written, but for simplicity we can pre-process 
+// A custom remark plugin could be written, but for simplicity we can pre-process
 // the markdown string to use standard markdown links that ReactMarkdown can handle,
 // or we can provide custom components to ReactMarkdown.
 // Let's use a regex to replace [[Entity]] with [Entity](/wiki/Entity) before passing to ReactMarkdown.
@@ -23,8 +23,8 @@ export default function TopicPage() {
           // If we need auth tokens, we should include them.
           // App.tsx uses fetch with credentials or auth client.
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("session_token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("session_token")}`,
+          },
         });
         if (!res.ok) {
           throw new Error("Failed to fetch topic page");
@@ -61,10 +61,12 @@ export default function TopicPage() {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: 40, fontFamily: "var(--font-sans)" }}>
       <nav style={{ marginBottom: 20 }}>
-        <Link to="/" style={{ color: "var(--color-brand)" }}>← Back to Zettel</Link>
+        <Link to="/" style={{ color: "var(--color-brand)" }}>
+          ← Back to Zettel
+        </Link>
       </nav>
       <div className="markdown-body">
-        <ReactMarkdown 
+        <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
             a: ({ node, ...props }) => {
@@ -72,7 +74,7 @@ export default function TopicPage() {
                 return <Link to={props.href}>{props.children}</Link>;
               }
               return <a {...props} />;
-            }
+            },
           }}
         >
           {processedMarkdown}

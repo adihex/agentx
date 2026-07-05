@@ -54,7 +54,8 @@ describe("E2E: agentx-mcp Request Handlers", () => {
     };
 
     // The mock returns whatever is passed in
-    const parsed = (ExecutionPlanSchema.parse as any)(validPlan);
+    // @ts-expect-error - bypassing private modifier
+    const parsed = ExecutionPlanSchema.parse(validPlan);
     expect(parsed.planId).toBe("e2e-mcp-plan");
     expect(parsed.goal).toBe("E2E test goal");
   });

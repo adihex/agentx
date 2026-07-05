@@ -72,7 +72,16 @@ interface MessageScrollerProps {
 
 export function MessageScroller({ children, className }: MessageScrollerProps) {
   return (
-    <div className={`message-scroller-root ${className || ""}`} style={{ position: "relative", height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+    <div
+      className={`message-scroller-root ${className || ""}`}
+      style={{
+        position: "relative",
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {children}
     </div>
   );
@@ -171,7 +180,13 @@ interface ItemProps extends React.HTMLAttributes<HTMLDivElement> {
   scrollAnchor?: boolean;
 }
 
-export function MessageScrollerItem({ children, messageId, scrollAnchor, className, ...props }: ItemProps) {
+export function MessageScrollerItem({
+  children,
+  messageId,
+  scrollAnchor,
+  className,
+  ...props
+}: ItemProps) {
   const itemRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -199,7 +214,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
 }
 
-export function MessageScrollerButton({ label = "Jump to newest message", className, ...props }: ButtonProps) {
+export function MessageScrollerButton({
+  label = "Jump to newest message",
+  className,
+  ...props
+}: ButtonProps) {
   const { isAtBottom, hasNewMessages, scrollToBottom } = useMessageScroller();
 
   if (isAtBottom && !hasNewMessages) return null;

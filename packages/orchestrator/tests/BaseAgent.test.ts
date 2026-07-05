@@ -12,7 +12,7 @@ describe("BaseAgent", () => {
       on: vi.fn(),
       run: vi.fn().mockResolvedValue("Execution success"),
     };
-    _agent = new BaseAgent("test-agent", loop as any, bus);
+    _agent = new BaseAgent("test-agent", loop as unknown, bus);
   });
 
   it("should respond to plan assignment", async () => {
@@ -65,7 +65,7 @@ describe("BaseAgent", () => {
 
     bus.dispatch({
       type: "plan.created",
-      plan: { planId: "p1", steps: [] } as any,
+      plan: { planId: "p1", steps: [] } as unknown,
     });
 
     bus.dispatch({
@@ -88,7 +88,7 @@ describe("BaseAgent", () => {
   it("should ignore steps assigned to other agents", async () => {
     bus.dispatch({
       type: "plan.created",
-      plan: { planId: "p1", steps: [] } as any,
+      plan: { planId: "p1", steps: [] } as unknown,
     });
 
     bus.dispatch({

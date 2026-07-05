@@ -74,3 +74,7 @@ Event-driven AI agent runtime SDK, modeled on the Node.js event loop and the Chr
 - `vitest`, `vite-plus`, `@ast-grep/cli`, `typescript`
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **Parallel Work**: Use `workmux` to spawn parallel agents in case the worktrees need explicit setting up like dependency install, .env copying, etc.
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

@@ -4,7 +4,7 @@ test.describe("Music Scanner E2E Workflow", () => {
   test.beforeEach(async ({ page }) => {
     // Add page init script to mock the global WebSocket constructor in the browser
     await page.addInitScript(() => {
-      (window as any).WebSocket = class MockWebSocket extends EventTarget {
+      (window as unknown).WebSocket = class MockWebSocket extends EventTarget {
         static CONNECTING = 0;
         static OPEN = 1;
         static CLOSING = 2;
@@ -121,7 +121,7 @@ test.describe("Music Scanner E2E Workflow", () => {
             if (this.onclose) this.onclose(closeEv);
           }, 10);
         }
-      } as any;
+      } as unknown;
     });
   });
 

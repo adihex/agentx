@@ -74,7 +74,8 @@ describe("AgentEventLoop", () => {
   it("should run a tick and return assistant text", async () => {
     const result = await loop.run("Hello agent");
     expect(result).toBe("Agent response");
-    expect((loop as any).context).toHaveLength(2);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.context).toHaveLength(2);
   });
 
   it("should handle microtasks", async () => {
@@ -88,15 +89,18 @@ describe("AgentEventLoop", () => {
     loop.dispatchTool("testTool", { arg: 1 }, "tc-test");
 
     await new Promise((r) => setTimeout(r, 10));
-    expect((loop as any).macrotaskQueue).toHaveLength(1);
-    expect((loop as any).macrotaskQueue[0].toolCallId).toBe("tc-test");
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.macrotaskQueue).toHaveLength(1);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.macrotaskQueue[0].toolCallId).toBe("tc-test");
 
     await loop.run("process tools");
-    expect((loop as any).macrotaskQueue).toHaveLength(0);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.macrotaskQueue).toHaveLength(0);
   });
 
   it("should support pausing and resuming via ADP", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     // Find the handle calls
     const pauseHandler = adp.handle.mock.calls.find(
       (c: any) => c[0] === "Metacognition.pause",
@@ -109,18 +113,21 @@ describe("AgentEventLoop", () => {
 
     const cb = vi.fn();
     pauseHandler({}, cb);
-    expect((loop as any).paused).toBe(true);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.paused).toBe(true);
 
     resumeHandler({}, cb);
-    expect((loop as any).paused).toBe(false);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.paused).toBe(false);
   });
 
   it("should handle inference halt", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const haltHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Inference.halt")[1];
 
     const abortController = new AbortController();
-    (loop as any).inferenceAbort = abortController;
+    // @ts-expect-error - bypassing private modifier
+    loop.inferenceAbort = abortController;
 
     const cb = vi.fn();
     haltHandler({}, cb);
@@ -129,27 +136,30 @@ describe("AgentEventLoop", () => {
   });
 
   it("should compact memory via ADP", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const compactHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Memory.compact")[1];
 
-    for (let i = 0; i < 10; i++) (loop as any).context.push({ role: "user", content: "msg" });
+    // @ts-expect-error - bypassing private modifier
+    for (let i = 0; i < 10; i++) loop.context.push({ role: "user", content: "msg" });
 
     const cb = vi.fn();
     compactHandler({}, cb);
-    expect((loop as any).context.length).toBeLessThan(10);
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.context.length).toBeLessThan(10);
   });
 
   it("should handle Session.prompt", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const promptHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Session.prompt")[1];
 
     const cb = vi.fn();
     promptHandler({ prompt: "Hello from ADP" }, cb);
-    expect((loop as any).promptQueue).toContain("Hello from ADP");
+    // @ts-expect-error - bypassing private modifier
+    expect(loop.promptQueue).toContain("Hello from ADP");
   });
 
   it("should support waitForPrompt", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const promptHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Session.prompt")[1];
 
     const promptPromise = loop.waitForPrompt();
@@ -160,10 +170,11 @@ describe("AgentEventLoop", () => {
   });
 
   it("should query memory nodes", async () => {
-    const adp = loop.adp as any;
+    const adp = loop.adp as unknown;
     const queryHandler = adp.handle.mock.calls.find((c: any) => c[0] === "Memory.queryNodes")[1];
 
-    (loop as any).context.push({ role: "user", content: "Secret message" });
+    // @ts-expect-error - bypassing private modifier
+    loop.context.push({ role: "user", content: "Secret message" });
 
     const cb = vi.fn();
     queryHandler({ query: "secret" }, cb);
@@ -175,7 +186,8 @@ describe("AgentEventLoop", () => {
     let step = 0;
     const toolResultsSeenAtStep: number[] = [];
 
-    (barrierLoop as any).llm.runStep = vi.fn().mockImplementation(async (msgs: any[]) => {
+    // @ts-expect-error - bypassing private modifier
+    barrierLoop.llm.runStep = vi.fn().mockImplementation(async (msgs: any[]) => {
       step++;
       toolResultsSeenAtStep.push(msgs.filter((m) => m.role === "tool").length);
       if (step === 1) {
@@ -205,7 +217,8 @@ describe("AgentEventLoop", () => {
 
     // Staggered completions: toolA finishes well before toolB, so a broken
     // (barrier-less) loop would re-infer after toolA with only 1/2 results.
-    (barrierLoop as any).threadPool.execute = vi.fn().mockImplementation(
+    // @ts-expect-error - bypassing private modifier
+    barrierLoop.threadPool.execute = vi.fn().mockImplementation(
       (req: any) =>
         new Promise((resolve) => {
           const delay = req.toolName === "toolA" ? 5 : 35;
@@ -235,7 +248,8 @@ describe("AgentEventLoop", () => {
 
   it("records tool results unwrapped (data on success, error-text on failure)", async () => {
     const u = new AgentEventLoop({ adpPort: 9997, autoTick: false });
-    (u as any).threadPool.execute = vi
+    // @ts-expect-error - bypassing private modifier
+    u.threadPool.execute = vi
       .fn()
       .mockImplementationOnce(async (req: any) => ({
         id: req.id,
@@ -257,7 +271,8 @@ describe("AgentEventLoop", () => {
     await new Promise((r) => setTimeout(r, 15));
     await u.run("drain");
 
-    const outputs = (u as any).context
+    // @ts-expect-error - bypassing private modifier
+    const outputs = u.context
       .filter((m: any) => m.role === "tool")
       .map((m: any) => m.content[0].output);
     expect(outputs).toContainEqual({ type: "json", value: { temp: 21 } });

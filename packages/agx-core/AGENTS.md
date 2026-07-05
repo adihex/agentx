@@ -49,3 +49,5 @@
 - **Dev only:** `typescript` (via the workspace `catalog:` reference). The package ships no runtime dependencies; `WebSocket` is consumed from the host platform global rather than bundled.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

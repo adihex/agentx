@@ -10,7 +10,12 @@ describe("ReplyPrompt", () => {
     const onChange = vi.fn();
     const onSend = vi.fn();
     render(
-      <ReplyPrompt question="Which match did you mean?" value="" onChange={onChange} onSend={onSend} />,
+      <ReplyPrompt
+        question="Which match did you mean?"
+        value=""
+        onChange={onChange}
+        onSend={onSend}
+      />,
     );
 
     expect(screen.getByText("AGENT NEEDS YOUR INPUT")).toBeInTheDocument();

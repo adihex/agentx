@@ -27,7 +27,8 @@ describe("AgentEventLoop Tool Injection", () => {
     // Wait for the worker to respond and push onto the macrotask queue.
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const macrotasks = (loop as any).macrotaskQueue;
+    // @ts-expect-error - bypassing private modifier
+    const macrotasks = loop.macrotaskQueue;
     expect(macrotasks.some((t: any) => t.source === "myCustomTool")).toBe(true);
     expect(macrotasks.some((t: any) => t.toolCallId === "tc-inject-1")).toBe(true);
 

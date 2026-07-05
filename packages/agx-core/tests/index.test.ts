@@ -53,9 +53,12 @@ describe("AdpClient (agnostic)", () => {
       this.readyState = mockWs.readyState;
       return mockWs;
     });
-    (MockWS as any).OPEN = 1;
-    (MockWS as any).CLOSED = 3;
-    (MockWS as any).CONNECTING = 0;
+    // @ts-expect-error - bypassing private modifier
+    MockWS.OPEN = 1;
+    // @ts-expect-error - bypassing private modifier
+    MockWS.CLOSED = 3;
+    // @ts-expect-error - bypassing private modifier
+    MockWS.CONNECTING = 0;
 
     vi.stubGlobal("WebSocket", MockWS);
     vi.useFakeTimers();

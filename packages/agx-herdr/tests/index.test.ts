@@ -10,7 +10,8 @@ vi.mock("ws", () => {
   const MockWS = vi.fn().mockImplementation(function () {
     return { on: vi.fn(), send: vi.fn(), close: vi.fn(), readyState: 1 };
   });
-  (MockWS as any).OPEN = 1;
+  // @ts-expect-error - bypassing private modifier
+  MockWS.OPEN = 1;
   return { default: MockWS };
 });
 

@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "build": "vp run -r build",
+    "prepare": "hk install",
     "test": "vitest run",
     "dev": "vp run -r dev",
     "lint": "vp lint --type-aware --type-check",
     "format": "vp fmt",
-    "check": "vp check",
+    "check": "vp check && pnpm ast-grep",
     "ast-grep": "ast-grep scan",
     "ast-grep:test": "ast-grep test",
     "test:ui": "vitest --ui",

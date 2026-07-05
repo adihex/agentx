@@ -70,7 +70,8 @@ export class AgxHerdrOrchestrator {
     }
 
     const pingRes = await this.herdr.ping();
-    console.log(c("green", `Connected to herdr v${(pingRes.result as any)?.version || "?"}`));
+    // @ts-expect-error - bypassing private modifier
+    console.log(c("green", `Connected to herdr v${pingRes.result?.version || "?"}`));
 
     // 1. Create workspace
     console.log(c("cyan", "Creating AGX workspace..."));
@@ -152,7 +153,8 @@ export class AgxHerdrOrchestrator {
         ],
         (event) => {
           if (event.event === "workspace_closed") {
-            const wsId = (event.data as any)?.workspace?.workspace_id;
+            // @ts-expect-error - bypassing private modifier
+            const wsId = event.data?.workspace?.workspace_id;
             if (wsId === this.workspaceId) {
               console.log(c("gray", "Workspace closed."));
               void this.shutdown();

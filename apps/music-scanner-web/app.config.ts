@@ -4,4 +4,4 @@ export default defineConfig({
   server: {
     preset: "node-server",
   },
-}) as any;
+}) as unknown;

@@ -91,3 +91,5 @@ and `registerMusicCommands(host)`.
   the originating client only.
 - **Entry guard:** `main()` only boots when `NODE_ENV !== "test"`, so importing
   the module in tests binds no port.
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

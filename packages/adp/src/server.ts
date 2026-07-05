@@ -99,7 +99,7 @@ export class AdpServer extends EventEmitter {
           const legacyHandler = this.handlers.get(req.method);
           if (legacyHandler) {
             console.log(`[ADP] ← ${req.method} (legacy)`);
-            legacyHandler(req.params as any, (resultData: unknown) => {
+            legacyHandler(req.params as unknown, (resultData: unknown) => {
               if (req.id !== undefined) {
                 this.sendResult(ws, req.id, resultData);
               }
@@ -172,7 +172,7 @@ export class AdpServer extends EventEmitter {
     this.broadcast({
       jsonrpc: "2.0",
       method,
-      params: params as any,
+      params: params as unknown,
     });
   }
 

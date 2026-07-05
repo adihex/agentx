@@ -62,13 +62,13 @@ describe("music-scanner-service — registerMusicCommands", () => {
 
   it("registers the Music.StartExtraction command", () => {
     const host = fakeHost();
-    registerMusicCommands(host as any);
+    registerMusicCommands(host as unknown);
     expect(host.commands.has("Music.StartExtraction")).toBe(true);
   });
 
   it("rejects an empty song name without touching the session", () => {
     const host = fakeHost();
-    registerMusicCommands(host as any);
+    registerMusicCommands(host as unknown);
     const ctx = fakeCtx();
     host.commands.get("Music.StartExtraction")!({}, ctx);
 
@@ -81,7 +81,7 @@ describe("music-scanner-service — registerMusicCommands", () => {
 
   it("seeds the caller's session conversation and acks on a valid song", () => {
     const host = fakeHost();
-    registerMusicCommands(host as any);
+    registerMusicCommands(host as unknown);
     const ctx = fakeCtx();
     host.commands.get("Music.StartExtraction")!({ songName: "Hello" }, ctx);
 

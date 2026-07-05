@@ -49,3 +49,5 @@ No tests exist in this package (no `*.test.ts`/`*.spec.ts`, no `test` script). T
 - `typescript` (`catalog:`, dev) — build via `tsc`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
+
+- **pnpm execution**: pnpm should always be used as `mise exec -- pnpm` to ensure correct tooling environment.

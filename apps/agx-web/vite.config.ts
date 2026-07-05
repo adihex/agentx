@@ -13,4 +13,4 @@ export default defineConfig({
       },
     },
   },
-} as any);
+} as unknown);
