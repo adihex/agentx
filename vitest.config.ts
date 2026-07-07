@@ -11,8 +11,8 @@ export default defineConfig({
       "packages/*/src/**/*.test.{ts,tsx}",
       "apps/*/src/**/*.test.{ts,tsx}",
     ],
-    setupFiles: ["./apps/web/vitest-setup.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**", "**/*.spec.ts", "**/e2e/**"],
+    setupFiles: ["./apps/music-scanner-web/vitest-setup.ts"],
+    exclude: ["**/node_modules/**", "**/dist/**", "**/dist-server/**", "**/*.spec.ts", "**/e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
@@ -26,13 +26,9 @@ export default defineConfig({
         "packages/adp/src/**/*.ts",
         "packages/core/src/**/*.ts",
         "packages/orchestrator/src/**/*.ts",
+        "apps/zettel/src/**/*.ts",
       ],
-      exclude: [
-        "**/*.test.ts",
-        "**/*.spec.ts",
-        "**/node_modules/**",
-        "**/dist/**",
-      ],
+      exclude: ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**", "**/dist/**"],
     },
   },
 });

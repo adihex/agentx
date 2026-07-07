@@ -122,7 +122,13 @@ export type OrchestrationEvent =
       stepId: string;
       guidance: RemediationGuidance;
     }
-  | { type: "clarification.needed"; planId: string; stepId: string; question: string; context: unknown }
+  | {
+      type: "clarification.needed";
+      planId: string;
+      stepId: string;
+      question: string;
+      context: unknown;
+    }
   | { type: "clarification.resolved"; planId: string; stepId: string; resolution: string }
   | { type: "milestone.reached"; planId: string; milestone: string }
   | { type: "session.complete"; planId: string; summary: string }

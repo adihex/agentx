@@ -28,8 +28,7 @@ const color = {
   gray: "\x1b[90m",
 } as const;
 
-const c = (col: keyof typeof color, text: string) =>
-  `${color[col]}${text}${RESET}`;
+const c = (col: keyof typeof color, text: string) => `${color[col]}${text}${RESET}`;
 
 /* ── Layout state ──────────────────────────────────────────── */
 
@@ -64,23 +63,14 @@ export class AgxHerdrOrchestrator {
     try {
       await this.herdr.connect();
     } catch (err) {
-      console.error(
-        c("cyan", "Failed to connect to herdr. Is it running?"),
-      );
-      console.error(
-        c("gray", "Install: curl -fsSL https://herdr.dev/install.sh | sh"),
-      );
+      console.error(c("cyan", "Failed to connect to herdr. Is it running?"));
+      console.error(c("gray", "Install: curl -fsSL https://herdr.dev/install.sh | sh"));
       console.error(c("gray", "Start:   herdr"));
       throw err;
     }
 
     const pingRes = await this.herdr.ping();
-    console.log(
-      c(
-        "green",
-        `Connected to herdr v${(pingRes.result as any)?.version || "?"}`,
-      ),
-    );
+    console.log(c("green", `Connected to herdr v${(pingRes.result as any)?.version || "?"}`));
 
     // 1. Create workspace
     console.log(c("cyan", "Creating AGX workspace..."));
@@ -132,35 +122,20 @@ export class AgxHerdrOrchestrator {
     );
 
     // 6. Launch scripts in each pane via `pane run`
-    await this.herdr.paneRun(
-      dagPaneId,
-      `npx tsx ${this.srcDir}dag-watcher.ts`,
-    );
-    await this.herdr.paneRun(
-      replPaneId,
-      `npx tsx ${this.srcDir}adp-repl.ts`,
-    );
-    await this.herdr.paneRun(
-      logsPaneId,
-      `npx tsx ${this.srcDir}log-watcher.ts`,
-    );
+    await this.herdr.paneRun(dagPaneId, `npx tsx ${this.srcDir}dag-watcher.ts`);
+    await this.herdr.paneRun(replPaneId, `npx tsx ${this.srcDir}adp-repl.ts`);
+    await this.herdr.paneRun(logsPaneId, `npx tsx ${this.srcDir}log-watcher.ts`);
 
     // 7. Subscribe to workspace lifecycle events
     await this.subscribeToHerdrEvents();
 
     console.log();
-    console.log(
-      `${BOLD}${color.cyan}AGX Orchestrator ready.${RESET}`,
-    );
-    console.log(
-      c("gray", `Workspace: ${this.workspaceId}`),
-    );
+    console.log(`${BOLD}${color.cyan}AGX Orchestrator ready.${RESET}`);
+    console.log(c("gray", `Workspace: ${this.workspaceId}`));
     console.log();
     console.log(c("gray", "  Detach:   Ctrl+B Q"));
     console.log(c("gray", "  Reattach: herdr"));
-    console.log(
-      c("gray", "  Close:    herdr workspace close " + this.workspaceId),
-    );
+    console.log(c("gray", "  Close:    herdr workspace close " + this.workspaceId));
     console.log();
   }
 
@@ -180,7 +155,7 @@ export class AgxHerdrOrchestrator {
             const wsId = (event.data as any)?.workspace?.workspace_id;
             if (wsId === this.workspaceId) {
               console.log(c("gray", "Workspace closed."));
-              this.shutdown();
+              void this.shutdown();
             }
           }
         },

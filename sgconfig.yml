@@ -1,0 +1,8 @@
+# ast-grep project config — https://ast-grep.github.io/reference/sgconfig.html
+# Run:  pnpm ast-grep        (scan repo against rules/)
+#       pnpm ast-grep:test   (run rule-tests/)
+#       pnpm exec ast-grep run -p '<pattern>' -l ts <paths>   (ad-hoc search)
+ruleDirs:
+  - rules
+testConfigs:
+  - testDir: rule-tests

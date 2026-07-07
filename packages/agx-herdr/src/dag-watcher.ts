@@ -10,7 +10,6 @@ import {
   nodeReducer,
   nowHHMMSS,
   type AgentNode,
-  type AgentStatus,
 } from "@agentx/agx-core";
 
 const RESET = "\x1b[0m";
@@ -36,9 +35,7 @@ function render() {
   const done = nodes.filter((n) => n.status === "success").length;
   const errors = nodes.filter((n) => n.status === "error").length;
 
-  console.log(
-    `${BOLD}${color.cyan}AGX ORCHESTRATOR v0.1${RESET}  ${DIM}${nowHHMMSS()}${RESET}`,
-  );
+  console.log(`${BOLD}${color.cyan}AGX ORCHESTRATOR v0.1${RESET}  ${DIM}${nowHHMMSS()}${RESET}`);
   console.log(
     `${DIM}Running:${RESET} ${color.yellow}${running}${RESET}  ` +
       `${DIM}Done:${RESET} ${color.green}${done}${RESET}  ` +
@@ -72,7 +69,7 @@ async function start() {
 
   const client = new AdpClient("ws://localhost:9222");
 
-  client.onStatus((connected) => {
+  client.onStatus((_connected) => {
     // Re-render with connection status on next tick
     setTimeout(render, 0);
   });

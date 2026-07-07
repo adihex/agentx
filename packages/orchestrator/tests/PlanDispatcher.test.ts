@@ -1,15 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, beforeEach } from "vitest";
 import { OrchestrationBus } from "../src/OrchestrationBus";
 import { PlanDispatcher } from "../src/PlanDispatcher";
-import { ExecutionPlan, ExecutionPlanSchema } from "../src/types";
+import { ExecutionPlan } from "../src/types";
 
 describe("PlanDispatcher", () => {
   let bus: OrchestrationBus;
-  let dispatcher: PlanDispatcher;
 
   beforeEach(() => {
     bus = new OrchestrationBus();
-    dispatcher = new PlanDispatcher(bus);
+    new PlanDispatcher(bus);
   });
 
   it("should handle plan.created event", () => {
@@ -31,7 +30,16 @@ describe("PlanDispatcher", () => {
       planId: "test-2",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [] }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 3,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: { passes: [], maxTotalReviewRounds: 1 },
@@ -51,11 +59,20 @@ describe("PlanDispatcher", () => {
       planId: "test-3",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [] }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 3,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: {
-        passes: [{ id: "pass-1", criteria: "test" }],
+        passes: [{ id: "pass-1", checklist: ["test"] }],
         maxTotalReviewRounds: 1,
       },
     };
@@ -73,6 +90,7 @@ describe("PlanDispatcher", () => {
       planId: "test-3",
       stepId: "step-1",
       passId: "pass-1",
+      round: 1,
     });
   });
 
@@ -81,11 +99,20 @@ describe("PlanDispatcher", () => {
       planId: "test-4",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [] }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 3,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: {
-        passes: [{ id: "pass-1", criteria: "test" }],
+        passes: [{ id: "pass-1", checklist: ["test"] }],
         maxTotalReviewRounds: 2,
       },
     };
@@ -103,7 +130,19 @@ describe("PlanDispatcher", () => {
       planId: "test-4",
       stepId: "step-1",
       passId: "pass-1",
-      guidance: { failedCriteria: ["criteria"], suggestion: "fix" },
+      guidance: {
+        reviewPassId: "pass-1",
+        failedCriteria: ["criteria"],
+        remediation: [
+          {
+            stepId: "step-1",
+            specificFix: "fix",
+            severity: "blocker",
+          },
+        ],
+        roundNumber: 1,
+        maxRounds: 2,
+      },
     });
   });
 
@@ -112,11 +151,20 @@ describe("PlanDispatcher", () => {
       planId: "test-5",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [] }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 3,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: {
-        passes: [{ id: "pass-1", criteria: "test" }],
+        passes: [{ id: "pass-1", checklist: ["test"] }],
         maxTotalReviewRounds: 0,
       },
     };
@@ -134,7 +182,19 @@ describe("PlanDispatcher", () => {
       planId: "test-5",
       stepId: "step-1",
       passId: "pass-1",
-      guidance: { failedCriteria: ["criteria"], suggestion: "fix" },
+      guidance: {
+        reviewPassId: "pass-1",
+        failedCriteria: ["criteria"],
+        remediation: [
+          {
+            stepId: "step-1",
+            specificFix: "fix",
+            severity: "blocker",
+          },
+        ],
+        roundNumber: 1,
+        maxRounds: 0,
+      },
     });
   });
 
@@ -144,6 +204,7 @@ describe("PlanDispatcher", () => {
       planId: "test-6",
       stepId: "step-1",
       question: "What should I do?",
+      context: null,
     });
   });
 
@@ -152,6 +213,7 @@ describe("PlanDispatcher", () => {
       type: "clarification.resolved",
       planId: "test-7",
       stepId: "step-1",
+      resolution: "resolved",
     });
   });
 
@@ -160,7 +222,16 @@ describe("PlanDispatcher", () => {
       planId: "test-8",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [], maxRetries: 2 }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 2,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: { passes: [], maxTotalReviewRounds: 1 },
@@ -172,6 +243,7 @@ describe("PlanDispatcher", () => {
       planId: "test-8",
       stepId: "step-1",
       error: "Error",
+      attempt: 1,
     });
   });
 
@@ -180,7 +252,16 @@ describe("PlanDispatcher", () => {
       planId: "test-9",
       goal: "Test goal",
       createdAt: new Date().toISOString(),
-      steps: [{ id: "step-1", description: "Step 1", dependencies: [], maxRetries: 1 }],
+      steps: [
+        {
+          id: "step-1",
+          description: "Step 1",
+          dependencies: [],
+          acceptanceCriteria: [],
+          assignedExecutorRole: "default",
+          maxRetries: 1,
+        },
+      ],
       milestones: [],
       successCriteria: [],
       reviewConfig: { passes: [], maxTotalReviewRounds: 1 },
@@ -192,12 +273,14 @@ describe("PlanDispatcher", () => {
       planId: "test-9",
       stepId: "step-1",
       error: "Error",
+      attempt: 1,
     });
     bus.dispatch({
       type: "plan.step.failed",
       planId: "test-9",
       stepId: "step-1",
       error: "Error",
+      attempt: 2,
     });
   });
 });

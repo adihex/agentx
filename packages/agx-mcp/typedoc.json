@@ -1,8 +1,0 @@
-{
-  "entryPoints": ["src/index.ts"],
-  "out": "docs",
-  "plugin": [],
-  "includeVersion": true,
-  "categorizeByGroup": true,
-  "cleanOutputDir": true
-}

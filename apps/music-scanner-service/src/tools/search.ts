@@ -1,40 +1,59 @@
+import { execFileSync } from "node:child_process";
+import { z } from "zod";
+import type { ToolDefinition } from "@agentx/core";
+
 /**
  * Music Search Tool
  *
- * This tool uses yt-dlp to find the best match for a song query.
- * It's designed to be stringified and injected into an AgenticThreadPool worker.
+ * Uses yt-dlp to find the best matches for a song query. Arguments are passed
+ * to yt-dlp as an argv array (no shell), so the query can never escape into a
+ * shell command.
  */
-export const searchMusic = `async (args) => {
-  const { execSync } = require('child_process');
-  const query = args.query;
-  
+
+export const searchMusicSchema = z.object({
+  query: z.string().min(1).describe("The song/artist text to search for"),
+});
+
+export type SearchMusicInput = z.infer<typeof searchMusicSchema>;
+
+interface SearchResult {
+  title: string;
+  id: string;
+  duration?: string;
+}
+
+/** Implementation invoked inside an AgenticThreadPool worker. */
+export async function searchMusic(args: SearchMusicInput) {
+  const { query } = searchMusicSchema.parse(args);
+
   try {
-    console.log('[Tool:searchMusic] Searching for:', query);
-    // Search for the top 3 results and return their titles and IDs
-    const cmd = "yt-dlp \\"ytsearch3:" + query + "\\" --get-title --get-id --get-duration --no-playlist";
-    const output = execSync(cmd).toString().trim();
-    
-    const lines = output.split('\\n');
-    const results = [];
+    console.log("[Tool:searchMusic] Searching for:", query);
+    // argv array — yt-dlp receives `ytsearch3:<query>` as a single, un-escaped argument.
+    const output = execFileSync(
+      "yt-dlp",
+      [`ytsearch3:${query}`, "--get-title", "--get-id", "--get-duration", "--no-playlist"],
+      { encoding: "utf8" },
+    ).trim();
+
+    const lines = output.split("\n");
+    const results: SearchResult[] = [];
     for (let i = 0; i < lines.length; i += 3) {
-      if (lines[i] && lines[i+1]) {
-        results.push({
-          title: lines[i],
-          id: lines[i+1],
-          duration: lines[i+2]
-        });
+      if (lines[i] && lines[i + 1]) {
+        results.push({ title: lines[i], id: lines[i + 1], duration: lines[i + 2] });
       }
     }
-    
-    return {
-      success: true,
-      results,
-      bestMatch: results[0]
-    };
+
+    return { success: true, results, bestMatch: results[0] };
   } catch (err) {
-    return {
-      success: false,
-      error: err.message
-    };
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
-}`;
+}
+
+export const searchMusicTool: ToolDefinition<SearchMusicInput> = {
+  name: "searchMusic",
+  description:
+    "Search for a song on YouTube and return the top matches (title, id, duration). Use the bestMatch id for downloading.",
+  inputSchema: searchMusicSchema,
+  modulePath: new URL(import.meta.url).pathname,
+  exportName: "searchMusic",
+};

@@ -23,8 +23,8 @@
  *   /agentx shutdown       — Gracefully shut down the agent
  */
 
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { Text } from "@mariozechner/pi-tui";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { Text } from "@earendil-works/pi-tui";
 import { AdpClient, AdpDomains } from "@agentx/adp";
 import { Type } from "typebox";
 
@@ -93,13 +93,13 @@ async function connectToAgent(url: string, ctx: any): Promise<void> {
     });
 
     // Track unexpected disconnections
-    client.onClose((code, reason) => {
+    client.onClose((code: number) => {
       state.connected = false;
       pi.sendMessage({
         customType: "agentx-event",
         content: `🔌 Disconnected (code=${code})`,
         display: true,
-        details: { code, reason },
+        details: { code, reason: undefined },
       });
     });
 
@@ -267,7 +267,9 @@ export default function (api: ExtensionAPI) {
         return;
       }
       try {
-        const res = await state.client.send(AdpDomains.Metacognition.getCallFrame);
+        const res = await state.client.send<Record<string, any>>(
+          AdpDomains.Metacognition.getCallFrame,
+        );
         state.callFrame = res;
         ctx.ui.notify(`Call frame:\n${formatCallFrame(res)}`, "info");
       } catch (err: any) {
@@ -325,7 +327,9 @@ export default function (api: ExtensionAPI) {
         return;
       }
       try {
-        const res = await state.client.send(AdpDomains.Session.prompt, { prompt: message });
+        const res = await state.client.send<{ queueLength?: number }>(AdpDomains.Session.prompt, {
+          prompt: message,
+        });
         ctx.ui.notify(`Prompt queued. Queue length: ${res.queueLength ?? "?"}`, "info");
       } catch (err: any) {
         ctx.ui.notify(`Send failed: ${err.message ?? err}`, "error");

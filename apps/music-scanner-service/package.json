@@ -1,19 +1,23 @@
 {
-  "name": "@agentx/music-scanner-service",
+  "name": "music-scanner-service",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
-    "build": "tsgo",
     "test": "echo 'No tests'"
   },
   "dependencies": {
     "@agentx/adp": "workspace:*",
-    "@agentx/core": "workspace:*"
+    "@agentx/core": "workspace:*",
+    "dotenv": "^17.4.2",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "@types/node": "catalog:",
+    "jiti": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }

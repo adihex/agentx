@@ -9,7 +9,7 @@ export const JsonRpcRequestSchema = z.object({
   jsonrpc: z.literal("2.0"),
   id: z.union([z.string(), z.number()]).optional(),
   method: z.string(),
-  params: z.record(z.unknown()).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -35,7 +35,7 @@ export type JsonRpcResponse = z.infer<typeof JsonRpcResponseSchema>;
 
 // ─── ADP Domain Commands ───────────────────────────────────────────────────────
 
-/** 
+/**
  * AdpDomains — the control plane namespaces.
  * Modeled after the Chrome DevTools Protocol (CDP).
  */

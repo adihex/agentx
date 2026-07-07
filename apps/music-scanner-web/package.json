@@ -1,0 +1,46 @@
+{
+  "name": "music-scanner-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.120.20",
+    "@tanstack/start": "^1.120.17",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.21.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "^7.18.0",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@storybook/addon-essentials": "^8.1.1",
+    "@storybook/addon-interactions": "^8.1.1",
+    "@storybook/addon-links": "^8.1.1",
+    "@storybook/blocks": "^8.1.1",
+    "@storybook/react": "^8.1.1",
+    "@storybook/react-vite": "^8.1.1",
+    "@storybook/test": "^8.1.1",
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "jsdom": "^29.1.1",
+    "storybook": "^8.1.1",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

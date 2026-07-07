@@ -1,0 +1,29 @@
+{
+  "name": "music-scanner-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun src/index.tsx",
+    "start": "bun src/index.tsx",
+    "test": "echo 'No tests'"
+  },
+  "dependencies": {
+    "@agentx/adp": "workspace:*",
+    "@agentx/agx-cli": "workspace:*",
+    "@agentx/agx-core": "workspace:*",
+    "@opentui/core": "catalog:",
+    "@opentui/react": "catalog:",
+    "react": "catalog:",
+    "ws": "catalog:"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "catalog:",
+    "@types/ws": "catalog:",
+    "jsdom": "^29.1.1",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -91,7 +91,7 @@ describe("AdpClient", () => {
     try {
       await client.send("foo");
       expect(false).toBe(true);
-    } catch (err) {
+    } catch (err: any) {
       expect(err.message).toContain("WebSocket");
     }
   });

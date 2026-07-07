@@ -44,14 +44,14 @@ original agx-cli layout:
 
 ## Key Differences from agx-cli
 
-| Feature | agx-cli (OpenTUI) | agx-herdr |
-|---------|-------------------|-----------|
-| Renderer | React-based TUI via OpenTUI | Native terminal via herdr |
-| Persistence | None — exit kills everything | Detach/reattach, agents keep running |
-| Dependencies | React, @opentui/core, yoga-layout | Zero UI deps — just Node.js + herdr |
-| Agent awareness | Manual via ADP events | Native herdr agent status reporting |
-| Remote access | Not supported | SSH in and run `herdr` |
-| `.scm` loader hack | Required for OpenTUI | Not needed |
+| Feature            | agx-cli (OpenTUI)                 | agx-herdr                            |
+| ------------------ | --------------------------------- | ------------------------------------ |
+| Renderer           | React-based TUI via OpenTUI       | Native terminal via herdr            |
+| Persistence        | None — exit kills everything      | Detach/reattach, agents keep running |
+| Dependencies       | React, @opentui/core, yoga-layout | Zero UI deps — just Node.js + herdr  |
+| Agent awareness    | Manual via ADP events             | Native herdr agent status reporting  |
+| Remote access      | Not supported                     | SSH in and run `herdr`               |
+| `.scm` loader hack | Required for OpenTUI              | Not needed                           |
 
 ## Architecture
 
@@ -92,11 +92,11 @@ herdr workspace close <workspace_id>
 
 Same as agx-cli:
 
-| Command | Action |
-|---------|--------|
-| `/help` | Show available commands |
-| `/pause <agentId>` | Pause an agent |
-| `/resume <agentId>` | Resume a paused agent |
-| `/inspect <agentId>` | Dump agent state |
-| `/halt` | Halt all agents |
-| `/exit` | Quit REPL |
+| Command              | Action                  |
+| -------------------- | ----------------------- |
+| `/help`              | Show available commands |
+| `/pause <agentId>`   | Pause an agent          |
+| `/resume <agentId>`  | Resume a paused agent   |
+| `/inspect <agentId>` | Dump agent state        |
+| `/halt`              | Halt all agents         |
+| `/exit`              | Quit REPL               |

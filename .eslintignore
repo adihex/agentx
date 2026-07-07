@@ -1,5 +1,5 @@
-apps/web/.output
-apps/web/.vinxi
+apps/music-scanner-web/.output
+apps/music-scanner-web/.vinxi
 **/dist
 **/*.mjs
 node_modules
