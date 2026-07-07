@@ -152,27 +152,27 @@ Two levels: global (`~/.config/workmux/config.yaml`) and project
 ### Key options
 
 ```yaml
-agent: claude                    # default agent for <agent> placeholder
-merge_strategy: rebase           # merge, rebase, or squash
-mode: window                     # window or session
+agent: claude # default agent for <agent> placeholder
+merge_strategy: rebase # merge, rebase, or squash
+mode: window # window or session
 
 panes:
-  - command: <agent>             # <agent> resolves to configured agent
+  - command: <agent> # <agent> resolves to configured agent
     focus: true
-  - split: horizontal            # second pane with shell
+  - split: horizontal # second pane with shell
 
 files:
   copy:
-    - .env                       # copy from main worktree
+    - .env # copy from main worktree
   symlink:
-    - node_modules               # symlink from main worktree
+    - node_modules # symlink from main worktree
 
 post_create:
-  - '<global>'                   # include global hooks
-  - npm install                  # project-specific setup
+  - "<global>" # include global hooks
+  - npm install # project-specific setup
 
-base_branch: develop             # default base for new worktrees
-window_prefix: wm-               # tmux window name prefix
+base_branch: develop # default base for new worktrees
+window_prefix: wm- # tmux window name prefix
 ```
 
 Use `'<global>'` in project config arrays to include global values.

@@ -52,6 +52,7 @@ Guidelines:
 1. Write a short PR title (max 72 characters)
 
 2. Ensure the branch is pushed:
+
    ```bash
    git push -u origin HEAD
    ```

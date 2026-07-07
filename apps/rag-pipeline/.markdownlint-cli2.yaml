@@ -24,4 +24,3 @@ ignores:
   - ".worktrees"
   - "*__worktrees"
   - ".git"
-
