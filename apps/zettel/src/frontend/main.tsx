@@ -6,7 +6,7 @@ import TopicPage from "./components/TopicPage.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/zettel">
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/wiki/:entity" element={<TopicPage />} />

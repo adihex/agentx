@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { authClient } from "./auth-client";
 import { api } from "./api-client";
 import ToolsManager from "./ToolsManager";
+import NotebookLMImportModal from "./NotebookLMImportModal";
 import SemanticVisualizer from "./components/SemanticVisualizer";
 import {
   MessageScrollerProvider,
@@ -104,6 +105,7 @@ export default function App() {
   const [recording, setRecording] = useState(false);
   const [recordSecs, setRecordSecs] = useState(0);
   const [showTools, setShowTools] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -907,6 +909,21 @@ export default function App() {
             Tools
           </button>
 
+          <button
+            className="rail-tools-btn"
+            onClick={() => setShowImportModal(true)}
+            title="Import from NotebookLM"
+            style={{ marginTop: "4px" }}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "16px", marginRight: "6px" }}
+            >
+              download
+            </span>
+            Import Notebook
+          </button>
+
           <div className="rail-foot">
             <span className={`status-dot ${connected ? "on" : ""}`} />
             <span>{connected ? "Connected" : "Connecting…"}</span>
@@ -1437,6 +1454,9 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* ---------- NotebookLM Import Modal ---------- */}
+        {showImportModal && <NotebookLMImportModal onClose={() => setShowImportModal(false)} />}
       </div>
     </MessageScrollerProvider>
   );

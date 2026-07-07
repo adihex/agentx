@@ -32,6 +32,7 @@
     { "path": "apps/pi-extension" },
     { "path": "apps/simon-cli" },
     { "path": "apps/zettel" },
+    { "path": "apps/zettel-import" },
     { "path": "apps/music-scanner-web" }
   ]
 }

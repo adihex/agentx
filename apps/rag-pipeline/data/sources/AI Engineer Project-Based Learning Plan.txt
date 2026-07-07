@@ -243,3 +243,333 @@ To get started with your build, how comfortable are you with the concept of
 Vector Embeddings
 
 ? Would you like to explore how text gets converted into math first, or should we dive straight into picking a vector database to set up?
+
+User
+
+:
+
+ 
+
+I know what chunking is, I dont know what embeddings are.
+
+Gemini
+
+:
+
+ 
+
+Computers don't understand words; they only understand numbers. An embedding is a way to translate the underlying 
+
+meaning
+
+ of a piece of text (like one of your chunks) into a long list of numbers, known as a vector.
+
+Imagine a massive, multi-dimensional map. When a model creates embeddings, text with similar meanings are assigned coordinates that place them very close to each other on this map. For example, "king" and "queen" will be mathematically grouped together, while "toaster" will be placed far away.
+
+In a RAG system, every single chunk of your document database gets converted into one of these number lists and stored in a Vector Database.
+
+When a user interacts with your application, their question is also converted into an embedding.
+
+If a user asks your bot, "Do you have any canine food?", how do you think the database uses these embeddings to find the right text chunks to answer the question, even if your documents only use the word "dog"?
+
+User
+
+:
+
+ 
+
+cosine similarity?
+
+Gemini
+
+:
+
+ 
+
+Spot on. Cosine similarity is the exact mathematical method the vector database uses to compare those number lists.
+
+When "canine food" and "dog" are converted into embeddings, they are assigned coordinates that create vectors pointing in almost the exact same direction on that massive map. Cosine similarity ignores the magnitude (length) of the vectors and simply measures the angle between them.
+
+If they point in the exact same direction, the angle is 0°, and the cosine similarity is 
+
+1
+
+ (highly related).
+
+If they are at a 90° angle, the similarity is 
+
+0
+
+ (unrelated, like "dog" and "toaster").
+
+If they point in completely opposite directions, the similarity is 
+
+-1
+
+.
+
+To see how the math behind this retrieval step feels in practice, try adjusting the vectors in this simplified 2D space:
+
+{
+  "component": "LlmGeneratedComponent",
+  "props": {
+    "height": "600px",
+    "prompt": "Create an interactive 2D graph demonstrating Cosine Similarity between two vectors, Vector A and Vector B. \nObjective: Allow users to manipulate two vectors to see how the angle between them affects the cosine similarity score.\nStrategy: Standard Layout with a central 2D Cartesian coordinate system.\nInputs: The endpoints of Vector A and Vector B must be draggable by the user within the coordinate plane.\nBehavior: Draw Vector A and Vector B originating from the center (0,0) to their draggable endpoints. As the user drags the endpoints, dynamically calculate and display the following metrics prominently on the screen: the current coordinates of A and B, the angle between them in degrees, and the calculated Cosine Similarity (ranging from -1.00 to 1.00). Visually shade the arc representing the angle between the two vectors. Ensure clear visual distinction between Vector A and Vector B using labels and contrasting visual styles."
+  }
+}
+
+
+json?chameleon
+
+Now that we understand how our Vector Database will retrieve the most relevant text chunks using embeddings, we have everything we need to generate a grounded answer.
+
+How do you think we should combine the user's original question (e.g., "Do you have canine food?") with the text chunks we just retrieved from the database 
+
+before
+
+ sending it all to the LLM?
+
+User
+
+:
+
+ 
+
+But who decides that the vectors of dog and  canine food are close to each other? Like how is that decided?
+
+Gemini
+
+:
+
+ 
+
+No human manually decides this! An embedding model figures it out entirely on its own by reading massive amounts of text across the internet.
+
+It learns this through context. As Chip Huyen explains in her book you shared, one common way to train these models is to have them play a massive game of "fill in the blank".
+
+If an AI reads billions of sentences, it sees patterns like:
+
+"I poured the kibble for my ___."
+
+"The ___ needs to go for a walk."
+
+It notices that "dog" and "canine" frequently fill the exact same blanks and hang out around the same neighboring words. Because they share the same context, the model's internal math slowly adjusts during training to assign them almost identical coordinates (vectors) on that massive map. It's purely statistical pattern recognition!
+
+So, back to our RAG system: the vector database just used this math to successfully retrieve the document chunks about "dog kibble" based on the user asking about "canine food."
+
+Now for the final step of RAG (Generation): How do you think we should package the user's original question together with those retrieved text chunks 
+
+before
+
+ we hand it all over to the LLM?
+
+User
+
+:
+
+ 
+
+Append the retrieved citations in the user prompt
+
+Gemini
+
+:
+
+ 
+
+Exactly. We literally paste them together into one big text string. A standard RAG prompt template usually looks something like this:
+
+"You are a helpful inventory assistant. Use the following context to answer the user's question.
+
+ 
+
+Context:
+
+ [Insert retrieved chunks here]
+
+ 
+
+User Question:
+
+ [Insert original question here]"
+
+This simple trick forces the LLM to rely on your specific data rather than its internal memory, drastically reducing the chance that it makes things up (hallucinating).
+
+Now that our RAG pipeline has successfully retrieved the data and assembled the perfect prompt, we need the actual "brain" to read it and generate the final answer. For this Stage 1 project, we planned to serve an open-source model locally using 
+
+vLLM
+
+, matching the quickstart guides you shared.
+
+When you are picking an open-source model to download and run on your own machine (for example, a small 8-billion parameter model versus a massive 70-billion parameter model), what is the primary hardware limitation on your computer that dictates which model you can actually run?
+
+User
+
+:
+
+ 
+
+GPU
+
+Gemini
+
+:
+
+ 
+
+You are looking at the right piece of hardware! Specifically, the primary bottleneck is the 
+
+GPU Memory (VRAM)
+
+ 💾.
+
+When you serve a model locally (using a tool like vLLM), you must load all of its "weights"—the billions of parameters it learned during training—directly into the GPU's memory.
+
+By default, these weights are stored as 16-bit numbers (FP16). A quick rule of thumb 🧮 is that every 1 billion parameters requires about 2 Gigabytes of VRAM just to store the model, plus extra memory for the "KV Cache" to process the context of your conversation.
+
+{
+  "component": "LlmGeneratedComponent",
+  "props": {
+    "height": "600px",
+    "prompt": "Create an interactive calculator demonstrating GPU VRAM requirements for Large Language Models. \nObjective: Allow users to see how model parameter count and precision affect the memory footprint.\nStrategy: Form Layout with clear inputs and dynamic results.\nInputs: A slider for 'Model Parameters' ranging from 1 to 70 (representing Billions of parameters). A dropdown for 'Model Precision' with options: FP16 (2 bytes per parameter), INT8 (1 byte per parameter), and INT4 (0.5 bytes per parameter).\nBehavior: Dynamically calculate the VRAM required for the model weights. The formula is (Parameters in billions * Bytes per parameter). Then, add a 20% overhead to represent the KV Cache and context window memory. Display the 'Total Estimated VRAM' prominently in Gigabytes (GB). Below the calculation, visually compare this required VRAM against common GPU memory capacities (e.g., 8GB, 24GB, 80GB) to indicate what hardware would be necessary."
+  }
+}
+
+
+json?chameleon
+
+Play around with the calculator above. If you wanted to run a massive 70-billion parameter model on a single 40GB GPU, you clearly can't use the standard FP16 precision.
+
+Based on the dropdown options that shrink the memory footprint, what is the name of the technique AI engineers use to compress these models?
+
+User
+
+:
+
+ 
+
+Quantization
+
+Gemini
+
+:
+
+ 
+
+Exactly. Quantization 🗜️ is the secret to running powerful AI on consumer hardware.
+
+By squishing 16-bit numbers down to 8-bit (INT8) or even 4-bit (INT4) formats—using specific quantization algorithms like AWQ or GPTQ—you can drastically shrink the memory footprint with barely any noticeable drop in the model's intelligence.
+
+And with that, you understand the foundational blueprint for your 
+
+Stage 1 Project (Local RAG)
+
+! You now know how to:
+
+Embed and store your documents.
+
+Retrieve the right facts using Cosine Similarity.
+
+Assemble a grounded prompt.
+
+Serve the open-source model locally using vLLM and Quantization.
+
+Let's level up to 
+
+Stage 2: The Multi-Model Inference Gateway (Medium)
+
+. 🚀
+
+Imagine your RAG application becomes a huge hit. To save compute costs, you decide to run 
+
+two
+
+ models: a massive, highly capable model for complex RAG reasoning, and a much smaller, lightning-fast model just to handle simple conversational greetings and quick summaries.
+
+If you are building a central "API Gateway" 🚦 that intercepts every single user request before it reaches the models, what specific information do you think needs to be included in the user's API payload so your gateway knows exactly 
+
+which
+
+ model to route the prompt to?
+
+User
+
+:
+
+ 
+
+The effort for inference?
+
+Gemini
+
+:
+
+ 
+
+That is actually a brilliant, advanced approach! You are thinking about 
+
+Dynamic Routing
+
+ (or complexity routing).
+
+At the most basic level, a standard API payload simply includes an explicit 
+
+Model ID
+
+ (e.g., 
+
+{"model": "small-fast-bot", "prompt": "Hi!"}
+
+). The gateway reads that ID and forwards it to the correct server.
+
+However, many cutting-edge AI gateways do exactly what you just suggested: they calculate the "effort" or complexity of the user's prompt. If it's a simple greeting, the gateway automatically routes it to the small model. If it's complex math, it routes it to the massive, highly capable model. This saves a ton of compute money!
+
+Once your Stage 2 gateway is successfully routing requests, you need to track its performance (Observability).
+
+In traditional software, we just measure total response time. But with LLMs, users read the answer as it streams word-by-word on the screen. Because of this streaming behavior, AI Engineers must track latency in two distinct phases:
+
+The time it takes for the model to "think" and output the very first word.
+
+The speed at which it generates the rest of the words.
+
+Based on the materials you shared, do you happen to know the terms or acronyms used in the industry to measure these two specific phases of AI latency?
+
+User
+
+:
+
+ 
+
+Time To First Token?
+
+Gemini
+
+:
+
+ 
+
+Spot on. 
+
+Time to First Token (TTFT)
+
+ ⏱️ is exactly right for the first phase. The second phase is typically measured as 
+
+Time Per Output Token (TPOT)
+
+ or inter-token latency. Together, they give you a complete picture of the user's waiting experience.
+
+With your gateway intelligently routing requests and monitoring TTFT/TPOT, your application is ready for massive scale. That brings us to 
+
+Stage 3: Production Infrastructure (Hard)
+
+. 🏗️
+
+At this stage, you move out of a single-machine setup and deploy your application onto a Kubernetes cluster. According to the deployment guides you shared, while a standalone vLLM server is great when everything fits on one machine, you need a framework like 
+
+Ray Serve
+
+ to orchestrate inference across multiple different servers (nodes).
+
+Imagine you want to serve a truly massive model, but you only have access to smaller GPUs. Even with 4-bit quantization, the model's weights are simply too large to fit into the VRAM of any single GPU in your cluster.
+
+How do you think a distributed infrastructure framework solves this physical memory barrier so the model can still run?

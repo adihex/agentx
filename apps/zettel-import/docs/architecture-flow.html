@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zettel-Import Architecture & Flow</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --border: #30363d;
+        --fg: #c9d1d9;
+        --muted: #8b949e;
+        --accent: #58a6ff;
+        --accent2: #7ee787;
+        --accent3: #f0883e;
+        --accent4: #f778ba;
+        --accent5: #d2a8ff;
+        --err: #f85149;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      header {
+        padding: 2rem 2rem 1rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      header p {
+        color: var(--muted);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+      nav {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.75rem 2rem;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 70px;
+        z-index: 9;
+      }
+      nav button {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.15s;
+      }
+      nav button:hover {
+        color: var(--fg);
+        border-color: var(--muted);
+      }
+      nav button.active {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(88, 166, 255, 0.1);
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+
+      /* Architecture view */
+      .arch-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .arch-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+      }
+      .arch-box h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .arch-box h3 .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .arch-box ul {
+        list-style: none;
+        font-size: 0.825rem;
+        color: var(--muted);
+      }
+      .arch-box ul li {
+        padding: 0.2rem 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+      .arch-box ul li::before {
+        content: "▸";
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+      .arch-box code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        color: var(--accent2);
+      }
+      .shared-db {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(126, 231, 135, 0.08));
+        border-color: var(--accent);
+      }
+
+      /* Flow chart */
+      .flow-container {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        overflow-x: auto;
+        padding: 1rem 0;
+      }
+      .flow-step {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        min-width: 200px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .flow-step .step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .flow-step h4 {
+        font-size: 0.825rem;
+        margin-bottom: 0.35rem;
+      }
+      .flow-step p {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .flow-arrow {
+        display: flex;
+        align-items: center;
+        padding: 0 0.5rem;
+        color: var(--accent);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .flow-app-label {
+        font-size: 0.65rem;
+        color: var(--accent3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      /* Pipeline stages */
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+      }
+      .pipeline-stage {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .pipeline-stage .glyph {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .pipeline-stage h4 {
+        font-size: 0.8rem;
+      }
+      .pipeline-stage p {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+
+      /* Schema table */
+      .schema-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0;
+      }
+      .schema-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+      }
+      .schema-card h4 {
+        font-size: 0.825rem;
+        color: var(--accent2);
+        margin-bottom: 0.5rem;
+      }
+      .schema-card code {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+      .schema-card .col {
+        padding: 0.15rem 0;
+        font-size: 0.75rem;
+      }
+      .schema-card .col .name {
+        color: var(--fg);
+        font-weight: 500;
+      }
+      .schema-card .col .type {
+        color: var(--muted);
+      }
+      .schema-card .pk {
+        color: var(--accent3);
+      }
+
+      /* Timeline */
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--border);
+      }
+      .timeline-event {
+        position: relative;
+        padding: 0.75rem 0;
+      }
+      .timeline-event::before {
+        content: "";
+        position: absolute;
+        left: -1.55rem;
+        top: 1rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--bg);
+      }
+      .timeline-event.web::before {
+        background: var(--accent2);
+      }
+      .timeline-event.cli::before {
+        background: var(--accent3);
+      }
+      .timeline-event.db::before {
+        background: var(--accent4);
+      }
+      .timeline-event .time {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+      .timeline-event .label {
+        font-size: 0.825rem;
+      }
+      .timeline-event .detail {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      /* Key */
+      .key {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+      .key-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .key-swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+      }
+
+      @media (max-width: 768px) {
+        .arch-grid {
+          grid-template-columns: 1fr;
+        }
+        .pipeline {
+          grid-template-columns: 1fr 1fr;
+        }
+        .flow-container {
+          flex-wrap: wrap;
+        }
+        .flow-arrow {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>zettel-import ↔ zettel</h1>
+      <p>
+        Architecture, data flow, schema, and interaction timeline for the NotebookLM import pipeline
+      </p>
+    </header>
+    <nav>
+      <button class="active" onclick="switchView('arch')">Architecture</button>
+      <button onclick="switchView('flow')">Data Flow</button>
+      <button onclick="switchView('schema')">DB Schema</button>
+      <button onclick="switchView('timeline')">Interaction Timeline</button>
+    </nav>
+    <main>
+      <!-- ARCHITECTURE -->
+      <div id="arch" class="view active">
+        <div class="arch-grid">
+          <div class="arch-box">
+            <h3>
+              <span class="dot" style="background: var(--accent3)"></span> @agentx/zettel-import
+              (CLI)
+            </h3>
+            <ul>
+              <li><code>src/index.tsx</code> — OpenTUI entry point (Bun runtime)</li>
+              <li><code>src/args.ts</code> — CLI arg parsing (notebook-id, db-url, user-id)</li>
+              <li><code>src/pipeline.ts</code> — Orchestrates 4-stage import pipeline</li>
+              <li>
+                <code>src/nlm.ts</code> — Calls <code>nlm</code> CLI for NotebookLM source lists &
+                content
+              </li>
+              <li>
+                <code>src/store.ts</code> — <b>Kysely</b> typesafe NoteStore (mirrors zettel schema)
+              </li>
+              <li><code>src/rag.ts</code> — Saves sources + runs ChromaDB indexing</li>
+              <li>
+                <code>src/Dashboard.tsx</code> — TUI progress grid (fetch → note → graph → save)
+              </li>
+            </ul>
+          </div>
+          <div class="arch-box">
+            <h3><span class="dot" style="background: var(--accent2)"></span> zettel (Web App)</h3>
+            <ul>
+              <li><code>src/index.ts</code> — Hono server :5174 + ADP WebSocket</li>
+              <li><code>src/notes/store.ts</code> — Raw <code>@libsql/client</code> NoteStore</li>
+              <li><code>src/notes/auth.ts</code> — Better Auth + Kysely dialect</li>
+              <li><code>src/frontend/App.tsx</code> — React SPA (Vite :5173)</li>
+              <li><code>NotebookLMImportModal.tsx</code> — Modal showing CLI instructions</li>
+              <li>Polls <code>listNotes()</code> every <b>2.5s</b> for live refresh</li>
+              <li>Vector + keyword hybrid search via <code>searchNotes()</code></li>
+            </ul>
+          </div>
+          <div class="arch-box shared-db">
+            <h3>
+              <span class="dot" style="background: var(--accent4)"></span> Shared Turso/libsql
+              Database
+            </h3>
+            <ul>
+              <li>Local file path: <code>~/.agentx-zettel/zettel.db</code> (default)</li>
+              <li>
+                Or remote Turso via <code>TURSO_DATABASE_URL</code> + <code>TURSO_AUTH_TOKEN</code>
+              </li>
+              <li>Both apps read/write the <b>same 5 tables</b> — the DB is the contract</li>
+              <li>Tenant isolation: <code>user_id</code> column scopes all queries</li>
+              <li><b>38 notes</b> currently imported (tag: <code>notebooklm-import</code>)</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem">
+          Import Pipeline (4 stages per source)
+        </h3>
+        <div class="pipeline">
+          <div class="pipeline-stage">
+            <div class="glyph">📥</div>
+            <h4>1. fetch</h4>
+            <p>Calls <code>nlm source content</code> to pull raw text from NotebookLM</p>
+          </div>
+          <div class="pipeline-stage">
+            <div class="glyph">📝</div>
+            <h4>2. note</h4>
+            <p>Creates note in Turso DB with embedding (<code>gemini-embedding-001</code>)</p>
+          </div>
+          <div class="pipeline-stage">
+            <div class="glyph">🕸️</div>
+            <h4>3. graph</h4>
+            <p>Extracts entities & relations via <code>gemini-2.5-flash</code> GraphRAG</p>
+          </div>
+          <div class="pipeline-stage">
+            <div class="glyph">🔍</div>
+            <h4>4. save</h4>
+            <p>Saves to <code>rag-pipeline/data/sources/</code> + ChromaDB indexing</p>
+          </div>
+        </div>
+        <div class="key">
+          <div class="key-item">
+            <span class="key-swatch" style="background: var(--accent3)"></span> CLI (zettel-import)
+          </div>
+          <div class="key-item">
+            <span class="key-swatch" style="background: var(--accent2)"></span> Web App (zettel)
+          </div>
+          <div class="key-item">
+            <span class="key-swatch" style="background: var(--accent4)"></span> Shared Database
+          </div>
+          <div class="key-item">
+            <span class="key-swatch" style="background: var(--accent5)"></span> LLM (Gemini)
+          </div>
+          <div class="key-item">
+            <span class="key-swatch" style="background: var(--accent)"></span> External (nlm CLI)
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA FLOW -->
+      <div id="flow" class="view">
+        <h3 style="margin-bottom: 1rem">End-to-End Data Flow</h3>
+        <div class="flow-container">
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent2)">Web App</div>
+            <div class="step-num">1</div>
+            <h4>User clicks "Import"</h4>
+            <p>NotebookLMImportModal renders. User sees CLI command to copy-paste.</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent3)">CLI</div>
+            <div class="step-num">2</div>
+            <h4>User runs CLI</h4>
+            <p><code>pnpm --filter zettel-import start -- NOTEBOOK_ID --user-id X</code></p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent)">nlm</div>
+            <div class="step-num">3</div>
+            <h4>List & Fetch Sources</h4>
+            <p>Calls <code>nlm source list</code> then <code>nlm source content</code> for each</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent5)">Gemini</div>
+            <div class="step-num">4</div>
+            <h4>Embed + Extract</h4>
+            <p>Generates 768-dim embeddings & entity graph via LLM</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent4)">Turso DB</div>
+            <div class="step-num">5</div>
+            <h4>Write to DB</h4>
+            <p>Kysely inserts note + tags + entities + relations</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-app-label" style="color: var(--accent2)">Web App</div>
+            <div class="step-num">6</div>
+            <h4>Poll detects changes</h4>
+            <p>2.5s polling calls <code>listNotes(userId)</code>, new notes appear</p>
+          </div>
+        </div>
+
+        <h3 style="margin: 2rem 0 1rem">Failure Handling</h3>
+        <div class="arch-grid" style="grid-template-columns: 1fr 1fr 1fr">
+          <div class="arch-box" style="border-color: var(--accent3)">
+            <h4 style="color: var(--accent3)">Embeddings fail</h4>
+            <p>Note is still created with <code>embedded: false</code>. Embedding is null in DB.</p>
+          </div>
+          <div class="arch-box" style="border-color: var(--accent3)">
+            <h4 style="color: var(--accent3)">Graph extraction fails</h4>
+            <p>Note exists without graph entities. Stage marked as error in TUI.</p>
+          </div>
+          <div class="arch-box" style="border-color: var(--accent3)">
+            <h4 style="color: var(--accent3)">Fetch from nlm fails</h4>
+            <p>Source row skipped. Remaining sources continue. Detail shown in TUI.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEMA -->
+      <div id="schema" class="view">
+        <h3 style="margin-bottom: 0.5rem">Shared Database Schema</h3>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem">
+          Both apps write to and read from these tables. This is the integration contract.
+        </p>
+        <div class="schema-grid">
+          <div class="schema-card" style="border-top: 2px solid var(--accent2)">
+            <h4>notes</h4>
+            <div class="col"><span class="name pk">id</span> <span class="type">TEXT PK</span></div>
+            <div class="col">
+              <span class="name">user_id</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">title</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">created</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">source</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">body</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">embedding</span> <span class="type">F32_BLOB(768)</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted)">
+              CLI writes via Kysely, Web app reads via raw <code>@libsql/client</code>
+            </p>
+          </div>
+          <div class="schema-card" style="border-top: 2px solid var(--accent3)">
+            <h4>note_tags</h4>
+            <div class="col">
+              <span class="name pk">note_id</span> <span class="type">TEXT PK FK→notes</span>
+            </div>
+            <div class="col">
+              <span class="name pk">tag</span> <span class="type">TEXT PK</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted)">
+              CLI tags all imports as <code>notebooklm-import</code>
+            </p>
+          </div>
+          <div class="schema-card" style="border-top: 2px solid var(--accent5)">
+            <h4>note_links</h4>
+            <div class="col">
+              <span class="name pk">from_id</span> <span class="type">TEXT PK FK→notes</span>
+            </div>
+            <div class="col">
+              <span class="name pk">to_id</span> <span class="type">TEXT PK FK→notes</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted)">
+              CLI does not create links (user creates them in web app)
+            </p>
+          </div>
+          <div class="schema-card" style="border-top: 2px solid var(--accent4)">
+            <h4>entities</h4>
+            <div class="col">
+              <span class="name pk">name</span> <span class="type">TEXT PK</span>
+            </div>
+            <div class="col">
+              <span class="name">type</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">description</span> <span class="type">TEXT</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted)">
+              Extracted by Gemini 2.5 Flash GraphRAG
+            </p>
+          </div>
+          <div class="schema-card" style="border-top: 2px solid var(--accent4)">
+            <h4>entity_relations</h4>
+            <div class="col">
+              <span class="name">source</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">target</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">relationship</span> <span class="type">TEXT NOT NULL</span>
+            </div>
+            <div class="col">
+              <span class="name">note_id</span> <span class="type">TEXT FK→notes</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted)">
+              Powers the knowledge graph visualization in web app
+            </p>
+          </div>
+        </div>
+
+        <h3 style="margin: 2rem 0 0.5rem">Technology Stack per Side</h3>
+        <div class="arch-grid" style="grid-template-columns: 1fr 1fr">
+          <div class="arch-box" style="border-top: 2px solid var(--accent3)">
+            <h4 style="color: var(--accent3)">CLI (zettel-import)</h4>
+            <ul>
+              <li><b>Runtime:</b> Bun</li>
+              <li><b>UI:</b> OpenTUI (React)</li>
+              <li>
+                <b>DB:</b> <code>@libsql/client</code> + <code>kysely</code> +
+                <code>@libsql/kysely-libsql</code>
+              </li>
+              <li><b>LLM:</b> Vercel AI SDK + <code>@ai-sdk/google</code></li>
+              <li><b>Types:</b> Kysely <code>Database</code> interface</li>
+            </ul>
+          </div>
+          <div class="arch-box" style="border-top: 2px solid var(--accent2)">
+            <h4 style="color: var(--accent2)">Web App (zettel)</h4>
+            <ul>
+              <li><b>Runtime:</b> Node.js (tsx)</li>
+              <li><b>UI:</b> React + Vite</li>
+              <li><b>DB:</b> <code>@libsql/client</code> (raw SQL)</li>
+              <li>
+                <b>LLM:</b> Vercel AI SDK + <code>@ai-sdk/google</code> + <code>@ai-sdk/groq</code>
+              </li>
+              <li><b>Auth:</b> Better Auth + <code>@libsql/kysely-libsql</code></li>
+              <li><b>Server:</b> Hono + ADP WebSocket</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIMELINE -->
+      <div id="timeline" class="view">
+        <h3 style="margin-bottom: 1rem">End-to-End Interaction Timeline</h3>
+        <div class="timeline">
+          <div class="timeline-event web">
+            <div class="time">Step 1 — Browser</div>
+            <div class="label">User opens zettel web app → clicks "Import from NotebookLM"</div>
+            <div class="detail">
+              NotebookLMImportModal renders with two options: Local CLI or Enterprise API
+            </div>
+          </div>
+          <div class="timeline-event web">
+            <div class="time">Step 2 — Browser</div>
+            <div class="label">User selects "Local CLI" mode</div>
+            <div class="detail">
+              Modal shows the exact command to run:
+              <code>npx @agentx/zettel-import &lt;ID&gt;</code>
+            </div>
+          </div>
+          <div class="timeline-event cli">
+            <div class="time">Step 3 — Terminal</div>
+            <div class="label">User pastes command into terminal</div>
+            <div class="detail">
+              CLI boots (Bun + OpenTUI), connects to the same Turso DB as the web app
+            </div>
+          </div>
+          <div class="timeline-event cli">
+            <div class="time">Step 4 — CLI (fetch)</div>
+            <div class="label">
+              CLI calls <code>nlm source list &lt;notebookId&gt; --json</code>
+            </div>
+            <div class="detail">
+              Returns list of sources. For each: calls <code>nlm source content</code>, writes to
+              temp file, reads back
+            </div>
+          </div>
+          <div class="timeline-event cli">
+            <div class="time">Step 5 — CLI (note)</div>
+            <div class="label">For each source: <code>store.insertNote()</code> via Kysely</div>
+            <div class="detail">
+              Generates timestamp ID (YYYYMMDDHHmmss), calls Gemini for 768-dim embedding, inserts
+              into <code>notes</code> table
+            </div>
+          </div>
+          <div class="timeline-event cli">
+            <div class="time">Step 6 — CLI (graph)</div>
+            <div class="label">For each note: <code>store.extractAndSaveGraph()</code></div>
+            <div class="detail">
+              Calls Gemini 2.5 Flash to extract entities & relations, inserts into
+              <code>entities</code> + <code>entity_relations</code>
+            </div>
+          </div>
+          <div class="timeline-event cli">
+            <div class="time">Step 7 — CLI (save)</div>
+            <div class="label">
+              Writes source to <code>rag-pipeline/data/sources/</code>, runs ChromaDB index
+            </div>
+            <div class="detail">(Skipped with <code>--skip-rag</code>)</div>
+          </div>
+          <div class="timeline-event db">
+            <div class="time">Step 8 — Turso DB</div>
+            <div class="label">
+              All notes now persisted with user_id matching the logged-in user
+            </div>
+            <div class="detail">
+              38 notes written, tagged <code>notebooklm-import</code>, scoped to authenticated user
+            </div>
+          </div>
+          <div class="timeline-event web">
+            <div class="time">Step 9 — Browser (poll)</div>
+            <div class="label">Web app's 2.5s polling calls <code>listNotes(userId)</code></div>
+            <div class="detail">
+              Returns all notes including the newly imported ones. React state updates, UI
+              re-renders
+            </div>
+          </div>
+          <div class="timeline-event web">
+            <div class="time">Step 10 — Browser</div>
+            <div class="label">User sees imported notes in the zettel feed</div>
+            <div class="detail">
+              Notes are fully functional: searchable, linkable, editable, with graph visualization.
+              Search for tag <code>notebooklm-import</code> to filter.
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin: 2rem 0 0.5rem">Key Integration Points</h3>
+        <div class="arch-grid" style="grid-template-columns: 1fr 1fr">
+          <div class="arch-box" style="border-left: 3px solid var(--err)">
+            <h4>⚠️ Common Pitfall: User ID Mismatch</h4>
+            <p style="font-size: 0.8rem; color: var(--muted)">
+              The CLI's <code>--user-id</code> must match the authenticated user in the web app.
+              Better Auth generates IDs like <code>T9H5T82lYiwkkw9Fb9tXlFIO9Jrmh9QZ</code>, not the
+              string <code>"default"</code>. Use the actual user ID from the DB.
+            </p>
+          </div>
+          <div class="arch-box" style="border-left: 3px solid var(--accent2)">
+            <h4>✅ Verification Checklist</h4>
+            <p style="font-size: 0.8rem; color: var(--muted)">
+              1. Both apps use the same DB file/URL<br />
+              2. <code>--user-id</code> matches the web app user<br />
+              3. <code>GEMINI_API_KEY</code> is set for embeddings + graph<br />
+              4. <code>nlm</code> CLI is authenticated (<code>nlm login</code>)<br />
+              5. Web app server is running (:5174)<br />
+              6. Vite dev client is running (:5173)
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      function switchView(name) {
+        document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+        document.getElementById(name).classList.add("active");
+        document.querySelectorAll("nav button").forEach((b, i) => {
+          b.classList.toggle(
+            "active",
+            b.textContent.toLowerCase().includes(name) ||
+              (name === "arch" && i === 0) ||
+              (name === "flow" && i === 1) ||
+              (name === "schema" && i === 2) ||
+              (name === "timeline" && i === 3),
+          );
+        });
+      }
+    </script>
+  </body>
+</html>

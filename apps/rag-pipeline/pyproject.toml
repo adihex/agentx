@@ -5,14 +5,16 @@ description = "A local RAG system grounded on AI Engineering notebook sources"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "google-genai>=0.1.0",
-    "chromadb>=0.4.24",
-    "rank-bm25>=0.2.2",
-    "python-dotenv>=1.0.1",
-    "tqdm>=4.66.0",
-    "numpy>=1.24.0",
-    "pydantic>=2.13.4",
-    "networkx>=3.4.2",
+  "google-genai>=0.1.0",
+  "chromadb>=0.4.24",
+  "rank-bm25>=0.2.2",
+  "python-dotenv>=1.0.1",
+  "tqdm>=4.66.0",
+  "numpy>=1.24.0",
+  "pydantic>=2.13.4",
+  "networkx>=3.4.2",
+  "fastapi>=0.100.0",
+  "uvicorn>=0.23.0",
 ]
 
 [build-system]

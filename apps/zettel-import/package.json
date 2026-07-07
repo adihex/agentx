@@ -1,0 +1,33 @@
+{
+  "name": "@agentx/zettel-import",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Import NotebookLM notebook sources into the Zettelkasten (Turso) and the local RAG pipeline (ChromaDB)",
+  "bin": {
+    "zettel-import": "./bin/zettel-import.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "bun src/index.tsx",
+    "dev": "bun src/index.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests specified yet'"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "catalog:",
+    "@libsql/client": "catalog:",
+    "@libsql/kysely-libsql": "catalog:",
+    "@opentui/core": "catalog:",
+    "@opentui/react": "catalog:",
+    "ai": "catalog:",
+    "dotenv": "^17.4.2",
+    "kysely": "catalog:",
+    "react": "catalog:",
+    "ws": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  }
+}

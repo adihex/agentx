@@ -1,0 +1,14 @@
+{
+  "name": "@agentx/rag-pipeline",
+  "version": "1.0.0",
+  "description": "RAG pipeline and NotebookLM importer for AgentX",
+  "scripts": {
+    "lint": "mise exec -- ruff check .",
+    "format": "mise exec -- ruff format .",
+    "typecheck": "mise exec -- ty check .",
+    "check": "pnpm run lint && pnpm run typecheck",
+    "test": "echo 'No tests specified yet'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
