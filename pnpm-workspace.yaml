@@ -2,4 +2,21 @@ packages:
   - "packages/*"
   - "apps/*"
 allowBuilds:
+  "@google/genai": true
+  "@parcel/watcher": true
   esbuild: true
+  koffi: true
+  protobufjs: true
+overrides:
+  vite: ^8.0.0
+  "@tanstack/react-router": 1.120.20
+  "@tanstack/router-core": 1.120.19
+  "@tanstack/router-generator": 1.120.20
+  "@tanstack/router-plugin": 1.120.20
+  "@tanstack/react-start-plugin": 1.120.17
+  "@tanstack/server-functions-plugin": 1.120.17
+  "@tanstack/directive-functions-plugin": 1.120.17
+  "@tanstack/start-server-core": 1.120.19
+  "@tanstack/start-client-core": 1.120.19
+  "@tanstack/start-config": 1.120.19
+  vinxi: 0.5.11

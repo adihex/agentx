@@ -25,28 +25,5 @@
     "vite-plus": "^0.1.20",
     "vitest": "^4.1.5"
   },
-  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8",
-  "pnpm": {
-    "overrides": {
-      "vite": "^8.0.0",
-      "@tanstack/react-router": "1.120.20",
-      "@tanstack/router-core": "1.120.19",
-      "@tanstack/router-generator": "1.120.20",
-      "@tanstack/router-plugin": "1.120.20",
-      "@tanstack/react-start-plugin": "1.120.17",
-      "@tanstack/server-functions-plugin": "1.120.17",
-      "@tanstack/directive-functions-plugin": "1.120.17",
-      "@tanstack/start-server-core": "1.120.19",
-      "@tanstack/start-client-core": "1.120.19",
-      "@tanstack/start-config": "1.120.19",
-      "vinxi": "0.5.11"
-    },
-    "onlyBuiltDependencies": [
-      "@google/genai",
-      "@parcel/watcher",
-      "esbuild",
-      "koffi",
-      "protobufjs"
-    ]
-  }
+  "packageManager": "pnpm@11.8.0"
 }
