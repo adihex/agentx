@@ -7,7 +7,7 @@
  *   3. Help command output
  *   4. Log-to-dashboard functionality
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
@@ -39,7 +39,7 @@ vi.mock("@agentx/agx-core", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@agentx/agx-core")>();
   return {
     ...actual,
-    AdpClient: vi.fn().mockImplementation(function (url: string) {
+    AdpClient: vi.fn().mockImplementation(function (_url: string) {
       const listeners = new Set<(event: any) => void>();
       const statusListeners = new Set<(connected: boolean) => void>();
       return {

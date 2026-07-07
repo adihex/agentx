@@ -1,9 +1,8 @@
 /**
  * agx-cli — Unit tests for ADP REPL extracted functions
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
-import path from "node:path";
 
 vi.mock("@agentx/agx-core", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@agentx/agx-core")>();

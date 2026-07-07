@@ -16,7 +16,6 @@ import {
   MessageScrollerButton,
   Message,
   Bubble,
-  Attachment,
   Marker,
 } from "@agentx/shared-ui";
 import "./App.css";

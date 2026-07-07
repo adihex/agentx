@@ -145,6 +145,6 @@ export class AgentEventLoop extends AgentSession {
 
     this.adp.handle(AdpDomains.Toolchain.list, (_p, cb) => cb(this.listTools()));
     // @ts-expect-error - bypassing private modifier
-    this.adp.handle(AdpDomains.Toolchain.intercept, (p, cb) => cb(this.interceptToolp));
+    this.adp.handle(AdpDomains.Toolchain.intercept, (p, cb) => cb(this.interceptTool(p)));
   }
 }

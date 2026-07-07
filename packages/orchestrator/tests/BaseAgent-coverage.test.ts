@@ -74,7 +74,7 @@ describe("BaseAgent coverage", () => {
     // Mock run to throw
     loop.run = vi.fn().mockRejectedValue(new Error("Tool crash"));
 
-    const agent = new BaseAgent("agent-2", loop as unknown, bus);
+    const _agent = new BaseAgent("agent-2", loop as unknown, bus);
 
     const failedSpy = vi.fn();
     bus.onEvent("plan.step.failed", failedSpy);
@@ -109,7 +109,7 @@ describe("BaseAgent coverage", () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
     const loop = new (AgentEventLoop as unknown)();
-    const agent = new BaseAgent("default-executor", loop as unknown, bus);
+    const _agent = new BaseAgent("default-executor", loop as unknown, bus);
 
     const startedSpy = vi.fn();
     bus.onEvent("plan.step.started", startedSpy);
@@ -142,7 +142,7 @@ describe("BaseAgent coverage", () => {
     const bus = new OrchestrationBus();
     const { AgentEventLoop } = await import("@agentx/core");
     const loop = new (AgentEventLoop as unknown)();
-    const agent = new BaseAgent("agent-3", loop as unknown, bus);
+    const _agent = new BaseAgent("agent-3", loop as unknown, bus);
 
     const startedSpy = vi.fn();
     bus.onEvent("plan.step.started", startedSpy);

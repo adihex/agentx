@@ -45,12 +45,11 @@ test.describe("Music Scanner E2E Workflow", () => {
               if (songName.toLowerCase().includes("error")) {
                 // Error path simulation
                 setTimeout(() => {
-                  (triggerMsg({
+                  triggerMsg({
                     method: "Music.Status",
                     params: { message: `Initializing search for "${songName}"...` },
-                  }),
-                    10);
-                });
+                  });
+                }, 10);
 
                 setTimeout(() => {
                   triggerMsg({

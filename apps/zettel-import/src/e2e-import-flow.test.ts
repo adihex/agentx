@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { NoteStore as ImportStore, type NotesTable } from "../src/store";
+import { NoteStore as ImportStore } from "../src/store";
 import { createClient, type Client } from "@libsql/client";
 import fs from "node:fs";
 import os from "node:os";

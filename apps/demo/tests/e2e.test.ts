@@ -8,7 +8,7 @@
  *   4. Shutdown flow
  *   5. Signal handling (SIGINT/SIGTERM)
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@agentx/core", () => {
   const mockAdp = {
@@ -16,7 +16,7 @@ vi.mock("@agentx/core", () => {
     notify: vi.fn(),
     close: vi.fn().mockResolvedValue(undefined),
   };
-  const MockAgentEventLoop = vi.fn().mockImplementation(function (opts: any) {
+  const MockAgentEventLoop = vi.fn().mockImplementation(function (_opts: any) {
     return {
       adp: mockAdp,
       run: vi.fn().mockResolvedValue("E2E demo response"),

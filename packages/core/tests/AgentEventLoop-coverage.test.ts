@@ -1,7 +1,7 @@
 /**
  * Core AgentEventLoop — coverage for uncovered error/corner paths
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { AgentEventLoop } from "../src/AgentEventLoop";
 
 vi.mock("@agentx/adp", () => {
@@ -310,7 +310,7 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("should handle tool dispatch with emit events", async () => {
     loop = new AgentEventLoop({ adpPort: 9920 });
     const events: string[] = [];
-    loop.on("tool.dispatch", (evt: any) => {
+    loop.on("tool.dispatch", (_evt: any) => {
       events.push("dispatch");
     });
 

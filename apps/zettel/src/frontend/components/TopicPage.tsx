@@ -69,7 +69,7 @@ export default function TopicPage() {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            a: ({ node, ...props }) => {
+            a: ({ ...props }) => {
               if (props.href && props.href.startsWith("/wiki/")) {
                 return <Link to={props.href}>{props.children}</Link>;
               }

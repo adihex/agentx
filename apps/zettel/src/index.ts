@@ -24,7 +24,6 @@ import {
   listNotes,
   readNote,
   backlinksOf,
-  writeNote,
   listCustomTools,
   writeCustomTool,
   deleteCustomTool,
@@ -265,7 +264,7 @@ const routes = api
     }
   })
   .post("/transcribe", async (c) => {
-    const user = c.get("user");
+    const _user = c.get("user");
     try {
       const body = await c.req.parseBody();
       const file = body["file"] as File | undefined;
@@ -377,7 +376,7 @@ export const userAgents = new Map<string, AgentEventLoop>();
 
 // A mock HTTP server that does nothing, to prevent AdpServer from binding to the real upgrade event
 const mockHttpServer = {
-  on: (event: string, callback: any) => {
+  on: (_event: string, _callback: any) => {
     // Do nothing
   },
 };

@@ -7,7 +7,7 @@
  *   3. DAG watcher monitoring
  *   4. Log watcher file streaming
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
 

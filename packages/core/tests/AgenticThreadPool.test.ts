@@ -100,7 +100,7 @@ describe("AgenticThreadPool", () => {
     });
     // In test mode, trying to import default export that doesn't exist
     // should result in an error
-    expect(res.success || !res.success).toBeDefined();
+    expect(res.success).toBe(false);
     await pool.terminateAll();
   });
 

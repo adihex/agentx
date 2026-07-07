@@ -1,10 +1,12 @@
 import path from "node:path";
 import os from "node:os";
-import { mkdirSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 
-// Force a fresh test directory for the database before importing store.js
-const testDir = path.join(os.tmpdir(), "agentx-zettel-test-" + Date.now());
-mkdirSync(testDir, { recursive: true });
+// Force a fresh, unique test directory for the database before importing store.js.
+// mkdtempSync guarantees uniqueness even when vitest workers start within the
+// same millisecond (Date.now()-only suffixes collided and caused UNIQUE
+// constraint failures on notes.id across parallel test files).
+const testDir = mkdtempSync(path.join(os.tmpdir(), "agentx-zettel-test-"));
 process.env.ZETTEL_DIR = testDir;
 
 import { describe, it, expect } from "vitest";
@@ -90,8 +92,8 @@ describe("Multi-tenant Notes Database Isolation", () => {
     const noteA1 = await writeNote(userA, { content: "Note A1" });
     const noteA2 = await writeNote(userA, { content: "Note A2" });
 
-    const noteB1 = await writeNote(userB, { content: "Note B1" });
-    const noteB2 = await writeNote(userB, { content: "Note B2" });
+    const _noteB1 = await writeNote(userB, { content: "Note B1" });
+    const _noteB2 = await writeNote(userB, { content: "Note B2" });
 
     // Link A1 to A2
     await addLink(userA, noteA1.id, noteA2.id);
