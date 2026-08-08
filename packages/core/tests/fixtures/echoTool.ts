@@ -12,3 +12,10 @@ export async function echo(args: { input?: unknown }): Promise<{ echoed: unknown
 export async function fail(): Promise<never> {
   throw new Error("Tool error");
 }
+
+/** Never resolves — exercises timeout and worker-exit paths. */
+export async function hang(): Promise<never> {
+  return new Promise<never>(() => {
+    // Intentionally left pending.
+  });
+}

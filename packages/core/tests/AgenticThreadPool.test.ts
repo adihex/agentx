@@ -21,6 +21,51 @@ const customTools: Record<string, ToolDefinition> = {
     modulePath: fixturePath,
     exportName: "fail",
   },
+  hang: {
+    name: "hang",
+    description: "Never resolves",
+    inputSchema: z.object({}),
+    modulePath: fixturePath,
+    exportName: "hang",
+  },
+};
+
+const withDeadline = async <T>(promise: Promise<T>, ms = 1_000): Promise<T> => {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error(`Promise did not settle within ${ms}ms`));
+    }, ms);
+  });
+
+  try {
+    return await Promise.race([promise, deadline]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+};
+
+const withWorkerExecution = async <T>(run: () => Promise<T>): Promise<T> => {
+  const previousNodeEnv = process.env.NODE_ENV;
+  const previousMockLlm = process.env.MOCK_LLM;
+  process.env.NODE_ENV = "production";
+  delete process.env.MOCK_LLM;
+
+  try {
+    return await run();
+  } finally {
+    if (previousNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = previousNodeEnv;
+    }
+
+    if (previousMockLlm === undefined) {
+      delete process.env.MOCK_LLM;
+    } else {
+      process.env.MOCK_LLM = previousMockLlm;
+    }
+  }
 };
 
 describe("AgenticThreadPool", () => {
@@ -99,8 +144,8 @@ describe("AgenticThreadPool", () => {
       args: { input: "hello" },
     });
     // In test mode, trying to import default export that doesn't exist
-    // should result in an error
-    expect(res.success || !res.success).toBeDefined();
+    // should result in a typed boolean outcome
+    expect(typeof res.success).toBe("boolean");
     await pool.terminateAll();
   });
 
@@ -116,5 +161,60 @@ describe("AgenticThreadPool", () => {
     expect(res.error).toContain("not registered");
     expect(res.durationMs).toBe(0);
     await pool.terminateAll();
+  });
+
+  it("should resolve a hanging worker tool as a typed timeout result", async () => {
+    await withWorkerExecution(async () => {
+      const pool = new AgenticThreadPool(1, customTools, { defaultTimeoutMs: 50 });
+      try {
+        const res = await withDeadline(
+          pool.execute({
+            id: "hang-timeout",
+            toolCallId: "tc-hang-timeout",
+            toolName: "hang",
+            args: {},
+          }),
+        );
+
+        expect(res).toMatchObject({
+          id: "hang-timeout",
+          toolCallId: "tc-hang-timeout",
+          success: false,
+          errorCode: "TOOL_TIMEOUT",
+        });
+        expect(res.error).toContain("timed out");
+        expect(res.durationMs).toBeGreaterThanOrEqual(0);
+      } finally {
+        await pool.terminateAll();
+      }
+    });
+  });
+
+  it("should resolve a pending request when its worker exits", async () => {
+    await withWorkerExecution(async () => {
+      const pool = new AgenticThreadPool(1, customTools, { defaultTimeoutMs: 5_000 });
+      try {
+        const pending = pool.execute({
+          id: "worker-exit",
+          toolCallId: "tc-worker-exit",
+          toolName: "hang",
+          args: {},
+        });
+
+        const [worker] = (pool as any).workers;
+        await worker.terminate();
+
+        const res = await withDeadline(pending);
+        expect(res).toMatchObject({
+          id: "worker-exit",
+          toolCallId: "tc-worker-exit",
+          success: false,
+          errorCode: "WORKER_EXIT",
+        });
+        expect(res.error).toContain("exited");
+      } finally {
+        await pool.terminateAll();
+      }
+    });
   });
 });
