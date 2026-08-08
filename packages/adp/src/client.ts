@@ -42,9 +42,10 @@ export class AdpClient {
 
         if ("id" in data && data.id !== null) {
           const res = data as JsonRpcResponse;
-          const pending = this.pendingRequests.get(res.id);
+          const responseId = data.id as string | number;
+          const pending = this.pendingRequests.get(responseId);
           if (pending) {
-            this.pendingRequests.delete(res.id);
+            this.pendingRequests.delete(responseId);
             if (res.error) {
               pending.reject(new Error(res.error.message));
             } else {
