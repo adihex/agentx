@@ -1,7 +1,7 @@
 /**
  * Core AgentEventLoop — coverage for uncovered error/corner paths
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { AgentEventLoop } from "../src/AgentEventLoop";
 
 vi.mock("@agentx/adp", () => {
@@ -72,6 +72,8 @@ describe("AgentEventLoop — error handling coverage", () => {
 
   it("should handle non-abort inference errors and push error assistant message", async () => {
     loop = new AgentEventLoop({ adpPort: 9901 });
+    const runEnd = vi.fn();
+    loop.on("run.end", runEnd);
     (loop as any).llm.runStep = vi.fn().mockRejectedValue(new Error("LLM connection lost"));
 
     const result = await loop.run("trigger error");
@@ -79,6 +81,8 @@ describe("AgentEventLoop — error handling coverage", () => {
     const lastMsg = (loop as any).context[(loop as any).context.length - 1];
     expect(lastMsg.role).toBe("assistant");
     expect(lastMsg.content).toContain("LLM connection lost");
+    expect(runEnd).toHaveBeenCalledTimes(1);
+    expect(runEnd).toHaveBeenCalledWith({ runId: 1, status: "failed", reason: "LLM connection lost" });
   });
 
   it("should handle AbortError (name) gracefully", async () => {
@@ -296,7 +300,7 @@ describe("AgentEventLoop — error handling coverage", () => {
   it("should handle tool dispatch with emit events", async () => {
     loop = new AgentEventLoop({ adpPort: 9920 });
     const events: string[] = [];
-    loop.on("tool.dispatch", (evt: any) => {
+    loop.on("tool.dispatch", () => {
       events.push("dispatch");
     });
 
