@@ -1,5 +1,5 @@
 [tools]
-bun = "latest"
-node = "latest"
-pnpm = "latest"
-turso = "latest"
+bun = "1.3.14"
+node = "24.14.0"
+pnpm = "11.8.0"
+turso = "1.0.31"

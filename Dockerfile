@@ -30,6 +30,7 @@ COPY packages/agx-core/package.json ./packages/agx-core/
 COPY packages/agx-cli/package.json ./packages/agx-cli/
 COPY packages/agx-herdr/package.json ./packages/agx-herdr/
 COPY packages/mcp/package.json ./packages/mcp/
+COPY packages/shared-ui/package.json ./packages/shared-ui/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ─── Stage 2: Build all packages ────────────────────────────────────────────
