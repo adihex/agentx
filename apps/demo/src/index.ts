@@ -43,16 +43,22 @@ export function createShutdownHandler(agent: AgentEventLoop, signal?: string) {
  * Returns when shutdown is requested.
  */
 export async function runPromptLoop(agent: AgentEventLoop) {
-  while (true) {
-    const prompt = await agent.waitForPrompt();
-    if (prompt === null) {
-      break;
+  try {
+    while (true) {
+      const prompt = await agent.waitForPrompt();
+      if (prompt === null) {
+        break;
+      }
+      try {
+        await agent.run(prompt);
+      } catch (err: any) {
+        console.error("[Demo] Inference error:", err.message ?? err);
+      }
     }
-    try {
-      await agent.run(prompt);
-    } catch (err: any) {
-      console.error("[Demo] Inference error:", err.message ?? err);
-    }
+  } finally {
+    // Session.shutdown wakes the prompt loop but intentionally leaves shared
+    // infrastructure to its owner. This demo owns the server and worker pool.
+    await agent.shutdown();
   }
 }
 

@@ -18,7 +18,13 @@ vi.mock("@agentx/core", () => {
   return { AgentEventLoop: MockAgentEventLoop };
 });
 
-import { DEMO_SYSTEM_PROMPT, DEMO_ADP_PORT, DEMO_BANNER, createDemoAgent } from "../src/index";
+import {
+  DEMO_SYSTEM_PROMPT,
+  DEMO_ADP_PORT,
+  DEMO_BANNER,
+  createDemoAgent,
+  runPromptLoop,
+} from "../src/index";
 
 describe("demo/index.ts — extracted functions", () => {
   it("DEMO_SYSTEM_PROMPT is a non-empty string", () => {
@@ -64,5 +70,13 @@ describe("demo/index.ts — extracted functions", () => {
     const agent = createDemoAgent({ systemPrompt: "Only prompt" });
     expect(agent.adpPort).toBe(DEMO_ADP_PORT);
     expect(agent.systemPrompt).toBe("Only prompt");
+  });
+
+  it("fully shuts down the runtime when the ADP prompt loop closes", async () => {
+    const agent = createDemoAgent();
+
+    await runPromptLoop(agent);
+
+    expect(agent.shutdown).toHaveBeenCalledOnce();
   });
 });
