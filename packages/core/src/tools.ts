@@ -20,6 +20,8 @@ export interface ToolDefinition<I = any> {
   modulePath?: string;
   /** Named export in that module (default "default"). */
   exportName?: string;
+  /** Maximum execution time for this tool before it returns a timeout result. */
+  timeoutMs?: number;
   /** Optional inline / main-thread implementation (mocks/tests). */
   execute?: (input: I) => Promise<unknown>;
 }
