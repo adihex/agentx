@@ -17,7 +17,7 @@ export const JsonRpcRequestSchema = z.object({
  */
 export const JsonRpcResponseSchema = z.object({
   jsonrpc: z.literal("2.0"),
-  id: z.union([z.string(), z.number()]),
+  id: z.union([z.string(), z.number(), z.null()]),
   result: z.unknown().optional(),
   error: z
     .object({
