@@ -265,4 +265,137 @@ describe("AgentEventLoop", () => {
 
     await u.shutdown();
   });
+
+  it("awaits a tool chain and publishes one completed terminal event", async () => {
+    vi.useFakeTimers();
+    try {
+      const lifecycleLoop = new AgentEventLoop({ adpPort: 9996, autoTick: true, quiet: true });
+      const runEnd = vi.fn();
+      lifecycleLoop.on("run.end", runEnd);
+
+      let step = 0;
+      (lifecycleLoop as any).llm.runStep = vi.fn().mockImplementation(async () => {
+        step++;
+        if (step === 1) {
+          return {
+            text: "",
+            toolCalls: [{ toolCallId: "tc-tool", toolName: "toolA", input: {} }],
+            responseMessages: [
+              {
+                role: "assistant",
+                content: [
+                  { type: "tool-call", toolCallId: "tc-tool", toolName: "toolA", input: {} },
+                ],
+              },
+            ],
+          };
+        }
+        return {
+          text: "final answer",
+          toolCalls: [],
+          responseMessages: [{ role: "assistant", content: "final answer" }],
+        };
+      });
+
+      (lifecycleLoop as any).threadPool.execute = vi.fn().mockImplementation(
+        (req: any) =>
+          new Promise((resolve) => {
+            setTimeout(
+              () =>
+                resolve({
+                  id: req.id,
+                  toolCallId: req.toolCallId,
+                  success: true,
+                  data: "tool ok",
+                  durationMs: 25,
+                }),
+              25,
+            );
+          }),
+      );
+
+      let settled = false;
+      const runPromise = lifecycleLoop.run("use the tool").then((result) => {
+        settled = true;
+        return result;
+      });
+
+      await vi.advanceTimersByTimeAsync(24);
+      expect(settled).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(1);
+      await expect(runPromise).resolves.toBe("final answer");
+
+      expect(step).toBe(2);
+      expect(runEnd).toHaveBeenCalledTimes(1);
+      expect(runEnd).toHaveBeenCalledWith({ runId: 1, status: "completed", reason: "no_tool_calls" });
+      const notify = (lifecycleLoop.adp as any).notify;
+      expect(notify.mock.calls.filter((call: any[]) => call[0] === "Session.runEnd")).toEqual([
+        ["Session.runEnd", { runId: 1, status: "completed", reason: "no_tool_calls" }],
+      ]);
+
+      await lifecycleLoop.shutdown();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("releases a paused run on shutdown and publishes one halted terminal event", async () => {
+    const pausedLoop = new AgentEventLoop({ adpPort: 9995, quiet: true });
+    const runEnd = vi.fn();
+    pausedLoop.on("run.end", runEnd);
+    pausedLoop.pause();
+
+    const inferenceEnded = new Promise<void>((resolve) => {
+      pausedLoop.once("inference.end", () => resolve());
+    });
+    const runPromise = pausedLoop.run("pause me");
+
+    await inferenceEnded;
+    expect((pausedLoop as any).running).toBe(true);
+
+    pausedLoop.requestShutdown();
+    await expect(runPromise).resolves.toBe("Agent response");
+
+    expect(runEnd).toHaveBeenCalledTimes(1);
+    expect(runEnd).toHaveBeenCalledWith({ runId: 1, status: "halted", reason: "shutdown" });
+
+    await pausedLoop.shutdown();
+  });
+
+  it("publishes halted exactly once when halt races active inference", async () => {
+    const haltLoop = new AgentEventLoop({ adpPort: 9994, quiet: true });
+    const runEnd = vi.fn();
+    haltLoop.on("run.end", runEnd);
+
+    (haltLoop as any).llm.runStep = vi.fn().mockImplementation(
+      (_msgs: any[], _tools: any, signal: AbortSignal) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener(
+            "abort",
+            () => {
+              const err = new Error("aborted by test");
+              err.name = "AbortError";
+              reject(err);
+            },
+            { once: true },
+          );
+        }),
+    );
+
+    const inferenceStarted = new Promise<void>((resolve) => {
+      haltLoop.once("inference.start", () => resolve());
+    });
+    const runPromise = haltLoop.run("slow");
+    await inferenceStarted;
+
+    expect(haltLoop.halt()).toEqual({ status: "halted" });
+    expect(haltLoop.halt()).toEqual({ status: "halted" });
+
+    await expect(runPromise).resolves.toBe("[inference halted by operator]");
+    expect(runEnd).toHaveBeenCalledTimes(1);
+    expect(runEnd).toHaveBeenCalledWith({ runId: 1, status: "halted", reason: "halted" });
+
+    await haltLoop.shutdown();
+  });
 });
