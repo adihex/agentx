@@ -1,7 +1,7 @@
 /**
  * Zettelkasten note tools.
  *
- * Four tools matching the ToolDefinition contract from @agentx/core. Each tool
+ * Tools matching the ToolDefinition contract from @agentx/core. Each tool
  * exports a zod schema, an async implementation invoked inside a thread-pool
  * worker, and a ToolDefinition pointing at this module by file path.
  */
@@ -14,6 +14,7 @@ import {
   searchNotes as searchNotesStore,
   addLink,
   backlinksOf,
+  traverseGraphStore,
 } from "../notes/store.js";
 
 // ── createNote ────────────────────────────────────────────────────────────────
@@ -98,6 +99,31 @@ export async function getNote(args: GetNoteInput & { userId?: string }) {
   }
 }
 
+// ── traverseGraph ─────────────────────────────────────────────────────────────
+
+export const traverseGraphSchema = z.object({
+  entityName: z.string().min(1).describe("The entity name from which to start traversal."),
+  depth: z
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .optional()
+    .describe("Traversal depth (default 2, maximum 5)."),
+});
+export type TraverseGraphInput = z.infer<typeof traverseGraphSchema>;
+
+export async function traverseGraph(args: TraverseGraphInput & { userId?: string }) {
+  const { entityName, depth } = traverseGraphSchema.parse(args);
+  const userId = args.userId ?? "default";
+  try {
+    const result = await traverseGraphStore(userId, entityName, depth ?? 2);
+    return { success: true, result };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 // ── ToolDefinitions ───────────────────────────────────────────────────────────
 
 export const createNoteTool: ToolDefinition<CreateNoteInput> = {
@@ -132,4 +158,12 @@ export const getNoteTool: ToolDefinition<GetNoteInput> = {
   inputSchema: getNoteSchema,
   modulePath: new URL(import.meta.url).pathname,
   exportName: "getNote",
+};
+
+export const traverseGraphTool: ToolDefinition<TraverseGraphInput> = {
+  name: "traverseGraph",
+  description: "Traverse the knowledge graph from an entity to discover related entities and concepts.",
+  inputSchema: traverseGraphSchema,
+  modulePath: new URL(import.meta.url).pathname,
+  exportName: "traverseGraph",
 };
