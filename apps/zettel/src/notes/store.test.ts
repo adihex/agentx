@@ -1,13 +1,10 @@
-import path from "node:path";
-import os from "node:os";
-import { mkdirSync } from "node:fs";
+import { describe, it, expect, vi } from "vitest";
 
-// Force a fresh test directory for the database before importing store.js
-const testDir = path.join(os.tmpdir(), "agentx-zettel-test-" + Date.now());
-mkdirSync(testDir, { recursive: true });
-process.env.ZETTEL_DIR = testDir;
-
-import { describe, it, expect } from "vitest";
+vi.hoisted(() => {
+  process.env.ZETTEL_DIR = `/tmp/agentx-zettel-test-${process.pid}-${Math.random()}`;
+  delete process.env.TURSO_DATABASE_URL;
+  delete process.env.TURSO_AUTH_TOKEN;
+});
 import {
   writeNote,
   listNotes,
@@ -17,6 +14,9 @@ import {
   backlinksOf,
   updateNote,
   deleteNote,
+  replaceNoteGraph,
+  traverseGraphStore,
+  client,
 } from "./store.js";
 
 describe("Multi-tenant Notes Database Isolation", () => {
@@ -90,8 +90,8 @@ describe("Multi-tenant Notes Database Isolation", () => {
     const noteA1 = await writeNote(userA, { content: "Note A1" });
     const noteA2 = await writeNote(userA, { content: "Note A2" });
 
-    const noteB1 = await writeNote(userB, { content: "Note B1" });
-    const noteB2 = await writeNote(userB, { content: "Note B2" });
+    await writeNote(userB, { content: "Note B1" });
+    await writeNote(userB, { content: "Note B2" });
 
     // Link A1 to A2
     await addLink(userA, noteA1.id, noteA2.id);
@@ -197,5 +197,127 @@ describe("Multi-tenant Notes Database Isolation", () => {
     // Verify note still exists for User A
     const read = await readNote(userA, noteA.id);
     expect(read).not.toBeNull();
+  });
+});
+
+describe("tenant graph store", () => {
+  const userA = "graph-user-A";
+  const userB = "graph-user-B";
+
+  it("stores same-named entities independently for each tenant", async () => {
+    const noteA = await writeNote(userA, { content: "A graph note" });
+    const noteB = await writeNote(userB, { content: "B graph note" });
+
+    await replaceNoteGraph(userA, noteA.id, {
+      entities: [{ name: "Mercury", type: "planet", description: "A planet" }],
+      relations: [],
+    });
+    await replaceNoteGraph(userB, noteB.id, {
+      entities: [{ name: "Mercury", type: "element", description: "A metal" }],
+      relations: [],
+    });
+
+    const rows = await client.execute(
+      "SELECT user_id, type, description FROM entities WHERE name = 'Mercury' ORDER BY user_id",
+    );
+    expect(rows.rows).toEqual([
+      { user_id: userA, type: "planet", description: "A planet" },
+      { user_id: userB, type: "element", description: "A metal" },
+    ]);
+  });
+
+  it("enforces note ownership and atomically replaces relations", async () => {
+    const note = await writeNote(userA, { content: "Owned graph note" });
+    const firstGraph = {
+      entities: [
+        { name: "A", type: "concept", description: "first" },
+        { name: "B", type: "concept", description: "second" },
+      ],
+      relations: [{ source: "A", target: "B", relationship: "leads to" }],
+    };
+
+    await expect(replaceNoteGraph(userB, note.id, firstGraph)).rejects.toThrow("Note not found");
+    await replaceNoteGraph(userA, note.id, firstGraph);
+    await replaceNoteGraph(userA, note.id, firstGraph);
+    expect((await traverseGraphStore(userA, "A", 1)).relations).toHaveLength(1);
+
+    await replaceNoteGraph(userA, note.id, {
+      entities: [
+        { name: "A", type: "concept", description: "updated" },
+        { name: "C", type: "concept", description: "third" },
+      ],
+      relations: [{ source: "A", target: "C", relationship: "replaces" }],
+    });
+    expect(await traverseGraphStore(userA, "A", 1)).toEqual({
+      entities: ["A", "C"],
+      relations: [{ source: "A", target: "C", relationship: "replaces", noteId: note.id }],
+    });
+  });
+
+  it("traverses deterministically with tenant isolation, deduplication, and bounded depth", async () => {
+    const traversalUser = "graph-traversal-user";
+    const noteA1 = await writeNote(traversalUser, { content: "Graph one" });
+    const noteA2 = await writeNote(traversalUser, { content: "Graph two" });
+    const noteB = await writeNote(userB, { content: "Other tenant graph" });
+    const entities = ["A", "B", "C", "D"].map((name) => ({
+      name,
+      type: "concept",
+      description: name,
+    }));
+
+    await replaceNoteGraph(traversalUser, noteA1.id, {
+      entities,
+      relations: [
+        { source: "B", target: "C", relationship: "next" },
+        { source: "A", target: "B", relationship: "next" },
+      ],
+    });
+    await replaceNoteGraph(traversalUser, noteA2.id, {
+      entities,
+      relations: [
+        { source: "C", target: "D", relationship: "next" },
+        { source: "A", target: "B", relationship: "next" },
+      ],
+    });
+    await replaceNoteGraph(userB, noteB.id, {
+      entities: [...entities, { name: "SECRET", type: "concept", description: "hidden" }],
+      relations: [{ source: "A", target: "SECRET", relationship: "private" }],
+    });
+
+    expect(await traverseGraphStore(traversalUser, "A", 2)).toEqual({
+      entities: ["A", "B", "C"],
+      relations: [
+        { source: "A", target: "B", relationship: "next", noteId: noteA1.id },
+        { source: "A", target: "B", relationship: "next", noteId: noteA2.id },
+        { source: "B", target: "C", relationship: "next", noteId: noteA1.id },
+      ],
+    });
+    expect(await traverseGraphStore(traversalUser, "A", 0)).toEqual({
+      entities: ["A"],
+      relations: [],
+    });
+    expect(await traverseGraphStore(traversalUser, "missing", 3)).toEqual({
+      entities: [],
+      relations: [],
+    });
+    await expect(traverseGraphStore(traversalUser, "A", -1)).rejects.toThrow("depth");
+    await expect(traverseGraphStore(traversalUser, "A", 101)).rejects.toThrow("depth");
+  });
+
+  it("removes note-owned relations when a note is deleted", async () => {
+    const note = await writeNote(userA, { content: "Disposable graph" });
+    await replaceNoteGraph(userA, note.id, {
+      entities: [
+        { name: "Delete", type: "concept", description: "source" },
+        { name: "Me", type: "concept", description: "target" },
+      ],
+      relations: [{ source: "Delete", target: "Me", relationship: "owns" }],
+    });
+
+    await deleteNote(userA, note.id);
+    expect(await traverseGraphStore(userA, "Delete", 2)).toEqual({
+      entities: ["Delete"],
+      relations: [],
+    });
   });
 });

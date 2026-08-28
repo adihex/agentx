@@ -55,6 +55,7 @@ export const client = createClient({
 async function initDb(): Promise<void> {
   try {
     await client.execute("PRAGMA busy_timeout = 5000");
+    await client.execute("PRAGMA foreign_keys = ON");
   } catch {
     // Ignore if not supported (e.g., remote HTTP database)
   }
@@ -179,6 +180,76 @@ async function initDb(): Promise<void> {
       FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE CASCADE
     )
   `);
+
+  await client.execute(`
+    CREATE UNIQUE INDEX IF NOT EXISTS notes_user_id_id_idx ON notes(user_id, id)
+  `);
+
+  const legacyRelationColumns = await client.execute("PRAGMA table_info(entity_relations)");
+  if (
+    legacyRelationColumns.rows.length > 0 &&
+    !legacyRelationColumns.rows.some((row) => row.name === "user_id")
+  ) {
+    await client.batch([
+      "ALTER TABLE entity_relations RENAME TO legacy_entity_relations",
+      "ALTER TABLE entities RENAME TO legacy_entities",
+      `CREATE TABLE entities (
+        user_id TEXT NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL, description TEXT NOT NULL,
+        PRIMARY KEY (user_id, name)
+      )`,
+      `CREATE TABLE entity_relations (
+        user_id TEXT NOT NULL, note_id TEXT NOT NULL, source TEXT NOT NULL,
+        target TEXT NOT NULL, relationship TEXT NOT NULL,
+        PRIMARY KEY (user_id, note_id, source, target, relationship),
+        FOREIGN KEY (note_id, user_id) REFERENCES notes(id, user_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id, source) REFERENCES entities(user_id, name),
+        FOREIGN KEY (user_id, target) REFERENCES entities(user_id, name)
+      )`,
+      `INSERT OR IGNORE INTO entities (user_id, name, type, description)
+       SELECT DISTINCT n.user_id, endpoints.name,
+         COALESCE(e.type, 'unknown'), COALESCE(e.description, '')
+       FROM (
+         SELECT note_id, source AS name FROM legacy_entity_relations
+         UNION SELECT note_id, target AS name FROM legacy_entity_relations
+       ) endpoints
+       JOIN notes n ON n.id = endpoints.note_id
+       LEFT JOIN legacy_entities e ON e.name = endpoints.name`,
+      `INSERT OR IGNORE INTO entity_relations (user_id, note_id, source, target, relationship)
+       SELECT n.user_id, r.note_id, r.source, r.target, r.relationship
+       FROM legacy_entity_relations r JOIN notes n ON n.id = r.note_id`,
+      "DROP TABLE legacy_entity_relations",
+      "DROP TABLE legacy_entities",
+    ]);
+  }
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS entities (
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      description TEXT NOT NULL,
+      PRIMARY KEY (user_id, name)
+    )
+  `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS entity_relations (
+      user_id TEXT NOT NULL,
+      note_id TEXT NOT NULL,
+      source TEXT NOT NULL,
+      target TEXT NOT NULL,
+      relationship TEXT NOT NULL,
+      PRIMARY KEY (user_id, note_id, source, target, relationship),
+      FOREIGN KEY (note_id, user_id) REFERENCES notes(id, user_id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id, source) REFERENCES entities(user_id, name),
+      FOREIGN KEY (user_id, target) REFERENCES entities(user_id, name)
+    )
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS entity_relations_traversal_idx
+    ON entity_relations(user_id, source, target)
+  `);
 }
 
 // ── Markdown Parser for Migration ──────────────────────────────────────────────
@@ -199,6 +270,89 @@ export interface WriteNoteInput {
   tags?: string[];
   links?: string[];
   source?: NoteSource;
+}
+
+export interface GraphEntityInput {
+  name: string;
+  type: string;
+  description: string;
+}
+
+export interface GraphRelationInput {
+  source: string;
+  target: string;
+  relationship: string;
+}
+
+export interface NoteGraphInput {
+  entities: GraphEntityInput[];
+  relations: GraphRelationInput[];
+}
+
+/** Atomically replace the graph relations owned by one note. */
+export async function replaceNoteGraph(
+  userId: string,
+  noteId: string,
+  graph: NoteGraphInput,
+): Promise<void> {
+  await ensureDb();
+
+  const ownedNote = await client.execute({
+    sql: "SELECT 1 FROM notes WHERE id = ? AND user_id = ?",
+    args: [noteId, userId],
+  });
+  if (ownedNote.rows.length === 0) throw new Error("Note not found");
+
+  const entities = [...graph.entities]
+    .map((entity) => ({
+      name: entity.name.trim(),
+      type: entity.type.trim(),
+      description: entity.description.trim(),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const names = new Set<string>();
+  for (const entity of entities) {
+    if (!entity.name || !entity.type) throw new Error("Entity name and type are required");
+    if (names.has(entity.name)) throw new Error(`Duplicate entity: ${entity.name}`);
+    names.add(entity.name);
+  }
+
+  const relations = [...graph.relations]
+    .map((relation) => ({
+      source: relation.source.trim(),
+      target: relation.target.trim(),
+      relationship: relation.relationship.trim(),
+    }))
+    .sort(
+      (a, b) =>
+        a.source.localeCompare(b.source) ||
+        a.target.localeCompare(b.target) ||
+        a.relationship.localeCompare(b.relationship),
+    );
+  for (const relation of relations) {
+    if (!relation.relationship) throw new Error("Relationship is required");
+    if (!names.has(relation.source) || !names.has(relation.target)) {
+      throw new Error("Every relation endpoint must be included in entities");
+    }
+  }
+
+  await client.batch([
+    ...entities.map((entity) => ({
+      sql: `INSERT INTO entities (user_id, name, type, description) VALUES (?, ?, ?, ?)
+            ON CONFLICT(user_id, name) DO UPDATE SET
+              type = excluded.type, description = excluded.description`,
+      args: [userId, entity.name, entity.type, entity.description],
+    })),
+    {
+      sql: "DELETE FROM entity_relations WHERE user_id = ? AND note_id = ?",
+      args: [userId, noteId],
+    },
+    ...relations.map((relation) => ({
+      sql: `INSERT OR IGNORE INTO entity_relations
+            (user_id, note_id, source, target, relationship) VALUES (?, ?, ?, ?, ?)`,
+      args: [userId, noteId, relation.source, relation.target, relation.relationship],
+    })),
+  ]);
 }
 
 /** Create a new atomic note in the database. */
@@ -631,6 +785,10 @@ export async function deleteNote(userId: string, id: string): Promise<void> {
   // Clean up in transaction
   await client.batch([
     {
+      sql: "DELETE FROM entity_relations WHERE user_id = ? AND note_id = ?",
+      args: [userId, id],
+    },
+    {
       sql: "DELETE FROM note_tags WHERE note_id = ?",
       args: [id],
     },
@@ -643,4 +801,68 @@ export async function deleteNote(userId: string, id: string): Promise<void> {
       args: [id, userId],
     },
   ]);
+}
+
+export interface GraphTraversalResult {
+  entities: string[];
+  relations: Array<{ source: string; target: string; relationship: string; noteId: string }>;
+}
+
+/** Traverse both directions from an entity, with depth limited to 0..100 edges. */
+export async function traverseGraphStore(
+  userId: string,
+  entityName: string,
+  depth = 2,
+): Promise<GraphTraversalResult> {
+  await ensureDb();
+  if (!Number.isInteger(depth) || depth < 0 || depth > 100) {
+    throw new Error("Graph traversal depth must be an integer between 0 and 100");
+  }
+
+  const start = entityName.trim();
+  if (!start) return { entities: [], relations: [] };
+  const exists = await client.execute({
+    sql: "SELECT 1 FROM entities WHERE user_id = ? AND name = ?",
+    args: [userId, start],
+  });
+  if (exists.rows.length === 0) return { entities: [], relations: [] };
+
+  const entities = new Set([start]);
+  const relations = new Map<
+    string,
+    { source: string; target: string; relationship: string; noteId: string }
+  >();
+  let frontier = [start];
+
+  for (let level = 0; level < depth && frontier.length > 0; level += 1) {
+    const placeholders = frontier.map(() => "?").join(", ");
+    const result = await client.execute({
+      sql: `SELECT source, target, relationship, note_id
+            FROM entity_relations
+            WHERE user_id = ?
+              AND (source IN (${placeholders}) OR target IN (${placeholders}))
+            ORDER BY source, target, relationship, note_id`,
+      args: [userId, ...frontier, ...frontier],
+    });
+    const next = new Set<string>();
+    for (const row of result.rows) {
+      const relation = {
+        source: row.source as string,
+        target: row.target as string,
+        relationship: row.relationship as string,
+        noteId: row.note_id as string,
+      };
+      const key = JSON.stringify(relation);
+      if (!relations.has(key)) relations.set(key, relation);
+      for (const name of [relation.source, relation.target]) {
+        if (!entities.has(name)) {
+          entities.add(name);
+          next.add(name);
+        }
+      }
+    }
+    frontier = [...next].sort((a, b) => a.localeCompare(b));
+  }
+
+  return { entities: [...entities], relations: [...relations.values()] };
 }
