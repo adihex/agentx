@@ -302,7 +302,22 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
     expect(notesB1[0].title).toBe("About Oranges");
     expect(notesB1[0].body).toContain("Oranges are citrus");
 
-    // 8. Cleanup WebSockets
+    // 8. Topic pages search only the authenticated tenant's notes.
+    const wikiA = await fetch(`http://localhost:${port}/api/wiki/Apples`, {
+      headers: { cookie: cookieA },
+    });
+    expect(wikiA.status).toBe(200);
+    const wikiAData = await wikiA.json();
+    expect(wikiAData.markdown).toContain("About Apples");
+    expect(wikiAData.markdown).not.toContain("About Oranges");
+
+    const wikiB = await fetch(`http://localhost:${port}/api/wiki/Apples`, {
+      headers: { cookie: cookieB },
+    });
+    expect(wikiB.status).toBe(200);
+    expect((await wikiB.json()).markdown).toContain("No notes found");
+
+    // 9. Cleanup WebSockets
     wsA.close();
     wsB.close();
   });

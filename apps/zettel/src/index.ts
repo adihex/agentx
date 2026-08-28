@@ -27,6 +27,7 @@ import {
   deleteCustomTool,
   updateNote,
   deleteNote,
+  searchNotes,
 } from "./notes/store.js";
 
 dotenv.config();
@@ -236,6 +237,20 @@ const routes = api
       return c.json({ nodes, edges });
     } catch {
       return c.json({ nodes: [], edges: [] });
+    }
+  })
+  .get("/wiki/:entity", async (c) => {
+    const user = c.get("user");
+    const entity = c.req.param("entity");
+    try {
+      const results = await searchNotes(user.id, entity, 50);
+      const sections = results.map(
+        (result) => `### [[${result.title}]]\n\n> ${result.snippet}`,
+      );
+      const related = sections.length > 0 ? sections.join("\n\n") : "No notes found mentioning this entity.";
+      return c.json({ markdown: `# ${entity}\n\n## Related Notes\n\n${related}\n` });
+    } catch (err: unknown) {
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
     }
   })
   .post("/transcribe", async (c) => {
