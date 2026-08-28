@@ -16,6 +16,8 @@ import {
   backlinksOf,
   traverseGraphStore,
 } from "../notes/store.js";
+import { extractAndReplaceNoteGraph } from "../notes/graph-extraction.js";
+import { createDefaultGraphModelProvider } from "../notes/graph-model-provider.js";
 
 // ── createNote ────────────────────────────────────────────────────────────────
 
@@ -35,6 +37,18 @@ export async function createNote(args: CreateNoteInput & { userId?: string }) {
   const userId = args.userId ?? "default";
   try {
     const note = await writeNote(userId, { content, title, tags, source });
+    if (process.env.GROQ_API_KEY) {
+      try {
+        await extractAndReplaceNoteGraph(
+          userId,
+          note.id,
+          content,
+          createDefaultGraphModelProvider(),
+        );
+      } catch (err) {
+        console.error("[zettel] Graph indexing failed:", err);
+      }
+    }
     return { success: true, id: note.id };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) };
