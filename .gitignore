@@ -13,7 +13,10 @@ coverage
 .impeccable/
 .understand-anything/
 .vscode/
-.agents
+.agents/*
+!.agents/setup
+!.agents/resume
+.amp/portals/*
 
 # Copilot CLI auto-generated files (keep .github/workflows/ for GitHub Actions)
 .github/INSTRUCTIONS_INSTALLED.md

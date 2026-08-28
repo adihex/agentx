@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+start_time=$SECONDS
+
+step() {
+  printf '\n[orb setup +%ss] %s\n' "$((SECONDS - start_time))" "$1"
+}
+
+step "Installing host tools"
+missing_apt_packages=()
+command -v ffmpeg >/dev/null 2>&1 || missing_apt_packages+=(ffmpeg)
+command -v gpg >/dev/null 2>&1 || missing_apt_packages+=(gnupg)
+command -v python3 >/dev/null 2>&1 || missing_apt_packages+=(python3)
+python3 -m pip --version >/dev/null 2>&1 || missing_apt_packages+=(python3-pip)
+
+if ((${#missing_apt_packages[@]})); then
+  sudo apt-get update
+  sudo apt-get install -y --no-install-recommends "${missing_apt_packages[@]}"
+fi
+
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v yt-dlp >/dev/null 2>&1; then
+  python3 -m pip install --user --break-system-packages yt-dlp
+fi
+
+if ! command -v gcloud >/dev/null 2>&1; then
+  sudo install -d -m 0755 /usr/share/keyrings
+  curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    | sudo gpg --dearmor --yes -o /usr/share/keyrings/cloud.google.gpg
+  printf '%s\n' \
+    'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
+    | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null
+  sudo apt-get update
+  sudo apt-get install -y --no-install-recommends google-cloud-cli
+fi
+
+step "Installing mise and pinned toolchains"
+if ! command -v mise >/dev/null 2>&1; then
+  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$HOME/.local/bin/mise" sh
+fi
+
+cd "$repo_root"
+MISE_YES=1 mise install
+
+profile_marker="# agentx mise tools v1"
+if ! grep -Fqx "$profile_marker" "$HOME/.bash_profile" 2>/dev/null; then
+  cat >> "$HOME/.bash_profile" <<'EOF'
+
+# agentx mise tools v1
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) PATH="$HOME/.local/bin:$PATH" ;;
+esac
+case ":$PATH:" in
+  *":$HOME/.local/share/mise/shims:"*) ;;
+  *) PATH="$HOME/.local/share/mise/shims:$PATH" ;;
+esac
+export PATH
+EOF
+fi
+
+step "Installing workspace dependencies"
+mise exec -- pnpm install --frozen-lockfile
+
+step "Installing Playwright browsers"
+if ! /sbin/ldconfig -p | grep -Fq 'libgtk-4.so.1'; then
+  mise exec -- pnpm --filter zettel exec playwright install-deps chromium firefox webkit
+fi
+mise exec -- pnpm --filter zettel exec playwright install chromium firefox webkit
+
+step "Setup complete in $((SECONDS - start_time))s"

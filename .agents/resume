@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PATH="$HOME/.local/bin:$PATH"
+
+command -v mise >/dev/null 2>&1 || {
+  echo "orb resume: mise is missing; rerun .agents/setup" >&2
+  exit 1
+}
+
+test -d "$repo_root/node_modules/.pnpm" || {
+  echo "orb resume: workspace dependencies are missing; rerun .agents/setup" >&2
+  exit 1
+}
+
+cd "$repo_root"
+mise exec -- node --version >/dev/null
+echo "orb resume: toolchain and workspace dependencies are ready"
