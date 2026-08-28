@@ -36,6 +36,10 @@ export const api = {
   graph: {
     $get: () => authedFetch("/api/graph"),
   },
+  wiki: {
+    $get: (opts: { param: { entity: string } }) =>
+      authedFetch(`/api/wiki/${encodeURIComponent(opts.param.entity)}`),
+  },
   transcribe: {
     $post: (opts: { form: Record<string, unknown> }) => {
       const formData = new FormData();
