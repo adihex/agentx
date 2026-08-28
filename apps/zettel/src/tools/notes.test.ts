@@ -1,8 +1,15 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { traverseGraphStore } = vi.hoisted(() => ({
-  traverseGraphStore: vi.fn(),
-}));
+const { createDefaultGraphModelProvider, extractAndReplaceNoteGraph, traverseGraphStore, writeNote } =
+  vi.hoisted(() => ({
+    createDefaultGraphModelProvider: vi.fn(),
+    extractAndReplaceNoteGraph: vi.fn(),
+    traverseGraphStore: vi.fn(),
+    writeNote: vi.fn(),
+  }));
+
+vi.mock("../notes/graph-extraction.js", () => ({ extractAndReplaceNoteGraph }));
+vi.mock("../notes/graph-model-provider.js", () => ({ createDefaultGraphModelProvider }));
 
 vi.mock("../notes/store.js", () => ({
   addLink: vi.fn(),
@@ -10,10 +17,64 @@ vi.mock("../notes/store.js", () => ({
   readNote: vi.fn(),
   searchNotes: vi.fn(),
   traverseGraphStore,
-  writeNote: vi.fn(),
+  writeNote,
 }));
 
-import { traverseGraph, traverseGraphSchema } from "./notes.js";
+import { createNote, traverseGraph, traverseGraphSchema } from "./notes.js";
+
+describe("createNote graph indexing", () => {
+  beforeEach(() => {
+    vi.stubEnv("GROQ_API_KEY", "test-key");
+    createDefaultGraphModelProvider.mockReset();
+    extractAndReplaceNoteGraph.mockReset();
+    writeNote.mockReset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("indexes a successfully created note for the owning tenant", async () => {
+    const provider = { extractGraph: vi.fn() };
+    createDefaultGraphModelProvider.mockReturnValue(provider);
+    writeNote.mockResolvedValue({ id: "note-1" });
+    extractAndReplaceNoteGraph.mockResolvedValue({ entities: [], relations: [] });
+
+    await expect(createNote({ content: "Ada designed an engine.", userId: "tenant-a" })).resolves.toEqual({
+      success: true,
+      id: "note-1",
+    });
+    expect(extractAndReplaceNoteGraph).toHaveBeenCalledWith(
+      "tenant-a",
+      "note-1",
+      "Ada designed an engine.",
+      provider,
+    );
+  });
+
+  it("keeps the captured note when graph extraction fails", async () => {
+    createDefaultGraphModelProvider.mockReturnValue({ extractGraph: vi.fn() });
+    writeNote.mockResolvedValue({ id: "note-2" });
+    extractAndReplaceNoteGraph.mockRejectedValue(new Error("model unavailable"));
+
+    await expect(createNote({ content: "A durable note." })).resolves.toEqual({
+      success: true,
+      id: "note-2",
+    });
+  });
+
+  it("does not call the model when graph extraction is not configured", async () => {
+    vi.stubEnv("GROQ_API_KEY", "");
+    writeNote.mockResolvedValue({ id: "note-3" });
+
+    await expect(createNote({ content: "An offline note." })).resolves.toEqual({
+      success: true,
+      id: "note-3",
+    });
+    expect(createDefaultGraphModelProvider).not.toHaveBeenCalled();
+    expect(extractAndReplaceNoteGraph).not.toHaveBeenCalled();
+  });
+});
 
 describe("traverseGraph tool", () => {
   beforeEach(() => {
