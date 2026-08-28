@@ -52,6 +52,7 @@ catalog:
   "@libsql/kysely-libsql": 0.4.1
   react: 19.2.7
   react-dom: 19.2.7
+  react-router-dom: 7.18.0
   tsx: 4.22.4
   typescript: 7.0.1-rc
   vite: 8.0.16
