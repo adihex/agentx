@@ -4,16 +4,44 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export PATH="$HOME/.local/bin:$PATH"
 
-command -v mise >/dev/null 2>&1 || {
-  echo "orb resume: mise is missing; rerun .agents/setup" >&2
+fail() {
+  echo "orb resume: $1; rerun .agents/setup" >&2
   exit 1
 }
 
-test -d "$repo_root/node_modules/.pnpm" || {
-  echo "orb resume: workspace dependencies are missing; rerun .agents/setup" >&2
-  exit 1
-}
+command -v mise >/dev/null 2>&1 || fail "mise is missing"
+test "$(mise --version | awk '{print $1}')" = "2026.8.14" || fail "mise version is stale"
 
 cd "$repo_root"
-mise exec -- node --version >/dev/null
+mise install --dry-run-code >/dev/null 2>&1 || fail "a configured toolchain is missing"
+
+setup_marker="node_modules/.agentx-orb-setup-complete"
+expected_fingerprint="$(sha256sum .agents/setup mise.toml pnpm-lock.yaml | sha256sum | cut -d' ' -f1)"
+test -f "$setup_marker" || fail "setup did not complete"
+test "$(cat "$setup_marker")" = "$expected_fingerprint" || fail "setup is stale"
+
+test -f node_modules/.pnpm/lock.yaml || fail "workspace dependencies are missing"
+cmp -s pnpm-lock.yaml node_modules/.pnpm/lock.yaml || fail "workspace dependencies are stale"
+
+for command_name in ffmpeg gcloud yt-dlp; do
+  command -v "$command_name" >/dev/null 2>&1 || fail "$command_name is missing"
+done
+test "$(yt-dlp --version)" = "2026.08.19" || fail "yt-dlp version is stale"
+test "$(dpkg-query -W -f='${Version}' google-cloud-cli 2>/dev/null)" = "582.0.0-0" \
+  || fail "Google Cloud CLI version is stale"
+
+playwright=(mise exec -- pnpm --filter zettel exec playwright)
+"${playwright[@]}" install-deps --dry-run chromium firefox webkit >/dev/null 2>&1 \
+  || fail "Playwright system dependencies are missing"
+
+mise exec -- pnpm --filter zettel exec node --input-type=module - <<'EOF' \
+  || fail "Playwright browsers are missing"
+import fs from "node:fs";
+import { chromium, firefox, webkit } from "@playwright/test";
+
+for (const browser of [chromium, firefox, webkit]) {
+  fs.accessSync(browser.executablePath(), fs.constants.X_OK);
+}
+EOF
+
 echo "orb resume: toolchain and workspace dependencies are ready"

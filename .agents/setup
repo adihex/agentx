@@ -3,6 +3,13 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 start_time=$SECONDS
+mise_version="2026.8.14"
+yt_dlp_version="2026.08.19"
+gcloud_version="582.0.0-0"
+setup_marker="$repo_root/node_modules/.agentx-orb-setup-complete"
+
+# A failed setup must not leave a previous success marker behind.
+rm -f "$setup_marker"
 
 step() {
   printf '\n[orb setup +%ss] %s\n' "$((SECONDS - start_time))" "$1"
@@ -16,30 +23,56 @@ command -v python3 >/dev/null 2>&1 || missing_apt_packages+=(python3)
 python3 -m pip --version >/dev/null 2>&1 || missing_apt_packages+=(python3-pip)
 
 if ((${#missing_apt_packages[@]})); then
-  sudo apt-get update
-  sudo apt-get install -y --no-install-recommends "${missing_apt_packages[@]}"
+  sudo env DEBIAN_FRONTEND=noninteractive apt-get update
+  sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    "${missing_apt_packages[@]}"
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
 
-if ! command -v yt-dlp >/dev/null 2>&1; then
-  python3 -m pip install --user --break-system-packages yt-dlp
+if [[ "$(yt-dlp --version 2>/dev/null || true)" != "$yt_dlp_version" ]]; then
+  python3 -m pip install --user --break-system-packages "yt-dlp==$yt_dlp_version"
 fi
 
-if ! command -v gcloud >/dev/null 2>&1; then
+installed_gcloud_version="$(dpkg-query -W -f='${Version}' google-cloud-cli 2>/dev/null || true)"
+if [[ "$installed_gcloud_version" != "$gcloud_version" ]]; then
   sudo install -d -m 0755 /usr/share/keyrings
   curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
     | sudo gpg --dearmor --yes -o /usr/share/keyrings/cloud.google.gpg
   printf '%s\n' \
     'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
     | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null
-  sudo apt-get update
-  sudo apt-get install -y --no-install-recommends google-cloud-cli
+  sudo env DEBIAN_FRONTEND=noninteractive apt-get update
+  sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    --allow-downgrades "google-cloud-cli=$gcloud_version"
 fi
 
 step "Installing mise and pinned toolchains"
-if ! command -v mise >/dev/null 2>&1; then
-  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$HOME/.local/bin/mise" sh
+if [[ "$(mise --version 2>/dev/null | awk '{print $1}' || true)" != "$mise_version" ]]; then
+  case "$(uname -m)" in
+    x86_64)
+      mise_arch="x64"
+      mise_sha256="7cd12d6002d5b3c83a89cad79023712faf2a36f9e8b2ee2061dac5135b3de0ed"
+      ;;
+    aarch64 | arm64)
+      mise_arch="arm64"
+      mise_sha256="bc2c447a7e498b0bed0a421cc2101b407fef09a3195670d35a4aa3f43cd868a1"
+      ;;
+    *)
+      echo "Unsupported orb architecture: $(uname -m)" >&2
+      exit 1
+      ;;
+  esac
+
+  mise_download="$(mktemp)"
+  trap 'rm -f "$mise_download"' EXIT
+  curl -fsSL \
+    "https://github.com/jdx/mise/releases/download/v$mise_version/mise-v$mise_version-linux-$mise_arch" \
+    -o "$mise_download"
+  printf '%s  %s\n' "$mise_sha256" "$mise_download" | sha256sum --check --status
+  install -D -m 0755 "$mise_download" "$HOME/.local/bin/mise"
+  rm -f "$mise_download"
+  trap - EXIT
 fi
 
 cd "$repo_root"
@@ -66,9 +99,11 @@ step "Installing workspace dependencies"
 mise exec -- pnpm install --frozen-lockfile
 
 step "Installing Playwright browsers"
-if ! /sbin/ldconfig -p | grep -Fq 'libgtk-4.so.1'; then
-  mise exec -- pnpm --filter zettel exec playwright install-deps chromium firefox webkit
+playwright=(mise exec -- pnpm --filter zettel exec playwright)
+if ! "${playwright[@]}" install-deps --dry-run chromium firefox webkit >/dev/null; then
+  "${playwright[@]}" install-deps chromium firefox webkit
 fi
-mise exec -- pnpm --filter zettel exec playwright install chromium firefox webkit
+"${playwright[@]}" install chromium firefox webkit
 
+sha256sum .agents/setup mise.toml pnpm-lock.yaml | sha256sum | cut -d' ' -f1 > "$setup_marker"
 step "Setup complete in $((SECONDS - start_time))s"
