@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { AgentEventLoop } from "../src/AgentEventLoop";
+import { AdpClient } from "../../adp/src/client";
 import type { ToolDefinition } from "../src/tools";
 
 const fixturePath = fileURLToPath(new URL("./fixtures/echoTool.ts", import.meta.url));
@@ -36,15 +37,24 @@ describe("AgentEventLoop Tool Injection", () => {
 
   it("should support custom ADP handlers", async () => {
     const loop = new AgentEventLoop({ adpPort: 9226 });
-    const handler = vi.fn();
+    const client = new AdpClient("ws://localhost:9226");
+    const handler = vi.fn((params, callback) => {
+      callback({ echoed: params.foo });
+    });
 
     loop.registerAdpHandler("Custom.test", handler);
+    await client.connect();
 
-    // Simulate an ADP call using the new EventEmitter API
-    loop.adp.emit("Custom.test", { foo: "bar" }, () => {});
+    const result = await client.send("Custom.test", { foo: "bar" });
 
-    expect(handler).toHaveBeenCalledWith({ foo: "bar" }, expect.any(Function));
+    expect(handler).toHaveBeenCalledWith(
+      { foo: "bar" },
+      expect.any(Function),
+      expect.any(String),
+    );
+    expect(result).toEqual({ echoed: "bar" });
 
+    client.close();
     await loop.shutdown();
   });
 });
