@@ -265,9 +265,12 @@ const routes = api
       const arrayBuffer = await file.arrayBuffer();
       const data = Buffer.from(arrayBuffer);
 
+      // Sanitize the filename to prevent Windows-style path traversal attacks
+      // path.basename does not strip backslashes on POSIX systems
+      const safeFilename = path.basename(file.name).replace(/[^a-zA-Z0-9.-]/g, '_');
       const tmpPath = path.join(
         os.tmpdir(),
-        `zettel-audio-${Date.now()}-${path.basename(file.name)}`,
+        `zettel-audio-${Date.now()}-${safeFilename}`,
       );
       fs.writeFileSync(tmpPath, data);
 
