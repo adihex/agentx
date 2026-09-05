@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "${NITESHIFT_ENVIRONMENT_SETTINGS_DIR:?}/.."
+export PATH="$HOME/.local/bin:$PATH"
+mise_version="2026.8.14"
+
+if [[ "$(mise --version 2>/dev/null | awk '{print $1}' || true)" != "$mise_version" ]]; then
+  case "$(uname -m)" in
+    x86_64)
+      mise_arch="x64"
+      mise_sha256="7cd12d6002d5b3c83a89cad79023712faf2a36f9e8b2ee2061dac5135b3de0ed"
+      ;;
+    aarch64 | arm64)
+      mise_arch="arm64"
+      mise_sha256="bc2c447a7e498b0bed0a421cc2101b407fef09a3195670d35a4aa3f43cd868a1"
+      ;;
+    *)
+      echo "Unsupported Niteshift architecture: $(uname -m)" >&2
+      exit 1
+      ;;
+  esac
+
+  mise_download="$(mktemp)"
+  trap 'rm -f "$mise_download"' EXIT
+  curl -fsSL \
+    "https://github.com/jdx/mise/releases/download/v$mise_version/mise-v$mise_version-linux-$mise_arch" \
+    -o "$mise_download"
+  printf '%s  %s\n' "$mise_sha256" "$mise_download" | sha256sum --check --status
+  install -D -m 0755 "$mise_download" "$HOME/.local/bin/mise"
+  rm -f "$mise_download"
+  trap - EXIT
+fi
+
+
+mise trust
+MISE_YES=1 mise install
+mise exec -- pnpm install --frozen-lockfile
+mise exec -- pnpm --filter zettel exec playwright install --with-deps chromium firefox webkit
+mise exec -- pnpm exec vp run @agentx/orchestrator#build
+mise exec -- pnpm exec vp run @agentx/agx-core#build

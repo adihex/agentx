@@ -9,9 +9,11 @@ import {
   type LogEntry,
 } from "@agentx/agx-core";
 
+import { getAdpUrl } from "./adpUrl.js";
+
 export type { AgentNode, LogEntry };
 
-export function useAdp(url = "ws://localhost:9222") {
+export function useAdp(url = getAdpUrl(window.location)) {
   const [connected, setConnected] = useState(false);
   const [nodes, dispatch] = useReducer(nodeReducer, DEFAULT_NODES);
   const [logs, setLogs] = useState<LogEntry[]>(DEFAULT_LOGS);
