@@ -41,8 +41,7 @@ function binaryAvailable(bin: string): boolean {
   // Absolute/relative path → just check the file.
   if (bin.includes(path.sep)) return fs.existsSync(bin);
   try {
-    // `command -v` resolves builtins/PATH entries; argv array, no shell injection.
-    execFileSync("/usr/bin/env", ["sh", "-c", `command -v ${bin}`], { stdio: "ignore" });
+    execFileSync("which", [bin], { stdio: "ignore" });
     return true;
   } catch {
     return false;
