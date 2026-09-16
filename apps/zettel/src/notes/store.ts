@@ -681,7 +681,8 @@ export async function materializeToolFile(
   const dir = path.join(os.tmpdir(), "agentx-tools", userId);
   await fs.mkdir(dir, { recursive: true });
 
-  const filePath = path.join(dir, `${toolName}.ts`);
+  const safeToolName = path.basename(toolName).replace(/[^a-zA-Z0-9.-]/g, '_');
+  const filePath = path.join(dir, `${safeToolName}.ts`);
   await fs.writeFile(filePath, code, "utf-8");
   return filePath;
 }
