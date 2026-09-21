@@ -56,6 +56,7 @@ export const AdpDomains = {
   Toolchain: {
     intercept: "Toolchain.intercept",
     list: "Toolchain.list",
+    cancel: "Toolchain.cancel",
   },
   /** Context and memory management */
   Memory: {

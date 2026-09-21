@@ -81,7 +81,27 @@ export interface AgentSessionOptions {
   autoTick?: boolean;
   /** Silence direct diagnostic output so a host can own the screen. */
   quiet?: boolean;
+  /**
+   * Fail-closed policy gate evaluated synchronously inside dispatchTool before
+   * a call reaches the pool. Return `false`/`{allow:false, reason}` to deny;
+   * a throwing hook denies the call (fail-closed). Denied calls fold into a
+   * typed TOOL_POLICY_DENIED result so the run still settles normally.
+   */
+  toolPolicy?: ToolPolicyHook;
 }
+
+/** The dispatch the policy hook is asked to rule on. */
+export interface ToolPolicyCall {
+  toolName: string;
+  args: Record<string, unknown>;
+  toolCallId: string;
+}
+
+/** A policy verdict: boolean shorthand or an object carrying a deny reason. */
+export type ToolPolicyVerdict = boolean | { allow: boolean; reason?: string };
+
+/** Synchronous policy hook consulted before every tool dispatch. */
+export type ToolPolicyHook = (call: ToolPolicyCall) => ToolPolicyVerdict;
 
 /**
  * AgentSession — one conversation on the agentx runtime.
@@ -151,6 +171,10 @@ export class AgentSession extends EventEmitter {
   protected toolLandingResolvers = new Set<() => void>();
   /** Tick-idle gates — used when a run is superseded during an active tick. */
   protected tickIdleResolvers = new Set<() => void>();
+  /** Optional fail-closed policy gate consulted before each tool dispatch. */
+  protected toolPolicy?: ToolPolicyHook;
+  /** toolCallId → pool request id, for cancelToolCall(). */
+  protected toolCallIndex = new Map<string, string>();
 
   /**
    * Create a new conversation session.
@@ -165,6 +189,7 @@ export class AgentSession extends EventEmitter {
     this.notifier = opts.notify ?? (() => {});
     this.autoTick = opts.autoTick ?? false;
     this.quiet = opts.quiet ?? false;
+    this.toolPolicy = opts.toolPolicy;
 
     if (opts.systemPrompt) {
       this.context.push({ role: "system", content: opts.systemPrompt });
@@ -232,6 +257,31 @@ export class AgentSession extends EventEmitter {
     const id = this.uid();
     const runId = this.activeRunId;
     const args = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+
+    // Fail-closed policy gate: a deny verdict or a throwing hook both fold
+    // into a typed failed result — the call never reaches the pool, but the
+    // pending-tool accounting still settles so the run can terminate.
+    const verdict = this.evaluateToolPolicy(toolName, args, toolCallId);
+    if (!verdict.allow) {
+      this.pendingToolCalls++;
+      if (runId !== null) {
+        this.pendingToolCallsByRun.set(runId, this.pendingToolCallsForRun(runId) + 1);
+      }
+      const result: ToolResult = {
+        id,
+        toolCallId,
+        success: false,
+        error: `Tool dispatch denied by policy${verdict.reason ? `: ${verdict.reason}` : ""}`,
+        errorCode: "TOOL_POLICY_DENIED",
+        durationMs: 0,
+      };
+      this.log(`[Loop] ⛔  Tool "${toolName}" denied by policy (${verdict.reason ?? "no reason"})`);
+      this.queueToolResult(runId, toolName, toolCallId, result);
+      this.emit("tool.complete", { toolName, id, result });
+      this.notify("Toolchain.responseReceived", { toolName, result });
+      return;
+    }
+
     this.pendingToolCalls++;
     if (runId !== null) {
       this.pendingToolCallsByRun.set(runId, this.pendingToolCallsForRun(runId) + 1);
@@ -242,9 +292,11 @@ export class AgentSession extends EventEmitter {
     // the macrotask queue, exactly like libuv posts I/O completions. A rejected
     // execution is folded into a typed failed result so the landing gate always
     // fires and the run can still settle (exactly-once terminal state).
+    this.toolCallIndex.set(toolCallId, id);
     void this.threadPool
       .execute({ id, toolCallId, toolName, args })
       .then((result) => {
+        this.toolCallIndex.delete(toolCallId);
         this.log(`[Loop] 📬  Tool "${toolName}" completed in ${result.durationMs}ms`);
         this.queueToolResult(runId, toolName, toolCallId, result);
         this.emit("tool.complete", { toolName, id, result });
@@ -253,6 +305,7 @@ export class AgentSession extends EventEmitter {
         this.notify("Toolchain.responseReceived", { toolName, result });
       })
       .catch((err: unknown) => {
+        this.toolCallIndex.delete(toolCallId);
         this.logError(`[tool: "${toolName}" rejected:`, err);
         const result: ToolResult = {
           id,
@@ -266,6 +319,40 @@ export class AgentSession extends EventEmitter {
         this.notify("Toolchain.responseReceived", { toolName, result });
       });
     this.emit("tool.dispatch", { toolName, id, args });
+  }
+
+  /**
+   * Cancel an in-flight tool call by its LLM tool-call id.
+   *
+   * The underlying worker/main-thread computation is not interrupted — the
+   * pool resolves the request immediately as TOOL_REQUEST_CANCELLED and drops
+   * the late result, so the run settles as if the tool had failed fast.
+   */
+  public cancelToolCall(toolCallId: string): { status: string; toolCallId?: string; reason?: string } {
+    const requestId = this.toolCallIndex.get(toolCallId);
+    if (!requestId || !this.threadPool.cancel(requestId)) {
+      return { status: "error", reason: `no in-flight tool call "${toolCallId}"` };
+    }
+    this.toolCallIndex.delete(toolCallId);
+    this.log(`[Loop] 🗑  Cancelled tool call ${toolCallId}`);
+    return { status: "cancelled", toolCallId };
+  }
+
+  /** Evaluate the configured tool policy; any throw denies the call (fail-closed). */
+  private evaluateToolPolicy(
+    toolName: string,
+    args: Record<string, unknown>,
+    toolCallId: string,
+  ): { allow: boolean; reason?: string } {
+    if (!this.toolPolicy) return { allow: true };
+    try {
+      const verdict = this.toolPolicy({ toolName, args, toolCallId });
+      return typeof verdict === "object" ? verdict : { allow: verdict };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logError(`[Loop] Tool policy hook threw — denying "${toolName}":`, message);
+      return { allow: false, reason: `policy hook failed closed: ${message}` };
+    }
   }
 
   /**

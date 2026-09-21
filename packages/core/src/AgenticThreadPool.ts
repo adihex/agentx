@@ -16,7 +16,9 @@ export type ToolExecutionErrorCode =
   | "THREAD_POOL_TERMINATED"
   | "THREAD_POOL_UNAVAILABLE"
   | "WORKER_ERROR"
-  | "WORKER_EXIT";
+  | "WORKER_EXIT"
+  | "TOOL_REQUEST_CANCELLED"
+  | "TOOL_POLICY_DENIED";
 
 export interface AgenticThreadPoolOptions {
   /** Default max runtime for any tool execution before a timeout result is returned. */
@@ -81,7 +83,8 @@ export interface ToolResult {
 interface PendingToolRequest {
   request: Pick<ToolRequest, "id" | "toolCallId" | "toolName">;
   resolve: (res: ToolResult) => void;
-  worker: Worker;
+  /** Owning worker; null on the main-thread (test) execution path. */
+  worker: Worker | null;
   startedAt: number;
   timeout?: ReturnType<typeof setTimeout>;
 }
@@ -107,7 +110,6 @@ export class AgenticThreadPool {
   private workers: Worker[] = [];
   private nextWorkerIndex = 0;
   private pendingRequests = new Map<string, PendingToolRequest>();
-  private mainThreadInFlight = 0;
   private readonly defaultTimeoutMs: number;
   private readonly maxPendingRequests: number;
   private readonly maxResultBytes: number;
@@ -240,7 +242,7 @@ export class AgenticThreadPool {
       );
     }
 
-    if (this.pendingRequests.size + this.mainThreadInFlight >= this.maxPendingRequests) {
+    if (this.pendingRequests.size >= this.maxPendingRequests) {
       return this.errorResult(
         requestMeta,
         "TOOL_QUEUE_FULL",
@@ -255,12 +257,23 @@ export class AgenticThreadPool {
     // In test environment, execute on main thread using jiti.
     // This path is still bounded for never-resolving async tool mocks.
     if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
-      this.mainThreadInFlight++;
-      try {
-        return await this.executeOnMainThread(normalizedReq, def, timeoutMs);
-      } finally {
-        this.mainThreadInFlight--;
-      }
+      // Main-thread executions register in pendingRequests too, so cancel()
+      // and the queue bound apply identically on both paths. The underlying
+      // computation keeps running after a cancel — its result is dropped.
+      return new Promise<ToolResult>((resolve) => {
+        const pending: PendingToolRequest = {
+          request: requestMeta,
+          resolve,
+          worker: null,
+          startedAt: start,
+        };
+        this.pendingRequests.set(req.id, pending);
+        void this.executeOnMainThread(normalizedReq, def, timeoutMs)
+          .then((res) => this.settlePending(req.id, res))
+          .catch((err) =>
+            this.settlePending(req.id, this.errorFromUnknown(requestMeta, err, start)),
+          );
+      });
     }
 
     if (this.workers.length === 0) {
@@ -311,6 +324,26 @@ export class AgenticThreadPool {
         this.replaceWorker(worker);
       }
     });
+  }
+
+  /**
+   * Cancel an in-flight request: resolves its execute() promise immediately
+   * with TOOL_REQUEST_CANCELLED. The worker/main-thread computation is not
+   * interrupted — its eventual result is dropped because the pending entry is
+   * gone. Returns false when the id is unknown or already settled.
+   */
+  public cancel(id: string): boolean {
+    const pending = this.pendingRequests.get(id);
+    if (!pending) return false;
+    return this.settlePending(
+      id,
+      this.errorResult(
+        pending.request,
+        "TOOL_REQUEST_CANCELLED",
+        `Tool execution "${pending.request.toolName}" was cancelled`,
+        pending.startedAt,
+      ),
+    );
   }
 
   /** Terminate all workers and resolve any in-flight requests as typed failures. */
@@ -460,7 +493,7 @@ export class AgenticThreadPool {
         ),
       );
 
-      if (!didSettle) return;
+      if (!didSettle || !pending.worker) return;
 
       this.failPendingForWorker(
         pending.worker,
