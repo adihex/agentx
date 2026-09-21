@@ -7,7 +7,12 @@
  */
 
 import readline from "node:readline";
-import { AdpClient, parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
+import {
+  AdpClient,
+  parseReplCommand,
+  REPL_HELP_LINES,
+  formatAdpResponseBody,
+} from "@agentx/agx-core";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,7 +54,7 @@ async function startRepl() {
 
   client.onEvent((ev) => {
     if (ev.method === "Debugger.Response") {
-      console.log(`\n\x1b[35m← ${JSON.stringify(ev.params.result || ev.params)}\x1b[0m`);
+      console.log(`\n\x1b[35m← ${formatAdpResponseBody(ev.params)}\x1b[0m`);
       rl.prompt();
     }
     // Also show agent status updates in the REPL

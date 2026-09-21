@@ -7,6 +7,7 @@ import {
   nowHHMMSS,
   nodeReducer,
   parseReplCommand,
+  formatAdpResponseBody,
   type AgentNode,
   type LogEntry,
 } from "@agentx/agx-core";
@@ -47,10 +48,7 @@ export function useAdp(url = "ws://localhost:9222") {
         });
       }
       if (ev.method === "Debugger.Response") {
-        const params = ev.params as { result?: unknown; error?: string };
-        addRepl(
-          `  ← ${params.error ? `error: ${params.error}` : JSON.stringify(params.result)}`,
-        );
+        addRepl(`  ← ${formatAdpResponseBody(ev.params)}`);
       }
     });
 

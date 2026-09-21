@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   nowHHMMSS,
   parseReplCommand,
+  formatAdpResponseBody,
   AdpClient,
   STATUS_TERM_COLOR,
   STATUS_HEX,
@@ -393,5 +394,30 @@ describe("AdpClient.sendAndWait", () => {
       }),
     ).not.toThrow();
     expect(eventFn).not.toHaveBeenCalled();
+  });
+});
+
+describe("formatAdpResponseBody", () => {
+  it("stringifies object results", () => {
+    expect(formatAdpResponseBody({ result: { ok: 1 } })).toBe('{"ok":1}');
+  });
+
+  it("renders string errors with the error prefix", () => {
+    expect(formatAdpResponseBody({ error: "nope" })).toBe("error: nope");
+  });
+
+  it("renders structured errors JSON-encoded", () => {
+    expect(formatAdpResponseBody({ error: { code: -32601 } })).toBe(
+      'error: {"code":-32601}',
+    );
+  });
+
+  it("prefers error over result when both are present", () => {
+    expect(formatAdpResponseBody({ result: 1, error: "e" })).toBe("error: e");
+  });
+
+  it("falls back to the raw params when result is absent", () => {
+    expect(formatAdpResponseBody({ method: "x" } as never)).toBe('{"method":"x"}');
+    expect(formatAdpResponseBody(undefined)).toBe("undefined");
   });
 });

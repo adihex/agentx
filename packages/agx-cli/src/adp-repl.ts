@@ -1,5 +1,10 @@
 import readline from "readline";
-import { AdpClient, parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
+import {
+  AdpClient,
+  parseReplCommand,
+  REPL_HELP_LINES,
+  formatAdpResponseBody,
+} from "@agentx/agx-core";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -100,11 +105,7 @@ export function handleConnectionStatus(connected: boolean, rl: readline.Interfac
  */
 export function handleAdpEvent(ev: any, rl: readline.Interface) {
   if (ev.method === "Debugger.Response") {
-    const body =
-      ev.params?.error !== undefined
-        ? `error: ${typeof ev.params.error === "string" ? ev.params.error : JSON.stringify(ev.params.error)}`
-        : JSON.stringify(ev.params?.result ?? ev.params);
-    console.log(`\n${REPL_COLORS.magenta}← ${body}${REPL_COLORS.reset}`);
+    console.log(`\n${REPL_COLORS.magenta}← ${formatAdpResponseBody(ev.params)}${REPL_COLORS.reset}`);
     rl.prompt();
   }
 }

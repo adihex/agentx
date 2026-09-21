@@ -231,6 +231,22 @@ export class AdpClient {
 }
 
 /* ── repl command parser ─────────────────────────────────── */
+
+/**
+ * Render the payload of a `Debugger.Response` frame for a REPL/log line.
+ * Error frames render as `error: <message>`; result frames JSON-stringify so
+ * objects never collapse to `[object Object]`.
+ */
+export function formatAdpResponseBody(
+  params: { result?: unknown; error?: unknown } | undefined,
+): string {
+  if (params && params.error !== undefined) {
+    const err = params.error;
+    return `error: ${typeof err === "string" ? err : JSON.stringify(err)}`;
+  }
+  return JSON.stringify(params?.result ?? params) ?? "undefined";
+}
+
 export function parseReplCommand(raw: string): { method: string; args: string[] } | null {
   const trimmed = raw.trim();
   if (!trimmed.startsWith("/")) return null;
