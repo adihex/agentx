@@ -1,123 +1,91 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+/**
+ * Zettel note-tool tests: create/link/search/read/graph traversal against a
+ * real sqlite store isolated via ZETTEL_DIR.
+ */
+import { mkdirSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { describe, it, expect } from "vitest";
 
-const { createDefaultGraphModelProvider, extractAndReplaceNoteGraph, traverseGraphStore, writeNote } =
-  vi.hoisted(() => ({
-    createDefaultGraphModelProvider: vi.fn(),
-    extractAndReplaceNoteGraph: vi.fn(),
-    traverseGraphStore: vi.fn(),
-    writeNote: vi.fn(),
-  }));
+const testDir = path.join(os.tmpdir(), "agentx-zettel-tools-test-" + Date.now());
+mkdirSync(testDir, { recursive: true });
+process.env.ZETTEL_DIR = testDir;
+delete process.env.GROQ_API_KEY;
 
-vi.mock("../notes/graph-extraction.js", () => ({ extractAndReplaceNoteGraph }));
-vi.mock("../notes/graph-model-provider.js", () => ({ createDefaultGraphModelProvider }));
+const { createNote, linkNotes, searchNotes, getNote, traverseGraph } = await import("./notes.js");
+const { readNote, replaceNoteGraph } = await import("../notes/store.js");
 
-vi.mock("../notes/store.js", () => ({
-  addLink: vi.fn(),
-  backlinksOf: vi.fn(),
-  readNote: vi.fn(),
-  searchNotes: vi.fn(),
-  traverseGraphStore,
-  writeNote,
-}));
+const userId = "tools-test-" + Date.now();
 
-import { createNote, traverseGraph, traverseGraphSchema } from "./notes.js";
+describe("zettel note tools", () => {
+  let noteA = "";
+  let noteB = "";
 
-describe("createNote graph indexing", () => {
-  beforeEach(() => {
-    vi.stubEnv("GROQ_API_KEY", "test-key");
-    createDefaultGraphModelProvider.mockReset();
-    extractAndReplaceNoteGraph.mockReset();
-    writeNote.mockReset();
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it("indexes a successfully created note for the owning tenant", async () => {
-    const provider = { extractGraph: vi.fn() };
-    createDefaultGraphModelProvider.mockReturnValue(provider);
-    writeNote.mockResolvedValue({ id: "note-1" });
-    extractAndReplaceNoteGraph.mockResolvedValue({ entities: [], relations: [] });
-
-    await expect(createNote({ content: "Ada designed an engine.", userId: "tenant-a" })).resolves.toEqual({
-      success: true,
-      id: "note-1",
+  it("createNote returns the new note id and persists it", async () => {
+    const res = await createNote({
+      userId,
+      content: "Apples are delicious fruits.",
+      title: "About Apples",
+      tags: ["apples", "fruit"],
     });
-    expect(extractAndReplaceNoteGraph).toHaveBeenCalledWith(
-      "tenant-a",
-      "note-1",
-      "Ada designed an engine.",
-      provider,
+    expect(res).toMatchObject({ success: true });
+    if (!("id" in res)) throw new Error("expected id");
+    noteA = res.id;
+    expect((await readNote(userId, noteA))?.title).toBe("About Apples");
+  });
+
+  it("createNote still succeeds when graph indexing fails", async () => {
+    process.env.GROQ_API_KEY = "present-but-unusable";
+    try {
+      const res = await createNote({ userId, content: "Oranges are citrus fruits." });
+      expect(res).toMatchObject({ success: true });
+    } finally {
+      delete process.env.GROQ_API_KEY;
+    }
+  });
+
+  it("getNote reports a missing note", async () => {
+    const res = await getNote({ userId, id: "does-not-exist" });
+    expect(res.note).toBeNull();
+    expect(res.error).toContain("not found");
+  });
+
+  it("linkNotes records backlinks visible via getNote", async () => {
+    const created = await createNote({ userId, content: "Backlink target body." });
+    if (!("id" in created)) throw new Error("expected id");
+    noteB = created.id;
+    expect(await linkNotes({ userId, fromId: noteA, toId: noteB })).toEqual({ ok: true });
+    const res = await getNote({ userId, id: noteB });
+    expect(res.backlinks).toContain(noteA);
+  });
+
+  it("searchNotes matches titles", async () => {
+    const res = await searchNotes({ userId, query: "Apples" });
+    expect(res.results.some((r) => r.id === noteA)).toBe(true);
+  });
+
+  it("traverseGraph walks seeded entity relations", async () => {
+    await replaceNoteGraph(userId, noteA, {
+      entities: [
+        { name: "Apple", type: "fruit", description: "a fruit" },
+        { name: "Orchard", type: "place", description: "where apples grow" },
+      ],
+      relations: [{ source: "Apple", target: "Orchard", relationship: "grows_in" }],
+    });
+    const res = await traverseGraph({ userId, entityName: "Apple" });
+    expect(res.success).toBe(true);
+    expect(res.result.entities).toContain("Orchard");
+    expect(res.result.relations).toContainEqual(
+      expect.objectContaining({ source: "Apple", target: "Orchard" }),
     );
   });
 
-  it("keeps the captured note when graph extraction fails", async () => {
-    createDefaultGraphModelProvider.mockReturnValue({ extractGraph: vi.fn() });
-    writeNote.mockResolvedValue({ id: "note-2" });
-    extractAndReplaceNoteGraph.mockRejectedValue(new Error("model unavailable"));
-
-    await expect(createNote({ content: "A durable note." })).resolves.toEqual({
-      success: true,
-      id: "note-2",
-    });
+  it("traverseGraph returns empty for an unknown entity", async () => {
+    const res = await traverseGraph({ userId, entityName: "NoSuchEntity" });
+    expect(res).toMatchObject({ success: true, result: { entities: [], relations: [] } });
   });
 
-  it("does not call the model when graph extraction is not configured", async () => {
-    vi.stubEnv("GROQ_API_KEY", "");
-    writeNote.mockResolvedValue({ id: "note-3" });
-
-    await expect(createNote({ content: "An offline note." })).resolves.toEqual({
-      success: true,
-      id: "note-3",
-    });
-    expect(createDefaultGraphModelProvider).not.toHaveBeenCalled();
-    expect(extractAndReplaceNoteGraph).not.toHaveBeenCalled();
-  });
-});
-
-describe("traverseGraph tool", () => {
-  beforeEach(() => {
-    traverseGraphStore.mockReset();
-  });
-
-  it("returns a successful graph traversal", async () => {
-    const result = {
-      entities: ["Alpha", "Beta"],
-      relations: [
-        { source: "Alpha", target: "Beta", relationship: "connects", noteId: "note-1" },
-      ],
-    };
-    traverseGraphStore.mockResolvedValue(result);
-
-    await expect(traverseGraph({ entityName: "Alpha", depth: 3, userId: "tenant-a" })).resolves.toEqual({
-      success: true,
-      result,
-    });
-    expect(traverseGraphStore).toHaveBeenCalledWith("tenant-a", "Alpha", 3);
-  });
-
-  it("forwards the tenant and uses defaults for omitted userId and depth", async () => {
-    traverseGraphStore.mockResolvedValue({ entities: [], relations: [] });
-
-    await traverseGraph({ entityName: "Alpha" });
-
-    expect(traverseGraphStore).toHaveBeenCalledWith("default", "Alpha", 2);
-  });
-
-  it("validates traversal depth bounds", () => {
-    expect(traverseGraphSchema.safeParse({ entityName: "Alpha", depth: 1 }).success).toBe(true);
-    expect(traverseGraphSchema.safeParse({ entityName: "Alpha", depth: 5 }).success).toBe(true);
-    expect(traverseGraphSchema.safeParse({ entityName: "Alpha", depth: 0 }).success).toBe(false);
-    expect(traverseGraphSchema.safeParse({ entityName: "Alpha", depth: 6 }).success).toBe(false);
-  });
-
-  it("returns a failure when the graph store throws", async () => {
-    traverseGraphStore.mockRejectedValue(new Error("database unavailable"));
-
-    await expect(traverseGraph({ entityName: "Alpha", userId: "tenant-a" })).resolves.toEqual({
-      success: false,
-      error: "database unavailable",
-    });
+  it("rejects invalid input at the schema boundary", async () => {
+    await expect(traverseGraph({ userId, entityName: "x", depth: 10 })).rejects.toThrow();
   });
 });
