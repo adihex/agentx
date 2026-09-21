@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
+import fs from "node:fs";
 import type { AdpClient } from "@agentx/agx-core";
 import { REPL_HELP_LINES } from "@agentx/agx-core";
 import {
+  DEFAULT_ADP_URL,
+  LOG_FILE,
+  REPL_COLORS,
+  REPL_PROMPT,
   handleAdpEvent,
   handleReplInput,
+  logToDashboard,
   renderReplFeedback,
 } from "../src/adp-repl";
 
@@ -13,6 +19,29 @@ const makeClient = (sendResult: boolean) => {
 };
 
 const fakeRl = () => ({ prompt: vi.fn() });
+
+describe("REPL constants", () => {
+  it("REPL_COLORS has expected ANSI codes", () => {
+    expect(REPL_COLORS.header).toBe("\x1b[36m");
+    expect(REPL_COLORS.green).toBe("\x1b[32m");
+    expect(REPL_COLORS.red).toBe("\x1b[31m");
+    expect(REPL_COLORS.reset).toBe("\x1b[0m");
+  });
+
+  it("REPL_PROMPT contains the prompt text", () => {
+    expect(REPL_PROMPT).toContain("agx@debugger:~$");
+  });
+
+  it("DEFAULT_ADP_URL is localhost:9222", () => {
+    expect(DEFAULT_ADP_URL).toBe("ws://localhost:9222");
+  });
+
+  it("logToDashboard appends a timestamped line", () => {
+    logToDashboard("Test message");
+    const content = fs.readFileSync(LOG_FILE, "utf-8");
+    expect(content).toContain("[REPL] Test message");
+  });
+});
 
 describe("handleReplInput", () => {
   it("flags /help for local rendering instead of sending it", () => {
@@ -30,11 +59,11 @@ describe("handleReplInput", () => {
 
   it("sends parsed commands and stays silent (server replies via Debugger.Response)", () => {
     const { client, send } = makeClient(true);
-    const res = handleReplInput("/pause", client);
+    const res = handleReplInput("/pause agent1", client);
     expect(res.action).toBe("continue");
     expect(send).toHaveBeenCalledWith({
       method: "Debugger.Pause",
-      params: { args: [] },
+      params: { args: ["agent1"] },
     });
     expect(renderReplFeedback(res)).toBeNull();
   });
