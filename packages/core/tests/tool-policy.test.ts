@@ -4,7 +4,13 @@ import { z } from "zod";
 
 vi.mock("../src/LLMOrchestrator", () => ({
   LLMOrchestrator: vi.fn().mockImplementation(function () {
-    return { runStep: vi.fn() };
+    return {
+      runStep: vi.fn().mockResolvedValue({
+        text: "ok",
+        toolCalls: [],
+        responseMessages: [{ role: "assistant", content: "ok" }],
+      }),
+    };
   }),
 }));
 
@@ -135,5 +141,42 @@ describe("tool cancellation", () => {
     const result = await execPromise;
     expect(result.success).toBe(false);
     expect(result.errorCode).toBe("TOOL_REQUEST_CANCELLED");
+  });
+});
+
+describe("pause gate semantics", () => {
+  it("run parks at the pause gate until resume releases it", async () => {
+    const session = makeSession();
+    session.pause();
+
+    let settled = false;
+    const run = session.run("hello").then((text) => {
+      settled = true;
+      return text;
+    });
+    await new Promise((r) => setTimeout(r, 60));
+    expect(settled).toBe(false);
+
+    session.resume();
+    await expect(run).resolves.toBe("ok");
+    session.shutdownEngine();
+  });
+
+  it("requestShutdown unblocks a paused run", async () => {
+    const session = makeSession();
+    session.pause();
+
+    let settled = false;
+    const run = session.run("hello").then((text) => {
+      settled = true;
+      return text;
+    });
+    await new Promise((r) => setTimeout(r, 60));
+    expect(settled).toBe(false);
+
+    session.requestShutdown();
+    await run;
+    expect(settled).toBe(true);
+    session.shutdownEngine();
   });
 });
