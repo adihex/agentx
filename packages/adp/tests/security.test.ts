@@ -35,6 +35,17 @@ describe("ADP transport security", () => {
     expect(wss.options.host).toBe("127.0.0.1");
   });
 
+  it("close() while the deferred bind is still pending resolves cleanly", async () => {
+    const server = makeServer(port++);
+    await server.close();
+  });
+
+  it("close() is idempotent", async () => {
+    const server = makeServer(port++);
+    await server.close();
+    await server.close();
+  });
+
   it("rejects unauthenticated clients when authToken is set", async () => {
     const p = port++;
     const server = makeServer({ port: p, authToken: "s3cret" });

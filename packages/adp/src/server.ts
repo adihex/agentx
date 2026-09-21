@@ -110,6 +110,10 @@ export class AdpServer extends EventEmitter {
   private wss: WebSocketServer;
   /** HTTP listener we created ourselves (auth mode); closed with the server. */
   private ownedHttpServer: Server | null = null;
+  /** Settles once the bind either succeeded (`listening`) or failed (`error`). */
+  private readonly bindReady: Promise<void>;
+  private bindFailed = false;
+  private closed = false;
   /** Accepted credentials; empty means open loopback mode. */
   private readonly principals: AdpPrincipal[];
   /** socket → principal, so per-request scope checks know the caller. */
@@ -165,6 +169,30 @@ export class AdpServer extends EventEmitter {
         maxPayload,
       });
     }
+
+    // A host-qualified listen() resolves its address asynchronously, so the
+    // bind lands on a later tick — close() waits for it (or for its failure).
+    if (this.ownedHttpServer) {
+      const srv = this.ownedHttpServer;
+      this.bindReady = new Promise<void>((resolve) => {
+        srv.once("listening", () => resolve());
+        srv.once("error", () => {
+          this.bindFailed = true;
+          resolve();
+        });
+      });
+    } else if (options.server) {
+      this.bindReady = Promise.resolve();
+    } else {
+      this.bindReady = new Promise<void>((resolve) => {
+        this.wss.once("listening", () => resolve());
+        this.wss.once("error", () => {
+          this.bindFailed = true;
+          resolve();
+        });
+      });
+    }
+
     this.wss.on("error", (err) => {
       console.error("[ADP] Server error:", err);
     });
@@ -392,11 +420,16 @@ export class AdpServer extends EventEmitter {
    * Graceful shutdown.
    * @returns A promise that resolves when the server is closed.
    */
-  public close(): Promise<void> {
+  public async close(): Promise<void> {
+    // Wait for the deferred bind: closing a server that is still coming up
+    // (or that never bound) used to throw "Server is not running".
+    await this.bindReady;
+    if (this.closed || this.bindFailed) return;
+    this.closed = true;
     return new Promise((resolve, reject) => {
       for (const ws of this.clients) ws.close();
       this.wss.close((err) => {
-        if (err) {
+        if (err && !/not running/i.test(err.message)) {
           reject(err);
           return;
         }
@@ -406,7 +439,9 @@ export class AdpServer extends EventEmitter {
         }
         const httpServer = this.ownedHttpServer;
         this.ownedHttpServer = null;
-        httpServer.close((closeErr) => (closeErr ? reject(closeErr) : resolve()));
+        httpServer.close((closeErr) =>
+          closeErr && !/not running/i.test(closeErr.message) ? reject(closeErr) : resolve(),
+        );
       });
     });
   }
