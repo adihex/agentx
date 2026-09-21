@@ -1,5 +1,5 @@
 import readline from "readline";
-import { AdpClient, parseReplCommand } from "@agentx/agx-core";
+import { AdpClient, parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -68,6 +68,20 @@ export function handleReplInput(
 }
 
 /**
+ * Render local feedback for a handled input line: the help banner for /help,
+ * the error text for failures, and nothing for successful sends (the server
+ * answers those with a Debugger.Response event).
+ */
+export function renderReplFeedback(result: {
+  action: "continue" | "exit" | "error";
+  message?: string;
+}): string | null {
+  if (result.message === "help") return REPL_HELP_LINES.join("\n");
+  if (result.action === "error" && result.message) return result.message;
+  return null;
+}
+
+/**
  * Handle ADP connection status changes.
  */
 export function handleConnectionStatus(connected: boolean, rl: readline.Interface) {
@@ -86,9 +100,11 @@ export function handleConnectionStatus(connected: boolean, rl: readline.Interfac
  */
 export function handleAdpEvent(ev: any, rl: readline.Interface) {
   if (ev.method === "Debugger.Response") {
-    console.log(
-      `\n${REPL_COLORS.magenta}← ${JSON.stringify(ev.params.result || ev.params)}${REPL_COLORS.reset}`,
-    );
+    const body =
+      ev.params?.error !== undefined
+        ? `error: ${typeof ev.params.error === "string" ? ev.params.error : JSON.stringify(ev.params.error)}`
+        : JSON.stringify(ev.params?.result ?? ev.params);
+    console.log(`\n${REPL_COLORS.magenta}← ${body}${REPL_COLORS.reset}`);
     rl.prompt();
   }
 }
@@ -120,6 +136,14 @@ async function startRepl() {
       rl.close();
       return;
     }
+    const feedback = renderReplFeedback(result);
+    if (feedback !== null) {
+      console.log(
+        result.action === "error"
+          ? `${REPL_COLORS.red}${feedback}${REPL_COLORS.reset}`
+          : `${REPL_COLORS.dim}${feedback}${REPL_COLORS.reset}`,
+      );
+    }
     rl.prompt();
   }).on("close", () => {
     client.destroy();
@@ -127,4 +151,9 @@ async function startRepl() {
   });
 }
 
-startRepl().catch(console.error);
+const invokedAsScript =
+  typeof process.argv[1] === "string" &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedAsScript) {
+  startRepl().catch(console.error);
+}
