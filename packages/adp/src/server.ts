@@ -3,6 +3,8 @@ import { EventEmitter } from "events";
 import http, { type IncomingMessage, type Server } from "node:http";
 import {
   JsonRpcRequestSchema,
+  ADP_PROTOCOL_VERSION,
+  AdpDomains,
   type JsonRpcResponse,
   type AdpEvent,
   type AdpCommandHandler,
@@ -65,22 +67,54 @@ export interface AdpServerOptions {
   /** Interface to bind. Defaults to loopback — ADP is a local control plane. */
   host?: string;
   /**
-   * When set, clients must present this token — `Authorization: Bearer <token>`
-   * header or `?token=` query parameter — during the WebSocket handshake or the
-   * upgrade is refused with 401.
+   * Credentials required during the WebSocket handshake. Accepts a bare token
+   * string, one principal, or a principal list. Clients authenticate with an
+   * `Authorization: Bearer <token>` header or `?token=` query parameter.
    */
-  authToken?: string;
+  authToken?: string | AdpPrincipal | AdpPrincipal[];
   /** Largest accepted inbound frame in bytes (ws maxPayload). Default 1 MiB. */
   maxPayloadBytes?: number;
 }
 
+/**
+ * One authenticated client identity. `scopes` are allowed method prefixes
+ * (e.g. `"Toolchain."`); omitted means unrestricted access.
+ */
+export interface AdpPrincipal {
+  token: string;
+  scopes?: string[];
+}
+
+/** Structured audit record emitted through onAudit(). */
+export interface AdpAuditEvent {
+  type: "connect" | "disconnect" | "upgrade.denied" | "command" | "command.denied";
+  sessionId?: string;
+  method?: string;
+  at: number;
+}
+
+/** Notified with every audit record. */
+export type AdpAuditListener = (event: AdpAuditEvent) => void;
+
 const DEFAULT_MAX_PAYLOAD_BYTES = 1_048_576;
+
+function normalizePrincipals(
+  authToken: AdpServerOptions["authToken"],
+): AdpPrincipal[] {
+  if (!authToken) return [];
+  if (typeof authToken === "string") return [{ token: authToken }];
+  return Array.isArray(authToken) ? authToken : [authToken];
+}
 
 export class AdpServer extends EventEmitter {
   private wss: WebSocketServer;
   /** HTTP listener we created ourselves (auth mode); closed with the server. */
   private ownedHttpServer: Server | null = null;
-  private readonly authToken?: string;
+  /** Accepted credentials; empty means open loopback mode. */
+  private readonly principals: AdpPrincipal[];
+  /** socket → principal, so per-request scope checks know the caller. */
+  private socketPrincipals = new Map<WebSocket, AdpPrincipal>();
+  private auditListeners: AdpAuditListener[] = [];
   /** Single ADP method → handler dispatch table. */
   private handlers = new Map<string, RegisteredAdpHandler>();
   private clients = new Set<WebSocket>();
@@ -98,7 +132,7 @@ export class AdpServer extends EventEmitter {
   constructor(portOrOptions: number | AdpServerOptions) {
     super();
     const options = typeof portOrOptions === "number" ? { port: portOrOptions } : portOrOptions;
-    this.authToken = options.authToken;
+    this.principals = normalizePrincipals(options.authToken);
     const maxPayload = options.maxPayloadBytes ?? DEFAULT_MAX_PAYLOAD_BYTES;
     if (options.server) {
       const httpServer = options.server;
@@ -111,7 +145,7 @@ export class AdpServer extends EventEmitter {
           this.wss.emit("connection", ws, request);
         });
       });
-    } else if (this.authToken) {
+    } else if (this.principals.length > 0) {
       // Auth requires refusing the handshake itself, so we own the HTTP
       // listener and gate the upgrade before ws ever answers 101.
       const host = options.host ?? "127.0.0.1";
@@ -135,12 +169,15 @@ export class AdpServer extends EventEmitter {
       console.error("[ADP] Server error:", err);
     });
 
-    this.wss.on("connection", (ws: WebSocket) => {
+    this.wss.on("connection", (ws: WebSocket, request: IncomingMessage) => {
       const sessionId = this.newSessionId();
       console.log(`[ADP] Client connected (session ${sessionId})`);
       this.clients.add(ws);
       this.sockets.set(sessionId, ws);
       this.sessionIds.set(ws, sessionId);
+      const principal = this.principalFor(request);
+      if (principal) this.socketPrincipals.set(ws, principal);
+      this.emitAudit({ type: "connect", sessionId, at: Date.now() });
       for (const listener of this.connectionListeners) listener(sessionId);
 
       ws.on("error", (err) => {
@@ -156,6 +193,8 @@ export class AdpServer extends EventEmitter {
         this.clients.delete(ws);
         this.sockets.delete(sessionId);
         this.sessionIds.delete(ws);
+        this.socketPrincipals.delete(ws);
+        this.emitAudit({ type: "disconnect", sessionId, at: Date.now() });
         for (const listener of this.disconnectionListeners) listener(sessionId);
       });
     });
@@ -179,22 +218,47 @@ export class AdpServer extends EventEmitter {
     request: IncomingMessage,
     socket: { write(data: string): void; destroy(): void },
   ): boolean {
-    if (!this.authToken) return true;
-
-    const header = request.headers["authorization"];
-    if (header === `Bearer ${this.authToken}`) return true;
-
-    try {
-      const url = new URL(request.url ?? "", "http://localhost");
-      if (url.searchParams.get("token") === this.authToken) return true;
-    } catch {
-      // fall through to rejection
-    }
+    if (this.principals.length === 0) return true;
+    if (this.principalFor(request)) return true;
 
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
     socket.destroy();
     console.warn("[ADP] Refused unauthenticated upgrade");
+    this.emitAudit({ type: "upgrade.denied", at: Date.now() });
     return false;
+  }
+
+  /** Resolve the principal an upgrade request authenticates as, if any. */
+  private principalFor(request: IncomingMessage): AdpPrincipal | null {
+    if (this.principals.length === 0) return null;
+
+    const header = request.headers["authorization"];
+    if (typeof header === "string" && header.startsWith("Bearer ")) {
+      const token = header.slice("Bearer ".length);
+      const match = this.principals.find((p) => p.token === token);
+      if (match) return match;
+    }
+
+    try {
+      const url = new URL(request.url ?? "", "http://localhost");
+      const token = url.searchParams.get("token");
+      if (token) {
+        const match = this.principals.find((p) => p.token === token);
+        if (match) return match;
+      }
+    } catch {
+      // fall through
+    }
+    return null;
+  }
+
+  /** Subscribe to structured audit events (connects, denied upgrades/commands). */
+  public onAudit(listener: AdpAuditListener): void {
+    this.auditListeners.push(listener);
+  }
+
+  private emitAudit(event: AdpAuditEvent): void {
+    for (const listener of this.auditListeners) listener(event);
   }
 
   /**
@@ -417,6 +481,36 @@ export class AdpServer extends EventEmitter {
       if (requestId === undefined) return; // notification: never respond
       respondOnce(() => this.sendResult(ws, requestId, resultData));
     };
+
+    // Built-in protocol handshake — always available so clients can discover
+    // the version and auth posture before issuing domain calls.
+    if (req.method === AdpDomains.Adp.hello) {
+      const principal = this.socketPrincipals.get(ws);
+      reply({
+        version: ADP_PROTOCOL_VERSION,
+        authRequired: this.principals.length > 0,
+        authenticated: this.principals.length === 0 || principal !== undefined,
+      });
+      this.emitAudit({ type: "command", sessionId, method: req.method, at: Date.now() });
+      return;
+    }
+
+    // Scope gate: a scoped principal may only call methods under its prefixes.
+    const principal = this.socketPrincipals.get(ws);
+    if (
+      principal?.scopes &&
+      !principal.scopes.some((scope) => req.method.startsWith(scope))
+    ) {
+      this.emitAudit({ type: "command.denied", sessionId, method: req.method, at: Date.now() });
+      if (requestId !== undefined) {
+        respondOnce(() =>
+          this.sendError(ws, requestId, -32601, `Method not permitted: ${req.method}`),
+        );
+      }
+      return;
+    }
+
+    this.emitAudit({ type: "command", sessionId, method: req.method, at: Date.now() });
 
     const registered = this.handlers.get(req.method);
     if (!registered) {

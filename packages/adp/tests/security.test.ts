@@ -87,3 +87,76 @@ describe("ADP transport security", () => {
     ).rejects.toThrow("closed");
   });
 });
+
+describe("ADP protocol version + scopes + audit", () => {
+  it("answers Adp.hello with the protocol version", async () => {
+    const p = port++;
+    makeServer(p);
+    const client = makeClient(`ws://localhost:${p}`);
+    await client.waitForOpen();
+
+    const hello = await client.hello();
+    expect(hello.version).toBe("1");
+    expect(hello.authRequired).toBe(false);
+  });
+
+  it("advertises authRequired on an authenticated server", async () => {
+    const p = port++;
+    makeServer({ port: p, authToken: "s3cret" });
+    const client = makeClient(`ws://localhost:${p}?token=s3cret`);
+    await client.waitForOpen();
+
+    const hello = await client.hello();
+    expect(hello.authRequired).toBe(true);
+    expect(hello.authenticated).toBe(true);
+  });
+
+  it("enforces per-token method scopes", async () => {
+    const p = port++;
+    const server = makeServer({
+      port: p,
+      authToken: [
+        { token: "reader", scopes: ["Toolchain."] },
+        { token: "admin" },
+      ],
+    });
+    server.on("Toolchain.list", (_params, cb) => cb({ tools: [] }));
+    server.on("Session.prompt", (_params, cb) => cb({ ok: true }));
+
+    const reader = makeClient(`ws://localhost:${p}?token=reader`);
+    await reader.waitForOpen();
+    await expect(reader.send("Toolchain.list")).resolves.toEqual({ tools: [] });
+    await expect(reader.send("Session.prompt", { prompt: "x" })).rejects.toThrow(
+      "Method not permitted",
+    );
+
+    const admin = makeClient(`ws://localhost:${p}?token=admin`);
+    await admin.waitForOpen();
+    await expect(admin.send("Session.prompt", { prompt: "x" })).resolves.toEqual({ ok: true });
+  });
+
+  it("emits audit events for connect, denied command, and disconnect", async () => {
+    const p = port++;
+    const server = makeServer({
+      port: p,
+      authToken: { token: "reader", scopes: ["Toolchain."] },
+    });
+    server.on("Toolchain.list", (_params, cb) => cb({ tools: [] }));
+
+    const events: { type: string; method?: string }[] = [];
+    server.onAudit((e) => events.push(e));
+
+    const client = makeClient(`ws://localhost:${p}?token=reader`);
+    await client.waitForOpen();
+    await client.send("Toolchain.list");
+    await expect(client.send("Memory.compact")).rejects.toThrow();
+    client.close();
+
+    await new Promise((r) => setTimeout(r, 20));
+    const types = events.map((e) => e.type);
+    expect(types).toContain("connect");
+    expect(types).toContain("command");
+    expect(types).toContain("command.denied");
+    expect(events.find((e) => e.type === "command.denied")?.method).toBe("Memory.compact");
+  });
+});

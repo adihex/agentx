@@ -1,5 +1,6 @@
 import WebSocket, { type RawData } from "ws";
-import type { JsonRpcResponse, AdpEvent } from "./schemas.js";
+import { AdpDomains } from "./schemas.js";
+import type { JsonRpcResponse, AdpEvent, AdpHello } from "./schemas.js";
 
 /**
  * Normalize a ws `RawData` frame to a UTF-8 string.
@@ -61,6 +62,14 @@ export class AdpClient {
 
   public get isOpen(): boolean {
     return this.ws.readyState === WebSocket.OPEN;
+  }
+
+  /**
+   * Protocol handshake: resolves the server's `Adp.hello` payload with the
+   * wire version and auth posture. Requires an open connection.
+   */
+  public hello(): Promise<AdpHello> {
+    return this.send<AdpHello>(AdpDomains.Adp.hello);
   }
 
   public async connect(): Promise<void> {
