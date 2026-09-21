@@ -42,20 +42,27 @@ type PendingRequest = {
 };
 
 export class AdpClient {
-  private ws: WebSocket;
+  /** Assigned by openSocket() — recreated on waitForOpen retries. */
+  private ws!: WebSocket;
   private pendingRequests = new Map<string | number, PendingRequest>();
   private eventListeners: Array<(method: string, params?: unknown) => void> = [];
   private closeListeners: Array<(code: number) => void> = [];
   private readonly defaultTimeoutMs: number;
+  private readonly token?: string;
 
   constructor(
     private url: string,
     options: AdpClientOptions = {},
   ) {
     this.defaultTimeoutMs = options.timeoutMs ?? 0;
+    this.token = options.token;
+    this.openSocket();
+  }
+
+  private openSocket(): void {
     this.ws = new WebSocket(
       this.url,
-      options.token ? { headers: { authorization: `Bearer ${options.token}` } } : undefined,
+      this.token ? { headers: { authorization: `Bearer ${this.token}` } } : undefined,
     );
     this.setupHandlers();
   }
@@ -174,10 +181,39 @@ export class AdpClient {
   public async waitForOpen(): Promise<void> {
     if (this.ws.readyState === WebSocket.OPEN) return;
     return new Promise((resolve, reject) => {
-      this.ws.once("open", () => resolve());
-      // A refused/dead connection must not leave callers hanging.
-      this.ws.once("error", reject);
-      this.ws.once("close", () => reject(new Error("WebSocket closed before opening")));
+      // The server's loopback bind resolves its host asynchronously, so a
+      // client constructed right after the server can hit ECONNREFUSED while
+      // the listener is still coming up — retry those briefly before giving up.
+      const deadline = Date.now() + 1_000;
+      const attempt = () => {
+        let settled = false;
+        this.ws.once("open", () => {
+          if (!settled) {
+            settled = true;
+            resolve();
+          }
+        });
+        this.ws.once("error", (err: unknown) => {
+          if (settled) return;
+          settled = true;
+          const code = (err as NodeJS.ErrnoException | undefined)?.code;
+          if (code === "ECONNREFUSED" && Date.now() < deadline) {
+            setTimeout(() => {
+              this.openSocket();
+              attempt();
+            }, 25);
+            return;
+          }
+          reject(err instanceof Error ? err : new Error(String(err)));
+        });
+        this.ws.once("close", () => {
+          if (!settled) {
+            settled = true;
+            reject(new Error("WebSocket closed before opening"));
+          }
+        });
+      };
+      attempt();
     });
   }
 
