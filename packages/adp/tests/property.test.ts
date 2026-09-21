@@ -28,8 +28,10 @@ describe("ADP protocol — property tests", () => {
           expect(result).not.toBeNull();
           // Bare verbs map to the legacy Debugger.* surface; a dotted verb is
           // already a fully-qualified ADP method and passes through verbatim.
-          if (cmd.includes(".")) {
-            expect(result!.method).toBe(cmd);
+          // The parser splits on spaces, so only the first token is the verb.
+          const verb = cmd.split(" ")[0];
+          if (verb.includes(".")) {
+            expect(result!.method).toBe(verb);
           } else {
             expect(result!.method).toMatch(/^Debugger\./);
           }
