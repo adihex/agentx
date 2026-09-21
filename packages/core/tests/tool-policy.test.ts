@@ -249,3 +249,95 @@ describe("Memory.compact semantics", () => {
     session.shutdownEngine();
   });
 });
+
+describe("session ADP-op semantics", () => {
+  it("enqueuePrompt/waitForPrompt drain the queue FIFO", async () => {
+    const session = makeSession();
+    expect(session.enqueuePrompt("first").status).toBe("queued");
+    session.enqueuePrompt("second");
+    await expect(session.waitForPrompt()).resolves.toBe("first");
+    await expect(session.waitForPrompt()).resolves.toBe("second");
+    session.shutdownEngine();
+  });
+
+  it("enqueuePrompt rejects empty prompts", () => {
+    const session = makeSession();
+    expect(session.enqueuePrompt("")).toEqual({ status: "error", reason: "missing prompt" });
+    session.shutdownEngine();
+  });
+
+  it("enqueuePrompt wakes a parked waitForPrompt", async () => {
+    const session = makeSession();
+    const waiting = session.waitForPrompt();
+    session.enqueuePrompt("wake");
+    await expect(waiting).resolves.toBe("wake");
+    session.shutdownEngine();
+  });
+
+  it("requestShutdown resolves a parked waitForPrompt with null", async () => {
+    const session = makeSession();
+    const waiting = session.waitForPrompt();
+    session.requestShutdown();
+    await expect(waiting).resolves.toBeNull();
+    await expect(session.waitForPrompt()).resolves.toBeNull();
+    session.shutdownEngine();
+  });
+
+  it("halt with no active inference reports no_active_inference and a later run still completes", async () => {
+    const session = makeSession();
+    expect(session.halt()).toEqual({ status: "no_active_inference" });
+    await expect(session.run("hello")).resolves.toBe("ok");
+    session.shutdownEngine();
+  });
+
+  it("halt during inference aborts the run", async () => {
+    const session = makeSession();
+    // Park the run behind the pause gate, then halt — halt releases the gate
+    // and publishes the halted terminal.
+    session.pause();
+    let resolved: string | undefined;
+    const run = session.run("hello").then((t) => (resolved = t));
+    await new Promise((r) => setTimeout(r, 60));
+    expect(resolved).toBeUndefined();
+    expect(session.halt().status).toBe("halted");
+    await run;
+    session.shutdownEngine();
+  });
+
+  it("listTools reflects the injected tool set", () => {
+    const session = makeSession();
+    const { tools } = session.listTools();
+    expect(tools.map((t) => t.name).sort()).toEqual(["echo", "hang"]);
+    session.shutdownEngine();
+  });
+
+  it("interceptTool validates input and dispatches", () => {
+    const session = makeSession();
+    expect(session.interceptTool(undefined)).toEqual({
+      status: "error",
+      reason: "missing toolName",
+    });
+    const dispatched = session.interceptTool({ toolName: "echo", args: { v: 1 } });
+    expect(dispatched.status).toBe("dispatched");
+    expect(dispatched.toolCallId).toMatch(/^intercept_/);
+    session.shutdownEngine();
+  });
+
+  it("getCallFrame reports live counters", () => {
+    const session = makeSession();
+    session.pause();
+    const frame = session.getCallFrame();
+    expect(frame).toMatchObject({ paused: true, contextLength: 0 });
+    session.shutdownEngine();
+  });
+
+  it("injectThought appends a user message and reports the new length", () => {
+    const session = makeSession();
+    const res = session.injectThought("note this");
+    expect(res).toEqual({ status: "injected", contextLength: 1 });
+    const ctx = (session as unknown as { context: Array<{ role: string; content: string }> })
+      .context;
+    expect(ctx[0].content).toContain("[ADP Injected]");
+    session.shutdownEngine();
+  });
+});
