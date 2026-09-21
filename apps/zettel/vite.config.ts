@@ -27,9 +27,9 @@ export default defineConfig({
       build: {
         command: "tsc -b && tsc -p tsconfig.server.json && vite build",
         output: ["dist/**", "dist-server/**"],
-        input: [{ auto: true }, "!dist/**", "!dist-server/**", "!node_modules/**"],
+        input: [{ auto: true }, "src/**", "!dist/**", "!dist-server/**", "!node_modules/**"],
         dependsOn: ["@agentx/adp#build", "@agentx/core#build", "@agentx/agx-core#build"],
       },
     },
   },
-});
+} as Parameters<typeof defineConfig>[0]);

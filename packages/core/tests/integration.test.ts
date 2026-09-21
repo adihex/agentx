@@ -42,7 +42,7 @@ vi.mock("../src/AgenticThreadPool", () => {
 import { AgentEventLoop } from "../src/AgentEventLoop";
 import { AdpClient } from "../../adp/src/client";
 
-let port = 9800;
+let port = 9900; // distinct from adp/security (9800s) and e2e-lifecycle (9850) — parallel workers must not collide
 
 describe("AgentEventLoop + ADP Integration", () => {
   let loop: AgentEventLoop | null = null;
@@ -87,10 +87,10 @@ describe("AgentEventLoop + ADP Integration", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    const pauseResult = await client.send("Metacognition.pause");
+    const pauseResult = await client.send<{ status: string }>("Metacognition.pause");
     expect(pauseResult.status).toBe("paused");
 
-    const resumeResult = await client.send("Metacognition.resume");
+    const resumeResult = await client.send<{ status: string }>("Metacognition.resume");
     expect(resumeResult.status).toBe("resumed");
   });
 
@@ -100,7 +100,10 @@ describe("AgentEventLoop + ADP Integration", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    const result = await client.send("Inference.evaluate", { expression: "test message" });
+    const result = await client.send<{ status: string; contextLength: number }>(
+      "Inference.evaluate",
+      { expression: "test message" },
+    );
     expect(result.status).toBe("injected");
     expect(result.contextLength).toBeGreaterThan(0);
   });
@@ -122,7 +125,7 @@ describe("AgentEventLoop + ADP Integration", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    const result = await client.send("Inference.halt");
+    const result = await client.send<{ status: string }>("Inference.halt");
     expect(result.status).toBe("no_active_inference");
   });
 });

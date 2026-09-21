@@ -1,7 +1,7 @@
 /**
  * agentx-mcp — Unit tests for MCP server
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 // Mock the MCP SDK before any imports
 vi.mock("@modelcontextprotocol/sdk/server/index.js", () => {

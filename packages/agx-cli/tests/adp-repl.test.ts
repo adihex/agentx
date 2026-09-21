@@ -1,37 +1,26 @@
-/**
- * agx-cli — Unit tests for ADP REPL extracted functions
- */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
-import path from "node:path";
-
-vi.mock("@agentx/agx-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@agentx/agx-core")>();
-  return {
-    ...actual,
-    AdpClient: vi.fn().mockImplementation(function () {
-      return {
-        send: vi.fn().mockReturnValue(true),
-        onStatus: vi.fn(),
-        onEvent: vi.fn(),
-        connect: vi.fn(),
-        destroy: vi.fn(),
-      };
-    }),
-  };
-});
-
+import type { AdpClient } from "@agentx/agx-core";
+import { REPL_HELP_LINES } from "@agentx/agx-core";
 import {
+  DEFAULT_ADP_URL,
   LOG_FILE,
   REPL_COLORS,
   REPL_PROMPT,
-  DEFAULT_ADP_URL,
-  logToDashboard,
+  handleAdpEvent,
   handleReplInput,
+  logToDashboard,
+  renderReplFeedback,
 } from "../src/adp-repl";
-import { AdpClient } from "@agentx/agx-core";
 
-describe("agx-cli REPL — extracted functions", () => {
+const makeClient = (sendResult: boolean) => {
+  const send = vi.fn().mockReturnValue(sendResult);
+  return { client: { send } as unknown as AdpClient, send };
+};
+
+const fakeRl = () => ({ prompt: vi.fn() });
+
+describe("REPL constants", () => {
   it("REPL_COLORS has expected ANSI codes", () => {
     expect(REPL_COLORS.header).toBe("\x1b[36m");
     expect(REPL_COLORS.green).toBe("\x1b[32m");
@@ -39,7 +28,7 @@ describe("agx-cli REPL — extracted functions", () => {
     expect(REPL_COLORS.reset).toBe("\x1b[0m");
   });
 
-  it("REPL_PROMPT contains expected text", () => {
+  it("REPL_PROMPT contains the prompt text", () => {
     expect(REPL_PROMPT).toContain("agx@debugger:~$");
   });
 
@@ -47,66 +36,106 @@ describe("agx-cli REPL — extracted functions", () => {
     expect(DEFAULT_ADP_URL).toBe("ws://localhost:9222");
   });
 
-  it("logs to dashboard file", () => {
-    // Clean up before
-    if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
-
+  it("logToDashboard appends a timestamped line", () => {
     logToDashboard("Test message");
     const content = fs.readFileSync(LOG_FILE, "utf-8");
     expect(content).toContain("[REPL] Test message");
+  });
+});
 
-    fs.unlinkSync(LOG_FILE);
+describe("handleReplInput", () => {
+  it("flags /help for local rendering instead of sending it", () => {
+    const { client, send } = makeClient(true);
+    const res = handleReplInput("/help", client);
+    expect(res).toEqual({ action: "continue", message: "help" });
+    expect(send).not.toHaveBeenCalled();
   });
 
-  it("handleReplInput returns continue for empty input", () => {
-    const client = new (AdpClient as any)();
-    const result = handleReplInput("", client);
-    expect(result.action).toBe("continue");
-    expect(result.message).toBeUndefined();
-  });
-
-  it("handleReplInput returns continue for whitespace-only", () => {
-    const client = new (AdpClient as any)();
-    const result = handleReplInput("   ", client);
-    expect(result.action).toBe("continue");
-  });
-
-  it("handleReplInput returns help for /help", () => {
-    const client = new (AdpClient as any)();
-    const result = handleReplInput("/help", client);
-    expect(result.action).toBe("continue");
-    expect(result.message).toBe("help");
-  });
-
-  it("handleReplInput returns exit for /exit or /quit", () => {
-    const client = new (AdpClient as any)();
+  it("exits on /exit and /quit", () => {
+    const { client } = makeClient(true);
     expect(handleReplInput("/exit", client).action).toBe("exit");
     expect(handleReplInput("/quit", client).action).toBe("exit");
   });
 
-  it("handleReplInput parses and sends valid commands", () => {
-    const client = new (AdpClient as any)();
-    const result = handleReplInput("/pause agent1", client);
-    expect(result.action).toBe("continue");
-    expect(result.message).toContain("sent:Debugger.Pause");
-    expect(client.send).toHaveBeenCalledWith({
+  it("sends parsed commands and stays silent (server replies via Debugger.Response)", () => {
+    const { client, send } = makeClient(true);
+    const res = handleReplInput("/pause agent1", client);
+    expect(res.action).toBe("continue");
+    expect(send).toHaveBeenCalledWith({
       method: "Debugger.Pause",
       params: { args: ["agent1"] },
     });
+    expect(renderReplFeedback(res)).toBeNull();
   });
 
-  it("handleReplInput returns error for unknown format", () => {
-    const client = new (AdpClient as any)();
-    const result = handleReplInput("garbage", client);
-    expect(result.action).toBe("error");
-    expect(result.message).toContain("Unknown command format");
+  it("surfaces a send failure as printable feedback", () => {
+    const { client } = makeClient(false);
+    const res = handleReplInput("/pause", client);
+    expect(res.action).toBe("error");
+    expect(renderReplFeedback(res)).toMatch(/disconnect/i);
   });
 
-  it("handleReplInput returns error when send fails", () => {
-    const client = new (AdpClient as any)();
-    client.send.mockReturnValue(false);
-    const result = handleReplInput("/halt", client);
-    expect(result.action).toBe("error");
-    expect(result.message).toContain("Failed to send");
+  it("surfaces an unparseable command as printable feedback", () => {
+    const { client } = makeClient(true);
+    const res = handleReplInput("not-a-command", client);
+    expect(res.action).toBe("error");
+    expect(renderReplFeedback(res)).toMatch(/unknown command/i);
+  });
+
+  it("ignores blank input", () => {
+    const { client, send } = makeClient(true);
+    expect(handleReplInput("   ", client)).toEqual({ action: "continue" });
+    expect(send).not.toHaveBeenCalled();
+  });
+});
+
+describe("renderReplFeedback", () => {
+  it("renders the shared help lines for /help", () => {
+    const text = renderReplFeedback({ action: "continue", message: "help" });
+    expect(text).toBe(REPL_HELP_LINES.join("\n"));
+  });
+
+  it("renders error messages verbatim", () => {
+    expect(
+      renderReplFeedback({ action: "error", message: "boom" }),
+    ).toBe("boom");
+  });
+
+  it("renders nothing for plain continue/exit results", () => {
+    expect(renderReplFeedback({ action: "continue" })).toBeNull();
+    expect(renderReplFeedback({ action: "exit" })).toBeNull();
+  });
+});
+
+describe("handleAdpEvent", () => {
+  it("re-prompts on Debugger.Response frames", () => {
+    const rl = fakeRl();
+    const logs: string[] = [];
+    const spy = vi.spyOn(console, "log").mockImplementation((m) => logs.push(String(m)));
+    handleAdpEvent(
+      { method: "Debugger.Response", params: { result: { ok: 1 } } },
+      rl as never,
+    );
+    expect(rl.prompt).toHaveBeenCalled();
+    expect(logs.join("\n")).toContain('"ok":1');
+    spy.mockRestore();
+  });
+
+  it("renders an error field instead of the raw params blob", () => {
+    const rl = fakeRl();
+    const logs: string[] = [];
+    const spy = vi.spyOn(console, "log").mockImplementation((m) => logs.push(String(m)));
+    handleAdpEvent(
+      { method: "Debugger.Response", params: { error: "nope" } },
+      rl as never,
+    );
+    expect(logs.join("\n")).toContain("error:");
+    spy.mockRestore();
+  });
+
+  it("ignores non-response events", () => {
+    const rl = fakeRl();
+    handleAdpEvent({ method: "Agent.StatusUpdate", params: {} }, rl as never);
+    expect(rl.prompt).not.toHaveBeenCalled();
   });
 });

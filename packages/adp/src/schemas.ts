@@ -56,6 +56,7 @@ export const AdpDomains = {
   Toolchain: {
     intercept: "Toolchain.intercept",
     list: "Toolchain.list",
+    cancel: "Toolchain.cancel",
   },
   /** Context and memory management */
   Memory: {
@@ -67,7 +68,21 @@ export const AdpDomains = {
     prompt: "Session.prompt",
     shutdown: "Session.shutdown",
   },
+  /** Protocol-level meta methods, answered by the server itself */
+  Adp: {
+    hello: "Adp.hello",
+  },
 } as const;
+
+/** Wire protocol version, reported by `Adp.hello`. */
+export const ADP_PROTOCOL_VERSION = "1" as const;
+
+/** Payload returned by the `Adp.hello` handshake. */
+export interface AdpHello {
+  version: string;
+  authRequired: boolean;
+  authenticated: boolean;
+}
 
 /** Callback shape the ADP server uses when dispatching a command to a handler */
 export type AdpCommandCallback<T = unknown> = (result: T) => void;

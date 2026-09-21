@@ -7,7 +7,7 @@
  *   3. Help command output
  *   4. Log-to-dashboard functionality
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
@@ -37,7 +37,7 @@ vi.mock("@agentx/agx-core", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@agentx/agx-core")>();
   return {
     ...actual,
-    AdpClient: vi.fn().mockImplementation(function (url: string) {
+    AdpClient: vi.fn().mockImplementation(function (_url: string) {
       const listeners = new Set<(event: any) => void>();
       const statusListeners = new Set<(connected: boolean) => void>();
       return {
@@ -110,7 +110,9 @@ describe("E2E: agx-cli REPL Lifecycle", () => {
   });
 
   it("E2E: log-to-dashboard writes to file", () => {
-    const logFile = path.join(__dirname, "../orchestrator.log");
+    // Own filename: the real orchestrator.log is raced on by adp-repl.test.ts
+    // in a parallel worker.
+    const logFile = path.join(__dirname, "../orchestrator-e2e-test.log");
     const timestamp = new Date().toLocaleTimeString();
 
     // Simulate the logToDashboard function
@@ -120,7 +122,7 @@ describe("E2E: agx-cli REPL Lifecycle", () => {
     const content = fs.readFileSync(logFile, "utf-8");
     expect(content).toContain("Connected to ADP Server");
 
-    // Cleanup
-    fs.unlinkSync(logFile);
+    // Cleanup — force:true because adp-repl.test.ts races on the same file.
+    fs.rmSync(logFile, { force: true });
   });
 });

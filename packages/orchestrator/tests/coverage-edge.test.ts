@@ -1,10 +1,10 @@
 /**
  * Orchestrator Coverage — BaseAgent, OrchestrationBus edge paths
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OrchestrationBus } from "../src/OrchestrationBus";
 import { DependencyGraph } from "../src/DependencyGraph";
-import { ExecutionPlan, OrchestrationEvent } from "../src/types";
+import { ExecutionPlan } from "../src/types";
 
 describe("OrchestrationBus — edge coverage", () => {
   let bus: OrchestrationBus;

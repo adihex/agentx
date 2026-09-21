@@ -232,5 +232,8 @@ export class AgentSessionHost {
 
     bind(AdpDomains.Toolchain.list, (s, _p, cb) => cb(s.listTools()));
     bind(AdpDomains.Toolchain.intercept, (s, p, cb) => cb(s.interceptTool(p)));
+    bind(AdpDomains.Toolchain.cancel, (s, p, cb) =>
+      cb(s.cancelToolCall((p as { toolCallId?: string } | undefined)?.toolCallId ?? "")),
+    );
   }
 }

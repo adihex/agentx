@@ -15,7 +15,6 @@ import {
   MessageScrollerButton,
   Message,
   Bubble,
-  Attachment,
   Marker,
 } from "@agentx/shared-ui";
 import "./App.css";
@@ -175,13 +174,22 @@ export default function App() {
     }
   }, [session]);
 
+  // Notes/graph refresh is event-driven: UI mutations refetch on their own
+  // success path, agent writes arrive via Agent.ToolComplete/InferenceEnd.
+  // Refetching on focus/visibility-close covers changes made by other tabs or
+  // API clients that emit neither signal.
   useEffect(() => {
     if (!session) return;
     void fetchNotes();
-    const interval = setInterval(() => {
-      void fetchNotes();
-    }, 2500);
-    return () => clearInterval(interval);
+    const onForeground = () => {
+      if (document.visibilityState === "visible") void fetchNotes();
+    };
+    document.addEventListener("visibilitychange", onForeground);
+    window.addEventListener("focus", onForeground);
+    return () => {
+      document.removeEventListener("visibilitychange", onForeground);
+      window.removeEventListener("focus", onForeground);
+    };
   }, [fetchNotes, session]);
 
   // Connect to the agent via ADP WebSocket.

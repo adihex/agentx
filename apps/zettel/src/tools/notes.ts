@@ -12,6 +12,7 @@ import {
   writeNote,
   readNote,
   searchNotes as searchNotesStore,
+  listNotes as listNotesStore,
   addLink,
   backlinksOf,
   traverseGraphStore,
@@ -113,6 +114,30 @@ export async function getNote(args: GetNoteInput & { userId?: string }) {
   }
 }
 
+// ── listNotes ─────────────────────────────────────────────────────────────────
+
+export const listNotesSchema = z.object({
+  limit: z.number().int().positive().optional().describe("Max notes to return (default 20)."),
+});
+export type ListNotesInput = z.infer<typeof listNotesSchema>;
+
+export async function listNotes(args: ListNotesInput & { userId?: string }) {
+  const { limit } = listNotesSchema.parse(args);
+  const userId = args.userId ?? "default";
+  try {
+    const notes = await listNotesStore(userId);
+    // Bodies can be large; return a compact index so enumerating stays cheap.
+    return {
+      notes: notes
+        .slice(0, limit ?? 20)
+        .map(({ id, title, tags, created, source }) => ({ id, title, tags, created, source })),
+      total: notes.length,
+    };
+  } catch (err) {
+    return { notes: [], total: 0, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 // ── traverseGraph ─────────────────────────────────────────────────────────────
 
 export const traverseGraphSchema = z.object({
@@ -180,4 +205,13 @@ export const traverseGraphTool: ToolDefinition<TraverseGraphInput> = {
   inputSchema: traverseGraphSchema,
   modulePath: new URL(import.meta.url).pathname,
   exportName: "traverseGraph",
+};
+
+export const listNotesTool: ToolDefinition<ListNotesInput> = {
+  name: "listNotes",
+  description:
+    "Enumerate the user's notes as a compact index of {id,title,tags,created,source}. Use this to see what exists before searching.",
+  inputSchema: listNotesSchema,
+  modulePath: new URL(import.meta.url).pathname,
+  exportName: "listNotes",
 };

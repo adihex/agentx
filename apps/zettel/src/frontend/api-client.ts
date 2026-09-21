@@ -7,9 +7,7 @@ async function authedFetch(path: string, options: RequestInit = {}): Promise<Res
   return fetch(`${API_BASE}${path}`, {
     ...options,
     credentials: "include",
-    headers: {
-      ...options.headers,
-    },
+    headers: options.headers,
   });
 }
 

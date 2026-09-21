@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   nowHHMMSS,
   parseReplCommand,
+  formatAdpResponseBody,
   AdpClient,
   STATUS_TERM_COLOR,
   STATUS_HEX,
@@ -25,9 +26,21 @@ describe("agx-core helpers", () => {
     });
   });
 
+  it("parseReplCommand should pass through dotted ADP methods verbatim", () => {
+    expect(parseReplCommand("/Memory.compact")).toEqual({
+      method: "Memory.compact",
+      args: [],
+    });
+    expect(parseReplCommand("/Session.prompt run the plan")).toEqual({
+      method: "Session.prompt",
+      args: ["run", "the", "plan"],
+    });
+  });
+
   it("parseReplCommand should return null for non-commands", () => {
     expect(parseReplCommand("hello")).toBeNull();
     expect(parseReplCommand("  ")).toBeNull();
+    expect(parseReplCommand("/")).toBeNull();
   });
 
   it("colors and hex maps should be defined", () => {
@@ -169,5 +182,242 @@ describe("AdpClient (agnostic)", () => {
     messageCallback({ data: JSON.stringify({ method: "Test" }) });
 
     expect(eventFn).not.toHaveBeenCalled();
+  });
+
+  it("should pass the auth token as a query parameter", () => {
+    const client = new AdpClient("ws://localhost:9222", { token: "sek rit/1" });
+    client.connect();
+    expect(global.WebSocket).toHaveBeenCalledWith(
+      `ws://localhost:9222?token=${encodeURIComponent("sek rit/1")}`,
+    );
+  });
+
+  it("should reuse the token on reconnect", () => {
+    const client = new AdpClient("ws://localhost:9222", { token: "t" });
+    client.connect();
+    const closeCallback = mockWs.addEventListener.mock.calls.find(
+      (c: any) => c[0] === "close",
+    )[1];
+    closeCallback();
+    vi.advanceTimersByTime(3100);
+    expect(global.WebSocket).toHaveBeenLastCalledWith("ws://localhost:9222?token=t");
+  });
+});
+
+describe("AdpClient reconnect backoff", () => {
+  let mockWs: any;
+
+  const listener = (name: string) =>
+    mockWs.addEventListener.mock.calls.filter((c: any) => c[0] === name).at(-1)![1];
+
+  beforeEach(() => {
+    mockWs = {
+      addEventListener: vi.fn(),
+      send: vi.fn(),
+      close: vi.fn(),
+      readyState: 0,
+    };
+    const MockWS = vi.fn().mockImplementation(function () {
+      return mockWs;
+    });
+    (MockWS as any).OPEN = 1;
+    vi.stubGlobal("WebSocket", MockWS);
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("doubles the delay between consecutive failed reconnects", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")(); // attempt 1 scheduled at +3s
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(2);
+
+    listener("close")(); // attempt 2 scheduled at +6s
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(3);
+  });
+
+  it("caps the backoff at 30s", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    for (const ms of [3000, 6000, 12000, 24000]) {
+      listener("close")();
+      vi.advanceTimersByTime(ms);
+    }
+    expect(global.WebSocket).toHaveBeenCalledTimes(5);
+
+    listener("close")(); // next delay would be 48s → capped at 30s
+    vi.advanceTimersByTime(29999);
+    expect(global.WebSocket).toHaveBeenCalledTimes(5);
+    vi.advanceTimersByTime(1);
+    expect(global.WebSocket).toHaveBeenCalledTimes(6);
+  });
+
+  it("resets the backoff after a successful open", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")();
+    vi.advanceTimersByTime(3000); // connect #2
+    listener("close")();
+    vi.advanceTimersByTime(6000); // connect #3
+    listener("open")(); // successful open resets attempts
+    listener("close")();
+    vi.advanceTimersByTime(3000); // back to base delay
+    expect(global.WebSocket).toHaveBeenCalledTimes(4);
+  });
+
+  it("destroy() cancels a pending reconnect", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")();
+    client.destroy();
+    vi.advanceTimersByTime(60000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("AdpClient.sendAndWait", () => {
+  let mockWs: any;
+
+  const listener = (name: string) =>
+    mockWs.addEventListener.mock.calls.filter((c: any) => c[0] === name).at(-1)![1];
+
+  beforeEach(() => {
+    mockWs = {
+      addEventListener: vi.fn(),
+      send: vi.fn(),
+      close: vi.fn(),
+      readyState: 1, // OPEN
+    };
+    const MockWS = vi.fn().mockImplementation(function () {
+      return mockWs;
+    });
+    (MockWS as any).OPEN = 1;
+    vi.stubGlobal("WebSocket", MockWS);
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  const sentId = () => JSON.parse(mockWs.send.mock.calls.at(-1)![0]).id as string;
+
+  it("resolves with the response correlated by id", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("message")({
+      data: JSON.stringify({ jsonrpc: "2.0", id: sentId(), result: "pong" }),
+    });
+    await expect(promise).resolves.toBe("pong");
+  });
+
+  it("does not deliver responses to event listeners", async () => {
+    const client = new AdpClient();
+    client.connect();
+    const eventFn = vi.fn();
+    client.onEvent(eventFn);
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("message")({
+      data: JSON.stringify({ jsonrpc: "2.0", id: sentId(), result: "pong" }),
+    });
+    await promise;
+    expect(eventFn).not.toHaveBeenCalled();
+  });
+
+  it("rejects on a JSON-RPC error response", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Nope.Method", params: {} });
+    listener("message")({
+      data: JSON.stringify({
+        jsonrpc: "2.0",
+        id: sentId(),
+        error: { code: -32601, message: "Method not found: Nope.Method" },
+      }),
+    });
+    await expect(promise).rejects.toThrow("Method not found: Nope.Method");
+  });
+
+  it("rejects after the timeout", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} }, 100);
+    vi.advanceTimersByTime(100);
+    await expect(promise).rejects.toThrow("timed out");
+  });
+
+  it("rejects immediately when the socket is not open", async () => {
+    const client = new AdpClient();
+    client.connect();
+    mockWs.readyState = 0; // CONNECTING
+    await expect(client.sendAndWait({ method: "Ping.Pong", params: {} })).rejects.toThrow(
+      "WebSocket is not open",
+    );
+  });
+
+  it("rejects pending requests when the socket closes", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("close")();
+    await expect(promise).rejects.toThrow("WebSocket closed");
+  });
+
+  it("ignores responses with an unknown id", () => {
+    const client = new AdpClient();
+    client.connect();
+    const eventFn = vi.fn();
+    client.onEvent(eventFn);
+
+    expect(() =>
+      listener("message")({
+        data: JSON.stringify({ jsonrpc: "2.0", id: "stray", result: "x" }),
+      }),
+    ).not.toThrow();
+    expect(eventFn).not.toHaveBeenCalled();
+  });
+});
+
+describe("formatAdpResponseBody", () => {
+  it("stringifies object results", () => {
+    expect(formatAdpResponseBody({ result: { ok: 1 } })).toBe('{"ok":1}');
+  });
+
+  it("renders string errors with the error prefix", () => {
+    expect(formatAdpResponseBody({ error: "nope" })).toBe("error: nope");
+  });
+
+  it("renders structured errors JSON-encoded", () => {
+    expect(formatAdpResponseBody({ error: { code: -32601 } })).toBe(
+      'error: {"code":-32601}',
+    );
+  });
+
+  it("prefers error over result when both are present", () => {
+    expect(formatAdpResponseBody({ result: 1, error: "e" })).toBe("error: e");
+  });
+
+  it("falls back to the raw params when result is absent", () => {
+    expect(formatAdpResponseBody({ method: "x" } as never)).toBe('{"method":"x"}');
+    expect(formatAdpResponseBody(undefined)).toBe("undefined");
   });
 });

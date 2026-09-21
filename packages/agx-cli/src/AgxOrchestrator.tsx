@@ -7,6 +7,7 @@ import {
   REPL_HELP_LINES,
   STATUS_TERM_COLOR,
   parseReplCommand,
+  formatAdpResponseBody,
   nowHHMMSS,
   nodeReducer,
   type AgentNode,
@@ -128,8 +129,7 @@ export const AgxOrchestratorCLI = ({ onExit }: { onExit: () => void }) => {
         });
       }
       if (ev.method === "Debugger.Response") {
-        const params = ev.params as { result: unknown };
-        addRepl(`  ← ${String(params.result)}`);
+        addRepl(`  ← ${formatAdpResponseBody(ev.params)}`);
       }
     });
 

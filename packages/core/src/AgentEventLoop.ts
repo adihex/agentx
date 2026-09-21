@@ -142,5 +142,8 @@ export class AgentEventLoop extends AgentSession {
 
     this.adp.handle(AdpDomains.Toolchain.list, (_p, cb) => cb(this.listTools()));
     this.adp.handle(AdpDomains.Toolchain.intercept, (p, cb) => cb(this.interceptTool(p as any)));
+    this.adp.handle(AdpDomains.Toolchain.cancel, (p, cb) =>
+      cb(this.cancelToolCall((p as { toolCallId?: string } | undefined)?.toolCallId ?? "")),
+    );
   }
 }

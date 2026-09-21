@@ -376,7 +376,9 @@ export async function writeNote(userId: string, input: WriteNoteInput): Promise<
     });
     if (existsRes.rows.length === 0) break;
     suffix += 1;
-    id = `${base}-${suffix}`;
+    // Zero-pad so ids stay chronological under lexicographic ORDER BY
+    // ("-0010" must sort after "-0009").
+    id = `${base}-${pad(suffix, 4)}`;
   }
 
   const firstLine = input.content.split("\n").find((l) => l.trim().length > 0) ?? "";

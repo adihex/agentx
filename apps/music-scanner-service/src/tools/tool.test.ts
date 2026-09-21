@@ -10,7 +10,7 @@ vi.mock("node:child_process", () => ({
 // Import using absolute module resolution
 import { searchMusic, searchMusicSchema } from "./search.js";
 import { downloadAndUpload, downloadAndUploadSchema } from "./download.js";
-import { triggerCloudRun, triggerCloudRunSchema } from "./cloudrun.js";
+import { triggerCloudRun } from "./cloudrun.js";
 import { execFileSync } from "node:child_process";
 
 describe("searchMusic tool", () => {

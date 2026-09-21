@@ -1,10 +1,13 @@
-import { useEffect, useReducer, useState, useCallback } from "react";
+import { useEffect, useReducer, useRef, useState, useCallback } from "react";
 import {
   AdpClient,
   DEFAULT_NODES,
   DEFAULT_LOGS,
+  REPL_HELP_LINES,
   nowHHMMSS,
   nodeReducer,
+  parseReplCommand,
+  formatAdpResponseBody,
   type AgentNode,
   type LogEntry,
 } from "@agentx/agx-core";
@@ -23,8 +26,11 @@ export function useAdp(url = "ws://localhost:9222") {
   const addLog = useCallback((e: LogEntry) => setLogs((p) => [...p.slice(-99), e]), []);
   const addRepl = useCallback((l: string) => setReplOutput((p) => [...p.slice(-99), l]), []);
 
+  const clientRef = useRef<AdpClient | null>(null);
+
   useEffect(() => {
     const client = new AdpClient(url);
+    clientRef.current = client;
 
     const offStatus = client.onStatus((c) => setConnected(c));
     const offEvent = client.onEvent((ev) => {
@@ -42,12 +48,13 @@ export function useAdp(url = "ws://localhost:9222") {
         });
       }
       if (ev.method === "Debugger.Response") {
-        addRepl(`  ← ${String(ev.params.result)}`);
+        addRepl(`  ← ${formatAdpResponseBody(ev.params)}`);
       }
     });
 
     client.connect();
     return () => {
+      clientRef.current = null;
       offStatus();
       offEvent();
       client.destroy();
@@ -56,22 +63,24 @@ export function useAdp(url = "ws://localhost:9222") {
 
   const sendCommand = useCallback(
     (cmd: string) => {
-      addRepl(`agx@debugger:~$ ${cmd}`);
-      // AdpClient is scoped to the effect; open a one-shot WS for REPL sends
-      const ws = new WebSocket(url);
-      ws.onopen = () => {
-        ws.send(
-          JSON.stringify({
-            jsonrpc: "2.0",
-            id: Date.now(),
-            method: cmd.replace("/", "Debugger."),
-            params: {},
-          }),
-        );
-        ws.close();
-      };
+      const trimmed = cmd.trim();
+      addRepl(`agx@debugger:~$ ${trimmed}`);
+      if (trimmed === "/help") {
+        REPL_HELP_LINES.forEach(addRepl);
+        return;
+      }
+      const parsed = parseReplCommand(trimmed);
+      if (!parsed) {
+        addRepl(`  Unknown command: ${trimmed}`);
+        return;
+      }
+      // Reuse the persistent client — the server pushes Debugger.Response
+      // events on this socket, which a one-shot socket would never live to see.
+      if (!clientRef.current?.send({ method: parsed.method, params: { args: parsed.args } })) {
+        addRepl("  Not connected to the runtime.");
+      }
     },
-    [url, addRepl],
+    [addRepl],
   );
 
   return { connected, nodes, logs, replOutput, sendCommand };

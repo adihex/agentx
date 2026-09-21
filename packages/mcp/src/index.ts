@@ -80,7 +80,14 @@ class AgxMcpServer {
         bus.onAny((e) => events.push(e));
 
         console.error(`[MCP] Starting orchestration for plan: ${plan.planId}`);
+        // This process wires no executors (BaseAgent) to the session bus, so a
+        // nonempty plan can never produce terminal events — awaiting completion
+        // would just wait out a timeout. Empty plans complete synchronously
+        // inside the plan.created dispatch, so subscribe before start().
+        const completion =
+          plan.steps.length === 0 ? session.waitForCompletion(120_000) : null;
         await session.start(plan);
+        const result = completion ? await completion : null;
 
         return {
           content: [
@@ -88,9 +95,11 @@ class AgxMcpServer {
               type: "text",
               text: JSON.stringify(
                 {
-                  status: "completed",
-                  planId: plan.planId,
-                  summary: "Orchestration finished successfully.",
+                  status: result ? "completed" : "dispatched",
+                  planId: result?.planId ?? plan.planId,
+                  summary:
+                    result?.summary ??
+                    "Plan dispatched; attach executors (BaseAgent) to the session bus to run steps",
                   eventCount: events.length,
                 },
                 null,

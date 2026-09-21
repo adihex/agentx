@@ -15,13 +15,13 @@ import {
   searchNotesTool,
   getNoteTool,
   traverseGraphTool,
+  listNotesTool,
 } from "./tools/notes.js";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
 import {
   listNotes,
   readNote,
   backlinksOf,
-  writeNote,
   listCustomTools,
   writeCustomTool,
   deleteCustomTool,
@@ -44,9 +44,9 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
     model,
     onTextDelta,
   ) {
-    const lastUserMsg = String(
-      [...messages].reverse().find((m) => m.role === "user")?.content ?? "",
-    );
+    const lastUserContent = [...messages].reverse().find((m) => m.role === "user")?.content;
+    const lastUserMsg =
+      typeof lastUserContent === "string" ? lastUserContent : JSON.stringify(lastUserContent ?? "");
     const hasToolResult = messages.some((m) => m.role === "tool");
 
     if (hasToolResult) {
@@ -254,7 +254,6 @@ const routes = api
     }
   })
   .post("/transcribe", async (c) => {
-    const user = c.get("user");
     try {
       const body = await c.req.parseBody();
       const file = body["file"] as File | undefined;
@@ -354,14 +353,43 @@ export const httpServer = serve({
 
 export const userAgents = new Map<string, AgentEventLoop>();
 
+/**
+ * A user's agent holds worker threads and context; when its last ADP client
+ * disconnects it is evicted after a grace period so idle users stop holding
+ * threads. Reconnecting inside the window cancels the eviction.
+ */
+const AGENT_IDLE_EVICT_MS = 10 * 60 * 1000;
+const agentEvictTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function cancelAgentEviction(userId: string) {
+  const timer = agentEvictTimers.get(userId);
+  if (timer) {
+    clearTimeout(timer);
+    agentEvictTimers.delete(userId);
+  }
+}
+
+function scheduleAgentEviction(userId: string, agent: AgentEventLoop) {
+  const timer = setTimeout(() => {
+    agentEvictTimers.delete(userId);
+    if (agent.adp.clientCount === 0 && userAgents.get(userId) === agent) {
+      userAgents.delete(userId);
+      void agent.shutdown();
+    }
+  }, AGENT_IDLE_EVICT_MS);
+  timer.unref();
+  agentEvictTimers.set(userId, timer);
+}
+
 // A mock HTTP server that does nothing, to prevent AdpServer from binding to the real upgrade event
 const mockHttpServer = {
-  on: (event: string, callback: any) => {
+  on: () => {
     // Do nothing
   },
 };
 
 function getOrCreateUserAgent(userId: string): AgentEventLoop {
+  cancelAgentEviction(userId);
   let userAgent = userAgents.get(userId);
   if (!userAgent) {
     userAgent = new AgentEventLoop({
@@ -379,6 +407,7 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         searchNotes: searchNotesTool,
         getNote: getNoteTool,
         traverseGraph: traverseGraphTool,
+        listNotes: listNotesTool,
         transcribeAudio: transcribeAudioTool,
       },
       autoTick: true,
@@ -430,6 +459,13 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         }
       }
     })();
+
+    currentAgent.adp.onDisconnection(() => {
+      if (currentAgent.adp.clientCount === 0) {
+        scheduleAgentEviction(userId, currentAgent);
+      }
+    });
+    currentAgent.adp.onConnection(() => cancelAgentEviction(userId));
 
     userAgents.set(userId, userAgent);
   }

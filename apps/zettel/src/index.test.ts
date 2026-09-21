@@ -134,7 +134,7 @@ vi.spyOn(LLMOrchestrator.prototype, "runStep").mockImplementation(
 
 // Import after env vars are set
 const { httpServer, userAgents } = await import("./index.js");
-const { client, writeNote } = await import("./notes/store.js");
+const { client, writeNote, updateNote } = await import("./notes/store.js");
 
 describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
   let port = 0;
@@ -187,7 +187,7 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
       httpServer.close(() => resolve());
     });
     // Close database client
-    await client.close();
+    client.close();
   });
 
   async function signup(email: string, name: string): Promise<string> {
@@ -242,7 +242,12 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
     return new Promise((resolve) => {
       const handleMsg = (data: WebSocket.RawData) => {
         try {
-          const parsed = JSON.parse(data.toString());
+          const text = Array.isArray(data)
+            ? Buffer.concat(data).toString("utf8")
+            : Buffer.isBuffer(data)
+              ? data.toString("utf8")
+              : Buffer.from(data).toString("utf8");
+          const parsed = JSON.parse(text);
           if (parsed.method === "Agent.ToolComplete") {
             ws.off("message", handleMsg);
             resolve();
@@ -401,6 +406,187 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
       // Verify note is gone from list
       const notesA = await getNotes(cookieA);
       expect(notesA.find((n: any) => n.id === noteA.id)).toBeUndefined();
+    });
+  });
+
+  describe("REST API surface", () => {
+    it("reports health without auth", async () => {
+      const res = await fetch(`http://localhost:${port}/_health`);
+      expect(res.status).toBe(200);
+      expect((await res.json()).status).toBe("ok");
+    });
+
+    it("rejects unauthenticated API requests with 401", async () => {
+      const res = await fetch(`http://localhost:${port}/api/notes`);
+      expect(res.status).toBe(401);
+    });
+
+    it("serves a note with its backlinks", async () => {
+      const email = `reader-${Date.now()}@example.com`;
+      const cookie = await signup(email, "Reader");
+      const res0 = await fetch(`http://localhost:${port}/api/note`, {
+        headers: { cookie },
+      });
+      expect(res0.status).toBe(200);
+      expect((await res0.json()).note).toBeNull();
+
+      const resU = await client.execute({
+        sql: "SELECT id FROM user WHERE email = ?",
+        args: [email],
+      });
+      const userId = resU.rows[0].id as string;
+
+      const target = await writeNote(userId, { title: "Target", content: "backlink target" });
+      const source = await writeNote(userId, {
+        title: "Source",
+        content: "links out",
+        links: [target.id],
+      });
+
+      const res = await fetch(`http://localhost:${port}/api/note?id=${target.id}`, {
+        headers: { cookie },
+      });
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.note.title).toBe("Target");
+      expect(data.backlinks).toContain(source.id);
+    });
+
+    it("builds a deduplicated knowledge graph", async () => {
+      const email = `graph-${Date.now()}@example.com`;
+      const cookie = await signup(email, "Grapher");
+      const resU = await client.execute({
+        sql: "SELECT id FROM user WHERE email = ?",
+        args: [email],
+      });
+      const userId = resU.rows[0].id as string;
+
+      const a = await writeNote(userId, { title: "NodeA", content: "a" });
+      const b = await writeNote(userId, { title: "NodeB", content: "b", links: [a.id] });
+      // Pointing A back at B creates the same undirected edge -> dedup kicks in.
+      await updateNote(userId, a.id, { links: [b.id] });
+
+      const res = await fetch(`http://localhost:${port}/api/graph`, {
+        headers: { cookie },
+      });
+      expect(res.status).toBe(200);
+      const graph = await res.json();
+      expect(graph.nodes).toHaveLength(2);
+      expect(graph.edges).toHaveLength(1);
+      const edge = graph.edges[0];
+      expect([edge.source, edge.target].sort((x, y) => x.localeCompare(y))).toEqual(
+        [a.id, b.id].sort((x, y) => x.localeCompare(y)),
+      );
+    });
+
+    it("transcribes an uploaded audio file via the mock backend", async () => {
+      const cookie = await signup(`audio-${Date.now()}@example.com`, "Audio");
+      const form = new FormData();
+      form.append("file", new File([Buffer.from("RIFFfake")], "clip.wav", { type: "audio/wav" }));
+      const res = await fetch(`http://localhost:${port}/api/transcribe`, {
+        method: "POST",
+        headers: { cookie },
+        body: form,
+      });
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.transcript.text).toBe("Write a note about apples.");
+    });
+
+    it("rejects transcribe requests without a file", async () => {
+      const cookie = await signup(`audio2-${Date.now()}@example.com`, "Audio2");
+      const form = new FormData();
+      const res = await fetch(`http://localhost:${port}/api/transcribe`, {
+        method: "POST",
+        headers: { cookie },
+        body: form,
+      });
+      expect(res.status).toBe(400);
+    });
+
+    it("CRUDs custom tools with validation", async () => {
+      const cookie = await signup(`tools-${Date.now()}@example.com`, "Tools");
+
+      const bad = await fetch(`http://localhost:${port}/api/tools`, {
+        method: "POST",
+        headers: { cookie, "content-type": "application/json" },
+        body: JSON.stringify({ name: "incomplete" }),
+      });
+      expect(bad.status).toBe(400);
+
+      const good = await fetch(`http://localhost:${port}/api/tools`, {
+        method: "POST",
+        headers: { cookie, "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "mytool",
+          description: "d",
+          inputSchema: "{}",
+          code: "return 1",
+        }),
+      });
+      expect(good.status).toBe(200);
+      const tool = (await good.json()).tool;
+      expect(tool.name).toBe("mytool");
+
+      const list = await fetch(`http://localhost:${port}/api/tools`, { headers: { cookie } });
+      expect((await list.json()).tools.map((t: any) => t.id)).toContain(tool.id);
+
+      const noId = await fetch(`http://localhost:${port}/api/tools`, {
+        method: "DELETE",
+        headers: { cookie },
+      });
+      expect(noId.status).toBe(400);
+
+      const del = await fetch(`http://localhost:${port}/api/tools?id=${tool.id}`, {
+        method: "DELETE",
+        headers: { cookie },
+      });
+      expect(del.status).toBe(200);
+    });
+
+    it("rejects PUT/DELETE /api/note without an id", async () => {
+      const cookie = await signup(`noid-${Date.now()}@example.com`, "NoId");
+      const put = await fetch(`http://localhost:${port}/api/note`, {
+        method: "PUT",
+        headers: { cookie, "content-type": "application/json" },
+        body: JSON.stringify({ title: "x" }),
+      });
+      expect(put.status).toBe(400);
+      const del = await fetch(`http://localhost:${port}/api/note`, {
+        method: "DELETE",
+        headers: { cookie },
+      });
+      expect(del.status).toBe(400);
+    });
+
+    it("rejects unauthenticated WebSocket upgrades", async () => {
+      const net = await import("node:net");
+      await new Promise<void>((resolve, reject) => {
+        const sock = net.connect(port, "127.0.0.1", () => {
+          sock.write(
+            "GET /adp HTTP/1.1\r\nHost: localhost\r\nUpgrade: websocket\r\n" +
+              "Connection: Upgrade\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" +
+              "Sec-WebSocket-Version: 13\r\n\r\n",
+          );
+        });
+        let buf = "";
+        const timer = setTimeout(() => {
+          sock.destroy();
+          reject(new Error("timed out waiting for 401"));
+        }, 5000);
+        sock.on("data", (chunk) => {
+          buf += chunk.toString();
+          if (buf.includes("401")) {
+            clearTimeout(timer);
+            sock.destroy();
+            resolve();
+          }
+        });
+        sock.on("error", (err) => {
+          clearTimeout(timer);
+          reject(err);
+        });
+      });
     });
   });
 });

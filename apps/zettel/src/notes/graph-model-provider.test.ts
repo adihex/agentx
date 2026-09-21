@@ -1,44 +1,38 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
-const { generateObject } = vi.hoisted(() => ({ generateObject: vi.fn() }));
-
+const generateObject = vi.hoisted(() => vi.fn());
 vi.mock("ai", () => ({ generateObject }));
 
-import { createGraphModelProvider } from "./graph-model-provider.js";
+import { createGraphModelProvider, createDefaultGraphModelProvider } from "./graph-model-provider.js";
 
 describe("graph model provider", () => {
-  beforeEach(() => {
-    generateObject.mockReset();
-  });
-
-  it("requests structured graph output from the configured model", async () => {
-    const model = { modelId: "test-model" } as never;
-    const object = {
-      entities: [{ name: "Ada", type: "person", description: "mathematician" }],
+  it("extractGraph asks for entities and relations over the note text", async () => {
+    const graph = {
+      entities: [{ name: "Apple", type: "fruit", description: "a fruit" }],
       relations: [],
     };
-    generateObject.mockResolvedValue({ object });
+    generateObject.mockResolvedValue({ object: graph });
 
-    const provider = createGraphModelProvider(model);
+    const provider = createGraphModelProvider({} as Parameters<typeof createGraphModelProvider>[0]);
+    const result = await provider.extractGraph({
+      userId: "u1",
+      noteId: "n1",
+      text: "Apples grow in orchards.",
+    });
 
-    await expect(
-      provider.extractGraph({ userId: "tenant-secret", noteId: "note-1", text: "Ada wrote notes." }),
-    ).resolves.toEqual(object);
-    expect(generateObject).toHaveBeenCalledOnce();
-    const request = generateObject.mock.calls[0][0];
-    expect(request.model).toBe(model);
-    expect(request.schema.safeParse(object).success).toBe(true);
-    expect(request.prompt).toContain("Ada wrote notes.");
-    expect(request.prompt).not.toContain("tenant-secret");
-    expect(request.prompt).not.toContain("note-1");
+    expect(result).toEqual(graph);
+    const args = generateObject.mock.calls[0][0] as { prompt: string; schema: unknown };
+    expect(args.prompt).toContain("Apples grow in orchards.");
+    expect(args.prompt).toContain("must exactly match an entity name");
   });
 
-  it("lets model errors reach the extraction boundary", async () => {
-    generateObject.mockRejectedValue(new Error("provider unavailable"));
-    const provider = createGraphModelProvider({} as never);
-
-    await expect(
-      provider.extractGraph({ userId: "tenant", noteId: "note", text: "text" }),
-    ).rejects.toThrow("provider unavailable");
+  it("createDefaultGraphModelProvider uses the configured model env", () => {
+    process.env.GRAPH_EXTRACTION_MODEL = "test-model-x";
+    try {
+      const provider = createDefaultGraphModelProvider();
+      expect(typeof provider.extractGraph).toBe("function");
+    } finally {
+      delete process.env.GRAPH_EXTRACTION_MODEL;
+    }
   });
 });

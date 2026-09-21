@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 
 vi.hoisted(() => {
   process.env.ZETTEL_DIR = `/tmp/agentx-zettel-test-${process.pid}-${Math.random()}`;
@@ -16,6 +16,10 @@ import {
   deleteNote,
   replaceNoteGraph,
   traverseGraphStore,
+  writeCustomTool,
+  listCustomTools,
+  deleteCustomTool,
+  materializeToolFile,
   client,
 } from "./store.js";
 
@@ -319,5 +323,59 @@ describe("tenant graph store", () => {
       entities: ["Delete"],
       relations: [],
     });
+  });
+});
+
+describe("Custom tools store", () => {
+  const toolUser = "tools-store-" + Date.now();
+  const otherUser = "tools-other-" + Date.now();
+
+  beforeAll(async () => {
+    // custom_tools.user_id has a FK to the auth "user" table — seed the rows
+    // the FK needs (all NOT NULL columns, or INSERT OR IGNORE silently skips).
+    for (const [id, email] of [
+      [toolUser, `${toolUser}@t.dev`],
+      [otherUser, `${otherUser}@t.dev`],
+    ]) {
+      await client.execute({
+        sql: 'INSERT OR IGNORE INTO "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") VALUES (?, ?, ?, 0, ?, ?)',
+        args: [id, id, email, new Date().toISOString(), new Date().toISOString()],
+      });
+    }
+  });
+
+  it("creates, lists, materializes, and deletes a custom tool", async () => {
+    const tool = await writeCustomTool(toolUser, {
+      name: "shout",
+      description: "Uppercases input",
+      inputSchema: '{"type":"object"}',
+      code: "export async function shout(args) { return args.text.toUpperCase(); }",
+    });
+    expect(tool.id).toBeTruthy();
+
+    const listed = await listCustomTools(toolUser);
+    expect(listed).toHaveLength(1);
+    expect(listed[0]).toMatchObject({ name: "shout", description: "Uppercases input" });
+
+    // materializeToolFile writes the stored code to a real file jiti can load.
+    const filePath = await materializeToolFile(toolUser, "shout");
+    expect(filePath).toContain("shout.ts");
+    const { readFileSync } = await import("node:fs");
+    expect(readFileSync(filePath!, "utf-8")).toContain("toUpperCase");
+
+    await deleteCustomTool(toolUser, tool.id);
+    expect(await listCustomTools(toolUser)).toHaveLength(0);
+    expect(await materializeToolFile(toolUser, "shout")).toBeNull();
+  });
+
+  it("scopes custom tools to their owner", async () => {
+    await writeCustomTool(otherUser, {
+      name: "secret-tool",
+      description: "not yours",
+      inputSchema: "{}",
+      code: "x",
+    });
+    expect(await listCustomTools(toolUser)).toHaveLength(0);
+    expect(await materializeToolFile(toolUser, "secret-tool")).toBeNull();
   });
 });

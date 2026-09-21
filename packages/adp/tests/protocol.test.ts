@@ -160,6 +160,27 @@ describe("AdpServer", () => {
     });
   });
 
+  it("tracks connected client count via clientCount", async () => {
+    expect(server.clientCount).toBe(0);
+
+    const ws1 = new WebSocket(`ws://localhost:${PORT}`);
+    const ws2 = new WebSocket(`ws://localhost:${PORT}`);
+    await Promise.all([
+      new Promise((r) => ws1.on("open", r)),
+      new Promise((r) => ws2.on("open", r)),
+    ]);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(server.clientCount).toBe(2);
+
+    ws1.close();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(server.clientCount).toBe(1);
+
+    ws2.close();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(server.clientCount).toBe(0);
+  });
+
   it("should handle wss.close error", async () => {
     // Mock wss.close to return an error
     const originalClose = (server as any).wss.close;

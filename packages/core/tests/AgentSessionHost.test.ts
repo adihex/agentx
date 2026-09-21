@@ -36,7 +36,7 @@ vi.mock("@agentx/adp", () => {
       },
       Memory: { compact: "Memory.compact", queryNodes: "Memory.queryNodes" },
       Session: { prompt: "Session.prompt", shutdown: "Session.shutdown" },
-      Toolchain: { list: "Toolchain.list", intercept: "Toolchain.intercept" },
+      Toolchain: { list: "Toolchain.list", intercept: "Toolchain.intercept", cancel: "Toolchain.cancel" },
     },
   };
 });
@@ -152,5 +152,80 @@ describe("AgentSessionHost", () => {
     adp.onDisconnectionCb!("s1");
     expect(host.sessionCount).toBe(0);
     expect(host.getSession("s1")).toBeUndefined();
+  });
+
+  it("routes Toolchain.cancel to the caller's session", () => {
+    adp.onConnectionCb("s1");
+
+    const cancelHandler = adp.handlers.get("Toolchain.cancel")!;
+    const cb = vi.fn();
+    cancelHandler({ toolCallId: "never-dispatched" }, cb, "s1");
+
+    expect(cb).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "error" }),
+    );
+  });
+
+  it("logs and survives a session run that rejects", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      adp.onConnectionCb("s1");
+      const session = host.getSession("s1") as any;
+      // run() itself catches inference errors; force a hard rejection to
+      // exercise the host's per-session error boundary.
+      vi.spyOn(session, "run").mockRejectedValueOnce(new Error("llm boom"));
+
+      const promptHandler = adp.handlers.get("Session.prompt")!;
+      const cb = vi.fn();
+      promptHandler({ prompt: "explode" }, cb, "s1");
+
+      await new Promise((r) => setTimeout(r, 30));
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining("session s1 run failed"),
+        "llm boom",
+      );
+      // Host still alive: session remains registered for follow-up prompts.
+      expect(host.getSession("s1")).toBeDefined();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("wires Session.shutdown to requestShutdown", () => {
+    adp.onConnectionCb("s1");
+
+    const shutdownHandler = adp.handlers.get("Session.shutdown")!;
+    const cb = vi.fn();
+    shutdownHandler({}, cb, "s1");
+
+    expect(cb).toHaveBeenCalledWith({ status: "shutting_down" });
+  });
+
+  it("every bound ADP command reaches the caller's session and replies", () => {
+    adp.onConnectionCb("s1");
+
+    // Bound handlers must always invoke cb with the session method's result —
+    // including on absent params (the `?? ""` fallbacks).
+    const cases: Array<[string, unknown]> = [
+      ["Inference.halt", undefined],
+      ["Inference.evaluate", { expression: "x" }],
+      ["Inference.evaluate", undefined],
+      ["Metacognition.pause", {}],
+      ["Metacognition.resume", {}],
+      ["Metacognition.getCallFrame", {}],
+      ["Memory.compact", {}],
+      ["Memory.queryNodes", { query: "q" }],
+      ["Memory.queryNodes", {}],
+      ["Toolchain.list", {}],
+      ["Toolchain.intercept", { tool: "t" }],
+    ];
+
+    for (const [method, params] of cases) {
+      const cb = vi.fn();
+      adp.handlers.get(method)!(params, cb, "s1");
+      expect(cb, `${method} did not reply`).toHaveBeenCalledTimes(1);
+      expect(cb.mock.calls[0][0]).toBeDefined();
+    }
   });
 });
