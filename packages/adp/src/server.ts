@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket, type RawData } from "ws";
 import { EventEmitter } from "events";
-import type { Server } from "node:http";
+import http, { type IncomingMessage, type Server } from "node:http";
 import {
   JsonRpcRequestSchema,
   type JsonRpcResponse,
@@ -57,8 +57,30 @@ function decodeFrame(raw: RawData | Blob): string | Promise<string> {
 /** Notified when a client connects/disconnects, with that client's session id. */
 export type AdpConnectionListener = (sessionId: string) => void;
 
+export interface AdpServerOptions {
+  /** The port to listen on. */
+  port?: number;
+  /** Attach to an existing HTTP server (the /adp upgrade path) instead. */
+  server?: Server;
+  /** Interface to bind. Defaults to loopback — ADP is a local control plane. */
+  host?: string;
+  /**
+   * When set, clients must present this token — `Authorization: Bearer <token>`
+   * header or `?token=` query parameter — during the WebSocket handshake or the
+   * upgrade is refused with 401.
+   */
+  authToken?: string;
+  /** Largest accepted inbound frame in bytes (ws maxPayload). Default 1 MiB. */
+  maxPayloadBytes?: number;
+}
+
+const DEFAULT_MAX_PAYLOAD_BYTES = 1_048_576;
+
 export class AdpServer extends EventEmitter {
   private wss: WebSocketServer;
+  /** HTTP listener we created ourselves (auth mode); closed with the server. */
+  private ownedHttpServer: Server | null = null;
+  private readonly authToken?: string;
   /** Single ADP method → handler dispatch table. */
   private handlers = new Map<string, RegisteredAdpHandler>();
   private clients = new Set<WebSocket>();
@@ -73,22 +95,41 @@ export class AdpServer extends EventEmitter {
    * Create a new ADP server.
    * @param portOrOptions - The port to listen on or WebSocket server options.
    */
-  constructor(portOrOptions: number | { port?: number; server?: Server }) {
+  constructor(portOrOptions: number | AdpServerOptions) {
     super();
     const options = typeof portOrOptions === "number" ? { port: portOrOptions } : portOrOptions;
-    if (typeof portOrOptions === "object" && portOrOptions.server) {
-      const httpServer = portOrOptions.server;
-      this.wss = new WebSocketServer({ noServer: true });
+    this.authToken = options.authToken;
+    const maxPayload = options.maxPayloadBytes ?? DEFAULT_MAX_PAYLOAD_BYTES;
+    if (options.server) {
+      const httpServer = options.server;
+      this.wss = new WebSocketServer({ noServer: true, maxPayload });
       httpServer.on("upgrade", (request, socket, head) => {
         const pathname = request.url ? request.url.split("?")[0] : "";
-        if (pathname === "/adp") {
-          this.wss.handleUpgrade(request, socket, head, (ws) => {
-            this.wss.emit("connection", ws, request);
-          });
-        }
+        if (pathname !== "/adp") return;
+        if (!this.authorizeUpgrade(request, socket)) return;
+        this.wss.handleUpgrade(request, socket, head, (ws) => {
+          this.wss.emit("connection", ws, request);
+        });
       });
+    } else if (this.authToken) {
+      // Auth requires refusing the handshake itself, so we own the HTTP
+      // listener and gate the upgrade before ws ever answers 101.
+      const host = options.host ?? "127.0.0.1";
+      this.wss = new WebSocketServer({ noServer: true, maxPayload });
+      this.ownedHttpServer = http.createServer();
+      this.ownedHttpServer.on("upgrade", (request, socket, head) => {
+        if (!this.authorizeUpgrade(request, socket)) return;
+        this.wss.handleUpgrade(request, socket, head, (ws) => {
+          this.wss.emit("connection", ws, request);
+        });
+      });
+      this.ownedHttpServer.listen(options.port ?? 9222, host);
     } else {
-      this.wss = new WebSocketServer(options);
+      this.wss = new WebSocketServer({
+        port: options.port,
+        host: options.host ?? "127.0.0.1",
+        maxPayload,
+      });
     }
     this.wss.on("error", (err) => {
       console.error("[ADP] Server error:", err);
@@ -126,6 +167,34 @@ export class AdpServer extends EventEmitter {
     } else {
       console.log("[ADP] Control-plane attached to existing HTTP server");
     }
+  }
+
+  /**
+   * Gate an upgrade request when authToken is configured. Accepts the token
+   * via `Authorization: Bearer <token>` or a `?token=` query parameter (for
+   * browser WebSocket callers that cannot set headers). Returns false after
+   * writing the 401 and destroying the socket.
+   */
+  private authorizeUpgrade(
+    request: IncomingMessage,
+    socket: { write(data: string): void; destroy(): void },
+  ): boolean {
+    if (!this.authToken) return true;
+
+    const header = request.headers["authorization"];
+    if (header === `Bearer ${this.authToken}`) return true;
+
+    try {
+      const url = new URL(request.url ?? "", "http://localhost");
+      if (url.searchParams.get("token") === this.authToken) return true;
+    } catch {
+      // fall through to rejection
+    }
+
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+    console.warn("[ADP] Refused unauthenticated upgrade");
+    return false;
   }
 
   /**
@@ -262,7 +331,19 @@ export class AdpServer extends EventEmitter {
   public close(): Promise<void> {
     return new Promise((resolve, reject) => {
       for (const ws of this.clients) ws.close();
-      this.wss.close((err) => (err ? reject(err) : resolve()));
+      this.wss.close((err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (!this.ownedHttpServer) {
+          resolve();
+          return;
+        }
+        const httpServer = this.ownedHttpServer;
+        this.ownedHttpServer = null;
+        httpServer.close((closeErr) => (closeErr ? reject(closeErr) : resolve()));
+      });
     });
   }
 

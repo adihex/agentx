@@ -21,6 +21,12 @@ export interface AdpClientOptions {
    * per-call `timeoutMs` to `send()`.
    */
   timeoutMs?: number;
+  /**
+   * Bearer token presented during the WebSocket handshake. Required when the
+   * server is constructed with `authToken`. Browser callers (which cannot set
+   * headers) should put it in the URL: `ws://host?token=…`.
+   */
+  token?: string;
 }
 
 export interface AdpSendOptions {
@@ -46,7 +52,10 @@ export class AdpClient {
     options: AdpClientOptions = {},
   ) {
     this.defaultTimeoutMs = options.timeoutMs ?? 0;
-    this.ws = new WebSocket(this.url);
+    this.ws = new WebSocket(
+      this.url,
+      options.token ? { headers: { authorization: `Bearer ${options.token}` } } : undefined,
+    );
     this.setupHandlers();
   }
 
