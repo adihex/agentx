@@ -303,7 +303,7 @@ describe("PlanDispatcher", () => {
       reviewConfig: { passes: [], maxTotalReviewRounds: 1 },
     });
 
-    it("ignores a second plan.created while the first is still running", () => {
+    it("supersedes the running plan on a second plan.created", () => {
       const assigned: string[] = [];
       bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
 
@@ -311,9 +311,25 @@ describe("PlanDispatcher", () => {
       expect(assigned).toEqual(["a"]);
 
       bus.dispatch({ type: "plan.created", plan: plan("p2", [step("x")]) });
-      expect(assigned).toEqual(["a"]);
+      expect(assigned).toEqual(["a", "x"]);
 
-      // The original plan still completes normally.
+      // Events for the superseded plan are now stale and ignored.
+      bus.dispatch({ type: "plan.step.completed", planId: "p1", stepId: "a", result: "ok" });
+      expect(assigned).toEqual(["a", "x"]);
+    });
+
+    it("keeps the running plan intact when the superseding plan is invalid", () => {
+      const assigned: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
+
+      bus.dispatch({ type: "plan.created", plan: plan("p1", [step("a"), step("b", ["a"])]) });
+      expect(() =>
+        bus.dispatch({
+          type: "plan.created",
+          plan: plan("bad", [step("x", ["y"]), step("y", ["x"])]),
+        }),
+      ).toThrow(/circular/i);
+
       bus.dispatch({ type: "plan.step.completed", planId: "p1", stepId: "a", result: "ok" });
       expect(assigned).toEqual(["a", "b"]);
     });
