@@ -283,4 +283,90 @@ describe("PlanDispatcher", () => {
       attempt: 2,
     });
   });
+
+  describe("plan.created while a plan is active", () => {
+    const step = (id: string, deps: string[] = [], maxRetries = 3) => ({
+      id,
+      description: `step ${id}`,
+      dependencies: deps,
+      acceptanceCriteria: [],
+      assignedExecutorRole: "default",
+      maxRetries,
+    });
+    const plan = (planId: string, steps: ReturnType<typeof step>[]): ExecutionPlan => ({
+      planId,
+      goal: "g",
+      createdAt: new Date().toISOString(),
+      steps,
+      milestones: [],
+      successCriteria: [],
+      reviewConfig: { passes: [], maxTotalReviewRounds: 1 },
+    });
+
+    it("ignores a second plan.created while the first is still running", () => {
+      const assigned: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
+
+      bus.dispatch({ type: "plan.created", plan: plan("p1", [step("a"), step("b", ["a"])]) });
+      expect(assigned).toEqual(["a"]);
+
+      bus.dispatch({ type: "plan.created", plan: plan("p2", [step("x")]) });
+      expect(assigned).toEqual(["a"]);
+
+      // The original plan still completes normally.
+      bus.dispatch({ type: "plan.step.completed", planId: "p1", stepId: "a", result: "ok" });
+      expect(assigned).toEqual(["a", "b"]);
+    });
+
+    it("accepts a new plan once the previous plan has completed", () => {
+      const assigned: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
+
+      bus.dispatch({ type: "plan.created", plan: plan("p1", [step("a")]) });
+      bus.dispatch({ type: "plan.step.completed", planId: "p1", stepId: "a", result: "ok" });
+
+      bus.dispatch({ type: "plan.created", plan: plan("p2", [step("x")]) });
+      expect(assigned).toEqual(["a", "x"]);
+    });
+
+    it("accepts a new plan after the previous one failed terminally", () => {
+      const assigned: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
+
+      bus.dispatch({
+        type: "plan.created",
+        plan: plan("p1", [step("a", [], 0), step("b")]),
+      });
+      // "a" has no retry budget, so one failure marks it failed for good.
+      bus.dispatch({
+        type: "plan.step.failed",
+        planId: "p1",
+        stepId: "a",
+        error: "boom",
+        attempt: 1,
+      });
+
+      bus.dispatch({ type: "plan.created", plan: plan("p2", [step("x")]) });
+      expect(assigned).toEqual(["a", "b", "x"]);
+    });
+
+    it("rejects an invalid plan when idle without corrupting state", () => {
+      const assigned: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));
+
+      bus.dispatch({ type: "plan.created", plan: plan("p1", [step("a")]) });
+      bus.dispatch({ type: "plan.step.completed", planId: "p1", stepId: "a", result: "ok" });
+
+      expect(() =>
+        bus.dispatch({
+          type: "plan.created",
+          plan: plan("bad", [step("x", ["y"]), step("y", ["x"])]),
+        }),
+      ).toThrow(/circular/i);
+
+      // The failed replacement leaves no residue: a valid plan still runs.
+      bus.dispatch({ type: "plan.created", plan: plan("p2", [step("z")]) });
+      expect(assigned).toEqual(["a", "z"]);
+    });
+  });
 });

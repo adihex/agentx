@@ -19,8 +19,23 @@ export class PlanDispatcher {
 
   private wireEvents() {
     this.bus.onEvent("plan.created", (e) => {
+      if (
+        this.activePlan &&
+        this.graph &&
+        !this.graph.isPlanComplete() &&
+        !this.graph.hasBlockingFailures()
+      ) {
+        console.log(
+          `[Dispatcher] 🗑 Ignoring plan "${e.plan.planId}": plan "${this.activePlan.planId}" is still active`,
+        );
+        return;
+      }
+      // Build the graph before mutating session state so an invalid plan
+      // (cycle, duplicate id, dangling dependency) leaves the active plan — or
+      // the empty pre-plan state — untouched.
+      const graph = new DependencyGraph(e.plan);
       this.activePlan = e.plan;
-      this.graph = new DependencyGraph(e.plan);
+      this.graph = graph;
       this.dispatchReadySteps();
     });
 
