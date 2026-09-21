@@ -266,6 +266,35 @@ describe("session ADP-op semantics", () => {
     session.shutdownEngine();
   });
 
+  it("enqueuePrompt fails fast once the queue is full", () => {
+    const session = makeSession();
+    let last: { status: string; queueLength?: number; reason?: string } | undefined;
+    for (let i = 0; i < 64; i++) {
+      last = session.enqueuePrompt(`p${i}`);
+    }
+    expect(last?.status).toBe("queued");
+    expect(last?.queueLength).toBe(64);
+
+    const overflow = session.enqueuePrompt("overflow");
+    expect(overflow.status).toBe("error");
+    expect(overflow.reason).toMatch(/full/i);
+
+    // The cap recovers once the queue drains.
+    void session.waitForPrompt();
+    expect(session.enqueuePrompt("after-drain").status).toBe("queued");
+    session.shutdownEngine();
+  });
+
+  it("enqueuePrompt rejects after shutdown", () => {
+    const session = makeSession();
+    session.requestShutdown();
+    expect(session.enqueuePrompt("late")).toEqual({
+      status: "error",
+      reason: "session shutting down",
+    });
+    session.shutdownEngine();
+  });
+
   it("enqueuePrompt wakes a parked waitForPrompt", async () => {
     const session = makeSession();
     const waiting = session.waitForPrompt();

@@ -30,6 +30,8 @@ interface MacrotaskItem {
 
 /** Maximum inference→tool steps per run before the loop force-stops. */
 const MAX_STEPS_PER_RUN = 12;
+/** Pending prompts are bounded so an operator can't grow memory without limit. */
+const MAX_QUEUED_PROMPTS = 64;
 
 /**
  * RunStatus — the exactly-once terminal state published for every run.
@@ -396,6 +398,12 @@ export class AgentSession extends EventEmitter {
   public enqueuePrompt(prompt: string): { status: string; queueLength?: number; reason?: string } {
     if (!prompt) {
       return { status: "error", reason: "missing prompt" };
+    }
+    if (this.shutdownRequested) {
+      return { status: "error", reason: "session shutting down" };
+    }
+    if (this.promptQueue.length >= MAX_QUEUED_PROMPTS) {
+      return { status: "error", reason: `prompt queue full (${MAX_QUEUED_PROMPTS})` };
     }
     this.log(`[ADP] 📥  prompt: "${prompt.slice(0, 80)}${prompt.length > 80 ? "..." : ""}"`);
     this.promptQueue.push(prompt);
