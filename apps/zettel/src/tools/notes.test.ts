@@ -29,7 +29,7 @@ describe("zettel note tools", () => {
       tags: ["apples", "fruit"],
     });
     expect(res).toMatchObject({ success: true });
-    if (!("id" in res)) throw new Error("expected id");
+    if (!("id" in res) || !res.id) throw new Error("expected id");
     noteA = res.id;
     expect((await readNote(userId, noteA))?.title).toBe("About Apples");
   });
@@ -52,7 +52,7 @@ describe("zettel note tools", () => {
 
   it("linkNotes records backlinks visible via getNote", async () => {
     const created = await createNote({ userId, content: "Backlink target body." });
-    if (!("id" in created)) throw new Error("expected id");
+    if (!("id" in created) || !created.id) throw new Error("expected id");
     noteB = created.id;
     expect(await linkNotes({ userId, fromId: noteA, toId: noteB })).toEqual({ ok: true });
     const res = await getNote({ userId, id: noteB });
@@ -74,6 +74,7 @@ describe("zettel note tools", () => {
     });
     const res = await traverseGraph({ userId, entityName: "Apple" });
     expect(res.success).toBe(true);
+    if (!res.result) throw new Error("expected result");
     expect(res.result.entities).toContain("Orchard");
     expect(res.result.relations).toContainEqual(
       expect.objectContaining({ source: "Apple", target: "Orchard" }),
