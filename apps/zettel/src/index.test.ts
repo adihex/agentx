@@ -474,7 +474,9 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
       expect(graph.nodes).toHaveLength(2);
       expect(graph.edges).toHaveLength(1);
       const edge = graph.edges[0];
-      expect([edge.source, edge.target].sort()).toEqual([a.id, b.id].sort());
+      expect([edge.source, edge.target].sort((x, y) => x.localeCompare(y))).toEqual(
+        [a.id, b.id].sort((x, y) => x.localeCompare(y)),
+      );
     });
 
     it("transcribes an uploaded audio file via the mock backend", async () => {
