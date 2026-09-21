@@ -201,4 +201,31 @@ describe("AgentSessionHost", () => {
 
     expect(cb).toHaveBeenCalledWith({ status: "shutting_down" });
   });
+
+  it("every bound ADP command reaches the caller's session and replies", () => {
+    adp.onConnectionCb("s1");
+
+    // Bound handlers must always invoke cb with the session method's result —
+    // including on absent params (the `?? ""` fallbacks).
+    const cases: Array<[string, unknown]> = [
+      ["Inference.halt", undefined],
+      ["Inference.evaluate", { expression: "x" }],
+      ["Inference.evaluate", undefined],
+      ["Metacognition.pause", {}],
+      ["Metacognition.resume", {}],
+      ["Metacognition.getCallFrame", {}],
+      ["Memory.compact", {}],
+      ["Memory.queryNodes", { query: "q" }],
+      ["Memory.queryNodes", {}],
+      ["Toolchain.list", {}],
+      ["Toolchain.intercept", { tool: "t" }],
+    ];
+
+    for (const [method, params] of cases) {
+      const cb = vi.fn();
+      adp.handlers.get(method)!(params, cb, "s1");
+      expect(cb, `${method} did not reply`).toHaveBeenCalledTimes(1);
+      expect(cb.mock.calls[0][0]).toBeDefined();
+    }
+  });
 });
