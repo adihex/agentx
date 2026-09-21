@@ -13,16 +13,39 @@ function rawToUtf8(raw: RawData): string {
   return raw.toString("utf8");
 }
 
+export interface AdpClientOptions {
+  /**
+   * Default per-request timeout in milliseconds. `0` (the default) disables
+   * the timeout; a positive value rejects any `send()` that outlives it.
+   * Long-running commands (e.g. a full agent turn) should pass a larger
+   * per-call `timeoutMs` to `send()`.
+   */
+  timeoutMs?: number;
+}
+
+export interface AdpSendOptions {
+  /** Per-call timeout override; falls back to the constructor option. */
+  timeoutMs?: number;
+}
+
+type PendingRequest = {
+  resolve: (v: unknown) => void;
+  reject: (e: Error) => void;
+  timer?: ReturnType<typeof setTimeout>;
+};
+
 export class AdpClient {
   private ws: WebSocket;
-  private pendingRequests = new Map<
-    string | number,
-    { resolve: (v: unknown) => void; reject: (e: Error) => void }
-  >();
+  private pendingRequests = new Map<string | number, PendingRequest>();
   private eventListeners: Array<(method: string, params?: unknown) => void> = [];
   private closeListeners: Array<(code: number) => void> = [];
+  private readonly defaultTimeoutMs: number;
 
-  constructor(private url: string) {
+  constructor(
+    private url: string,
+    options: AdpClientOptions = {},
+  ) {
+    this.defaultTimeoutMs = options.timeoutMs ?? 0;
     this.ws = new WebSocket(this.url);
     this.setupHandlers();
   }
@@ -45,7 +68,7 @@ export class AdpClient {
           const responseId = data.id as string | number;
           const pending = this.pendingRequests.get(responseId);
           if (pending) {
-            this.pendingRequests.delete(responseId);
+            this.settleRequest(responseId, pending);
             if (res.error) {
               pending.reject(new Error(res.error.message));
             } else {
@@ -65,20 +88,23 @@ export class AdpClient {
 
     this.ws.on("error", (err) => {
       console.error("[ADP Client] WebSocket error:", err);
-      for (const pending of this.pendingRequests.values()) {
-        pending.reject(err);
-      }
-      this.pendingRequests.clear();
+      this.rejectAllPending(err);
     });
 
+    // A close — clean or abrupt — must never leave a send() hanging.
     this.ws.on("close", (code) => {
+      this.rejectAllPending(new Error(`WebSocket closed (code ${code})`));
       for (const listener of this.closeListeners) {
         listener(code);
       }
     });
   }
 
-  public send<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
+  public send<T = unknown>(
+    method: string,
+    params?: Record<string, unknown>,
+    options: AdpSendOptions = {},
+  ): Promise<T> {
     if (this.ws.readyState !== WebSocket.OPEN && this.ws.readyState !== WebSocket.CONNECTING) {
       return Promise.reject(new Error("WebSocket is not open"));
     }
@@ -92,10 +118,24 @@ export class AdpClient {
         params,
       });
 
-      this.pendingRequests.set(id, {
+      const pending: PendingRequest = {
         resolve: resolve as (v: unknown) => void,
         reject,
-      });
+      };
+
+      const timeoutMs = options.timeoutMs ?? this.defaultTimeoutMs;
+      if (timeoutMs > 0) {
+        const timer = setTimeout(() => {
+          if (this.pendingRequests.delete(id)) {
+            reject(new Error(`ADP request timed out after ${timeoutMs}ms: ${method}`));
+          }
+        }, timeoutMs);
+        // Never let a pending timeout keep the process alive.
+        if (typeof timer === "object") timer.unref();
+        pending.timer = timer;
+      }
+
+      this.pendingRequests.set(id, pending);
 
       if (this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(payload);
@@ -115,12 +155,28 @@ export class AdpClient {
 
   public async waitForOpen(): Promise<void> {
     if (this.ws.readyState === WebSocket.OPEN) return;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.ws.once("open", () => resolve());
+      // A refused/dead connection must not leave callers hanging.
+      this.ws.once("error", reject);
+      this.ws.once("close", () => reject(new Error("WebSocket closed before opening")));
     });
   }
 
   public close() {
     this.ws.close();
+  }
+
+  private settleRequest(id: string | number, pending: PendingRequest): void {
+    this.pendingRequests.delete(id);
+    if (pending.timer) clearTimeout(pending.timer);
+  }
+
+  private rejectAllPending(err: Error): void {
+    for (const [id, pending] of this.pendingRequests) {
+      if (pending.timer) clearTimeout(pending.timer);
+      pending.reject(err);
+      this.pendingRequests.delete(id);
+    }
   }
 }
