@@ -99,7 +99,9 @@ async function startRepl() {
   console.log(`${REPL_COLORS.header}AGX Agent Debugger Protocol (REPL)${REPL_COLORS.reset}`);
   console.log(`${REPL_COLORS.dim}Type /help for commands${REPL_COLORS.reset}`);
 
-  const client = new AdpClient(DEFAULT_ADP_URL);
+  const tokenArg = process.argv.find((a) => a.startsWith("--token="))?.slice("--token=".length);
+  const token = tokenArg ?? process.env.ADP_TOKEN;
+  const client = new AdpClient(DEFAULT_ADP_URL, token ? { token } : undefined);
 
   const rl = readline.createInterface({
     input: process.stdin,

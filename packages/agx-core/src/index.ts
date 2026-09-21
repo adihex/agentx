@@ -80,8 +80,15 @@ export class AdpClient {
   private statusListeners: Set<AdpStatusListener> = new Set();
   private destroyed = false;
 
-  constructor(url = "ws://localhost:9222") {
-    this.url = url;
+  constructor(
+    url = "ws://localhost:9222",
+    options: { token?: string } = {},
+  ) {
+    // The ws transport cannot set headers on every platform, so ADP auth is
+    // carried as a ?token= query parameter (see @agentx/adp principalFor).
+    this.url = options.token
+      ? `${url}${url.includes("?") ? "&" : "?"}token=${encodeURIComponent(options.token)}`
+      : url;
   }
 
   connect() {

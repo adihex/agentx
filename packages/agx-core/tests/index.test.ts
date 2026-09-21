@@ -170,4 +170,23 @@ describe("AdpClient (agnostic)", () => {
 
     expect(eventFn).not.toHaveBeenCalled();
   });
+
+  it("should pass the auth token as a query parameter", () => {
+    const client = new AdpClient("ws://localhost:9222", { token: "sek rit/1" });
+    client.connect();
+    expect(global.WebSocket).toHaveBeenCalledWith(
+      `ws://localhost:9222?token=${encodeURIComponent("sek rit/1")}`,
+    );
+  });
+
+  it("should reuse the token on reconnect", () => {
+    const client = new AdpClient("ws://localhost:9222", { token: "t" });
+    client.connect();
+    const closeCallback = mockWs.addEventListener.mock.calls.find(
+      (c: any) => c[0] === "close",
+    )[1];
+    closeCallback();
+    vi.advanceTimersByTime(3100);
+    expect(global.WebSocket).toHaveBeenLastCalledWith("ws://localhost:9222?token=t");
+  });
 });
