@@ -63,7 +63,9 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     expect(client.isOpen).toBe(true);
 
     // 1. Inspect initial state
-    const frame = await client.send("Metacognition.getCallFrame");
+    const frame = await client.send<{ running: boolean; iteration: number }>(
+      "Metacognition.getCallFrame",
+    );
     expect(frame.running).toBe(false);
     expect(frame.iteration).toBe(0);
 
@@ -73,15 +75,17 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     expect(result).toContain("E2E Response");
 
     // 3. Pause
-    const pauseResult = await client.send("Metacognition.pause");
+    const pauseResult = await client.send<{ status: string }>("Metacognition.pause");
     expect(pauseResult.status).toBe("paused");
 
     // 4. Resume
-    const resumeResult = await client.send("Metacognition.resume");
+    const resumeResult = await client.send<{ status: string }>("Metacognition.resume");
     expect(resumeResult.status).toBe("resumed");
 
     // 5. Final inspection
-    const finalFrame = await client.send("Metacognition.getCallFrame");
+    const finalFrame = await client.send<{ iteration: number }>(
+      "Metacognition.getCallFrame",
+    );
     expect(finalFrame.iteration).toBeGreaterThan(0);
   });
 
@@ -91,7 +95,7 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    const haltResult = await client.send("Inference.halt");
+    const haltResult = await client.send<{ status: string }>("Inference.halt");
     expect(haltResult.status).toBe("no_active_inference");
   });
 
@@ -105,7 +109,9 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     await loop.run("First message");
 
     // Query memory
-    const nodes = await client.send("Memory.queryNodes", { query: "First" });
+    const nodes = await client.send<{ count: number }>("Memory.queryNodes", {
+      query: "First",
+    });
     expect(nodes.count).toBeGreaterThan(0);
 
     // Compact
@@ -125,7 +131,7 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     expect(tools).toHaveProperty("tools");
 
     // Intercept a tool call
-    const intercept = await client.send("Toolchain.intercept", {
+    const intercept = await client.send<{ status: string }>("Toolchain.intercept", {
       toolName: "echo",
       args: { msg: "hello" },
     });
@@ -154,7 +160,7 @@ describe("E2E: ADP Handshake & Agent Lifecycle", () => {
     client = new AdpClient(`ws://localhost:${port}`);
     await client.connect();
 
-    const shutdown = await client.send("Session.shutdown");
+    const shutdown = await client.send<{ status: string }>("Session.shutdown");
     expect(shutdown.status).toBe("shutting_down");
 
     // Should still respond to close

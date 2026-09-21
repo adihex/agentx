@@ -76,13 +76,13 @@ describe("agx-herdr herdr-client", () => {
   });
 
   it("HerdrClient can be instantiated", () => {
-    const client = new HerdrClient("/tmp/herdr.sock");
+    const client = new HerdrClient({ socketPath: "/tmp/herdr.sock" });
     expect(client).toBeInstanceOf(HerdrClient);
     expect(client).toBeDefined();
   });
 
   it("HerdrClient instance has expected methods", () => {
-    const client = new HerdrClient("/tmp/test.sock");
+    const client = new HerdrClient({ socketPath: "/tmp/test.sock" });
     expect(typeof client.connect).toBe("function");
     expect(typeof client.request).toBe("function");
     expect(typeof client.close).toBe("function");

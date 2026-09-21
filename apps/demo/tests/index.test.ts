@@ -4,7 +4,7 @@
 import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@agentx/core", () => {
-  const MockAgentEventLoop = vi.fn().mockImplementation(function (opts: any) {
+  const MockAgentEventLoop = vi.fn().mockImplementation(function () {
     return {
       adp: { on: vi.fn(), notify: vi.fn(), close: vi.fn().mockResolvedValue(undefined) },
       waitForPrompt: vi.fn().mockResolvedValue(null),
