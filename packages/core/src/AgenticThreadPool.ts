@@ -115,6 +115,8 @@ export class AgenticThreadPool {
   private readonly maxResultBytes: number;
   private isTerminatingAll = false;
   private terminated = false;
+  /** Workers spawn lazily on first worker-path execute, never eagerly. */
+  private workersInitialized = false;
 
   /**
    * Create a new thread pool.
@@ -130,10 +132,16 @@ export class AgenticThreadPool {
     this.defaultTimeoutMs = this.normalizeTimeoutMs(options.defaultTimeoutMs);
     this.maxPendingRequests = this.normalizePositiveInt(options.maxPendingRequests, 256);
     this.maxResultBytes = this.normalizePositiveInt(options.maxResultBytes, 1_048_576);
-    this.init();
   }
 
+  /**
+   * Spawn the worker fleet on demand. Construction stays cheap (and
+   * test-mode/main-thread executions never pay for threads they won't use);
+   * the first worker-path execute() pays the spawn cost instead.
+   */
   private init() {
+    if (this.workersInitialized) return;
+    this.workersInitialized = true;
     for (let i = 0; i < this.size; i++) {
       this.workers.push(this.createWorker(i));
     }
@@ -275,6 +283,8 @@ export class AgenticThreadPool {
           );
       });
     }
+
+    this.init();
 
     if (this.workers.length === 0) {
       return this.errorResult(

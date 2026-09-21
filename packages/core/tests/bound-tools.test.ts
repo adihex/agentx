@@ -222,4 +222,21 @@ describe("bound execution on real workers", () => {
       expect(result.errorCode).toBe("TOOL_ARGS_INVALID");
     });
   });
+
+  it("spawns workers lazily — none until the first worker-path execute", async () => {
+    const pool = makePool(2, { echo: echoTool });
+    const internals = pool as unknown as { workers: unknown[] };
+    expect(internals.workers.length).toBe(0);
+
+    await withWorkerExecution(async () => {
+      const result = await pool.execute({
+        id: "wr-lazy",
+        toolCallId: "tc-w5",
+        toolName: "echo",
+        args: { input: "go" },
+      });
+      expect(result.success).toBe(true);
+      expect(internals.workers.length).toBe(2);
+    });
+  });
 });
