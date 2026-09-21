@@ -95,6 +95,12 @@ describe("zettel note tools", () => {
     expect(limited.notes).toHaveLength(1);
   });
 
+  it("linkNotes reports an error when a note does not exist", async () => {
+    const res = await linkNotes({ userId, fromId: noteA, toId: "no-such-note" });
+    expect(res).toMatchObject({ ok: false });
+    expect(res.error).toBeTruthy();
+  });
+
   it("rejects invalid input at the schema boundary", async () => {
     await expect(traverseGraph({ userId, entityName: "x", depth: 10 })).rejects.toThrow();
   });
