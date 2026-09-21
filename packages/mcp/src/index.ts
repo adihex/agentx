@@ -80,7 +80,12 @@ class AgxMcpServer {
         bus.onAny((e) => events.push(e));
 
         console.error(`[MCP] Starting orchestration for plan: ${plan.planId}`);
+        // Subscribe before start(): a synchronous plan can complete inside
+        // the plan.created dispatch itself. The 2-minute bound keeps a plan
+        // with no live executors from hanging the MCP call forever.
+        const completion = session.waitForCompletion(120_000);
         await session.start(plan);
+        const result = await completion;
 
         return {
           content: [
@@ -89,8 +94,8 @@ class AgxMcpServer {
               text: JSON.stringify(
                 {
                   status: "completed",
-                  planId: plan.planId,
-                  summary: "Orchestration finished successfully.",
+                  planId: result.planId,
+                  summary: result.summary,
                   eventCount: events.length,
                 },
                 null,
