@@ -223,6 +223,61 @@ describe("bound execution on real workers", () => {
     });
   });
 
+  it("respawns a worker that exits mid-request and keeps serving", async () => {
+    await withWorkerExecution(async () => {
+      const crashTool: ToolDefinition = {
+        name: "crashWorker",
+        description: "exits the worker",
+        inputSchema: z.object({}),
+        modulePath: fixturePath,
+        exportName: "crashWorker",
+      };
+      const pool = makePool(1, { crashWorker: crashTool, echo: echoTool });
+
+      const res = await pool.execute({
+        id: "wr-crash",
+        toolCallId: "tc-crash",
+        toolName: "crashWorker",
+        args: {},
+      });
+      expect(res.success).toBe(false);
+      expect(res.errorCode).toBe("WORKER_EXIT");
+
+      // The dead worker was replaced — the pool still serves new requests.
+      const next = await pool.execute({
+        id: "wr-after",
+        toolCallId: "tc-after",
+        toolName: "echo",
+        args: { input: "still alive" },
+      });
+      expect(next.success).toBe(true);
+      expect(next.data).toEqual({ echoed: "still alive" });
+    });
+  });
+
+  it("reports TOOL_EXECUTION_ERROR when a worker result cannot be serialized", async () => {
+    await withWorkerExecution(async () => {
+      const bigintTool: ToolDefinition = {
+        name: "returnBigInt",
+        description: "returns a bigint",
+        inputSchema: z.object({}),
+        modulePath: fixturePath,
+        exportName: "returnBigInt",
+      };
+      const pool = makePool(1, { returnBigInt: bigintTool });
+
+      const res = await pool.execute({
+        id: "wr-bigint",
+        toolCallId: "tc-bigint",
+        toolName: "returnBigInt",
+        args: {},
+      });
+      expect(res.success).toBe(false);
+      expect(res.errorCode).toBe("TOOL_EXECUTION_ERROR");
+      expect(res.error).toContain("unserializable");
+    });
+  });
+
   it("spawns workers lazily — none until the first worker-path execute", async () => {
     const pool = makePool(2, { echo: echoTool });
     const internals = pool as unknown as { workers: unknown[] };
