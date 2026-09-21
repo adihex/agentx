@@ -11,7 +11,7 @@ export default defineConfig({
       build: {
         command: "vite build",
         output: ["dist/**"],
-        input: [{ auto: true }, "!dist/**", "!node_modules/**"],
+        input: [{ auto: true }, "src/**", "!dist/**", "!node_modules/**"],
       },
     },
   },

@@ -61,7 +61,6 @@ describe("waitForCompletion", () => {
       steps: [
         {
           id: "s1",
-          title: "doomed step",
           description: "fails immediately",
           dependencies: [],
           acceptanceCriteria: [],
@@ -77,6 +76,7 @@ describe("waitForCompletion", () => {
       planId: "wait-2",
       stepId: "s1",
       error: "boom",
+      attempt: 1,
     });
     await expect(completion).rejects.toThrow("max retries");
   });

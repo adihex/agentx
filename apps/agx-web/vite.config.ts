@@ -8,7 +8,7 @@ export default defineConfig({
       build: {
         command: "tsc -b && vite build",
         output: ["dist/**"],
-        input: [{ auto: true }, "!dist/**", "!node_modules/**"],
+        input: [{ auto: true }, "src/**", "!dist/**", "!node_modules/**"],
         dependsOn: ["@agentx/agx-core#build"],
       },
     },

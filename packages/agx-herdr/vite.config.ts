@@ -6,7 +6,7 @@ export default defineConfig({
       build: {
         command: "tsdown src/index.ts --format esm --dts",
         output: ["dist/**"],
-        input: [{ auto: true }, "!dist/**", "!node_modules/**"],
+        input: [{ auto: true }, "src/**", "!dist/**", "!node_modules/**"],
         dependsOn: ["@agentx/adp#build", "@agentx/agx-core#build"],
       },
     },
