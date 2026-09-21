@@ -6,7 +6,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { AdpClient } from "../src/client";
 import { AdpServer } from "../src/server";
 
-let port = 9700;
+let port = 9750; // distinct from client-hardening (9700) — parallel workers must not collide
 
 describe("ADP Client-Server Integration", () => {
   let server: AdpServer | null = null;

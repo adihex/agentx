@@ -42,7 +42,7 @@ vi.mock("../src/AgenticThreadPool", () => {
 import { AgentEventLoop } from "../src/AgentEventLoop";
 import { AdpClient } from "../../adp/src/client";
 
-let port = 9800;
+let port = 9900; // distinct from adp/security (9800s) and e2e-lifecycle (9850) — parallel workers must not collide
 
 describe("AgentEventLoop + ADP Integration", () => {
   let loop: AgentEventLoop | null = null;
