@@ -100,6 +100,20 @@ describe("bound tool execution", () => {
     expect((res.data as { n: number }).n).toBe(7);
   });
 
+  it("preserves args the schema doesn't declare (host-injected fields)", async () => {
+    const pool = makePool(0, { echoArgs: echoArgsTool });
+    const res = await pool.execute({
+      id: "r5",
+      toolCallId: "tc5",
+      toolName: "echoArgs",
+      args: { input: "hi", userId: "tenant-9" },
+    });
+    expect(res.success).toBe(true);
+    // `userId` is undeclared in inputSchema but injected by hosts — it must
+    // reach the tool; the declared `n` default is still applied.
+    expect(res.data).toEqual({ input: "hi", n: 7, userId: "tenant-9" });
+  });
+
   it("rejects new executions when the pending queue is full", async () => {
     const pool = makePool(
       0,

@@ -260,7 +260,13 @@ export class AgenticThreadPool {
     }
 
     const timeoutMs = this.timeoutFor(def);
-    const normalizedReq = { ...req, args: parsedArgs.data as Record<string, unknown> };
+    // Schema-normalized values win for declared fields (defaults applied),
+    // but keys the schema doesn't declare — e.g. a tenant id the host
+    // injected into req.args — must survive to the tool.
+    const normalizedReq = {
+      ...req,
+      args: { ...req.args, ...(parsedArgs.data as Record<string, unknown>) },
+    };
 
     // In test environment, execute on main thread using jiti.
     // This path is still bounded for never-resolving async tool mocks.
