@@ -285,3 +285,113 @@ describe("AdpClient reconnect backoff", () => {
     expect(global.WebSocket).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("AdpClient.sendAndWait", () => {
+  let mockWs: any;
+
+  const listener = (name: string) =>
+    mockWs.addEventListener.mock.calls.filter((c: any) => c[0] === name).at(-1)![1];
+
+  beforeEach(() => {
+    mockWs = {
+      addEventListener: vi.fn(),
+      send: vi.fn(),
+      close: vi.fn(),
+      readyState: 1, // OPEN
+    };
+    const MockWS = vi.fn().mockImplementation(function () {
+      return mockWs;
+    });
+    (MockWS as any).OPEN = 1;
+    vi.stubGlobal("WebSocket", MockWS);
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  const sentId = () => JSON.parse(mockWs.send.mock.calls.at(-1)![0]).id as string;
+
+  it("resolves with the response correlated by id", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("message")({
+      data: JSON.stringify({ jsonrpc: "2.0", id: sentId(), result: "pong" }),
+    });
+    await expect(promise).resolves.toBe("pong");
+  });
+
+  it("does not deliver responses to event listeners", async () => {
+    const client = new AdpClient();
+    client.connect();
+    const eventFn = vi.fn();
+    client.onEvent(eventFn);
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("message")({
+      data: JSON.stringify({ jsonrpc: "2.0", id: sentId(), result: "pong" }),
+    });
+    await promise;
+    expect(eventFn).not.toHaveBeenCalled();
+  });
+
+  it("rejects on a JSON-RPC error response", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Nope.Method", params: {} });
+    listener("message")({
+      data: JSON.stringify({
+        jsonrpc: "2.0",
+        id: sentId(),
+        error: { code: -32601, message: "Method not found: Nope.Method" },
+      }),
+    });
+    await expect(promise).rejects.toThrow("Method not found: Nope.Method");
+  });
+
+  it("rejects after the timeout", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} }, 100);
+    vi.advanceTimersByTime(100);
+    await expect(promise).rejects.toThrow("timed out");
+  });
+
+  it("rejects immediately when the socket is not open", async () => {
+    const client = new AdpClient();
+    client.connect();
+    mockWs.readyState = 0; // CONNECTING
+    await expect(client.sendAndWait({ method: "Ping.Pong" })).rejects.toThrow(
+      "WebSocket is not open",
+    );
+  });
+
+  it("rejects pending requests when the socket closes", async () => {
+    const client = new AdpClient();
+    client.connect();
+
+    const promise = client.sendAndWait({ method: "Ping.Pong", params: {} });
+    listener("close")();
+    await expect(promise).rejects.toThrow("WebSocket closed");
+  });
+
+  it("ignores responses with an unknown id", () => {
+    const client = new AdpClient();
+    client.connect();
+    const eventFn = vi.fn();
+    client.onEvent(eventFn);
+
+    expect(() =>
+      listener("message")({
+        data: JSON.stringify({ jsonrpc: "2.0", id: "stray", result: "x" }),
+      }),
+    ).not.toThrow();
+    expect(eventFn).not.toHaveBeenCalled();
+  });
+});

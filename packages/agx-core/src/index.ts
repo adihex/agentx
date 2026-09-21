@@ -81,6 +81,15 @@ export class AdpClient {
   private destroyed = false;
   private reconnectAttempts = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private requestSeq = 0;
+  private pendingResponses = new Map<
+    string,
+    {
+      resolve: (value: unknown) => void;
+      reject: (err: Error) => void;
+      timer: ReturnType<typeof setTimeout>;
+    }
+  >();
   /** First retry stays at the documented 3s; later retries double up to 30s. */
   private static readonly RECONNECT_BASE_MS = 3000;
   private static readonly RECONNECT_MAX_MS = 30000;
@@ -110,8 +119,28 @@ export class AdpClient {
 
     ws.addEventListener("message", (ev: MessageEvent) => {
       try {
-        const event: AdpEvent = JSON.parse(ev.data as string);
-        this.listeners.forEach((fn) => fn(event));
+        const frame = JSON.parse(ev.data as string) as {
+          id?: string | number;
+          method?: string;
+          params?: unknown;
+          result?: unknown;
+          error?: { message?: string };
+        };
+        // A frame with an `id` and no `method` is a response, not an event:
+        // settle the matching sendAndWait instead of broadcasting it.
+        if (frame.method === undefined && frame.id !== undefined) {
+          const pending = this.pendingResponses.get(frame.id);
+          if (!pending) return;
+          this.pendingResponses.delete(frame.id);
+          clearTimeout(pending.timer);
+          if (frame.error) {
+            pending.reject(new Error(frame.error.message ?? "ADP error"));
+          } else {
+            pending.resolve(frame.result);
+          }
+          return;
+        }
+        this.listeners.forEach((fn) => fn(frame as AdpEvent));
       } catch {
         /* ignore malformed */
       }
@@ -120,6 +149,12 @@ export class AdpClient {
     ws.addEventListener("close", () => {
       if (this.destroyed) return;
       this.statusListeners.forEach((fn) => fn(false));
+      // A dead socket must not leave sendAndWait awaiters hanging.
+      for (const pending of this.pendingResponses.values()) {
+        clearTimeout(pending.timer);
+        pending.reject(new Error("WebSocket closed before the response arrived"));
+      }
+      this.pendingResponses.clear();
       // Back off between retries so a permanently-down server is not pinged
       // every 3 seconds forever.
       const delay = Math.min(
@@ -140,6 +175,36 @@ export class AdpClient {
     return false;
   }
 
+  /**
+   * Send a command and await its JSON-RPC response (correlated by id).
+   * Rejects when the socket is not OPEN, on an error response, or after
+   * `timeoutMs` (default 5s). Fire-and-forget callers should keep using
+   * `send()` + the `Debugger.Response` event push.
+   */
+  sendAndWait<T = unknown>(
+    command: Omit<AdpCommand, "jsonrpc" | "id">,
+    timeoutMs = 5000,
+  ): Promise<T> {
+    if (this.ws?.readyState !== WebSocket.OPEN) {
+      return Promise.reject(new Error("WebSocket is not open"));
+    }
+    // String ids stay unique even under frozen fake timers.
+    const id = `${Date.now()}-${this.requestSeq++}`;
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        if (this.pendingResponses.delete(id)) {
+          reject(new Error(`ADP request timed out after ${timeoutMs}ms: ${command.method}`));
+        }
+      }, timeoutMs);
+      this.pendingResponses.set(id, {
+        resolve: resolve as (v: unknown) => void,
+        reject,
+        timer,
+      });
+      this.ws!.send(JSON.stringify({ jsonrpc: "2.0", id, ...command }));
+    });
+  }
+
   onEvent(fn: AdpListener) {
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);
@@ -155,6 +220,11 @@ export class AdpClient {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+    for (const pending of this.pendingResponses.values()) {
+      clearTimeout(pending.timer);
+      pending.reject(new Error("ADP client destroyed"));
+    }
+    this.pendingResponses.clear();
     this.ws?.close();
   }
 }
