@@ -26,6 +26,9 @@ export class PlanDispatcher {
       const graph = new DependencyGraph(e.plan);
       this.activePlan = e.plan;
       this.graph = graph;
+      // Budgets are per-plan: a superseding plan may reuse step ids and must
+      // start with fresh retry/review counters.
+      this.ledger = new RetryLedger();
       this.dispatchReadySteps();
     });
 

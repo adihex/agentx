@@ -176,9 +176,20 @@ export default function App() {
 
   // Notes/graph refresh is event-driven: UI mutations refetch on their own
   // success path, agent writes arrive via Agent.ToolComplete/InferenceEnd.
+  // Refetching on focus/visibility-close covers changes made by other tabs or
+  // API clients that emit neither signal.
   useEffect(() => {
     if (!session) return;
     void fetchNotes();
+    const onForeground = () => {
+      if (document.visibilityState === "visible") void fetchNotes();
+    };
+    document.addEventListener("visibilitychange", onForeground);
+    window.addEventListener("focus", onForeground);
+    return () => {
+      document.removeEventListener("visibilitychange", onForeground);
+      window.removeEventListener("focus", onForeground);
+    };
   }, [fetchNotes, session]);
 
   // Connect to the agent via ADP WebSocket.

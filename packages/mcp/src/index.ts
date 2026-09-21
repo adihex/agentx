@@ -80,12 +80,14 @@ class AgxMcpServer {
         bus.onAny((e) => events.push(e));
 
         console.error(`[MCP] Starting orchestration for plan: ${plan.planId}`);
-        // Subscribe before start(): a synchronous plan can complete inside
-        // the plan.created dispatch itself. The 2-minute bound keeps a plan
-        // with no live executors from hanging the MCP call forever.
-        const completion = session.waitForCompletion(120_000);
+        // This process wires no executors (BaseAgent) to the session bus, so a
+        // nonempty plan can never produce terminal events — awaiting completion
+        // would just wait out a timeout. Empty plans complete synchronously
+        // inside the plan.created dispatch, so subscribe before start().
+        const completion =
+          plan.steps.length === 0 ? session.waitForCompletion(120_000) : null;
         await session.start(plan);
-        const result = await completion;
+        const result = completion ? await completion : null;
 
         return {
           content: [
@@ -93,9 +95,11 @@ class AgxMcpServer {
               type: "text",
               text: JSON.stringify(
                 {
-                  status: "completed",
-                  planId: result.planId,
-                  summary: result.summary,
+                  status: result ? "completed" : "dispatched",
+                  planId: result?.planId ?? plan.planId,
+                  summary:
+                    result?.summary ??
+                    "Plan dispatched; attach executors (BaseAgent) to the session bus to run steps",
                   eventCount: events.length,
                 },
                 null,

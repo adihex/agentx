@@ -90,6 +90,58 @@ describe("Debugger.* legacy command aliases", () => {
     expect(events).toHaveLength(0);
   });
 
+  it("adapts {args:[...]} into the canonical named params", async () => {
+    const p = port++;
+    const server = makeServer({ port: p });
+    const seen: unknown[] = [];
+    server.on("Session.prompt", (params, cb) => {
+      seen.push(params);
+      cb({ enqueued: true });
+    });
+    server.on("Inference.evaluate", (params, cb) => {
+      seen.push(params);
+      cb("done");
+    });
+    server.on("Toolchain.cancel", (params, cb) => {
+      seen.push(params);
+      cb({ cancelled: true });
+    });
+    server.on("Toolchain.intercept", (params, cb) => {
+      seen.push(params);
+      cb({ status: "dispatched" });
+    });
+
+    const client = makeClient(`ws://localhost:${p}`);
+    await client.waitForOpen();
+
+    await client.send("Debugger.Prompt", { args: ["hello", "world"] });
+    await client.send("Debugger.Evaluate", { args: ["1", "+", "1"] });
+    await client.send("Debugger.Cancel", { args: ["call-42"] });
+    await client.send("Debugger.Intercept", { args: ["myTool"] });
+
+    expect(seen).toEqual([
+      { prompt: "hello world" },
+      { expression: "1 + 1" },
+      { toolCallId: "call-42" },
+      { toolName: "myTool" },
+    ]);
+  });
+
+  it("passes params through unchanged for aliases without an adapter", async () => {
+    const p = port++;
+    const server = makeServer({ port: p });
+    const seen: unknown[] = [];
+    server.on("Metacognition.pause", (params, cb) => {
+      seen.push(params);
+      cb({ paused: true });
+    });
+
+    const client = makeClient(`ws://localhost:${p}`);
+    await client.waitForOpen();
+    await client.send("Debugger.Pause", { args: [], extra: 1 });
+    expect(seen).toEqual([{ args: [], extra: 1 }]);
+  });
+
   it("a scoped principal's aliases are checked against the resolved domain", async () => {
     const p = port++;
     const server = makeServer({

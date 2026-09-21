@@ -334,6 +334,25 @@ describe("PlanDispatcher", () => {
       expect(assigned).toEqual(["a", "b"]);
     });
 
+    it("resets retry budgets when a superseding plan reuses step ids", () => {
+      const assigned: string[] = [];
+      const failedPlans: string[] = [];
+      bus.onEvent("plan.step.assigned", (e) => assigned.push(`${e.planId}:${e.stepId}`));
+      bus.onEvent("session.failed", (e) => failedPlans.push(e.planId));
+
+      // Exhaust p1's retry budget on step "a" (maxRetries 1 → one retry, then terminal).
+      bus.dispatch({ type: "plan.created", plan: plan("p1", [step("a", [], 1)]) });
+      bus.dispatch({ type: "plan.step.failed", planId: "p1", stepId: "a", error: "x", attempt: 1 });
+      bus.dispatch({ type: "plan.step.failed", planId: "p1", stepId: "a", error: "x", attempt: 2 });
+      expect(failedPlans).toEqual(["p1"]);
+
+      // p2 reuses step id "a": its first failure must retry, not terminate.
+      bus.dispatch({ type: "plan.created", plan: plan("p2", [step("a", [], 1)]) });
+      bus.dispatch({ type: "plan.step.failed", planId: "p2", stepId: "a", error: "x", attempt: 1 });
+      expect(failedPlans).toEqual(["p1"]);
+      expect(assigned).toEqual(["p1:a", "p1:a", "p2:a", "p2:a"]);
+    });
+
     it("accepts a new plan once the previous plan has completed", () => {
       const assigned: string[] = [];
       bus.onEvent("plan.step.assigned", (e) => assigned.push(e.stepId));

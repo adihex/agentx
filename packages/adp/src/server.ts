@@ -82,6 +82,26 @@ const DEBUGGER_METHOD_ALIASES: Record<string, string> = {
   "Debugger.Shutdown": AdpDomains.Session.shutdown,
 };
 
+/**
+ * REPL commands ship their arguments as `{ args: string[] }`, while canonical
+ * handlers read named params (`prompt`, `expression`, …). These adapters
+ * translate the legacy shape for argument-bearing aliases; space-separated
+ * tokens join back into a single text field.
+ */
+const replArgs = (params: unknown): string[] =>
+  Array.isArray((params as { args?: unknown })?.args)
+    ? ((params as { args: unknown[] }).args).map(String)
+    : [];
+
+const DEBUGGER_PARAM_ADAPTERS: Record<string, (params: unknown) => unknown> = {
+  "Debugger.Prompt": (p) => ({ prompt: replArgs(p).join(" ") }),
+  "Debugger.Evaluate": (p) => ({ expression: replArgs(p).join(" ") }),
+  "Debugger.QueryNodes": (p) => ({ query: replArgs(p).join(" ") }),
+  "Debugger.SwitchModel": (p) => ({ model: replArgs(p).join(" ") }),
+  "Debugger.Intercept": (p) => ({ toolName: replArgs(p)[0] }),
+  "Debugger.Cancel": (p) => ({ toolCallId: replArgs(p)[0] }),
+};
+
 export interface AdpServerOptions {
   /** The port to listen on. */
   port?: number;
@@ -609,10 +629,13 @@ export class AdpServer extends EventEmitter {
     if (registered.once) this.handlers.delete(method);
 
     try {
+      // Legacy Debugger.* params ({args: [...]}) are adapted to the canonical
+      // named-param shape before dispatch.
+      const params = DEBUGGER_PARAM_ADAPTERS[req.method]?.(req.params) ?? req.params;
       // Dispatch through the single handler table. The listener signature is
       // (params, callback, sessionId) — the third argument lets a multi-tenant
       // host route the command to the right session.
-      await registered.listener(req.params, reply, sessionId);
+      await registered.listener(params, reply, sessionId);
     } catch (err) {
       // A throwing handler must not take the connection down or mask itself
       // as a parse error; report -32603 (unless it already responded).
