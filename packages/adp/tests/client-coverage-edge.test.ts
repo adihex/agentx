@@ -4,7 +4,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { AdpClient } from "../src/client";
 import { AdpServer } from "../src/server";
-import WebSocket from "ws";
 import type { RawData } from "ws";
 
 describe("rawToUtf8 (via AdpClient message handler)", () => {
