@@ -180,6 +180,14 @@ export class AdpClient {
 
   public async waitForOpen(): Promise<void> {
     if (this.ws.readyState === WebSocket.OPEN) return;
+    // A socket that already failed (CLOSED/CLOSING) will never emit "open" —
+    // re-arm a fresh one before waiting so callers can retry after refusal.
+    if (
+      this.ws.readyState === WebSocket.CLOSED ||
+      this.ws.readyState === WebSocket.CLOSING
+    ) {
+      this.openSocket();
+    }
     return new Promise((resolve, reject) => {
       // The server's loopback bind resolves its host asynchronously, so a
       // client constructed right after the server can hit ECONNREFUSED while

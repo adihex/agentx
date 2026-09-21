@@ -89,6 +89,20 @@ describe("AdpClient pending-request hardening", () => {
     await expect(client.send("Never.Replies")).rejects.toThrow(/timed out/);
   });
 
+  it("retries while the server bind is still coming up", async () => {
+    const p = port++;
+    // Connect before anything listens — the first attempt is refused, but the
+    // retry window should catch a server that binds shortly after.
+    const c = makeClient(`ws://localhost:${p}`);
+    await new Promise((r) => setTimeout(r, 150));
+    const server = makeServer(p);
+    server.on("Ping.Pong", (_params, cb) => cb({ ok: true }));
+    await c.waitForOpen();
+    expect(c.isOpen).toBe(true);
+    const res = await c.send<{ ok: true }>("Ping.Pong", {});
+    expect(res).toEqual({ ok: true });
+  });
+
   it("rejects waitForOpen when the connection is refused", async () => {
     const client = makeClient("ws://localhost:1");
     await expect(client.waitForOpen()).rejects.toThrow();
