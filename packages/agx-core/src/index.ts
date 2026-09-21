@@ -164,6 +164,12 @@ export function parseReplCommand(raw: string): { method: string; args: string[] 
   const trimmed = raw.trim();
   if (!trimmed.startsWith("/")) return null;
   const [cmd, ...args] = trimmed.slice(1).split(" ");
-  const method = `Debugger.${cmd.charAt(0).toUpperCase()}${cmd.slice(1)}`;
+  if (!cmd) return null;
+  // A dotted verb is already a fully-qualified ADP method (`/Memory.compact`,
+  // `/Session.prompt`) — send it verbatim so the whole protocol is reachable.
+  // Bare verbs keep the legacy `Debugger.<Verb>` shape the server aliases.
+  const method = cmd.includes(".")
+    ? cmd
+    : `Debugger.${cmd.charAt(0).toUpperCase()}${cmd.slice(1)}`;
   return { method, args };
 }

@@ -25,9 +25,21 @@ describe("agx-core helpers", () => {
     });
   });
 
+  it("parseReplCommand should pass through dotted ADP methods verbatim", () => {
+    expect(parseReplCommand("/Memory.compact")).toEqual({
+      method: "Memory.compact",
+      args: [],
+    });
+    expect(parseReplCommand("/Session.prompt run the plan")).toEqual({
+      method: "Session.prompt",
+      args: ["run", "the", "plan"],
+    });
+  });
+
   it("parseReplCommand should return null for non-commands", () => {
     expect(parseReplCommand("hello")).toBeNull();
     expect(parseReplCommand("  ")).toBeNull();
+    expect(parseReplCommand("/")).toBeNull();
   });
 
   it("colors and hex maps should be defined", () => {
