@@ -190,3 +190,86 @@ describe("AdpClient (agnostic)", () => {
     expect(global.WebSocket).toHaveBeenLastCalledWith("ws://localhost:9222?token=t");
   });
 });
+
+describe("AdpClient reconnect backoff", () => {
+  let mockWs: any;
+
+  const listener = (name: string) =>
+    mockWs.addEventListener.mock.calls.filter((c: any) => c[0] === name).at(-1)![1];
+
+  beforeEach(() => {
+    mockWs = {
+      addEventListener: vi.fn(),
+      send: vi.fn(),
+      close: vi.fn(),
+      readyState: 0,
+    };
+    const MockWS = vi.fn().mockImplementation(function () {
+      return mockWs;
+    });
+    (MockWS as any).OPEN = 1;
+    vi.stubGlobal("WebSocket", MockWS);
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("doubles the delay between consecutive failed reconnects", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")(); // attempt 1 scheduled at +3s
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(2);
+
+    listener("close")(); // attempt 2 scheduled at +6s
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(3000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(3);
+  });
+
+  it("caps the backoff at 30s", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    for (const ms of [3000, 6000, 12000, 24000]) {
+      listener("close")();
+      vi.advanceTimersByTime(ms);
+    }
+    expect(global.WebSocket).toHaveBeenCalledTimes(5);
+
+    listener("close")(); // next delay would be 48s → capped at 30s
+    vi.advanceTimersByTime(29999);
+    expect(global.WebSocket).toHaveBeenCalledTimes(5);
+    vi.advanceTimersByTime(1);
+    expect(global.WebSocket).toHaveBeenCalledTimes(6);
+  });
+
+  it("resets the backoff after a successful open", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")();
+    vi.advanceTimersByTime(3000); // connect #2
+    listener("close")();
+    vi.advanceTimersByTime(6000); // connect #3
+    listener("open")(); // successful open resets attempts
+    listener("close")();
+    vi.advanceTimersByTime(3000); // back to base delay
+    expect(global.WebSocket).toHaveBeenCalledTimes(4);
+  });
+
+  it("destroy() cancels a pending reconnect", () => {
+    const client = new AdpClient();
+    client.connect();
+
+    listener("close")();
+    client.destroy();
+    vi.advanceTimersByTime(60000);
+    expect(global.WebSocket).toHaveBeenCalledTimes(1);
+  });
+});

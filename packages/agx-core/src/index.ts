@@ -79,6 +79,11 @@ export class AdpClient {
   private listeners: Set<AdpListener> = new Set();
   private statusListeners: Set<AdpStatusListener> = new Set();
   private destroyed = false;
+  private reconnectAttempts = 0;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  /** First retry stays at the documented 3s; later retries double up to 30s. */
+  private static readonly RECONNECT_BASE_MS = 3000;
+  private static readonly RECONNECT_MAX_MS = 30000;
 
   constructor(
     url = "ws://localhost:9222",
@@ -93,11 +98,13 @@ export class AdpClient {
 
   connect() {
     if (this.destroyed) return;
+    this.reconnectTimer = null;
     const ws = new WebSocket(this.url);
     this.ws = ws;
 
     ws.addEventListener("open", () => {
       if (this.destroyed) return;
+      this.reconnectAttempts = 0;
       this.statusListeners.forEach((fn) => fn(true));
     });
 
@@ -113,7 +120,14 @@ export class AdpClient {
     ws.addEventListener("close", () => {
       if (this.destroyed) return;
       this.statusListeners.forEach((fn) => fn(false));
-      setTimeout(() => this.connect(), 3000);
+      // Back off between retries so a permanently-down server is not pinged
+      // every 3 seconds forever.
+      const delay = Math.min(
+        AdpClient.RECONNECT_BASE_MS * 2 ** this.reconnectAttempts,
+        AdpClient.RECONNECT_MAX_MS,
+      );
+      this.reconnectAttempts++;
+      this.reconnectTimer = setTimeout(() => this.connect(), delay);
     });
   }
 
@@ -137,6 +151,10 @@ export class AdpClient {
 
   destroy() {
     this.destroyed = true;
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     this.ws?.close();
   }
 }
