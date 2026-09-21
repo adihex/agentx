@@ -1,7 +1,7 @@
 /**
  * ADP Client Coverage — covers rawToUtf8, error paths, send states
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { AdpClient } from "../src/client";
 import { AdpServer } from "../src/server";
 import WebSocket from "ws";

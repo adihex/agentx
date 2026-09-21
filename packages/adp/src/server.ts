@@ -9,7 +9,7 @@ import {
 } from "./schemas.js";
 
 type RegisteredAdpHandler = {
-  listener: (...args: any[]) => unknown | Promise<unknown>;
+  listener: (...args: any[]) => unknown;
   once: boolean;
 };
 
@@ -271,7 +271,7 @@ export class AdpServer extends EventEmitter {
   /** Register a method in the single ADP dispatcher table. */
   private registerHandler(
     method: string,
-    listener: (...args: any[]) => unknown | Promise<unknown>,
+    listener: (...args: any[]) => unknown,
     once: boolean,
   ): this {
     if (this.handlers.has(method)) {

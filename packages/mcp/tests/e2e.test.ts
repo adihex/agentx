@@ -10,7 +10,7 @@
  * Imports the module and directly tests the handler functions
  * that are set up in the AgxMcpServer class.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 
 describe("E2E: agentx-mcp Request Handlers", () => {
   it("E2E: can import the agentx-mcp module", async () => {
@@ -40,7 +40,7 @@ describe("E2E: agentx-mcp Request Handlers", () => {
   });
 
   it("E2E: orchestrator integration accepts valid plans", async () => {
-    const { OrchestratedSession, ExecutionPlanSchema } = await import("@agentx/orchestrator");
+    const { ExecutionPlanSchema } = await import("@agentx/orchestrator");
 
     // Verify the orchestrator can parse a valid plan
     const validPlan = {

@@ -15,7 +15,7 @@ function isElementEmpty(element: any): boolean {
     return String(element).trim() === "";
   }
   if (Array.isArray(element)) {
-    return element.length === 0 || element.every(isElementEmpty);
+    return element.every(isElementEmpty);
   }
   if (element.props) {
     if (element.props.children !== undefined) {

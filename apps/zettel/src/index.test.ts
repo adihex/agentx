@@ -187,7 +187,7 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
       httpServer.close(() => resolve());
     });
     // Close database client
-    await client.close();
+    client.close();
   });
 
   async function signup(email: string, name: string): Promise<string> {
@@ -242,7 +242,12 @@ describe("Multi-tenant HTTP/WebSocket Integration Smoke Test", () => {
     return new Promise((resolve) => {
       const handleMsg = (data: WebSocket.RawData) => {
         try {
-          const parsed = JSON.parse(data.toString());
+          const text = Array.isArray(data)
+            ? Buffer.concat(data).toString("utf8")
+            : Buffer.isBuffer(data)
+              ? data.toString("utf8")
+              : Buffer.from(data).toString("utf8");
+          const parsed = JSON.parse(text);
           if (parsed.method === "Agent.ToolComplete") {
             ws.off("message", handleMsg);
             resolve();

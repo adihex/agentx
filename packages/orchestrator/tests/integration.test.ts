@@ -2,7 +2,7 @@
  * Integration Test: Orchestrator end-to-end workflow
  * Tests PlanDispatcher + DependencyGraph + OrchestrationBus + RetryLedger
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OrchestrationBus } from "../src/OrchestrationBus";
 import { PlanDispatcher } from "../src/PlanDispatcher";
 import { DependencyGraph } from "../src/DependencyGraph";

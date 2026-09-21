@@ -1,7 +1,7 @@
 /**
  * agx-herdr — Unit tests for HerdrClient and extracted functions
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import * as os from "node:os";
 import * as path from "node:path";
 

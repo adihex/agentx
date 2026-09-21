@@ -1,5 +1,5 @@
 import readline from "readline";
-import { AdpClient, parseReplCommand, REPL_HELP_LINES } from "@agentx/agx-core";
+import { AdpClient, parseReplCommand } from "@agentx/agx-core";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

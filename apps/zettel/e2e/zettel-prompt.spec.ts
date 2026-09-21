@@ -110,7 +110,7 @@ test.describe("Zettel Prompt E2E (production)", () => {
       await expect(assistantTurn.first()).toBeVisible({ timeout: 100000 });
       const responseText = await assistantTurn.first().textContent();
       console.log(`✅ Agent responded: "${responseText?.slice(0, 200)}"`);
-    } catch (err) {
+    } catch {
       // Capture page state for debugging
       console.log("\n=== DEBUG: No agent response received ===");
       console.log(`WebSocket connected: ${wsConnected}`);

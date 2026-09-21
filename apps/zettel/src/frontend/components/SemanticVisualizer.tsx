@@ -226,7 +226,7 @@ function SemanticVisualizerInner({
             <>
               <div style={{ width: "1px", height: "14px", background: "var(--rule)" }} />
               <button
-                onClick={() => void zoomIn()}
+                onClick={() => zoomIn()}
                 title="Zoom In"
                 className="material-symbols-outlined"
                 style={{
@@ -244,7 +244,7 @@ function SemanticVisualizerInner({
                 zoom_in
               </button>
               <button
-                onClick={() => void zoomOut()}
+                onClick={() => zoomOut()}
                 title="Zoom Out"
                 className="material-symbols-outlined"
                 style={{
