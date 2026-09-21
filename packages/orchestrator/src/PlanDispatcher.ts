@@ -25,6 +25,10 @@ export class PlanDispatcher {
     });
 
     this.bus.onEvent("plan.step.completed", (e) => {
+      if (!this.isLiveStep(e.planId, e.stepId) || !this.graph?.isInProgress(e.stepId)) {
+        console.log(`[Dispatcher] 🗑 Ignoring stale completion for step ${e.stepId}`);
+        return;
+      }
       console.log(`[Dispatcher] 📋 Step ${e.stepId} completed. Triggering reviews...`);
       const plan = this.activePlan;
       if (!plan) return;
@@ -52,6 +56,10 @@ export class PlanDispatcher {
     });
 
     this.bus.onEvent("review.pass", (e) => {
+      if (!this.isLiveStep(e.planId, e.stepId)) {
+        console.log(`[Dispatcher] 🗑 Ignoring stale review.pass for step ${e.stepId}`);
+        return;
+      }
       console.log(`[Dispatcher] ✅ Review pass ${e.passId} passed for step ${e.stepId}`);
       if (this.graph?.markReviewPassed(e.stepId, e.passId)) {
         console.log(`[Dispatcher] 🎉 All reviews passed for step ${e.stepId}`);
@@ -60,6 +68,12 @@ export class PlanDispatcher {
     });
 
     this.bus.onEvent("review.fail", (e) => {
+      // Only a step that is genuinely under review can fail one — stale or
+      // out-of-order review results must not reset the graph state.
+      if (!this.isLiveStep(e.planId, e.stepId) || !this.graph?.isReviewing(e.stepId)) {
+        console.log(`[Dispatcher] 🗑 Ignoring stale review.fail for step ${e.stepId}`);
+        return;
+      }
       const stats = this.ledger.getStats(e.stepId);
       const plan = this.activePlan;
 
@@ -107,6 +121,10 @@ export class PlanDispatcher {
     });
 
     this.bus.onEvent("plan.step.failed", (e) => {
+      if (!this.isLiveStep(e.planId, e.stepId) || !this.graph?.isInProgress(e.stepId)) {
+        console.log(`[Dispatcher] 🗑 Ignoring stale failure for step ${e.stepId}`);
+        return;
+      }
       const stats = this.ledger.getStats(e.stepId);
       const step = this.activePlan?.steps.find((s) => s.id === e.stepId);
 
@@ -140,7 +158,10 @@ export class PlanDispatcher {
         type: "plan.step.assigned",
         planId: this.activePlan.planId,
         stepId: step.id,
-        executorId: "pool-default",
+        // Route to the step's declared executor role; "default" maps onto the
+        // shared pool executor.
+        executorId:
+          step.assignedExecutorRole === "default" ? "pool-default" : step.assignedExecutorRole,
       });
     }
 
@@ -151,5 +172,15 @@ export class PlanDispatcher {
         summary: "All steps completed successfully.",
       });
     }
+  }
+
+  /**
+   * A step-scoped event only counts when it belongs to the currently active
+   * plan and names a step that plan actually contains. Everything else is a
+   * stale event — dropped so it cannot mutate live state.
+   */
+  private isLiveStep(planId: string, stepId: string): boolean {
+    const plan = this.activePlan;
+    return plan?.planId === planId && plan.steps.some((s) => s.id === stepId);
   }
 }

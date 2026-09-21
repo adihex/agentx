@@ -12,7 +12,26 @@ export class DependencyGraph {
   private pendingReviewPasses = new Map<string, Set<string>>();
 
   constructor(private plan: ExecutionPlan) {
+    this.validateReferentialIntegrity();
     this.validateNoCycles();
+  }
+
+  /** Every step id must be unique and every dependency must point at a real step. */
+  private validateReferentialIntegrity() {
+    const ids = new Set<string>();
+    for (const step of this.plan.steps) {
+      if (ids.has(step.id)) {
+        throw new Error(`Duplicate step id in plan: ${step.id}`);
+      }
+      ids.add(step.id);
+    }
+    for (const step of this.plan.steps) {
+      for (const depId of step.dependencies) {
+        if (!ids.has(depId)) {
+          throw new Error(`Step "${step.id}" depends on unknown step "${depId}"`);
+        }
+      }
+    }
   }
 
   private validateNoCycles() {
@@ -78,6 +97,11 @@ export class DependencyGraph {
 
   public isReviewing(stepId: string): boolean {
     return this.pendingReviewPasses.has(stepId);
+  }
+
+  /** True while a step has been dispatched for execution and not yet resolved. */
+  public isInProgress(stepId: string): boolean {
+    return this.inProgressSteps.has(stepId);
   }
 
   /** Returns steps that have all dependencies met and are not already started/completed */
