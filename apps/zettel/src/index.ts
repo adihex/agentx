@@ -45,11 +45,7 @@ if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
   ) {
     const lastUserContent = [...messages].reverse().find((m) => m.role === "user")?.content;
     const lastUserMsg =
-      typeof lastUserContent === "string"
-        ? lastUserContent
-        : Array.isArray(lastUserContent)
-          ? lastUserContent.map((p) => (p.type === "text" ? p.text : "")).join("")
-          : "";
+      typeof lastUserContent === "string" ? lastUserContent : JSON.stringify(lastUserContent ?? "");
     const hasToolResult = messages.some((m) => m.role === "tool");
 
     if (hasToolResult) {
