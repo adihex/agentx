@@ -367,7 +367,7 @@ describe("AdpClient.sendAndWait", () => {
     const client = new AdpClient();
     client.connect();
     mockWs.readyState = 0; // CONNECTING
-    await expect(client.sendAndWait({ method: "Ping.Pong" })).rejects.toThrow(
+    await expect(client.sendAndWait({ method: "Ping.Pong", params: {} })).rejects.toThrow(
       "WebSocket is not open",
     );
   });

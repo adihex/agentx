@@ -129,9 +129,10 @@ export class AdpClient {
         // A frame with an `id` and no `method` is a response, not an event:
         // settle the matching sendAndWait instead of broadcasting it.
         if (frame.method === undefined && frame.id !== undefined) {
-          const pending = this.pendingResponses.get(frame.id);
+          const frameId = String(frame.id);
+          const pending = this.pendingResponses.get(frameId);
           if (!pending) return;
-          this.pendingResponses.delete(frame.id);
+          this.pendingResponses.delete(frameId);
           clearTimeout(pending.timer);
           if (frame.error) {
             pending.reject(new Error(frame.error.message ?? "ADP error"));
