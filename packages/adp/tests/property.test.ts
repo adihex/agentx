@@ -26,7 +26,13 @@ describe("ADP protocol — property tests", () => {
           const input = args.length > 0 ? `/${cmd} ${args.join(" ")}` : `/${cmd}`;
           const result = parseReplCommand(input);
           expect(result).not.toBeNull();
-          expect(result!.method).toMatch(/^Debugger\./);
+          // Bare verbs map to the legacy Debugger.* surface; a dotted verb is
+          // already a fully-qualified ADP method and passes through verbatim.
+          if (cmd.includes(".")) {
+            expect(result!.method).toBe(cmd);
+          } else {
+            expect(result!.method).toMatch(/^Debugger\./);
+          }
         },
       ),
     );
