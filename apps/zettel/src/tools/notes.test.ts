@@ -101,6 +101,19 @@ describe("zettel note tools", () => {
     expect(res.error).toBeTruthy();
   });
 
+  it("tools fall back to the default user when userId is omitted", async () => {
+    const created = await createNote({ content: "default-user note" });
+    expect(created).toMatchObject({ success: true });
+    const listed = await listNotes({});
+    expect(listed.notes.length).toBeGreaterThanOrEqual(1);
+    const searched = await searchNotes({ query: "default-user" });
+    expect(searched.results.length).toBeGreaterThanOrEqual(1);
+    const missing = await getNote({ id: "not-there" });
+    expect(missing.note).toBeNull();
+    const graph = await traverseGraph({ entityName: "Nobody" });
+    expect(graph).toMatchObject({ success: true, result: { entities: [] } });
+  });
+
   it("rejects invalid input at the schema boundary", async () => {
     await expect(traverseGraph({ userId, entityName: "x", depth: 10 })).rejects.toThrow();
   });
