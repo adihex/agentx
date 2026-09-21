@@ -110,7 +110,9 @@ describe("E2E: agx-cli REPL Lifecycle", () => {
   });
 
   it("E2E: log-to-dashboard writes to file", () => {
-    const logFile = path.join(__dirname, "../orchestrator.log");
+    // Own filename: the real orchestrator.log is raced on by adp-repl.test.ts
+    // in a parallel worker.
+    const logFile = path.join(__dirname, "../orchestrator-e2e-test.log");
     const timestamp = new Date().toLocaleTimeString();
 
     // Simulate the logToDashboard function
@@ -120,7 +122,7 @@ describe("E2E: agx-cli REPL Lifecycle", () => {
     const content = fs.readFileSync(logFile, "utf-8");
     expect(content).toContain("Connected to ADP Server");
 
-    // Cleanup
-    fs.unlinkSync(logFile);
+    // Cleanup — force:true because adp-repl.test.ts races on the same file.
+    fs.rmSync(logFile, { force: true });
   });
 });

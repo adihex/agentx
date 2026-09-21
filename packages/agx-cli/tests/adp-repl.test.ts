@@ -47,14 +47,15 @@ describe("agx-cli REPL — extracted functions", () => {
   });
 
   it("logs to dashboard file", () => {
-    // Clean up before
-    if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
+    // Clean up before/after — force:true because a sibling test file writes
+    // and deletes this same log file in a parallel worker.
+    fs.rmSync(LOG_FILE, { force: true });
 
     logToDashboard("Test message");
     const content = fs.readFileSync(LOG_FILE, "utf-8");
     expect(content).toContain("[REPL] Test message");
 
-    fs.unlinkSync(LOG_FILE);
+    fs.rmSync(LOG_FILE, { force: true });
   });
 
   it("handleReplInput returns continue for empty input", () => {
