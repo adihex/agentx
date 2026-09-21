@@ -353,6 +353,34 @@ export const httpServer = serve({
 
 export const userAgents = new Map<string, AgentEventLoop>();
 
+/**
+ * A user's agent holds worker threads and context; when its last ADP client
+ * disconnects it is evicted after a grace period so idle users stop holding
+ * threads. Reconnecting inside the window cancels the eviction.
+ */
+const AGENT_IDLE_EVICT_MS = 10 * 60 * 1000;
+const agentEvictTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function cancelAgentEviction(userId: string) {
+  const timer = agentEvictTimers.get(userId);
+  if (timer) {
+    clearTimeout(timer);
+    agentEvictTimers.delete(userId);
+  }
+}
+
+function scheduleAgentEviction(userId: string, agent: AgentEventLoop) {
+  const timer = setTimeout(() => {
+    agentEvictTimers.delete(userId);
+    if (agent.adp.clientCount === 0 && userAgents.get(userId) === agent) {
+      userAgents.delete(userId);
+      void agent.shutdown();
+    }
+  }, AGENT_IDLE_EVICT_MS);
+  timer.unref();
+  agentEvictTimers.set(userId, timer);
+}
+
 // A mock HTTP server that does nothing, to prevent AdpServer from binding to the real upgrade event
 const mockHttpServer = {
   on: () => {
@@ -361,6 +389,7 @@ const mockHttpServer = {
 };
 
 function getOrCreateUserAgent(userId: string): AgentEventLoop {
+  cancelAgentEviction(userId);
   let userAgent = userAgents.get(userId);
   if (!userAgent) {
     userAgent = new AgentEventLoop({
@@ -430,6 +459,13 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         }
       }
     })();
+
+    currentAgent.adp.onDisconnection(() => {
+      if (currentAgent.adp.clientCount === 0) {
+        scheduleAgentEviction(userId, currentAgent);
+      }
+    });
+    currentAgent.adp.onConnection(() => cancelAgentEviction(userId));
 
     userAgents.set(userId, userAgent);
   }

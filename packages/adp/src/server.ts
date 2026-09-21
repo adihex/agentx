@@ -439,6 +439,11 @@ export class AdpServer extends EventEmitter {
     return this.sessionIds.get(ws);
   }
 
+  /** Number of currently connected client sockets. */
+  public get clientCount(): number {
+    return this.clients.size;
+  }
+
   /**
    * Graceful shutdown.
    * @returns A promise that resolves when the server is closed.
