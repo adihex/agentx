@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 
 vi.hoisted(() => {
   process.env.ZETTEL_DIR = `/tmp/agentx-zettel-test-${process.pid}-${Math.random()}`;
@@ -328,6 +328,21 @@ describe("tenant graph store", () => {
 
 describe("Custom tools store", () => {
   const toolUser = "tools-store-" + Date.now();
+  const otherUser = "tools-other-" + Date.now();
+
+  beforeAll(async () => {
+    // custom_tools.user_id has a FK to the auth "user" table — seed the rows
+    // the FK needs (all NOT NULL columns, or INSERT OR IGNORE silently skips).
+    for (const [id, email] of [
+      [toolUser, `${toolUser}@t.dev`],
+      [otherUser, `${otherUser}@t.dev`],
+    ]) {
+      await client.execute({
+        sql: 'INSERT OR IGNORE INTO "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") VALUES (?, ?, ?, 0, ?, ?)',
+        args: [id, id, email, new Date().toISOString(), new Date().toISOString()],
+      });
+    }
+  });
 
   it("creates, lists, materializes, and deletes a custom tool", async () => {
     const tool = await writeCustomTool(toolUser, {
@@ -354,8 +369,7 @@ describe("Custom tools store", () => {
   });
 
   it("scopes custom tools to their owner", async () => {
-    const other = "tools-other-" + Date.now();
-    await writeCustomTool(other, {
+    await writeCustomTool(otherUser, {
       name: "secret-tool",
       description: "not yours",
       inputSchema: "{}",
