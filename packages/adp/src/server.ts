@@ -59,6 +59,29 @@ function decodeFrame(raw: RawData | Blob): string | Promise<string> {
 /** Notified when a client connects/disconnects, with that client's session id. */
 export type AdpConnectionListener = (sessionId: string) => void;
 
+/**
+ * Legacy `Debugger.<Verb>` commands emitted by every agx REPL/TUI frontend
+ * (`parseReplCommand`, `useAdp`, the pi extension). They alias onto the
+ * canonical ADP domains; unknown `Debugger.*` verbs still get -32601.
+ * Aliased requests also push a `Debugger.Response` event back to the caller
+ * since those frontends never correlate bare JSON-RPC responses.
+ */
+const DEBUGGER_METHOD_ALIASES: Record<string, string> = {
+  "Debugger.Pause": AdpDomains.Metacognition.pause,
+  "Debugger.Resume": AdpDomains.Metacognition.resume,
+  "Debugger.Inspect": AdpDomains.Metacognition.getCallFrame,
+  "Debugger.Halt": AdpDomains.Inference.halt,
+  "Debugger.SwitchModel": AdpDomains.Inference.switchModel,
+  "Debugger.Evaluate": AdpDomains.Inference.evaluate,
+  "Debugger.List": AdpDomains.Toolchain.list,
+  "Debugger.Intercept": AdpDomains.Toolchain.intercept,
+  "Debugger.Cancel": AdpDomains.Toolchain.cancel,
+  "Debugger.Compact": AdpDomains.Memory.compact,
+  "Debugger.QueryNodes": AdpDomains.Memory.queryNodes,
+  "Debugger.Prompt": AdpDomains.Session.prompt,
+  "Debugger.Shutdown": AdpDomains.Session.shutdown,
+};
+
 export interface AdpServerOptions {
   /** The port to listen on. */
   port?: number;
@@ -504,6 +527,12 @@ export class AdpServer extends EventEmitter {
     const req = parsed.data;
     const requestId = req.id;
 
+    // Legacy `Debugger.<Verb>` frontends: resolve to the canonical domain
+    // method before the scope gate and handler lookup so scoped principals
+    // are checked against the real method and the dispatch table stays single.
+    const isDebuggerMethod = req.method.startsWith("Debugger.");
+    const method = DEBUGGER_METHOD_ALIASES[req.method] ?? req.method;
+
     // At-most-one-response guard for this request id.
     let responded = false;
     const respondOnce = (send: () => void): void => {
@@ -514,7 +543,28 @@ export class AdpServer extends EventEmitter {
 
     const reply = (resultData: unknown): void => {
       if (requestId === undefined) return; // notification: never respond
-      respondOnce(() => this.sendResult(ws, requestId, resultData));
+      respondOnce(() => {
+        this.sendResult(ws, requestId, resultData);
+        if (isDebuggerMethod) {
+          this.notifyClient(sessionId, "Debugger.Response", {
+            method: req.method,
+            result: resultData,
+          });
+        }
+      });
+    };
+
+    const replyError = (code: number, message: string): void => {
+      if (requestId === undefined) return;
+      respondOnce(() => {
+        this.sendError(ws, requestId, code, message);
+        if (isDebuggerMethod) {
+          this.notifyClient(sessionId, "Debugger.Response", {
+            method: req.method,
+            error: message,
+          });
+        }
+      });
     };
 
     // Built-in protocol handshake — always available so clients can discover
@@ -534,28 +584,24 @@ export class AdpServer extends EventEmitter {
     const principal = this.socketPrincipals.get(ws);
     if (
       principal?.scopes &&
-      !principal.scopes.some((scope) => req.method.startsWith(scope))
+      !principal.scopes.some((scope) => method.startsWith(scope))
     ) {
-      this.emitAudit({ type: "command.denied", sessionId, method: req.method, at: Date.now() });
+      this.emitAudit({ type: "command.denied", sessionId, method, at: Date.now() });
       if (requestId !== undefined) {
-        respondOnce(() =>
-          this.sendError(ws, requestId, -32601, `Method not permitted: ${req.method}`),
-        );
+        replyError(-32601, `Method not permitted: ${req.method}`);
       }
       return;
     }
 
-    this.emitAudit({ type: "command", sessionId, method: req.method, at: Date.now() });
+    this.emitAudit({ type: "command", sessionId, method, at: Date.now() });
 
-    const registered = this.handlers.get(req.method);
+    const registered = this.handlers.get(method);
     if (!registered) {
-      if (requestId !== undefined) {
-        respondOnce(() => this.sendError(ws, requestId, -32601, `Method not found: ${req.method}`));
-      }
+      replyError(-32601, `Method not found: ${req.method}`);
       return;
     }
 
-    if (registered.once) this.handlers.delete(req.method);
+    if (registered.once) this.handlers.delete(method);
 
     try {
       // Dispatch through the single handler table. The listener signature is
@@ -565,10 +611,8 @@ export class AdpServer extends EventEmitter {
     } catch (err) {
       // A throwing handler must not take the connection down or mask itself
       // as a parse error; report -32603 (unless it already responded).
-      console.error(`[ADP] Handler for ${req.method} threw:`, err);
-      if (requestId !== undefined) {
-        respondOnce(() => this.sendError(ws, requestId, -32603, "Internal error"));
-      }
+      console.error(`[ADP] Handler for ${method} threw:`, err);
+      replyError(-32603, "Internal error");
     }
   }
 
