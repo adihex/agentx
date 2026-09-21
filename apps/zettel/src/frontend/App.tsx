@@ -174,13 +174,11 @@ export default function App() {
     }
   }, [session]);
 
+  // Notes/graph refresh is event-driven: UI mutations refetch on their own
+  // success path, agent writes arrive via Agent.ToolComplete/InferenceEnd.
   useEffect(() => {
     if (!session) return;
     void fetchNotes();
-    const interval = setInterval(() => {
-      void fetchNotes();
-    }, 2500);
-    return () => clearInterval(interval);
   }, [fetchNotes, session]);
 
   // Connect to the agent via ADP WebSocket.
