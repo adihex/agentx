@@ -159,7 +159,9 @@ describe("AgenticThreadPool", () => {
     });
     expect(res.success).toBe(false);
     expect(res.error).toContain("not registered");
-    expect(res.durationMs).toBe(0);
+    // durationMs is wall-clock; under parallel load the fail-fast path can
+    // still cross a millisecond boundary.
+    expect(res.durationMs).toBeLessThan(50);
     await pool.terminateAll();
   });
 
