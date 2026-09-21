@@ -15,6 +15,7 @@ import {
   searchNotesTool,
   getNoteTool,
   traverseGraphTool,
+  listNotesTool,
 } from "./tools/notes.js";
 import { transcribeAudioTool, transcribeAudio } from "./tools/transcribe.js";
 import {
@@ -377,6 +378,7 @@ function getOrCreateUserAgent(userId: string): AgentEventLoop {
         searchNotes: searchNotesTool,
         getNote: getNoteTool,
         traverseGraph: traverseGraphTool,
+        listNotes: listNotesTool,
         transcribeAudio: transcribeAudioTool,
       },
       autoTick: true,

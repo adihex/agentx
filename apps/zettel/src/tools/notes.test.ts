@@ -12,7 +12,7 @@ mkdirSync(testDir, { recursive: true });
 process.env.ZETTEL_DIR = testDir;
 delete process.env.GROQ_API_KEY;
 
-const { createNote, linkNotes, searchNotes, getNote, traverseGraph } = await import("./notes.js");
+const { createNote, linkNotes, searchNotes, getNote, traverseGraph, listNotes } = await import("./notes.js");
 const { readNote, replaceNoteGraph } = await import("../notes/store.js");
 
 const userId = "tools-test-" + Date.now();
@@ -84,6 +84,15 @@ describe("zettel note tools", () => {
   it("traverseGraph returns empty for an unknown entity", async () => {
     const res = await traverseGraph({ userId, entityName: "NoSuchEntity" });
     expect(res).toMatchObject({ success: true, result: { entities: [], relations: [] } });
+  });
+
+  it("listNotes returns compact rows and honours the limit", async () => {
+    const res = await listNotes({ userId });
+    expect(res.notes.length).toBeGreaterThanOrEqual(2);
+    expect(res.notes.map((n) => n.id)).toContain(noteA);
+    expect(res.notes[0]).not.toHaveProperty("body");
+    const limited = await listNotes({ userId, limit: 1 });
+    expect(limited.notes).toHaveLength(1);
   });
 
   it("rejects invalid input at the schema boundary", async () => {
