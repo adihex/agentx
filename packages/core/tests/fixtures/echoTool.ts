@@ -19,3 +19,13 @@ export async function hang(): Promise<never> {
     // Intentionally left pending.
   });
 }
+
+/** Return the full args object — used to verify schema-normalized arguments. */
+export async function echoArgs(args: Record<string, unknown>): Promise<unknown> {
+  return args;
+}
+
+/** Return a payload of a configurable size — exercises result-size limits. */
+export async function bigString(args: { length?: number }): Promise<string> {
+  return "x".repeat(args.length ?? 1024);
+}

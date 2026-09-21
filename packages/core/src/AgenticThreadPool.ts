@@ -7,9 +7,12 @@ const DEFAULT_TOOL_TIMEOUT_MS = 30_000;
 
 export type ToolExecutionErrorCode =
   | "TOOL_NOT_REGISTERED"
+  | "TOOL_ARGS_INVALID"
   | "TOOL_EXPORT_INVALID"
   | "TOOL_EXECUTION_ERROR"
   | "TOOL_TIMEOUT"
+  | "TOOL_OUTPUT_TOO_LARGE"
+  | "TOOL_QUEUE_FULL"
   | "THREAD_POOL_TERMINATED"
   | "THREAD_POOL_UNAVAILABLE"
   | "WORKER_ERROR"
@@ -18,6 +21,17 @@ export type ToolExecutionErrorCode =
 export interface AgenticThreadPoolOptions {
   /** Default max runtime for any tool execution before a timeout result is returned. */
   defaultTimeoutMs?: number;
+  /**
+   * Maximum in-flight tool executions (worker-dispatched + main-thread).
+   * Beyond it, execute() fails fast with TOOL_QUEUE_FULL. Default 256.
+   */
+  maxPendingRequests?: number;
+  /**
+   * Maximum serialized size of a tool's result data in bytes. Oversized or
+   * unserializable results are converted into typed failures so a runaway
+   * tool cannot blow up the model context. Default 1 MiB.
+   */
+  maxResultBytes?: number;
 }
 
 /**
@@ -93,7 +107,10 @@ export class AgenticThreadPool {
   private workers: Worker[] = [];
   private nextWorkerIndex = 0;
   private pendingRequests = new Map<string, PendingToolRequest>();
+  private mainThreadInFlight = 0;
   private readonly defaultTimeoutMs: number;
+  private readonly maxPendingRequests: number;
+  private readonly maxResultBytes: number;
   private isTerminatingAll = false;
   private terminated = false;
 
@@ -109,6 +126,8 @@ export class AgenticThreadPool {
     options: AgenticThreadPoolOptions = {},
   ) {
     this.defaultTimeoutMs = this.normalizeTimeoutMs(options.defaultTimeoutMs);
+    this.maxPendingRequests = this.normalizePositiveInt(options.maxPendingRequests, 256);
+    this.maxResultBytes = this.normalizePositiveInt(options.maxResultBytes, 1_048_576);
     this.init();
   }
 
@@ -125,14 +144,15 @@ export class AgenticThreadPool {
       const pending = this.pendingRequests.get(res.id);
       if (!pending) return;
 
+      const result = res.success
+        ? res
+        : {
+            ...res,
+            errorCode: res.errorCode ?? "TOOL_EXECUTION_ERROR",
+          };
       this.settlePending(
         res.id,
-        res.success
-          ? res
-          : {
-              ...res,
-              errorCode: res.errorCode ?? "TOOL_EXECUTION_ERROR",
-            },
+        this.capResult(result, pending.request, pending.startedAt),
       );
     });
 
@@ -206,12 +226,41 @@ export class AgenticThreadPool {
       );
     }
 
+    // Arg validation is fail-closed: malformed input never reaches the tool,
+    // and the worker receives the schema-normalized value (defaults applied).
+    const parsedArgs = def.inputSchema.safeParse(req.args);
+    if (!parsedArgs.success) {
+      return this.errorResult(
+        requestMeta,
+        "TOOL_ARGS_INVALID",
+        `Invalid args for tool "${req.toolName}": ${parsedArgs.error.issues
+          .map((i) => `${i.path.join(".") || "input"}: ${i.message}`)
+          .join("; ")}`,
+        start,
+      );
+    }
+
+    if (this.pendingRequests.size + this.mainThreadInFlight >= this.maxPendingRequests) {
+      return this.errorResult(
+        requestMeta,
+        "TOOL_QUEUE_FULL",
+        `Tool queue is full (${this.maxPendingRequests} pending executions)`,
+        start,
+      );
+    }
+
     const timeoutMs = this.timeoutFor(def);
+    const normalizedReq = { ...req, args: parsedArgs.data as Record<string, unknown> };
 
     // In test environment, execute on main thread using jiti.
     // This path is still bounded for never-resolving async tool mocks.
     if (process.env.NODE_ENV === "test" || process.env.MOCK_LLM === "true") {
-      return this.executeOnMainThread(req, def, timeoutMs);
+      this.mainThreadInFlight++;
+      try {
+        return await this.executeOnMainThread(normalizedReq, def, timeoutMs);
+      } finally {
+        this.mainThreadInFlight--;
+      }
     }
 
     if (this.workers.length === 0) {
@@ -231,7 +280,7 @@ export class AgenticThreadPool {
       id: req.id,
       toolCallId: req.toolCallId,
       toolName: req.toolName,
-      args: req.args,
+      args: normalizedReq.args,
       modulePath: def.modulePath,
       exportName: def.exportName ?? "default",
     };
@@ -343,13 +392,18 @@ export class AgenticThreadPool {
     try {
       return await Promise.race([
         run.then(
-          (data) => ({
-            id: request.id,
-            toolCallId: request.toolCallId,
-            success: true,
-            data,
-            durationMs: Date.now() - startedAt,
-          }),
+          (data) =>
+            this.capResult(
+              {
+                id: request.id,
+                toolCallId: request.toolCallId,
+                success: true,
+                data,
+                durationMs: Date.now() - startedAt,
+              },
+              request,
+              startedAt,
+            ),
           (err) => this.errorFromUnknown(request, err, startedAt),
         ),
         timeoutResult,
@@ -357,6 +411,41 @@ export class AgenticThreadPool {
     } finally {
       if (timeout) clearTimeout(timeout);
     }
+  }
+
+  /**
+   * Enforce the result-size bound: oversized or unserializable tool output is
+   * folded into a typed failure instead of reaching the model context.
+   */
+  private capResult(
+    result: ToolResult,
+    request: Pick<ToolRequest, "id" | "toolCallId" | "toolName">,
+    startedAt: number,
+  ): ToolResult {
+    if (!result.success) return result;
+
+    let size: number;
+    try {
+      const serialized = JSON.stringify(result.data);
+      size = serialized === undefined ? 0 : Buffer.byteLength(serialized, "utf8");
+    } catch {
+      return this.errorResult(
+        request,
+        "TOOL_EXECUTION_ERROR",
+        `Tool "${request.toolName}" returned an unserializable result`,
+        startedAt,
+      );
+    }
+
+    if (size > this.maxResultBytes) {
+      return this.errorResult(
+        request,
+        "TOOL_OUTPUT_TOO_LARGE",
+        `Tool "${request.toolName}" result exceeded ${this.maxResultBytes} bytes`,
+        startedAt,
+      );
+    }
+    return result;
   }
 
   private createTimeout(pending: PendingToolRequest, timeoutMs: number): ReturnType<typeof setTimeout> {
@@ -423,6 +512,12 @@ export class AgenticThreadPool {
     if (timeoutMs === undefined) return DEFAULT_TOOL_TIMEOUT_MS;
     if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return DEFAULT_TOOL_TIMEOUT_MS;
     return Math.max(1, Math.floor(timeoutMs));
+  }
+
+  private normalizePositiveInt(value: number | undefined, fallback: number): number {
+    if (value === undefined) return fallback;
+    if (!Number.isFinite(value) || value <= 0) return fallback;
+    return Math.max(1, Math.floor(value));
   }
 
   private errorFromUnknown(
