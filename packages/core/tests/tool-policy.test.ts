@@ -180,3 +180,72 @@ describe("pause gate semantics", () => {
     session.shutdownEngine();
   });
 });
+
+describe("Memory.compact semantics", () => {
+  type Msg = { role: string; content: unknown };
+  const ctxOf = (s: AgentSession) => (s as unknown as { context: Msg[] }).context;
+
+  it("is a no-op at or below the window threshold", () => {
+    const session = makeSession();
+    const ctx = ctxOf(session);
+    ctx.push(
+      { role: "system", content: "sys" },
+      { role: "user", content: "u1" },
+      { role: "assistant", content: "a1" },
+      { role: "user", content: "u2" },
+    );
+    const result = session.compact();
+    expect(result).toEqual({ before: 4, after: 4 });
+    session.shutdownEngine();
+  });
+
+  it("keeps system messages plus a recent window", () => {
+    const session = makeSession();
+    const ctx = ctxOf(session);
+    ctx.push(
+      { role: "system", content: "sys" },
+      { role: "user", content: "u1" },
+      { role: "assistant", content: "a1" },
+      { role: "user", content: "u2" },
+      { role: "assistant", content: "a2" },
+      { role: "user", content: "u3" },
+      { role: "assistant", content: "a3" },
+      { role: "user", content: "u4" },
+    );
+    const result = session.compact();
+    expect(result.before).toBe(8);
+    expect(result.after).toBe(5);
+    // compact() reassigns this.context — re-read rather than reusing `ctx`.
+    const compacted = ctxOf(session);
+    expect(compacted[0]).toEqual({ role: "system", content: "sys" });
+    expect(compacted.map((m) => m.role)).toEqual([
+      "system",
+      "assistant",
+      "user",
+      "assistant",
+      "user",
+    ]);
+    session.shutdownEngine();
+  });
+
+  it("never starts the retained window on an orphaned tool message", () => {
+    const session = makeSession();
+    const ctx = ctxOf(session);
+    ctx.push(
+      { role: "system", content: "sys" },
+      { role: "user", content: "u1" },
+      { role: "assistant", content: "a1" },
+      { role: "user", content: "u2" },
+      { role: "tool", content: "tool-result" }, // sits exactly on the window boundary
+      { role: "assistant", content: "a2" },
+      { role: "user", content: "u3" },
+      { role: "assistant", content: "a3" },
+    );
+    session.compact();
+    const nonSystem = ctxOf(session).filter((m) => m.role !== "system");
+    // The window backed up to keep the tool result inside its own turn.
+    expect(nonSystem[0]).toEqual({ role: "user", content: "u2" });
+    expect(nonSystem.map((m) => m.role)).toContain("tool");
+    session.shutdownEngine();
+  });
+});
