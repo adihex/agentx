@@ -137,6 +137,34 @@ describe("SemanticVisualizer Component", () => {
     expect(handlePreviewClick).toHaveBeenCalledTimes(1);
   });
 
+  it("opens the controls panel and exposes zoom actions in interactive mode", () => {
+    render(
+      <SemanticVisualizer
+        selectedNote={mockNotes[0]}
+        notes={mockNotes}
+        backlinks={["note-3"]}
+        interactive={true}
+      />
+    );
+
+    const toggle = screen.getByTitle("Map Controls");
+    // Panel closed: no zoom actions yet.
+    expect(screen.queryByTitle("Zoom In")).not.toBeInTheDocument();
+
+    fireEvent.click(toggle);
+    const zoomIn = screen.getByTitle("Zoom In");
+    const zoomOut = screen.getByTitle("Zoom Out");
+    const center = screen.getByTitle("Center View");
+    expect(zoomIn).toBeInTheDocument();
+    fireEvent.click(zoomIn);
+    fireEvent.click(zoomOut);
+    fireEvent.click(center);
+
+    // Closing the panel hides the actions again.
+    fireEvent.click(screen.getByTitle("Map Controls"));
+    expect(screen.queryByTitle("Zoom In")).not.toBeInTheDocument();
+  });
+
   it("toggles modal state and renders controls inside custom parent container", () => {
     const ParentComponent = () => {
       const [open, setOpen] = React.useState(false);
