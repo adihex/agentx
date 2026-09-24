@@ -1,0 +1,13 @@
+services:
+  - name: dashboard
+    command: 'export PATH="$HOME/.local/bin:$PATH"; exec mise exec -- pnpm --filter agx-web dev'
+    port: 5173
+  - name: runtime
+    command: 'export PATH="$HOME/.local/bin:$PATH"; exec mise exec -- pnpm --filter demo dev'
+    environment:
+      - name: OPENAI_API_KEY
+        secret: OPENAI_API_KEY
+      - name: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      - name: AGENT_MODEL
+        value: gpt-4o
